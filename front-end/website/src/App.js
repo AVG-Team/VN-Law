@@ -28,7 +28,7 @@ function App() {
                         }
                     />
                     <Route
-                        index
+                        path="/gioi-thieu"
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <About title="Giới thiệu" />

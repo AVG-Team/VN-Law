@@ -155,7 +155,7 @@ function NavList() {
     );
 }
 
-export default function NavbarWithMenu() {
+export function NavbarWithMenu() {
     const [openNav, setOpenNav] = React.useState(false);
 
     React.useEffect(() => {

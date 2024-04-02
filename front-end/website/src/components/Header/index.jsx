@@ -1,17 +1,10 @@
+import { NavbarWithMenu } from "./components/NavbarWithMenu";
+import { CarouselDefault } from "./components/Carousel";
 export default function Header() {
     return (
-        <header className="bg-gray-800 text-white p-4">
-            <p>
-                Edit <code>src/App.js</code> and save to reload.
-            </p>
-            <a
-                className="text-blue-400 hover:text-blue-200"
-                href="https://reactjs.org"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Learn React
-            </a>
+        <header>
+            <NavbarWithMenu />
+            <CarouselDefault />
         </header>
     );
 }
