@@ -1,10 +1,10 @@
 import { NavbarWithMenu } from "./components/NavbarWithMenu";
-import { CarouselDefault } from "./components/Carousel";
+import { Slide } from "./components/Slide";
 export default function Header() {
     return (
         <header>
             <NavbarWithMenu />
-            <CarouselDefault />
+            <Slide />
         </header>
     );
 }

@@ -1,6 +1,6 @@
 import { Carousel } from "@material-tailwind/react";
 
-export function CarouselTransition() {
+export function Slide() {
     return (
         <Carousel transition={{ duration: 2 }} className="rounded-xl">
             <img
