@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Reddit+Mono:wght@200..900&display=swap");
 html,
 body {
     height: 100%;
@@ -9,4 +9,5 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    font-family: "Open Sans", sans-serif;
 }

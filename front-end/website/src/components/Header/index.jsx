@@ -1,10 +1,8 @@
-import { NavbarWithMenu } from "./components/NavbarWithMenu";
-import { Slide } from "./components/Slide";
+import { Navbar } from "./components/Navbar";
 export default function Header() {
     return (
         <header>
-            <NavbarWithMenu />
-            <Slide />
+            <Navbar />
         </header>
     );
 }
