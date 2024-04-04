@@ -12,6 +12,7 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import Logo from "../../../assets/images/logo/logo2.png";
 const pages = ["Pháp Điển", "VBPL", "Chatbot"];
+const pageMobile = ["Pháp Điển", "VBPL", "Chatbot", "Sign In", "Sign Up"];
 //const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 export function Navbar() {
@@ -66,7 +67,7 @@ export function Navbar() {
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
                         >
-                            {pages.map((page) => (
+                            {pageMobile.map((page) => (
                                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                                     <Typography
                                         className="font-semibold text-blue-gray hover:!bg-blue-500"
@@ -91,12 +92,12 @@ export function Navbar() {
                         ))}
                     </div>
 
-                    <div>
+                    <div className="hidden md:flex">
                         <Button className="!bg-blue-gray-800 !mr-1 !rounded-lg !text-white hover:!bg-blue-gray-500">
-                            <Typography className="font-semibold">Sign In</Typography>
+                            Đăng nhập
                         </Button>
-                        <Button className="!bg-blue-gray-800 !ml-1 !rounded-lg  !text-white hover:!bg-blue-gray-500">
-                            <Typography className="font-semibold">Sign Up</Typography>
+                        <Button className="!bg-blue-gray-800 !ml-1 !rounded-lg  !text-white hover:!bg-blue-gray-500 text-xl">
+                            Đăng ký
                         </Button>
                         {/* <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu}>
