@@ -1,133 +1,192 @@
-import React, { useState } from "react";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-//import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-//import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
+import { Fragment } from "react";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/20/solid";
 import Logo from "../../../assets/images/logo/logo2.png";
-const pages = ["Pháp Điển", "VBPL", "Chatbot"];
-const pageMobile = ["Pháp Điển", "VBPL", "Chatbot", "Sign In", "Sign Up"];
-//const settings = ["Profile", "Account", "Dashboard", "Logout"];
+function classNames(...classes) {
+    return classes.filter(Boolean).join(" ");
+}
+const pages = [
+    { name: "Pháp Điển", href: "#", current: true },
+    { name: "VBPL", href: "#", current: false },
+    { name: "ChatBot", href: "#", current: false },
+    { name: "Tính năng khác", href: "#", current: false },
+];
 
+const menus = [
+    { name: "Profile", href: "#" },
+    { name: "Settings", href: "#" },
+    { name: "Sign out", href: "#" },
+];
 export function Navbar() {
-    const [anchorElNav, setAnchorElNav] = useState(null);
-    //const [anchorElUser, setAnchorElUser] = useState(null);
-
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
-    //const handleOpenUserMenu = (event) => {
-    //    setAnchorElUser(event.currentTarget);
-    //};
-
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
-
-    //const handleCloseUserMenu = () => {
-    //   setAnchorElUser(null);
-    //};
-
     return (
-        <AppBar position="sticky" className="top-0 z-50" sx={{ backgroundColor: "white !important" }}>
-            <Container maxWidth="xl">
-                <Toolbar className="flex items-center justify-between">
-                    <a href="#dd" className="text-decoration-none">
-                        <img src={Logo} alt="logo-ct" className="w-48" />
-                    </a>
-                    <div className="flex items-start md:hidden">
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            className="text-blue-gray-900"
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: "bottom",
-                                horizontal: "left",
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: "top",
-                                horizontal: "left",
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
-                        >
-                            {pageMobile.map((page) => (
-                                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                    <Typography
-                                        className="font-semibold text-blue-gray hover:!bg-blue-500"
-                                        textAlign="center"
+        <Disclosure as="nav" className="bg-white shadow-md">
+            {({ open }) => (
+                <>
+                    <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                        <div className="flex justify-between h-16">
+                            <div className="flex">
+                                <div className="flex items-center mr-2 -ml-2 md:hidden">
+                                    {/* Mobile menu button */}
+                                    <Disclosure.Button className="relative inline-flex items-center justify-center p-2 text-gray-400 rounded-md hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                                        <span className="absolute -inset-0.5" />
+                                        <span className="sr-only">Open main menu</span>
+                                        {open ? (
+                                            <XMarkIcon className="block w-6 h-6" aria-hidden="true" />
+                                        ) : (
+                                            <Bars3Icon className="block w-6 h-6" aria-hidden="true" />
+                                        )}
+                                    </Disclosure.Button>
+                                </div>
+                                <div className="flex items-center flex-shrink-0">
+                                    <img className="w-40" src={Logo} alt="Logo" />
+                                </div>
+                                <div className="hidden md:ml-6 md:flex md:space-x-8">
+                                    {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
+                                    {pages.map((page) =>
+                                        page.current ? (
+                                            <a
+                                                href={page.href}
+                                                className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 border-b-2 border-indigo-500"
+                                            >
+                                                {page.name}
+                                            </a>
+                                        ) : (
+                                            <a
+                                                href={page.href}
+                                                className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
+                                            >
+                                                {page.name}
+                                            </a>
+                                        ),
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex items-center">
+                                <div className="flex-shrink-0">
+                                    <button
+                                        type="button"
+                                        className="relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                     >
-                                        {page}
-                                    </Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu>
-                    </div>
-                    <div className="justify-start flex-grow hidden space-x-4 md:flex">
-                        {pages.map((page) => (
-                            <Button
-                                key={page}
-                                onClick={handleCloseNavMenu}
-                                className="my-2 font-semibold text-blue-gray-900"
-                                sx={{ color: "rgb(15 23 42 / var(--tw-text-opacity)) !important" }}
-                            >
-                                {page}
-                            </Button>
-                        ))}
+                                        Đăng nhập
+                                    </button>
+                                </div>
+                                <div className="hidden md:ml-4 md:flex md:flex-shrink-0 md:items-center">
+                                    <button
+                                        type="button"
+                                        className="relative p-1 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                    >
+                                        <span className="absolute -inset-1.5" />
+                                        <span className="sr-only">View notifications</span>
+                                        <BellIcon className="w-6 h-6" aria-hidden="true" />
+                                    </button>
+
+                                    {/* Profile dropdown */}
+                                    <Menu as="div" className="relative ml-3">
+                                        <div>
+                                            <Menu.Button className="relative flex text-sm bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                                <span className="absolute -inset-1.5" />
+                                                <span className="sr-only">Open user menu</span>
+                                                <img
+                                                    className="w-8 h-8 rounded-full"
+                                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                    alt=""
+                                                />
+                                            </Menu.Button>
+                                        </div>
+                                        <Transition
+                                            as={Fragment}
+                                            enter="transition ease-out duration-200"
+                                            enterFrom="transform opacity-0 scale-95"
+                                            enterTo="transform opacity-100 scale-100"
+                                            leave="transition ease-in duration-75"
+                                            leaveFrom="transform opacity-100 scale-100"
+                                            leaveTo="transform opacity-0 scale-95"
+                                        >
+                                            <Menu.Items className="absolute right-0 z-10 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                {menus.map((menu) => (
+                                                    <Menu.Item key={menu.name}>
+                                                        {({ active }) => (
+                                                            <a
+                                                                href={menu.href}
+                                                                className={classNames(
+                                                                    active ? "bg-gray-100" : "",
+                                                                    "block px-4 py-2 text-sm text-gray-700",
+                                                                )}
+                                                            >
+                                                                {menu.name}
+                                                            </a>
+                                                        )}
+                                                    </Menu.Item>
+                                                ))}
+                                            </Menu.Items>
+                                        </Transition>
+                                    </Menu>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="hidden md:flex">
-                        <Button className="!bg-blue-gray-800 !mr-1 !rounded-lg !text-white hover:!bg-blue-gray-500">
-                            Đăng nhập
-                        </Button>
-                        <Button className="!bg-blue-gray-800 !ml-1 !rounded-lg  !text-white hover:!bg-blue-gray-500 text-xl">
-                            Đăng ký
-                        </Button>
-                        {/* <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                            </IconButton>
-                        </Tooltip>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center">{setting}</Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu> */}
-                    </div>
-                </Toolbar>
-            </Container>
-        </AppBar>
+                    <Disclosure.Panel className="md:hidden">
+                        <div className="pt-2 pb-3 space-y-1">
+                            {/* Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" */}
+                            {pages.map((page) =>
+                                page.current ? (
+                                    <Disclosure.Button
+                                        as="a"
+                                        href={page.href}
+                                        className="block py-2 pl-3 pr-4 text-base font-medium text-indigo-700 border-l-4 border-indigo-500 bg-indigo-50 sm:pl-5 sm:pr-6"
+                                    >
+                                        {page.name}
+                                    </Disclosure.Button>
+                                ) : (
+                                    <Disclosure.Button
+                                        as="a"
+                                        href={page.href}
+                                        className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6"
+                                    >
+                                        {page.name}
+                                    </Disclosure.Button>
+                                ),
+                            )}
+                        </div>
+                        <div className="pt-4 pb-3 border-t border-gray-200">
+                            <div className="flex items-center px-4 sm:px-6">
+                                <div className="flex-shrink-0">
+                                    <img
+                                        className="w-10 h-10 rounded-full"
+                                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                        alt=""
+                                    />
+                                </div>
+                                <div className="ml-3">
+                                    <div className="text-base font-medium text-gray-800">Tom Cook</div>
+                                    <div className="text-sm font-medium text-gray-500">tom@example.com</div>
+                                </div>
+                                <button
+                                    type="button"
+                                    className="relative flex-shrink-0 p-1 ml-auto text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                >
+                                    <span className="absolute -inset-1.5" />
+                                    <span className="sr-only">View notifications</span>
+                                    <BellIcon className="w-6 h-6" aria-hidden="true" />
+                                </button>
+                            </div>
+                            <div className="mt-3 space-y-1">
+                                {menus.map((item) => (
+                                    <Disclosure.Button
+                                        as="a"
+                                        href={item.href}
+                                        className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 sm:px-6"
+                                    >
+                                        {item.name}
+                                    </Disclosure.Button>
+                                ))}
+                            </div>
+                        </div>
+                    </Disclosure.Panel>
+                </>
+            )}
+        </Disclosure>
     );
 }
