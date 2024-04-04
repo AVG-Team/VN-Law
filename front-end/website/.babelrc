@@ -1,10 +1,13 @@
 {
     "plugins": [
-      ["module-resolver", {
-        "alias": {
-          "~": "./src"
-        }
-      }]
+        [
+            "module-resolver",
+            {
+                "alias": {
+                    "~": "./src"
+                }
+            }
+        ]
     ]
-  }
-  // path import App form  '~/App'
+}
+// path import App form  '~/App'
