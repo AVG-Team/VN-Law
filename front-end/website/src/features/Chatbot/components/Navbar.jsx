@@ -1,6 +1,5 @@
 import LawQuestions from "./LawQuestions";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
-import "./ScrollbarStyles.module.css";
 
 function Navbar({ isOpenMenuNavbar, nameUser, clearMessages }) {
     return (

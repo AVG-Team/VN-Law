@@ -98,6 +98,7 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
             className={`flex flex-col relative w-[100%] h-screen z-0 ${activeChat ? "active-chat" : ""}`}
             onClick={handleClick}
         >
+            <div className="hidden justify-end justify-start"></div>
             <MenuMobile
                 isOpenMenuNavbar={isOpenMenuNavbar}
                 setIsOpenMenuNavbar={setIsOpenMenuNavbar}
@@ -145,7 +146,7 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                     <img src="https://cdn-icons-png.flaticon.com/512/432/432594.png" alt="icon" className="w-12" />
                     <p className="text-2xl font-bold mt-3">How can I help you today?</p>
                 </div>
-                <div className="flex flex-col h-full overflow-scroll">
+                <div className="flex flex-col h-full overflow-scroll lg:py-10">
                     {messages.map((message) => (
                         <div
                             key={message.id}
@@ -155,7 +156,7 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                         >
                             <div
                                 className={`flex rounded-lg ${
-                                    message.type === "question" ? "bg-primary" : "bg-gray-100"
+                                    message.type === "question" ? "bg-cyan-300" : "bg-gray-100"
                                 } p-4`}
                             >
                                 <p

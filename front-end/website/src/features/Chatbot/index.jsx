@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import Dialog from "./components/Dialog";
 import { useMediaQuery } from "react-responsive";
+import "./components/style.css";
 
 export default function Chatbot(props) {
     const title = props.title;
