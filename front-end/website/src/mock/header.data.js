@@ -1,59 +1,46 @@
-import {
-    Bars4Icon,
-    GlobeAmericasIcon,
-    NewspaperIcon,
-    PhoneIcon,
-    RectangleGroupIcon,
-    SquaresPlusIcon,
-    SunIcon,
-    TagIcon,
-    UserGroupIcon,
-} from "@heroicons/react/24/solid";
+import Logo from "../assets/images/logo/logo-circle.png";
+import LegalDoc from "../assets/images/lottie/legalDoc.json";
 
-const navListMenuItems = [
+export const pages = [
+    { key: "1", name: "Pháp Điển", href: "#", current: true },
+    { key: "2", name: "VBPL", href: "#", current: false },
+    { key: "3", name: "ChatBot", href: "#", current: false },
+    { key: "4", name: "Tính năng khác", href: "#", current: false },
+];
+
+export const menus = [
+    { key: "1", name: "Profile", href: "#" },
+    { key: "2", name: "Settings", href: "#" },
+    { key: "3", name: "Sign out", href: "#" },
+];
+
+export const banner = [
     {
-        title: "Products",
-        description: "Find the perfect solution for your needs.",
-        icon: SquaresPlusIcon,
+        key: "1",
+        title: "Tri Thức Pháp Luật Việt Nam",
+        description: "Phát Triển Bởi AVG Team",
+        logo: Logo,
+        page: "Trang chủ",
     },
     {
-        title: "About Us",
-        description: "Meet and learn about our dedication",
-        icon: UserGroupIcon,
+        key: "2",
+        title: "Danh sách văn bản pháp luật",
+        description: "Tập hợp các văn bản quy phạm pháp luật của Việt Nam",
+        logo: LegalDoc,
+        page: "Tra cứu",
     },
     {
-        title: "Blog",
-        description: "Find the perfect solution for your needs.",
-        icon: Bars4Icon,
+        key: "3",
+        title: "Tri Thức Pháp Luật Việt Nam",
+        description: "Phát Triển Bởi AVG Team",
+        logo: Logo,
+        page: "Home",
     },
     {
-        title: "Services",
-        description: "Learn how we can help you achieve your goals.",
-        icon: SunIcon,
-    },
-    {
-        title: "Support",
-        description: "Reach out to us for assistance or inquiries",
-        icon: GlobeAmericasIcon,
-    },
-    {
-        title: "Contact",
-        description: "Find the perfect solution for your needs.",
-        icon: PhoneIcon,
-    },
-    {
-        title: "News",
-        description: "Read insightful articles, tips, and expert opinions.",
-        icon: NewspaperIcon,
-    },
-    {
-        title: "Products",
-        description: "Find the perfect solution for your needs.",
-        icon: RectangleGroupIcon,
-    },
-    {
-        title: "Special Offers",
-        description: "Explore limited-time deals and bundles",
-        icon: TagIcon,
+        key: "4",
+        title: "Tri Thức Pháp Luật Việt Nam",
+        description: "Phát Triển Bởi AVG Team",
+        logo: Logo,
+        page: "Home",
     },
 ];

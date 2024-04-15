@@ -1,23 +1,12 @@
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { PlusIcon } from "@heroicons/react/20/solid";
 import Logo from "../../../assets/images/logo/logo2.png";
+import { menus, pages } from "../../../mock/header.data";
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
-const pages = [
-    { name: "Pháp Điển", href: "#", current: true },
-    { name: "VBPL", href: "#", current: false },
-    { name: "ChatBot", href: "#", current: false },
-    { name: "Tính năng khác", href: "#", current: false },
-];
-
-const menus = [
-    { name: "Profile", href: "#" },
-    { name: "Settings", href: "#" },
-    { name: "Sign out", href: "#" },
-];
 export function Navbar() {
     return (
         <Disclosure as="nav" className="bg-white shadow-md">
@@ -46,15 +35,17 @@ export function Navbar() {
                                     {pages.map((page) =>
                                         page.current ? (
                                             <a
+                                                key={page.key}
                                                 href={page.href}
-                                                className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 border-b-2 border-indigo-500"
+                                                className="inline-flex items-center px-1 pt-1 text-sm font-semibold text-gray-900 border-b-2 border-indigo-500"
                                             >
                                                 {page.name}
                                             </a>
                                         ) : (
                                             <a
+                                                key={page.key}
                                                 href={page.href}
-                                                className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
+                                                className="inline-flex items-center px-1 pt-1 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
                                             >
                                                 {page.name}
                                             </a>
@@ -135,7 +126,8 @@ export function Navbar() {
                                     <Disclosure.Button
                                         as="a"
                                         href={page.href}
-                                        className="block py-2 pl-3 pr-4 text-base font-medium text-indigo-700 border-l-4 border-indigo-500 bg-indigo-50 sm:pl-5 sm:pr-6"
+                                        key={page.key}
+                                        className="block py-2 pl-3 pr-4 text-base font-semibold text-indigo-700 border-l-4 border-indigo-500 bg-indigo-50 sm:pl-5 sm:pr-6"
                                     >
                                         {page.name}
                                     </Disclosure.Button>
@@ -143,7 +135,8 @@ export function Navbar() {
                                     <Disclosure.Button
                                         as="a"
                                         href={page.href}
-                                        className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6"
+                                        key={page.key}
+                                        className="block py-2 pl-3 pr-4 text-base font-semibold text-gray-500 border-l-4 border-transparent hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6"
                                     >
                                         {page.name}
                                     </Disclosure.Button>
@@ -160,8 +153,8 @@ export function Navbar() {
                                     />
                                 </div>
                                 <div className="ml-3">
-                                    <div className="text-base font-medium text-gray-800">Tom Cook</div>
-                                    <div className="text-sm font-medium text-gray-500">tom@example.com</div>
+                                    <div className="text-base font-semibold text-gray-800">Tom Cook</div>
+                                    <div className="text-sm font-semibold text-gray-500">tom@example.com</div>
                                 </div>
                                 <button
                                     type="button"
@@ -177,7 +170,8 @@ export function Navbar() {
                                     <Disclosure.Button
                                         as="a"
                                         href={item.href}
-                                        className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 sm:px-6"
+                                        key={item.key}
+                                        className="block px-4 py-2 text-base font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-800 sm:px-6"
                                     >
                                         {item.name}
                                     </Disclosure.Button>

@@ -1,0 +1,93 @@
+.heroBanner {
+    padding: 4rem 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    background-color: #d9ecff;
+}
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+}
+
+@keyframes blink {
+    50% {
+        border-color: transparent;
+    }
+}
+
+@media screen and (max-width: 996px) {
+    .heroBanner {
+        padding: 2rem;
+    }
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes jackInTheBox {
+    from {
+        opacity: 0;
+        transform: scale(0.1) rotate(30deg);
+        transform-origin: center bottom;
+    }
+
+    50% {
+        transform: rotate(-10deg);
+    }
+
+    70% {
+        transform: rotate(3deg);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.heroLogo {
+    animation-duration: 3s;
+    animation-name: jackInTheBox;
+}
+
+@media only screen and (max-width: 768px) {
+    .hero {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .heroInner {
+        padding: 0;
+    }
+
+    .heroProjectTagline {
+        font-size: 36px;
+        text-align: center;
+    }
+
+    .heroLogo {
+        display: block;
+        float: none;
+        margin: 0 auto;
+    }
+
+    .indexCtas {
+        justify-content: center;
+    }
+
+    .indexCtas a {
+        margin: 20px 36px;
+    }
+
+    .indexCtasGitHubButton {
+        display: none;
+    }
+}

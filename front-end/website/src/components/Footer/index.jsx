@@ -1,4 +1,3 @@
-import { Typography } from "@material-tailwind/react";
 import Logo from "../../assets/images/logo/logo2.png";
 export default function Footer() {
     return (
