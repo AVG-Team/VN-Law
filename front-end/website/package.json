@@ -22,6 +22,7 @@
         "react-dom": "^18.2.0",
         "react-router-dom": "^6.22.3",
         "react-scripts": "5.0.1",
+        "react-textarea-autosize": "^8.5.3",
         "save": "^2.9.0",
         "web-vitals": "^2.1.4"
     },
@@ -32,6 +33,7 @@
         "postcss": "^8.4.38",
         "postcss-cli": "^11.0.0",
         "react-app-rewired": "^2.2.1",
+        "react-responsive": "^10.0.0",
         "sass": "^1.72.0",
         "tailwindcss": "^3.4.3"
     },

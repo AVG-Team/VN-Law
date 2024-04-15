@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import loadable from "@loadable/component";
 import AuthLayout from "~/layouts/AuthLayout";
 import BasicLayout from "~/layouts/BasicLayout";
+import ContentLayout from "~/layouts/ContentLayout";
 import { CircularProgress } from "@mui/material";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -32,6 +33,16 @@ function App() {
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <About title="Giới thiệu" />
+                            </Suspense>
+                        }
+                    />
+                </Route>
+                <Route element={<ContentLayout />}>
+                    <Route
+                        path="/chatbot"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <Chatbot title="Chat Bot" />
                             </Suspense>
                         }
                     />
