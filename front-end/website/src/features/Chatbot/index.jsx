@@ -6,7 +6,7 @@ export default function Chatbot(props) {
                 Edit <code>src/features/Chatbot/index.jsx</code> and save to reload.
             </p>
             <a
-                className="text-blue-400 hover:text-blue-200 "
+                className="text-blue-400 hover:text-blue-20"
                 href="https://reactjs.org"
                 target="_blank"
                 rel="noopener noreferrer"

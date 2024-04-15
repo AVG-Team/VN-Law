@@ -8,13 +8,6 @@
     background-color: #d9ecff;
 }
 
-.hero__title {
-    overflow: hidden;
-    border-right: 0.15em solid #316ba5;
-    white-space: nowrap;
-    animation: typing 2s steps(22), blink 0.5s step-end infinite alternate;
-}
-
 @keyframes typing {
     from {
         width: 0;
@@ -61,7 +54,7 @@
 }
 
 .heroLogo {
-    animation-duration: 2s;
+    animation-duration: 3s;
     animation-name: jackInTheBox;
 }
 
