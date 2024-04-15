@@ -36,3 +36,4 @@ build/
 
 ### Mac OS ###
 .DS_Store
+front-end/website/src/mock/test.js
