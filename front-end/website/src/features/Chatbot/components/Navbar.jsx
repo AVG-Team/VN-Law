@@ -1,5 +1,6 @@
 import LawQuestions from "./LawQuestions";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import Logo from "../../../assets/images/logo/logo-no-bg.png";
 
 function Navbar({ isOpenMenuNavbar, nameUser, clearMessages }) {
     return (
@@ -16,8 +17,8 @@ function Navbar({ isOpenMenuNavbar, nameUser, clearMessages }) {
                     }}
                 >
                     <div className="flex items-center">
-                        <img src="https://cdn-icons-png.flaticon.com/512/432/432594.png" alt="icon" className="w-8" />
-                        <p className="pl-3 text-lg text-black">New Chat</p>
+                        <img src={Logo} alt="icon" className="w-10" />
+                        <p className="pl-3 text-lg text-black">Cuộc trò chuyện mới</p>
                     </div>
                     <PencilSquareIcon className="w-6 h-6 text-black" />
                 </div>
