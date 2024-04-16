@@ -1,14 +1,8 @@
 import React from "react"
-import { LinkIcon } from "@heroicons/react/24/solid"
-import { MapPinIcon } from "@heroicons/react/24/solid"
-import { UserGroupIcon } from "@heroicons/react/24/solid"
+import { socialMedidaLinks } from "~/mock/infomationContacts.data"
+import { LinkIcon, MapPinIcon, UserGroupIcon } from "@heroicons/react/24/solid"
 
-const SocialMedidaLinks = () => {
-    const socialMedidaLinks = [
-        { platform: 'Facebook', url: 'https://www.facebook.com/avg.team' },
-        { platform: 'Github',url: 'https://github.com/AVG-Team' }
-    ];
-
+export function SocialMedidaLinks(){
     return (
         <div className="w-full text-center dark:text-gray-900 justify-center flex flex-col lg:flex-row mx-auto gap-7 mt-5 lg:mt-10">
             <div className="lg:w-4/12">
@@ -22,10 +16,10 @@ const SocialMedidaLinks = () => {
                 <div className="bg-gray-300 rounded-md p-4 w-16 h-16 flex items-center mx-auto">
                     <LinkIcon/> 
                 </div>
-                <p className="text-lg font-bold pt-3">Links:</p>
+                <p className="text-lg font-bold pt-3">Liên kết:</p>
                 <div className="flex flex-col">
-                    {socialMedidaLinks.map((link) => (
-                        <a key={link.platform} href={link.url} target="blank">{link.url}</a>
+                    {socialMedidaLinks.map((item) => (
+                        <a key={item.platform} href={item.url} target="blank">{item.url}</a>
                     ))}
                 </div>
             </div>

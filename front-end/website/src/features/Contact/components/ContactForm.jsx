@@ -1,13 +1,12 @@
 import { useState } from "react";
 
-const ContactForm = () => {
+export function ContactForm (){
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        // console.log('Form submitted:' , {name, email, message});
         alert(`Form submitted:\nName: ${name}\nEmail: ${email}\nMessage: ${message}`);
         resetForm();
     }
