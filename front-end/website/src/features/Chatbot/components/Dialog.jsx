@@ -4,6 +4,7 @@ import { ChevronLeftIcon, ChevronRightIcon, EllipsisVerticalIcon, PaperAirplaneI
 import { TopQuestions } from "./LawQuestions";
 import VersionChatbot from "./VersionChatbot";
 import MenuMobile from "./MenuMobile";
+import Logo from "../../../assets/images/logo/logo-no-bg.png";
 
 function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, activeChat, setActiveChat }) {
     const [isHoveredIconMenu, setIsHoveredIconMenu] = useState(false);
@@ -143,8 +144,8 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                     isOpenMenuNavbar={isOpenMenuNavbar}
                 />
                 <div className="flex items-center justify-center flex-col h-full logo-chat">
-                    <img src="https://cdn-icons-png.flaticon.com/512/432/432594.png" alt="icon" className="w-12" />
-                    <p className="text-2xl font-bold mt-3">How can I help you today?</p>
+                    <img src={Logo} alt="icon" className="w-20" />
+                    <p className="text-2xl font-bold mt-3">Tôi có thể giúp gì cho bạn ?</p>
                 </div>
                 <div className="flex flex-col h-full overflow-scroll lg:py-10">
                     {messages.map((message) => (
@@ -179,7 +180,7 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                         name="question"
                         id="question"
                         className="resize-none w-10/12 border-[0.25px] border-b border-gray-400 text-gray-900 pl-3 py-2 placeholder:text-gray-400 focus:border-gray-600 focus-visible:outline-0 focus:ring-0 sm:text-sm sm:leading-6 rounded-lg"
-                        placeholder="Add your Question..."
+                        placeholder="Đặt câu hỏi cho chúng tôi tại đây..."
                         minRows={1}
                         maxRows={5}
                         value={textareaValue}
@@ -194,7 +195,7 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                     )}
                 </div>
                 <p className="text-base opacity-50">
-                    AVG LAW AI can make mistakes. Consider checking important information.
+                    AVG LAW AI có thể có những sai lầm. Hãy xem xét thông tin quan trọng.
                 </p>
             </div>
         </div>
