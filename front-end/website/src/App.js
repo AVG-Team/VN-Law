@@ -9,6 +9,8 @@ const Chatbot = loadable(() => import("~/features/Chatbot"));
 const Home = loadable(() => import("~/features/Home"));
 const About = loadable(() => import("~/features/About"));
 const SignOut = loadable(() => import("~/features/SignOut"));
+const Contact = loadable(() => import("~/features/Contact"));
+
 
 function App() {
     return (
@@ -32,6 +34,14 @@ function App() {
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <About title="Giới thiệu" />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/lien-he"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <Contact title="Liên hệ" />
                             </Suspense>
                         }
                     />
