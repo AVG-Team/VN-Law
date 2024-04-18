@@ -90,10 +90,10 @@ export default function VBQPPL(props) {
             </div>
             <div className="grid lg:grid-cols-3 grid-cols-1 lg:gap-4 mt-3">
                 {vbqppl.filter(filterItems).map((item) => (
-                    <a
+                    <div
                         key={item.id}
-                        className="border border-gray-300 rounded-md p-3 my-3 hover:shadow-md transition duration-300 ease-in-out flex flex-col justify-around"
-                        href={`/vbqppl/${item.number.replace(/\//g, "_")}`}
+                        className="border border-gray-300 rounded-md p-3 my-3 hover:shadow-md transition duration-300 ease-in-out flex flex-col justify-around cursor-pointer"
+                        onClick={() => window.open(`/vbqppl/${item.number.replace(/\//g, "_")}`, "_self")}
                     >
                         <p className="font-bold">{item.title}</p>
                         <p className="text-sm text-gray-500">{item.number}</p>
@@ -108,7 +108,7 @@ export default function VBQPPL(props) {
                             <DocumentIcon className="w-6 h-6" />
                             Tải xuống văn bản
                         </a>
-                    </a>
+                    </div>
                 ))}
             </div>
         </div>

@@ -25,14 +25,14 @@ export const vbqppl = [
         title: "Kết luận của Phó Thủ tướng Chính phủ Trần Hồng Hà, Trưởng Ban Chỉ đạo tại Hội nghị triển khai công tác năm 2024 của Ban Chỉ đạo Quốc gia Dân số và Phát triển",
         number: "153/TB-VPCP",
         category: "Dân số - Phát triển",
-        file: "153-vpcp.signed.pdf",
+        file: "153-tp-vpcp.signed.pdf",
     },
     {
         id: "5",
         title: "Kết luận của Thủ tướng Chính phủ Phạm Minh Chính tại buổi làm việc với lãnh đạo tỉnh Tiền Giang",
         number: "163/TB-VPCP",
         category: "Xã Hội",
-        file: "163-vpcp.signed.pdf",
+        file: "163-tp-vpcp.signed.pdf",
     },
     {
         id: "6",
