@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-export function Form(){
+export function LoginForm(){
     const [showPassword, setShowPassword] = useState(false);
     const EyePassword = (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -64,4 +64,4 @@ export function Form(){
     );
 }
 
-export default Form;
+export default LoginForm;
