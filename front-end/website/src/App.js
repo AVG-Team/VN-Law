@@ -5,12 +5,14 @@ import BasicLayout from "~/layouts/BasicLayout";
 import ContentLayout from "~/layouts/ContentLayout";
 import { CircularProgress } from "@mui/material";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import UserAuthLayout from "./layouts/UserAuthLayout";
 
 const Chatbot = loadable(() => import("~/features/Chatbot"));
 const Home = loadable(() => import("~/features/Home"));
 const About = loadable(() => import("~/features/About"));
 const SignOut = loadable(() => import("~/features/SignOut"));
 const Contact = loadable(() => import("~/features/Contact"));
+const SignUp = loadable(() => import("~/features/SignUp"));
 
 
 function App() {
@@ -53,6 +55,16 @@ function App() {
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <Chatbot title="Chat Bot" />
+                            </Suspense>
+                        }
+                    />
+                </Route>
+                <Route element={<UserAuthLayout />}>
+                    <Route
+                        path="/dang-ky"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <SignUp title="Sign Up" />
                             </Suspense>
                         }
                     />
