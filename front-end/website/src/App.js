@@ -6,9 +6,10 @@ import ContentLayout from "~/layouts/ContentLayout";
 import { CircularProgress } from "@mui/material";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-const Chatbot = loadable(() => import("~/features/Chatbot"));
 const Home = loadable(() => import("~/features/Home"));
 const About = loadable(() => import("~/features/About"));
+const TreeLaw = loadable(() => import("~/features/TreeLaw"));
+const Chatbot = loadable(() => import("~/features/Chatbot"));
 const SignOut = loadable(() => import("~/features/SignOut"));
 
 function App() {
@@ -43,6 +44,16 @@ function App() {
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <Chatbot title="Chat Bot" />
+                            </Suspense>
+                        }
+                    />
+                </Route>
+                <Route element={<ContentLayout />}>
+                    <Route
+                        path="/danh-sach-van-ban-phap-luat"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <TreeLaw title="Danh sách văn bản pháp luật" />
                             </Suspense>
                         }
                     />
