@@ -28,16 +28,14 @@ public class Main {
         Pdtopic pdtopic = new Pdtopic();
         Pdsubject pdsubject = new Pdsubject();
 
-        /*JsonArray topics= crawler.loadData(topicFile);
+        JsonArray topics= crawler.loadData(topicFile);
         crawler.insertData(topics,pdtopic);
 
         JsonArray subjects = crawler.loadData(subjectFile);
-        crawler.insertData(subjects,pdsubject);*/
-/*
-        List<String> result =  crawler.loadDataFromFile(Subjects);
-        for(String item : result){
-            System.out.println(item);
-        }*/
+        crawler.insertData(subjects,pdsubject);
+
+
+
 
         crawler.insertElements();
     }
