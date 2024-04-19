@@ -34,32 +34,32 @@ export function LoginForm(){
     };
 
     return (
-        <Box sx={{ boxShadow: 3, px: 5, py: 7, borderRadius: 1 }}>
-            <Typography component="h1" variant="h4" sx={{ fontWeight: 'bold', textAlign: 'center', mb: 4 }}>Đăng nhập</Typography>
-                <Box component="form" validate="true" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-                <TextField margin="normal" fullWidth id="email" type="email" label="Email" name="email" autoComplete="email" autoFocus required />
-                <TextField margin="normal" fullWidth name="password" label="Mật khẩu" type={showPassword ? 'text' : 'password'} id="password" autoComplete="current-password" required
-                    InputProps={{
-                    endAdornment: (
-                      <Button sx={{margin: 0,minWidth: 0,padding: 0, color:'#fff'}} onClick={togglePassword}>
-                        {showPassword ? EyePassword : EyeClosePassword}
-                      </Button>
-                    )
-                  }}
-                />
-                <Button type="submit" variant="contained" sx={{ mt: 3, mb: 2, display: 'block', ml: 'auto', mr: 'auto' }}>
-                    Đăng nhập
-                </Button>
-                <Grid container mt={5}>
-                  <Grid item xs>
-                    <Link  sx={{textDecoration:'none'}} href="#" variant="body2">Quên mật khẩu?</Link>
-                </Grid>
-                <Grid item sx={{display: 'flex', flexDirection:'row'}}>
-                    <Typography mr={0.5} variant="body2">Bạn không có tài khoản? </Typography>
-                    <Link sx={{textDecoration:'none',}} href="#" variant="body2">Đăng ký</Link>
-                </Grid>
-                </Grid>
+        <Box className="shadow-2xl px-5 py-7 sm:w-6/12 lg:w-4/12 rounded mx-auto">
+            <Typography component="h1" variant="h4" className="login-text text-center">Đăng nhập</Typography>
+            <Box component="form" validate="true" onSubmit={handleSubmit} className="mt-1 text-center">
+              <TextField margin="normal" fullWidth id="email" type="email" label="Email" name="email" autoComplete="email" autoFocus required />
+              <TextField margin="normal" fullWidth name="password" label="Mật khẩu" type={showPassword ? 'text' : 'password'} id="password" autoComplete="current-password" required
+                InputProps={{
+                endAdornment: (
+                  <Button className= "eye-button" onClick={togglePassword}>
+                    {showPassword ? EyePassword : EyeClosePassword}
+                  </Button>
+                  )
+                }}
+              />
+              <Button type="submit" variant="contained" className="submit-button ml-5">
+                Đăng nhập
+              </Button>
             </Box>
+            <Grid container className="mt-5">
+              <Grid item>
+                <Link className="no-underline" href="#" variant="body2">Quên mật khẩu?</Link>
+              </Grid>
+              <Grid item className="flex flex-row">
+                <Typography className="left" variant="body2">Bạn không có tài khoản? </Typography>
+                  <Link className="no-underline right" href="#" variant="body2">Đăng ký</Link>
+              </Grid>
+            </Grid>
         </Box>
     );
 }

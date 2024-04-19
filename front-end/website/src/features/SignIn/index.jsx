@@ -1,4 +1,5 @@
 import React from 'react';
+import "./components/style.css";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LoginForm from './components/LoginForm';
@@ -15,12 +16,12 @@ export default function SignIn(props) {
             <Grid container component="main">
                 <CssBaseline />
                 <Grid item xs={12} elevation={6} square>
-                <Box sx={{ my: 5, mx: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <Box component="img" sx={{ height: 100, width: 200 }} src={Logo} />
-                    <Typography component="text" variant="h6" sx={{ fontWeight: 'bold', color: '#130f40' }}>Tri Thức Pháp Luật Việt Nam</Typography>
-                    <Typography sx={{ mb: 2 }}>Phát triển bởi AVG Team</Typography>
-                    <LoginForm />
-                </Box>
+                    <Box className="my-5 mx-4 flex flex-col items-center">
+                        <Box component="img" className="logo" src={Logo} alt="Logo" />
+                        <Typography component="text" variant="h6" className="font-bold text-blue-gray-950">Tri Thức Pháp Luật Việt Nam</Typography>
+                        <Typography className="text-sub">Phát triển bởi AVG Team</Typography>
+                        <LoginForm />
+                    </Box>
                 </Grid>
             </Grid>
         </ThemeProvider>

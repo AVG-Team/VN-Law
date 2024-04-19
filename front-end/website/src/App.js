@@ -4,7 +4,6 @@ import AuthLayout from "~/layouts/AuthLayout";
 import BasicLayout from "~/layouts/BasicLayout";
 import { CircularProgress } from "@mui/material";
 import ContentLayout from "~/layouts/ContentLayout";
-import UserAuthLayout from "~/layouts/UserAuthLayout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const Chatbot = loadable(() => import("~/features/Chatbot"));
@@ -59,7 +58,7 @@ function App() {
                         }
                     />
                 </Route>
-                <Route element={<UserAuthLayout />}>
+                <Route element={<ContentLayout />}>
                     <Route
                         path="/dang-nhap"
                         element={
