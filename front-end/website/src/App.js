@@ -12,8 +12,6 @@ const About = loadable(() => import("~/features/About"));
 const SignOut = loadable(() => import("~/features/SignOut"));
 const Contact = loadable(() => import("~/features/Contact"));
 const SignIn = loadable(() => import("~/features/SignIn"));
-const VBQPPL = loadable(() => import("~/features/VBQPPL"));
-const VBBQPPLDetail = loadable(() => import("~/features/VBQPPL/detail"));
 
 function App() {
     return (
@@ -48,22 +46,6 @@ function App() {
                             </Suspense>
                         }
                     />
-                    <Route
-                        path="/van-ban-quy-pham-phap-luat"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <VBQPPL title="Văn Bản Quy Phạm Pháp Luật" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path="/vbqppl/:param"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <VBBQPPLDetail />
-                            </Suspense>
-                        }
-                    />
                 </Route>
                 <Route element={<ContentLayout />}>
                     <Route
@@ -74,8 +56,6 @@ function App() {
                             </Suspense>
                         }
                     />
-                </Route>
-                <Route element={<ContentLayout />}>
                     <Route
                         path="/dang-nhap"
                         element={
