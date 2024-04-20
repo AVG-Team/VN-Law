@@ -1,0 +1,29 @@
+.register-text{
+    font-weight: 500 !important;
+    margin-bottom: 1rem !important;
+}
+
+.submit-button{
+    margin: 1rem auto !important;
+}
+
+.logo{
+    width: 200px !important;
+    height: 90px !important;
+}
+
+.text-sub{
+    margin-bottom: 1rem !important;
+}
+
+.eye-button{
+    margin: 0 !important;
+    padding: 0 !important;
+    color: white !important;
+    min-width: 0 !important;
+}
+
+.no-underline{
+    text-decoration: none !important;;
+}
+

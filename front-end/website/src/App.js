@@ -2,10 +2,9 @@ import { Suspense } from "react";
 import loadable from "@loadable/component";
 import AuthLayout from "~/layouts/AuthLayout";
 import BasicLayout from "~/layouts/BasicLayout";
-import ContentLayout from "~/layouts/ContentLayout";
 import { CircularProgress } from "@mui/material";
+import ContentLayout from "~/layouts/ContentLayout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import UserAuthLayout from "./layouts/UserAuthLayout";
 
 const Chatbot = loadable(() => import("~/features/Chatbot"));
 const Home = loadable(() => import("~/features/Home"));
@@ -58,8 +57,6 @@ function App() {
                             </Suspense>
                         }
                     />
-                </Route>
-                <Route element={<UserAuthLayout />}>
                     <Route
                         path="/dang-ky"
                         element={
