@@ -92,7 +92,7 @@ export function RegisterForm(){
     }
 
     return (
-      <Box className="shadow-2xl px-5 py-7 sm:w-6/12 lg:w-4/12 rounded mx-auto">
+      <Box className="shadow-2xl px-5 py-7 w-full sm:w-8/12 lg:w-4/12 rounded mx-auto">
       <Typography component="h1" variant="h4" className="register-text text-center">Đăng ký</Typography>
       <Box component="form" validate="true" onSubmit={handleSubmit} className="mt-1 text-center flex flex-col">
           <TextField margin="normal" id="username" type="username" label="Tên người dùng" name="username" autoComplete="username" onChange={handleChange} autoFocus />
