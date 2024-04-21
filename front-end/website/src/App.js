@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import loadable from "@loadable/component";
 import AuthLayout from "~/layouts/AuthLayout";
 import BasicLayout from "~/layouts/BasicLayout";
-import ContentLayout from "~/layouts/ContentLayout";
 import { CircularProgress } from "@mui/material";
+import ContentLayout from "~/layouts/ContentLayout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const Chatbot = loadable(() => import("~/features/Chatbot"));
@@ -11,8 +11,7 @@ const Home = loadable(() => import("~/features/Home"));
 const About = loadable(() => import("~/features/About"));
 const SignOut = loadable(() => import("~/features/SignOut"));
 const Contact = loadable(() => import("~/features/Contact"));
-const VBQPPL = loadable(() => import("~/features/VBQPPL"));
-const VBBQPPLDetail = loadable(() => import("~/features/VBQPPL/detail"));
+const SignIn = loadable(() => import("~/features/SignIn"));
 
 function App() {
     return (
@@ -47,22 +46,6 @@ function App() {
                             </Suspense>
                         }
                     />
-                    <Route
-                        path="/van-ban-quy-pham-phap-luat"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <VBQPPL title="Văn Bản Quy Phạm Pháp Luật" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path="/vbqppl/:param"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <VBBQPPLDetail />
-                            </Suspense>
-                        }
-                    />
                 </Route>
                 <Route element={<ContentLayout />}>
                     <Route
@@ -70,6 +53,14 @@ function App() {
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <Chatbot title="Chat Bot" />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/dang-nhap"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <SignIn title="Đăng nhập" />
                             </Suspense>
                         }
                     />
