@@ -5,7 +5,6 @@ import BasicLayout from "~/layouts/BasicLayout";
 import { CircularProgress } from "@mui/material";
 import ContentLayout from "~/layouts/ContentLayout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 const Chatbot = loadable(() => import("~/features/Chatbot"));
 const Home = loadable(() => import("~/features/Home"));
 const About = loadable(() => import("~/features/About"));
@@ -14,6 +13,7 @@ const Contact = loadable(() => import("~/features/Contact"));
 const SignUp = loadable(() => import("~/features/SignUp"));
 const VBQPPL = loadable(() => import("~/features/VBQPPL"));
 const VBBQPPLDetail = loadable(() => import("~/features/VBQPPL/detail"));
+const SignIn = loadable(() => import("~/features/SignIn"));
 
 function App() {
     return (
@@ -71,6 +71,14 @@ function App() {
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <Chatbot title="Chat Bot" />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/dang-nhap"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <SignIn title="Đăng nhập" />
                             </Suspense>
                         }
                     />
