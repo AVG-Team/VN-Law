@@ -40,11 +40,11 @@ public class Pdtable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
 
-        Pdtable pdtable = (Pdtable) o;
+        Pdtable pdtable = (Pdtable) object;
 
         if (id != pdtable.id) return false;
         if (idArticle != null ? !idArticle.equals(pdtable.idArticle) : pdtable.idArticle != null) return false;

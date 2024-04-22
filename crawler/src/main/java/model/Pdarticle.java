@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 public class Pdarticle {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false, length = 128)
     private String id;
@@ -23,8 +24,8 @@ public class Pdarticle {
     @Column(name = "content", nullable = true, length = -1)
     private String content;
     @Basic
-    @Column(name = "`index`", nullable = true)
-    private Integer index;
+    @Column(name = "index", nullable = true, length = 25)
+    private String index;
     @Basic
     @Column(name = "vbqppl", nullable = true, length = -1)
     private String vbqppl;
@@ -32,7 +33,7 @@ public class Pdarticle {
     @Column(name = "vbqppl_link", nullable = true, length = -1)
     private String vbqpplLink;
     @Basic
-    @Column(name = "`order`", nullable = true)
+    @Column(name = "order", nullable = true)
     private Integer order;
 
     public String getId() {
@@ -83,11 +84,11 @@ public class Pdarticle {
         this.content = content;
     }
 
-    public Integer getIndex() {
+    public String getIndex() {
         return index;
     }
 
-    public void setIndex(Integer index) {
+    public void setIndex(String index) {
         this.index = index;
     }
 
@@ -116,11 +117,11 @@ public class Pdarticle {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
 
-        Pdarticle pdarticle = (Pdarticle) o;
+        Pdarticle pdarticle = (Pdarticle) object;
 
         if (id != null ? !id.equals(pdarticle.id) : pdarticle.id != null) return false;
         if (name != null ? !name.equals(pdarticle.name) : pdarticle.name != null) return false;

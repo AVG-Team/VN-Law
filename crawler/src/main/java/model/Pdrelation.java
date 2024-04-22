@@ -3,11 +3,14 @@ package model;
 import jakarta.persistence.*;
 
 @Entity
-@jakarta.persistence.IdClass(model.PdrelationPK.class)
 public class Pdrelation {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id_article1", nullable = false, length = 128)
     private String idArticle1;
+    @Basic
+    @Column(name = "id_article2", nullable = true, length = 128)
+    private String idArticle2;
 
     public String getIdArticle1() {
         return idArticle1;
@@ -16,10 +19,6 @@ public class Pdrelation {
     public void setIdArticle1(String idArticle1) {
         this.idArticle1 = idArticle1;
     }
-
-    @Id
-    @Column(name = "id_article2", nullable = false, length = 128)
-    private String idArticle2;
 
     public String getIdArticle2() {
         return idArticle2;

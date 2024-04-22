@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 public class Pdsubject {
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false, length = 128)
     private String id;
@@ -12,7 +12,7 @@ public class Pdsubject {
     @Column(name = "name", nullable = true, length = -1)
     private String name;
     @Basic
-    @Column(name = "`order`", nullable = true)
+    @Column(name = "order", nullable = true)
     private Integer order;
     @Basic
     @Column(name = "id_topic", nullable = true, length = 128)
@@ -51,11 +51,11 @@ public class Pdsubject {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
 
-        Pdsubject pdsubject = (Pdsubject) o;
+        Pdsubject pdsubject = (Pdsubject) object;
 
         if (id != null ? !id.equals(pdsubject.id) : pdsubject.id != null) return false;
         if (name != null ? !name.equals(pdsubject.name) : pdsubject.name != null) return false;
