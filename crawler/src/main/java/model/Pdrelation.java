@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 @Entity
 public class Pdrelation {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id_article1", nullable = false, length = 128)
     private String idArticle1;

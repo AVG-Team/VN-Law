@@ -2,6 +2,8 @@ package Controller;
 
 
 import com.google.gson.*;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import model.*;
 import Helper.Helpers;
 
@@ -59,13 +61,12 @@ public class Crawler {
         return relationArticle;
     }
 
-    public void insertElements() throws IOException {
+    public ArrayList<HashMap<String, String>> insertElements(String subjectDirectory,String treeNode) throws IOException {
 
         // prepare variable
-        String treeNode = "src/main/java/LawDirection/TreeNodes.json";
-        String subjectDirectory = "src/main/java/LawDirection/test";
+
         String checkpoint = "d8e4a3a0-254c-4593-967c-214ae12bcb0f.html";
-        boolean isSkipping = true;
+        boolean isSkipping;
         int count = 0;
         File folder = new File(subjectDirectory);
         File[] listOfFiles = folder.listFiles();
@@ -73,32 +74,30 @@ public class Crawler {
         JsonArray subjectNode = new JsonArray();
         JsonArray chapterNode = new JsonArray();
         JsonArray articleNode = new JsonArray();
+        JsonArray lateralNode = new JsonArray();
+
 
         JsonArray nodes = loadData(treeNode);
         List<Pdchapter> chaptersData = new ArrayList<>();
-        if (checkpoint != null) {
-            isSkipping = true;
-        } else {
-            isSkipping = false;
-        }
+        List<Pdsubject> pdsubjects = getData();
+        isSkipping = true;
+
 
         ArrayList<HashMap<String, String>> relationsMap = new ArrayList<>();
         String chapterId = "";
-
+        String subjectId = "";
         for (File file : listOfFiles) {
-
 
             String fileName = file.getName();
 
-/*
+            System.out.println(fileName);
 
             count++;
-            if (fileName.equals(checkpoint)) {
+            /*if (fileName.equals(checkpoint)) {
                 isSkipping = false;
             }
             if (isSkipping) continue;
 */
-
 
             // danh sach demuc
             Document subjectHtml = Jsoup.parse(file, "UTF-8");
@@ -106,12 +105,13 @@ public class Crawler {
 
             for (JsonElement element : nodes) {
                 JsonObject object = element.getAsJsonObject();
-                String subjectId = object.getAsJsonPrimitive("DeMucID").getAsString();
+                subjectId = object.getAsJsonPrimitive("DeMucID").getAsString();
                 if (subjectId.equals(fileName.split("\\.")[0])) {
 
                     subjectNode.add(object);
                 }
             }
+
 
             // danh sach chuongg
             for (JsonElement element : subjectNode) {
@@ -120,32 +120,42 @@ public class Crawler {
 
                 if (nameElement != null && nameElement.isJsonPrimitive()) {
                     String name = nameElement.getAsString();
-                    if (name.startsWith("Chương ")) {
+                    if (name.startsWith("Chương ") ) {
+                        chapterNode.add(object);
+                    }
+                    if(name.startsWith("Phần ")){
                         chapterNode.add(object);
                     }
                 }
             }
 
 
+            int order = 10;
             for (JsonElement element : chapterNode) {
                 if (element instanceof JsonObject) {
                     JsonObject chapter = (JsonObject) element;
 
                     String idChapter = chapter.get("MAPC").getAsString();
-                    int orderChapter = helper.ConvertRomanToNum(chapter.get("ChiMuc").getAsString());
 
                     Pdchapter chapterData = new Pdchapter();
                     chapterData.setName(chapter.get("TEN").getAsString());
                     chapterData.setId(idChapter);
                     chapterData.setIndex(chapter.get("ChiMuc").getAsString());
-                    chapterData.setOrder(orderChapter);
+                    if(chapter.get("TEN").getAsString().startsWith("Phần ")) {
+                        chapterData.setOrder(order);
+                        order+=10;
+                    }else{
+                        int orderChapter = helper.ConvertRomanToNum(chapter.get("ChiMuc").getAsString());
+                        chapterData.setOrder(orderChapter);
+                    }
                     chapterData.setIdSubject(chapter.get("DeMucID").getAsString());
 
                     try {
                       insertData(chapterData);
-                        System.out.println("Insert Chapter Completed");
+                       /* System.out.println("Insert Chapter Completed");*/
                     } catch (Exception e) {
                         System.out.println("chapter failed");
+                        e.printStackTrace();
                         continue;
                     }
 
@@ -153,6 +163,9 @@ public class Crawler {
                 }
 
             }
+            order = 10;
+
+
 
             // Trường hợp nếu chapter rỗng
             if (chaptersData.isEmpty()) {
@@ -169,22 +182,24 @@ public class Crawler {
 
             for (JsonElement element : subjectNode) {
                 if (element instanceof JsonObject) {
-                    if (!chapterNode.contains(element)) {
+                    if (!chapterNode.contains(element) && !lateralNode.contains(element)) {
                         JsonObject object = (JsonObject) element;
-                        /*System.out.println(object.toString());*/
                         articleNode.add(object);
                     }
                 }
             }
 
-            int order = 0;
+
 
             /*for(JsonElement s : articleNode){
                 System.out.println(s.toString());
             }*/
 
+
+
             for (JsonElement element : articleNode) {
                 JsonObject article = element.getAsJsonObject();
+
                 if (chaptersData.size() == 1) {
                     String chuongId = chaptersData.get(0).getId();
                     article.addProperty("ChuongID", chuongId);
@@ -195,12 +210,12 @@ public class Crawler {
                             break;
                         }
                     }
+
                 }
 
                 // variable
                 String lawText = "";
                 String lawLink = "";
-                String contentArticle = "";
 
                 String articleID = article.get("MAPC").getAsString();
                 Element articleHtml = subjectHtml.select(String.format("a[name='%s']", articleID)).first();
@@ -217,7 +232,6 @@ public class Crawler {
                         if (!links.isEmpty()) {
                             lawLink = links.first().attr("href");
                         }
-
                         // content
                         Element content = articleHtml.parent().nextElementSibling();
                         if (content != null) {
@@ -230,6 +244,7 @@ public class Crawler {
                                         if (!content.hasClass("pGhiChu") && !content.hasClass("pDieu") && !content.hasClass("pChuong")
                                                 && !content.hasClass("pNoiDung")) {
                                             contentHtml.add(content);
+
                                         }
                                         if (content.text().isEmpty()) {
                                             break;
@@ -257,7 +272,6 @@ public class Crawler {
                             }
                         }
 
-
                         StringBuilder contentString = new StringBuilder();
                         List<String> tables = new ArrayList<>();
                         for (Element contentItem : contentHtml) {
@@ -272,18 +286,22 @@ public class Crawler {
                             Pdarticle pdarticle = new Pdarticle();
                             pdarticle.setId(articleID);
                             pdarticle.setName(articleName);
-                            pdarticle.setIndex(article.get("ChiMuc").getAsInt());
+                            pdarticle.setIndex(article.get("ChiMuc").getAsString());
                             pdarticle.setContent(contentString.toString());
                             pdarticle.setVbqppl(lawText);
                             pdarticle.setVbqpplLink(lawLink);
-                            pdarticle.setIdChapter(article.get("ChuongID").getAsString());
+                            if(article.get("ChuongID") == null){
+                                pdarticle.setIdChapter(article.get("PhanID").getAsString());
+                            }else{
+                                pdarticle.setIdChapter(article.get("ChuongID").getAsString());
+                            }
                             pdarticle.setIdSubject(article.get("DeMucID").getAsString());
+                            pdarticle.setIdTopic(article.get("ChuDeID").getAsString());
                             pdarticle.setOrder(order);
-                         /*  System.out.println(articleName);
-                         System.out.println(contentString.toString());*/
+
                              insertData(pdarticle);
-                              System.out.println("Insert article Completed");
                         } catch (Exception e) {
+                          e.printStackTrace();
                             System.out.println("article failed");
                             continue;
                         }
@@ -292,9 +310,9 @@ public class Crawler {
                             Pdtable pdtable = new Pdtable();
                             pdtable.setIdArticle(articleID);
                             pdtable.setHtml(table);
-                            System.out.println(table);
+                           /* System.out.println(table);*/
                             insertData(pdtable);
-                            System.out.println("Insert Table Completed");
+                            /*System.out.println("Insert Table Completed");*/
                         }
 
 
@@ -310,26 +328,30 @@ public class Crawler {
                                     pdfile.setPath("");
                                     /*System.out.println(item.toString());*/
                                     insertData(pdfile);
-                                    System.out.println("Insert File Completed");
+                                    /*System.out.println("Insert File Completed");*/
                                 } catch (Exception ex) {
                                     System.out.println("Insert File Failed");
+                                    ex.printStackTrace();
                                     continue;
                                 }
                             }
                             Element fileLink = item.nextElementSibling();
+
+                            if(fileLink == null) continue;
+
                             if (fileLink.tagName().equals("p") && fileLink.hasClass("pChiDan")) {
+                                   Elements relationHtml = fileLink.select("a");
 
-                                Elements relationHtml = fileLink.select("a");
+                                   /*  System.out.println(relationHtml.toString());*/
+                                   if (!relationHtml.hasAttr("onclick") || relationHtml.attr("onclick").isEmpty()) {
+                                       continue;
+                                   }
+                                   String idRelation = helper.extractInput(relationHtml.attr("onclick").replace("'", ""));
+                                   relationsMap.add(new HashMap<String, String>() {{
+                                       put("idRelation1", article.get("MAPC").getAsString());
+                                       put("idRelation2", idRelation);
+                                   }});
 
-                                System.out.println(relationHtml.toString());
-                                if (!relationHtml.hasAttr("onclick") || relationHtml.attr("onclick").isEmpty()) {
-                                    continue;
-                                }
-                                String idRelation = helper.extractInput(relationHtml.attr("onclick").replace("'", ""));
-                                relationsMap.add(new HashMap<String, String>() {{
-                                    put("idRelation1", article.get("MAPC").getAsString());
-                                    put("idRelation2", idRelation);
-                                }});
                             }
 
                         }
@@ -340,21 +362,27 @@ public class Crawler {
                     }
                 }
             }
-
+            System.out.println(count);
+            System.out.println("complete");
         }
 
+
+        System.out.println("complete");
+        return relationsMap;
+    }
+
+    public void insertRelationTable(ArrayList<HashMap<String, String>> relationsMap){
         for (HashMap<String, String> item : relationsMap) {
             try {
                 Pdrelation pdrelation = new Pdrelation();
                 pdrelation.setIdArticle1(item.get("idRelation1"));
                 pdrelation.setIdArticle2(item.get("idRelation2"));
                 insertData(pdrelation);
-                System.out.println("Inserted liên quan " + item.get("idRelation1") + " - " + item.get("idRelation2"));
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("Không thể insert liên quan " + item.get("idRelation1") + " - " + item.get("idRelation2"));
             }
         }
-
     }
 
     public void insertData(JsonArray jsonArray, Object object) {
@@ -428,46 +456,46 @@ public class Crawler {
                 Pdchapter pdchapter = entityManager.find(Pdchapter.class, ((Pdchapter) object).getId());
                 if (pdchapter == null) {
                     entityManager.persist(object);
-                    System.out.println("ss");
+
                 }
             }
             if (object instanceof Pdarticle) {
                 Pdarticle pdarticle = entityManager.find(Pdarticle.class, ((Pdarticle) object).getId());
                 if (pdarticle == null) {
                     entityManager.persist(object);
-                    System.out.println("ss");
+
                 }
             }
             if (object instanceof Pdfile) {
                 Pdfile pdfile = entityManager.find(Pdfile.class, ((Pdfile) object).getId());
                 if (pdfile == null) {
                     entityManager.persist(object);
-                    System.out.println("ss");
+
                 }
             }
             if (object instanceof Pdtable) {
                 Pdtable pdtable = entityManager.find(Pdtable.class, ((Pdtable) object).getId());
                 if (pdtable == null) {
                     entityManager.persist(object);
-                    System.out.println("ss");
+
                 }
             }
             if (object instanceof Pdrelation) {
-                PdrelationPK pk = new PdrelationPK();
-                pk.setIdArticle1(((Pdrelation) object).getIdArticle1());
-                pk.setIdArticle2(((Pdrelation) object).getIdArticle2());
+                Pdrelation pdrelation = entityManager.find(Pdrelation.class, ((Pdrelation) object).getIdArticle1());
+                if(pdrelation == null){
+                    entityManager.persist(object);
 
-                Pdrelation pdrelation = entityManager.find(Pdrelation.class, pk);
-                entityManager.persist(object);
-                System.out.println("ss");
+                }
             }
+
             transaction.commit();
-            System.out.println("Inserted completely");
+           /* System.out.println("Inserted completely");*/
         } catch (Exception e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             e.printStackTrace();
+            System.out.println(object.toString());
         } finally {
             if (entityManager != null && entityManager.isOpen()) {
                 entityManager.close();
@@ -475,28 +503,29 @@ public class Crawler {
         }
     }
 
-    public void beasutifulHmtl(String filePath) {
+    public List<Pdsubject> getData() {
 
-        try {
-            // Chuyển đổi đường dẫn tệp cục bộ thành URL
-            File file = new File(filePath);
+        EntityTransaction transaction = null;
+        EntityManager entityManager = null;
 
-            // Đọc nội dung file HTML
-            Document doc = Jsoup.parse(file, "UTF-8");
 
-            // Tìm tất cả các phần tử <p> có class="pNoiDung"
-            Elements pNoiDungElements = doc.select("p.pNoiDung");
+        entityManager = HibernateUtil.getEntityManagerFactory().createEntityManager();
+        transaction = entityManager.getTransaction();
+        transaction.begin();
 
-            // Thay thế mỗi phần tử <p> bằng phần tử <div>
-            for (Element p : pNoiDungElements) {
-                Element div = new Element("div");
-                div.html(p.html()); // Sao chép nội dung từ phần tử <p> sang phần tử <div>
-                p.replaceWith(div); // Thay thế phần tử <p> bằng phần tử <div>
-            }
-            System.out.println(doc);
-            System.out.println("File đã được chỉnh sửa và lưu lại thành công.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+
+        // Thực hiện truy vấn JPA để lấy dữ liệu từ cơ sở dữ liệu
+        List<Pdsubject> objects = entityManager.createQuery("SELECT e FROM Pdsubject e", Pdsubject.class).getResultList();
+
+
+        // Kết thúc transaction
+        entityManager.getTransaction().commit();
+
+        // Đóng EntityManager
+        entityManager.close();
+
+        return objects;
+
     }
 }

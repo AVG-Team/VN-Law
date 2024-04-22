@@ -12,6 +12,7 @@
     <class>model.Pdtable</class>
     <class>model.Pdtopic</class>
       <class>model.Pdrelation</class>
+      <class>model.Pdlateral</class>
       <properties>
       <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/law_service"/>
       <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>

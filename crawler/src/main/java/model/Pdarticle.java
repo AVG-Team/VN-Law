@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 @Entity
 public class Pdarticle {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false, length = 128)
     private String id;
@@ -21,10 +20,10 @@ public class Pdarticle {
     @Column(name = "id_topic", nullable = true, length = 128)
     private String idTopic;
     @Basic
-    @Column(name = "content", nullable = true, length = -1)
+    @Column(name = "`content`", nullable = true, length = -1)
     private String content;
     @Basic
-    @Column(name = "index", nullable = true, length = 25)
+    @Column(name = "`index`", nullable = true, length = 25)
     private String index;
     @Basic
     @Column(name = "vbqppl", nullable = true, length = -1)
@@ -33,7 +32,7 @@ public class Pdarticle {
     @Column(name = "vbqppl_link", nullable = true, length = -1)
     private String vbqpplLink;
     @Basic
-    @Column(name = "order", nullable = true)
+    @Column(name = "`order`", nullable = true)
     private Integer order;
 
     public String getId() {

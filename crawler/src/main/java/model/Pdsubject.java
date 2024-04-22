@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 @Entity
 public class Pdsubject {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false, length = 128)
     private String id;
@@ -12,7 +11,7 @@ public class Pdsubject {
     @Column(name = "name", nullable = true, length = -1)
     private String name;
     @Basic
-    @Column(name = "order", nullable = true)
+    @Column(name = "`order`", nullable = true)
     private Integer order;
     @Basic
     @Column(name = "id_topic", nullable = true, length = 128)
