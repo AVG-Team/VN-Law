@@ -19,9 +19,9 @@ export const TopQuestions = ({ sendQuestion }) => {
     const isLargeScreen = useMediaQuery({ query: "(min-width: 1024px)" });
     const topQuestions = isLargeScreen ? sortedQuestions.slice(0, 4) : sortedQuestions.slice(0, 2);
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-4 lg:m-8 mx-8 my-4 top-questions">
+        <div className="grid grid-cols-1 gap-2 mx-8 my-4 lg:grid-cols-2 lg:gap-4 lg:m-8 top-questions">
             {topQuestions.map((question, index) => (
-                <div
+                <button
                     onClick={() => {
                         sendQuestion(question.question);
                     }}
@@ -29,8 +29,8 @@ export const TopQuestions = ({ sendQuestion }) => {
                     className="border-gray-400 border-[0.25px] rounded-lg hover:bg-slate-300 cursor-pointer"
                 >
                     <p className="text-lg text-gray-700">{question.field}</p>
-                    <p className="text-sm text-gray-400 px-1">{truncateText(question.question, 80)}</p>
-                </div>
+                    <p className="px-1 text-sm text-gray-400">{truncateText(question.question, 80)}</p>
+                </button>
             ))}
         </div>
     );
@@ -55,15 +55,15 @@ const LawQuestions = () => {
     const renderQuestionBlocks = (questions, title) => {
         return (
             <div className="mt-3">
-                <p className="text-base mb-3 text-gray-500 ml-2">{title}</p>
+                <p className="mb-3 ml-2 text-base text-gray-500">{title}</p>
                 {questionList.map((question, index) => (
                     <div
                         key={index}
-                        className="flex justify-between items-center my-1 p-2 hover:rounded-lg hover:bg-slate-300 cursor-pointer"
+                        className="flex items-center justify-between p-2 my-1 cursor-pointer hover:rounded-lg hover:bg-slate-300"
                     >
                         <p>{truncateText(question.question, maxLength)}</p>
                         <TrashIcon
-                            className="w-4 h-4 text-black opacity-50 hover:opacity-100 cursor-pointer"
+                            className="w-4 h-4 text-black opacity-50 cursor-pointer hover:opacity-100"
                             onClick={() => handleDeleteQuestion(index)}
                         />
                     </div>

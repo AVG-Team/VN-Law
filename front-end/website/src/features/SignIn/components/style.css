@@ -1,36 +1,20 @@
-.logo{
-    width: 330px !important;
-    height: 150px !important;
-}
-
-.text-sub{
+.text-sub {
     margin-bottom: 1rem !important;
 }
 
-.login-text{
-    font-weight: 500 !important;
-    margin-bottom: 1rem !important;
-}
-
-.eye-button{
-    margin: 0 !important;
-    padding: 0 !important;
-    color: white !important;
-    min-width: 0 !important;
-}
-
-.submit-button{
+.submit-button {
     margin: 2rem auto !important;
 }
 
-.no-underline{
-    text-decoration: none !important;;
+.no-underline {
+    text-decoration: none !important;
 }
 
-.left,.right{
+.left,
+.right {
     margin: auto 2px !important;
 }
 
-.mt-5{
+.mt-5 {
     justify-content: space-between;
 }

@@ -12,7 +12,6 @@ const Input = () => {
     return (
         <Paper component="form" className="px-[2px] py-1 flex items-center w-[300px] md:w-[400px]">
             <InputBase
-                sx={{ ml: 1, flex: 1 }}
                 placeholder="Tìm kiếm văn bản pháp luật"
                 inputProps={{ "aria-label": "search google maps" }}
                 className="flex-1 ml-1"

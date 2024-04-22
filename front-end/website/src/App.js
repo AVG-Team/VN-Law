@@ -21,7 +21,7 @@ function App() {
             <Routes>
                 <Route element={<AuthLayout />}>
                     <Route path="/dang-xuat" element={<SignOut />} />
-                    <Route path="/chat-bot" element={<Chatbot />} />
+                    {/* <Route path="/chat-bot" element={<Chatbot />} /> */}
                 </Route>
                 <Route element={<BasicLayout />}>
                     <Route
@@ -67,7 +67,7 @@ function App() {
                 </Route>
                 <Route element={<ContentLayout />}>
                     <Route
-                        path="/chatbot"
+                        path="/chat-bot"
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <Chatbot title="Chat Bot" />
@@ -86,7 +86,7 @@ function App() {
                         path="/dang-ky"
                         element={
                             <Suspense fallback={<CircularProgress />}>
-                                <SignUp title="Sign Up" />
+                                <SignUp title="Đăng ký" />
                             </Suspense>
                         }
                     />
