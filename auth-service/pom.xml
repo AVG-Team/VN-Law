@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>fit.hutech.service</groupId>
-    <artifactId>chat-service</artifactId>
+    <artifactId>auth-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>chat-service</name>
-    <description>chat-service</description>
+    <name>auth-service</name>
+    <description>auth-service</description>
     <properties>
         <java.version>21</java.version>
     </properties>
