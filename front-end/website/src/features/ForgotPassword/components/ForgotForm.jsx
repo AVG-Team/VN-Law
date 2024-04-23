@@ -46,7 +46,7 @@ export function ForgotForm() {
                     <Typography className="left-0 px-1 pt-[2px]" variant="body2">
                         Bạn muốn đăng nhập?
                     </Typography>
-                    <Link underline="none" className="!mt-[2px]" href="/dang-nhập" variant="body2">
+                    <Link underline="none" className="!mt-[2px]" href="/dang-nhap" variant="body2">
                         Đăng nhập
                     </Link>
                 </Grid>
