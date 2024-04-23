@@ -9,7 +9,7 @@ import Typography from "@mui/material/Typography";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export function RegisterForm() {
-    const [errors, setErrors] = useState({});
+    const [errors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [hasValuePassword, setHasValuePassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);

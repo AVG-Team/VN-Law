@@ -10,7 +10,7 @@ export default function SignIn(props) {
     return (
         <ThemeProvider theme={defaultTheme}>
             <Grid container component="main" className="min-h-screen" alignItems="center" justifyContent="center">
-                <Grid item xs={12} elevation={6} square>
+                <Grid item xs={12} elevation={6}>
                     <Box className="mx-4 my-5">
                         <LoginForm />
                     </Box>
