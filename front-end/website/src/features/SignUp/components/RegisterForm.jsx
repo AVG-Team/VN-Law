@@ -1,7 +1,7 @@
-import { useState, React } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
+import { useState, React } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Logo from "~/assets/images/logo/logo2.png";
@@ -83,9 +83,6 @@ export function RegisterForm() {
                     Tri Thức Pháp Luật Việt Nam
                 </Typography>
             </div>
-            <Typography component="h5" variant="h5" className="text-center italic !text-blue-gray-950">
-                Đăng ký
-            </Typography>
             <Box component="form" validate="true" onSubmit={handleSubmit} className="flex flex-col mt-1 text-center">
                 <TextField
                     margin="normal"
@@ -153,7 +150,7 @@ export function RegisterForm() {
                 {errors.confirmPassword && (
                     <Box className="text-sm text-left text-red-500">{errors.confirmPassword}</Box>
                 )}
-                <Button type="submit" variant="contained" className="ml-5 submit-button">
+                <Button type="submit" variant="contained" className="!mx-auto !my-8">
                     Đăng ký
                 </Button>
                 <Grid container className="justify-center mt-5">
@@ -161,7 +158,7 @@ export function RegisterForm() {
                         <Typography className="mr-0.5 px-1" variant="body2">
                             Bạn đã có tài khoản?
                         </Typography>
-                        <Link className="text-blue-500 no-underline" href="/dang-nhap" variant="body2">
+                        <Link underline="none" href="/dang-nhap" variant="body2">
                             Đăng nhập
                         </Link>
                     </Grid>

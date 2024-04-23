@@ -1,8 +1,6 @@
 import React from "react";
-import "./components/style.css";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import CssBaseline from "@mui/material/CssBaseline";
 import { RegisterForm } from "./components/RegisterForm";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 

@@ -48,9 +48,6 @@ export function LoginForm() {
                     Tri Thức Pháp Luật Việt Nam
                 </Typography>
             </div>
-            <Typography component="h5" variant="h5" className="text-center italic !text-blue-gray-950">
-                Đăng nhập
-            </Typography>
             <Box component="form" validate="true" onSubmit={handleSubmit} className="mt-1 text-center">
                 <TextField
                     margin="normal"
@@ -85,21 +82,21 @@ export function LoginForm() {
                         ),
                     }}
                 />
-                <Button type="submit" variant="contained" className="ml-5 submit-button">
+                <Button type="submit" variant="contained" className="!mx-auto !my-8">
                     Đăng nhập
                 </Button>
             </Box>
-            <Grid container className="mt-5">
+            <Grid container className="justify-between">
                 <Grid item>
-                    <Link className="no-underline" href="#" variant="body2">
+                    <Link underline="none" href="#" variant="body2">
                         Quên mật khẩu?
                     </Link>
                 </Grid>
                 <Grid item className="flex flex-row">
-                    <Typography className="left" variant="body2">
+                    <Typography className="left-0 px-1 pt-[2px]" variant="body2">
                         Bạn không có tài khoản?
                     </Typography>
-                    <Link className="no-underline right" href="/dang-ky" variant="body2">
+                    <Link underline="none" className="!mt-[2px]" href="/dang-ky" variant="body2">
                         Đăng ký
                     </Link>
                 </Grid>

@@ -1,5 +1,4 @@
 import React from "react";
-import "./components/style.css";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { LoginForm } from "./components/LoginForm";
