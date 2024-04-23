@@ -3,8 +3,8 @@ import LegalDoc from "../assets/images/lottie/legalDoc.json";
 
 export const pages = [
     { key: "1", name: "Pháp Điển", href: "#", current: true },
-    { key: "2", name: "VBPL", href: "#", current: false },
-    { key: "3", name: "ChatBot", href: "#", current: false },
+    { key: "2", name: "VBPL", href: "/van-ban-quy-pham-phap-luat", current: false },
+    { key: "3", name: "ChatBot", href: "/chat-bot", current: false },
     { key: "4", name: "Tính năng khác", href: "#", current: false },
 ];
 
@@ -43,4 +43,9 @@ export const banner = [
         logo: Logo,
         page: "Home",
     },
+];
+
+export const toggleButton = [
+    { id: 1, name: "Đăng nhập", link: "/dang-nhap" },
+    { id: 2, name: "Đăng ký", link: "/dang-ky" },
 ];
