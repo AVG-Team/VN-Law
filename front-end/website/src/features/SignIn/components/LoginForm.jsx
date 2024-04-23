@@ -88,7 +88,7 @@ export function LoginForm() {
             </Box>
             <Grid container className="justify-between">
                 <Grid item>
-                    <Link underline="none" href="#" variant="body2">
+                    <Link underline="none" href="/quen-mat-khau" variant="body2">
                         Quên mật khẩu?
                     </Link>
                 </Grid>

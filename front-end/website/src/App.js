@@ -5,15 +5,16 @@ import BasicLayout from "~/layouts/BasicLayout";
 import { CircularProgress } from "@mui/material";
 import ContentLayout from "~/layouts/ContentLayout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-const Chatbot = loadable(() => import("~/features/Chatbot"));
 const Home = loadable(() => import("~/features/Home"));
 const About = loadable(() => import("~/features/About"));
-const SignOut = loadable(() => import("~/features/SignOut"));
-const Contact = loadable(() => import("~/features/Contact"));
 const SignUp = loadable(() => import("~/features/SignUp"));
 const VBQPPL = loadable(() => import("~/features/VBQPPL"));
-const VBBQPPLDetail = loadable(() => import("~/features/VBQPPL/detail"));
 const SignIn = loadable(() => import("~/features/SignIn"));
+const SignOut = loadable(() => import("~/features/SignOut"));
+const Contact = loadable(() => import("~/features/Contact"));
+const Chatbot = loadable(() => import("~/features/Chatbot"));
+const VBBQPPLDetail = loadable(() => import("~/features/VBQPPL/detail"));
+const ForgotPassword = loadable(() => import("~/features/ForgotPassword"));
 
 function App() {
     return (
@@ -87,6 +88,14 @@ function App() {
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <SignUp title="Đăng ký" />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/quen-mat-khau"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <ForgotPassword title="Đăng ký" />
                             </Suspense>
                         }
                     />
