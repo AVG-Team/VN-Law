@@ -5,8 +5,10 @@ import BasicLayout from "~/layouts/BasicLayout";
 import { CircularProgress } from "@mui/material";
 import ContentLayout from "~/layouts/ContentLayout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 const Home = loadable(() => import("~/features/Home"));
 const About = loadable(() => import("~/features/About"));
+const TreeLaw = loadable(() => import("~/features/TreeLaw"));
 const SignUp = loadable(() => import("~/features/SignUp"));
 const VBQPPL = loadable(() => import("~/features/VBQPPL"));
 const SignIn = loadable(() => import("~/features/SignIn"));
@@ -96,6 +98,16 @@ function App() {
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <ForgotPassword title="Đăng ký" />
+                            </Suspense>
+                        }
+                    />
+                </Route>
+                <Route element={<ContentLayout />}>
+                    <Route
+                        path="/danh-sach-van-ban-phap-luat"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <TreeLaw title="Danh sách văn bản pháp luật" />
                             </Suspense>
                         }
                     />
