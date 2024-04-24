@@ -48,3 +48,10 @@
         border-radius: 0
     }
 }
+
+@media(max-width: 518px) {
+    .icon-input-message {
+        bottom: 4.5rem;
+    }
+    
+}

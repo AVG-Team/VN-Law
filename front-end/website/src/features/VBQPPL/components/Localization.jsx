@@ -1,5 +1,5 @@
 import * as React from "react";
-import { LocalizationContext, LocalizationMap, ThemeContext, Viewer } from "@react-pdf-viewer/core";
+import { LocalizationContext, ThemeContext, Viewer } from "@react-pdf-viewer/core";
 import { toolbarPlugin } from "@react-pdf-viewer/toolbar";
 
 import "@react-pdf-viewer/core/lib/styles/index.css";
