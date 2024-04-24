@@ -37,7 +37,7 @@ public class CrawlApplication {
 
         JsonArray subjects = crawler.loadData(subjectFile);
         crawler.insertData(subjects,pdsubject);*/
-        ArrayList<HashMap<String,String>> map = crawler.insertElements(,treeNode);
+        ArrayList<HashMap<String,String>> map = crawler.insertElements(test,treeNode);
 
         crawler.insertRelationTable(map);
 
