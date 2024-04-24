@@ -1,4 +1,4 @@
-package Repository;
+package repositories;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -10,7 +10,7 @@ public class HibernateUtil {
     private static EntityManagerFactory buildEntityManagerFactory() {
         try {
             // Tạo EntityManagerFactory từ persistence unit được đặt tên "crawler" trong persistence.xml
-            return Persistence.createEntityManagerFactory("crawler");
+            return Persistence.createEntityManagerFactory("crawl");
         } catch (Throwable ex) {
             System.err.println("Initial EntityManagerFactory creation failed." + ex);
             throw new ExceptionInInitializerError(ex);

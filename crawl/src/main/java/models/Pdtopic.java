@@ -1,4 +1,4 @@
-package model;
+package models;
 
 import jakarta.persistence.*;
 
@@ -39,11 +39,11 @@ public class Pdtopic {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
 
-        Pdtopic pdtopic = (Pdtopic) o;
+        Pdtopic pdtopic = (Pdtopic) object;
 
         if (id != null ? !id.equals(pdtopic.id) : pdtopic.id != null) return false;
         if (name != null ? !name.equals(pdtopic.name) : pdtopic.name != null) return false;

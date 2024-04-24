@@ -1,10 +1,9 @@
-package model;
+package models;
 
 import jakarta.persistence.*;
 
 @Entity
 public class Pdchapter {
-
     @Id
     @Column(name = "id", nullable = false, length = 128)
     private String id;
@@ -62,11 +61,11 @@ public class Pdchapter {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
 
-        Pdchapter pdchapter = (Pdchapter) o;
+        Pdchapter pdchapter = (Pdchapter) object;
 
         if (id != null ? !id.equals(pdchapter.id) : pdchapter.id != null) return false;
         if (name != null ? !name.equals(pdchapter.name) : pdchapter.name != null) return false;

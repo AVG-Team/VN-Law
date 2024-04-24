@@ -1,4 +1,4 @@
-package model;
+package models;
 
 import jakarta.persistence.*;
 
@@ -51,11 +51,11 @@ public class Pdfile {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
 
-        Pdfile pdfile = (Pdfile) o;
+        Pdfile pdfile = (Pdfile) object;
 
         if (id != pdfile.id) return false;
         if (idArticle != null ? !idArticle.equals(pdfile.idArticle) : pdfile.idArticle != null) return false;

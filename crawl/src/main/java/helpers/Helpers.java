@@ -1,12 +1,15 @@
-package Helper;
+package helpers;
 
 
-import java.io.*;
+import com.google.gson.*;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.gson.*;
 
 public class Helpers {
 
