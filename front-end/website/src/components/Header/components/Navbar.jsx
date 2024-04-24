@@ -1,13 +1,17 @@
+import Cookies from "js-cookie";
 import { Fragment } from "react";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { NavLink } from "react-router-dom";
 import Logo from "../../../assets/images/logo/logo2.png";
-import { menus, pages } from "../../../mock/header.data";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { menus, pages, toggleButton } from "../../../mock/header.data";
+import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
+
 export function Navbar() {
+    const isAuthtenticated = !!Cookies.get("StorageKeys.ACCESS_TOKEN");
     return (
         <Disclosure as="nav" className="bg-white shadow-md">
             {({ open }) => (
@@ -27,9 +31,9 @@ export function Navbar() {
                                         )}
                                     </Disclosure.Button>
                                 </div>
-                                <div className="flex items-center flex-shrink-0">
+                                <NavLink to={"/"} className="flex items-center flex-shrink-0">
                                     <img className="w-40" src={Logo} alt="Logo" />
-                                </div>
+                                </NavLink>
                                 <div className="hidden md:ml-6 md:flex md:space-x-8">
                                     {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
                                     {pages.map((page) =>
@@ -55,12 +59,26 @@ export function Navbar() {
                             </div>
                             <div className="flex items-center">
                                 <div className="flex-shrink-0">
-                                    <button
-                                        type="button"
-                                        className="relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                    >
-                                        Đăng nhập
-                                    </button>
+                                    {isAuthtenticated ? (
+                                        <NavLink
+                                            type="button"
+                                            className="relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 mr-1 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            to={"/dang-xuat"}
+                                        >
+                                            Đăng xuất
+                                        </NavLink>
+                                    ) : (
+                                        toggleButton.map((button) => (
+                                            <NavLink
+                                                key={button.id}
+                                                type="button"
+                                                className="relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 mr-1 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                to={button.link}
+                                            >
+                                                {button.name}
+                                            </NavLink>
+                                        ))
+                                    )}
                                 </div>
                                 <div className="hidden md:ml-4 md:flex md:flex-shrink-0 md:items-center">
                                     <button

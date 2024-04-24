@@ -115,7 +115,7 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
             className={`flex flex-col relative w-[100%] h-screen z-0 ${activeChat ? "active-chat" : ""}`}
             onClick={handleClick}
         >
-            <div className="hidden justify-end justify-start"></div>
+            <div className="justify-start justify-end hidden"></div>
             <MenuMobile
                 isOpenMenuNavbar={isOpenMenuNavbar}
                 setIsOpenMenuNavbar={setIsOpenMenuNavbar}
@@ -132,7 +132,7 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                                 setIsOpenMenuNavbar(false);
                                 setIsHoveredIconMenu(false);
                             }}
-                            className="w-6 h-6 text-gray-400 hover:text-gray-800 cursor-pointer"
+                            className="w-6 h-6 text-gray-400 cursor-pointer hover:text-gray-800"
                         />
                     ) : (
                         <ChevronRightIcon
@@ -142,12 +142,12 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                                 setIsOpenMenuNavbar(true);
                                 setIsHoveredIconMenu(false);
                             }}
-                            className="w-6 h-6 text-gray-400 hover:text-gray-800 cursor-pointer"
+                            className="w-6 h-6 text-gray-400 cursor-pointer hover:text-gray-800"
                         />
                     )
                 ) : (
                     <EllipsisVerticalIcon
-                        className="w-6 h-6 text-gray-400 hover:text-gray-800 cursor-pointer"
+                        className="w-6 h-6 text-gray-400 cursor-pointer hover:text-gray-800"
                         onMouseLeave={() => setIsHoveredIconMenu(false)}
                         onMouseEnter={() => setIsHoveredIconMenu(true)}
                     />
@@ -155,13 +155,13 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
             </div>
             <div className="flex-1 overflow-hidden">
                 <VersionChatbot
-                    className="hidden lg:flex lg:items-center absolute top-4 left-8 rounded-lg cursor-pointer hover:bg-slate-300 px-2"
+                    className="absolute hidden px-2 rounded-lg cursor-pointer lg:flex lg:items-center top-4 left-8 hover:bg-slate-300"
                     clearMessages={clearMessages}
                     isOpenMenuNavbar={isOpenMenuNavbar}
                 />
-                <div className="flex items-center justify-center flex-col h-full logo-chat">
+                <div className="flex flex-col items-center justify-center h-full logo-chat">
                     <img src={Logo} alt="icon" className="w-20" />
-                    <p className="text-2xl font-bold mt-3">Tôi có thể giúp gì cho bạn ?</p>
+                    <p className="mt-3 text-2xl font-bold">Tôi có thể giúp gì cho bạn ?</p>
                 </div>
                 <div className="flex flex-col h-full overflow-scroll lg:py-10">
                     {messages.map((message, index) => (
