@@ -4,7 +4,7 @@ Please include a summary of the changes and the related issue. Please also inclu
 
 
 ## Project
-- [ ] Webisite
+- [ ] Website
 - [ ] API
 - [ ] Documentation
 - [ ] Other... (please describe)
