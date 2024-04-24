@@ -1,31 +1,33 @@
 package Controller;
 
-
-import com.google.gson.*;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import model.*;
-import Helper.Helpers;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
-
-import Repository.HibernateUtil;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import helpers.Helpers;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import models.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import repositories.HibernateUtil;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
-public class Crawler {
+public class CrawlController {
 
     public final Helpers helper;
 
-    public Crawler(Helpers helper) {
+
+    public CrawlController(Helpers helper) {
         this.helper = helper;
     }
 
@@ -61,7 +63,7 @@ public class Crawler {
         return relationArticle;
     }
 
-    public ArrayList<HashMap<String, String>> insertElements(String subjectDirectory,String treeNode) throws IOException {
+    public ArrayList<HashMap<String, String>> insertElements(String subjectDirectory, String treeNode) throws IOException {
 
         // prepare variable
 
@@ -79,12 +81,10 @@ public class Crawler {
 
         JsonArray nodes = loadData(treeNode);
         List<Pdchapter> chaptersData = new ArrayList<>();
-        List<Pdsubject> pdsubjects = getData();
         isSkipping = true;
 
 
         ArrayList<HashMap<String, String>> relationsMap = new ArrayList<>();
-        String chapterId = "";
         String subjectId = "";
         for (File file : listOfFiles) {
 
@@ -151,8 +151,8 @@ public class Crawler {
                     chapterData.setIdSubject(chapter.get("DeMucID").getAsString());
 
                     try {
-                      insertData(chapterData);
-                       /* System.out.println("Insert Chapter Completed");*/
+//                        insertData(chapterData);
+                        /* System.out.println("Insert Chapter Completed");*/
                     } catch (Exception e) {
                         System.out.println("chapter failed");
                         e.printStackTrace();
@@ -172,10 +172,19 @@ public class Crawler {
                 UUID idTemp = UUID.randomUUID();
                 Pdchapter pdchapter = new Pdchapter();
                 pdchapter.setId(idTemp.toString());
-                pdchapter.setName("");
+                pdchapter.setName(subjectHtml.tagName("h3").text());
                 pdchapter.setIndex("0");
                 pdchapter.setOrder(0);
-                pdchapter.setIdSubject(fileName.split("//.")[0]);
+                System.out.println(fileName.split("\\.")[0]);
+                pdchapter.setIdSubject(fileName.split("\\.")[0]);
+                try {
+//                    insertData(pdchapter);
+                    /* System.out.println("Insert Chapter Completed");*/
+                } catch (Exception e) {
+                    System.out.println("chapter failed");
+                    e.printStackTrace();
+                    continue;
+                }
                 chaptersData.add(pdchapter);
             }
 
@@ -188,13 +197,6 @@ public class Crawler {
                     }
                 }
             }
-
-
-
-            /*for(JsonElement s : articleNode){
-                System.out.println(s.toString());
-            }*/
-
 
 
             for (JsonElement element : articleNode) {
@@ -299,9 +301,9 @@ public class Crawler {
                             pdarticle.setIdTopic(article.get("ChuDeID").getAsString());
                             pdarticle.setOrder(order);
 
-                             insertData(pdarticle);
+//                            insertData(pdarticle);
                         } catch (Exception e) {
-                          e.printStackTrace();
+                            e.printStackTrace();
                             System.out.println("article failed");
                             continue;
                         }
@@ -310,8 +312,8 @@ public class Crawler {
                             Pdtable pdtable = new Pdtable();
                             pdtable.setIdArticle(articleID);
                             pdtable.setHtml(table);
-                           /* System.out.println(table);*/
-                            insertData(pdtable);
+                            /* System.out.println(table);*/
+//                            insertData(pdtable);
                             /*System.out.println("Insert Table Completed");*/
                         }
 
@@ -327,7 +329,7 @@ public class Crawler {
                                     pdfile.setIdArticle(article.get("MAPC").getAsString());
                                     pdfile.setPath("");
                                     /*System.out.println(item.toString());*/
-                                    insertData(pdfile);
+//                                   insertData(pdfile);
                                     /*System.out.println("Insert File Completed");*/
                                 } catch (Exception ex) {
                                     System.out.println("Insert File Failed");
@@ -340,13 +342,13 @@ public class Crawler {
                             if(fileLink == null) continue;
 
                             if (fileLink.tagName().equals("p") && fileLink.hasClass("pChiDan")) {
-                                   Elements relationHtml = fileLink.select("a");
+                                Elements relationHtml = fileLink.select("a");
 
-                                   /*  System.out.println(relationHtml.toString());*/
-                                   if (!relationHtml.hasAttr("onclick") || relationHtml.attr("onclick").isEmpty()) {
-                                       continue;
-                                   }
-                                   String idRelation = helper.extractInput(relationHtml.attr("onclick").replace("'", ""));
+                                /*  System.out.println(relationHtml.toString());*/
+                                if (!relationHtml.hasAttr("onclick") || relationHtml.attr("onclick").isEmpty()) {
+                                    continue;
+                                }
+                                String idRelation = helper.extractInput(relationHtml.attr("onclick").replace("'", ""));
                                    relationsMap.add(new HashMap<String, String>() {{
                                        put("idRelation1", article.get("MAPC").getAsString());
                                        put("idRelation2", idRelation);
@@ -489,7 +491,7 @@ public class Crawler {
             }
 
             transaction.commit();
-           /* System.out.println("Inserted completely");*/
+            /* System.out.println("Inserted completely");*/
         } catch (Exception e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
@@ -528,4 +530,5 @@ public class Crawler {
         return objects;
 
     }
+
 }

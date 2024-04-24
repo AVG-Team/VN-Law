@@ -12,7 +12,7 @@
         <module>law-service</module>
         <module>chat-service</module>
         <module>recommend-service</module>
-        <module>crawler</module>
+        <module>crawl</module>
     </modules>
 
     <properties>
