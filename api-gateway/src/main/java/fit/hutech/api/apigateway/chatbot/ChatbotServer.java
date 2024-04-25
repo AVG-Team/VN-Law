@@ -1,4 +1,4 @@
-package fit.hutech.api.apigateway;
+package fit.hutech.api.apigateway.chatbot;
 
 import com.corundumstudio.socketio.*;
 import com.corundumstudio.socketio.listener.*;
