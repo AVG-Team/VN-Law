@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 const TypewriterText = ({ text, pendingReplyServer, setPendingReplyServer }) => {
     const [displayedText, setDisplayedText] = useState("");
-
+    console.log(text);
     useEffect(() => {
         let charIndex = 0;
         const interval = setInterval(() => {

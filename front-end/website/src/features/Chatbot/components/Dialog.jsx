@@ -14,7 +14,7 @@ import MenuMobile from "./MenuMobile";
 import TypewriterText from "./TypewriterText";
 import Logo from "~/assets/images/logo/logo-no-bg.png";
 
-const host = "http://localhost:3001";
+const host = "http://localhost:9000";
 
 function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, activeChat, setActiveChat }) {
     const [isHoveredIconMenu, setIsHoveredIconMenu] = useState(false);
@@ -35,7 +35,7 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
         socketRef.current = socketIOClient.connect(host);
 
         socketRef.current.on("sendDataServer", (dataGot) => {
-            fetchFakeReply(dataGot.data);
+            fetchReply(dataGot);
             setTextareaValue("");
         });
 
@@ -83,12 +83,14 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
         }
     };
 
-    const fetchFakeReply = (message) => {
+    const fetchReply = (message) => {
         const fakeReply = {
             id: messages.length + 2,
             content: message,
             type: "reply",
         };
+
+        console.log(message)
 
         setMessages((prevMessages) => [...prevMessages, fakeReply]);
     };
