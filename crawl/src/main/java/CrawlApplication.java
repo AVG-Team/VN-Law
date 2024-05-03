@@ -1,4 +1,6 @@
 import Controller.CrawlController;
+import Controller.CrawlDocumentController;
+import Controller.SplitDocumentController;
 import helpers.Helpers;
 import models.Pdsubject;
 import models.Pdtopic;
@@ -26,10 +28,10 @@ public class CrawlApplication {
 
     public static void main(String[] args) throws IOException {
 
-        Helpers helpers = new Helpers();
-        CrawlController crawler = new CrawlController(helpers);
-        Pdtopic pdtopic = new Pdtopic();
-        Pdsubject pdsubject = new Pdsubject();
+//        Helpers helpers = new Helpers();
+//        CrawlController crawler = new CrawlController(helpers);
+//        Pdtopic pdtopic = new Pdtopic();
+//        Pdsubject pdsubject = new Pdsubject();
 
 
       /* JsonArray topics= crawler.loadData(topicFile);
@@ -37,9 +39,14 @@ public class CrawlApplication {
 
         JsonArray subjects = crawler.loadData(subjectFile);
         crawler.insertData(subjects,pdsubject);*/
-        ArrayList<HashMap<String,String>> map = crawler.insertElements(test,treeNode);
+//        ArrayList<HashMap<String,String>> map = crawler.insertElements(test,treeNode);
+//
+//        crawler.insertRelationTable(map);
 
-        crawler.insertRelationTable(map);
+        CrawlDocumentController crawlDocumentController = new CrawlDocumentController();
+        SplitDocumentController splitDocumentController = new SplitDocumentController();
+
+        splitDocumentController.splitDocument();
 
     }
 }

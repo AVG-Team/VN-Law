@@ -12,6 +12,8 @@
       <class>models.Pdsubject</class>
       <class>models.Pdtable</class>
       <class>models.Pdtopic</class>
+      <class>models.Vbqppl</class>
+      <class>models.Indexvbqppl</class>
       <properties>
           <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/law_service"/>
           <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>
