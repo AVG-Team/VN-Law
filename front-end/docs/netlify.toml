@@ -1,3 +1,0 @@
-[build]
-command = "npm run build"  # Nếu cần thiết
-publish = "front-end/docs"  # Thư mục cần deploy
