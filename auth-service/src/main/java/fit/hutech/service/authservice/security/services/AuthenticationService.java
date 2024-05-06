@@ -38,6 +38,12 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+        if (repository.findByEmail(request.getEmail()).isPresent()) {
+            return AuthenticationResponse.builder()
+                    .message("Email is already registered")
+                    .build();
+        }
+
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -52,7 +58,7 @@ public class AuthenticationService {
 
         String verificationCode = UUID.randomUUID().toString();
         user.setVerificationCode(verificationCode);
-//        user.setEnabled(false);
+        user.setEnabled(false);
         repository.save(savedUser);
 
         emailSenderService.sendEmailWithToken(savedUser.getEmail(),verificationCode);
@@ -72,6 +78,12 @@ public class AuthenticationService {
                 )
         );
         var user = repository.findByEmail(request.getEmail()).orElseThrow();
+        if(!user.isEnabled()){
+            return AuthenticationResponse.builder()
+                    .message("Account has not been activated")
+                    .build();
+        }
+
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 

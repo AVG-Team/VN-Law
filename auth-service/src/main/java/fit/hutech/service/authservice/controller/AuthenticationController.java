@@ -10,6 +10,7 @@ import fit.hutech.service.authservice.security.services.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,21 +24,37 @@ public class AuthenticationController {
     private final AuthenticationService authService;
     private final UserRepository userRepository;
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
+    public ResponseEntity<?> register(
             @RequestBody RegisterRequest request
-    ){
-        if(userRepository.findByEmail(request.getEmail()).isPresent()){
-            System.out.println("Email is already registered");
-            return ResponseEntity.badRequest().build();
+    ) {
+        try {
+            AuthenticationResponse authResponse = authService.register(request);
+            if (authResponse.getMessage().equals("Email is already registered")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(authResponse.getMessage());
+            }
+            return ResponseEntity.ok(authResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Registration failed");
         }
-        return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(
+    public ResponseEntity<?> authenticate(
             @RequestBody AuthenticationRequest request
-    ){
-        return ResponseEntity.ok(authService.authenticate(request));
+    ) {
+        try {
+            AuthenticationResponse authResponse = authService.authenticate(request);
+            if (authResponse.getMessage().equals("Account has not been activated")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(authResponse.getMessage());
+            }
+            return ResponseEntity.ok(authResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Login failed");
+        }
     }
 
     @PostMapping("/refresh-token")
@@ -53,14 +70,14 @@ public class AuthenticationController {
             @RequestParam("verificationCode")
             String verificationCode
     ){
-//        User user = userRepository.findByVerificationCode(verificationCode)
-//                .orElseThrow(() -> new IllegalStateException("Invalid code"));
-//        if(user.isEnabled()){
-//            return ResponseEntity.badRequest().body("Account is already activated");
-//        }
-//        user.setEnabled(true);
-//        user.setVerificationCode(verificationCode);
-//        userRepository.save(user);
+        User user = userRepository.findByVerificationCode(verificationCode)
+                .orElseThrow(() -> new IllegalStateException("Invalid code"));
+        if(user.isEnabled()){
+            return ResponseEntity.badRequest().body("Account is already activated");
+        }
+        user.setEnabled(true);
+        user.setVerificationCode(verificationCode);
+        userRepository.save(user);
 
         return ResponseEntity.ok("Account activated successfully");
     }
