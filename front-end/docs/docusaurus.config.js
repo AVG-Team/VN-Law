@@ -12,11 +12,12 @@ const config = {
     tagline: "Tri thức pháp luật Việt Nam", // Tagline for your website.
     favicon: "img/favicon.ico",
 
-    // Set the production url of your site here
-    url: "https://your-docusaurus-site.example.com",
-    // Set the /<baseUrl>/ pathname under which your site is served
-    // For GitHub pages deployment, it is often '/<projectName>/'
-    baseUrl: "/",
+  // Set the production url of your site here
+  url: 'https://vn-law-docs.netlify.app/',
+  // Set the /<baseUrl>/ pathname under which your site is served
+  // For GitHub pages deployment, it is often '/<projectName>/'
+  baseUrl: '/',
+
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
