@@ -1,0 +1,6 @@
+.colDemoItems {
+    min-height: "70px";
+    align-items: "center";
+    display: "flex";
+    justify-content: "center";
+}
