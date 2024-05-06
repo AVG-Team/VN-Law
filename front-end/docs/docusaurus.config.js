@@ -10,14 +10,13 @@ import { themes as prismThemes } from "prism-react-renderer";
 const config = {
     title: "VN LAW", // Title for your website.
     tagline: "Tri thức pháp luật Việt Nam", // Tagline for your website.
-    favicon: "img/favicon.ico",
+    favicon: "img/logo-circle.ico",
 
-  // Set the production url of your site here
-  url: 'https://vn-law-docs.netlify.app/',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
-
+    // Set the production url of your site here
+    url: "https://vn-law-docs.netlify.app/",
+    // Set the /<baseUrl>/ pathname under which your site is served
+    // For GitHub pages deployment, it is often '/<projectName>/'
+    baseUrl: "/",
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
@@ -64,7 +63,7 @@ const config = {
                 title: "VN Law",
                 logo: {
                     alt: "VN Law Logo",
-                    src: "img/logo.svg",
+                    src: "img/logo-circle.png",
                 },
                 items: [
                     {
