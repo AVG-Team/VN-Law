@@ -1,4 +1,6 @@
+import axios from 'axios'
 import Box from "@mui/material/Box";
+import {toast} from 'react-toastify';
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import { useState, React } from "react";
@@ -9,6 +11,7 @@ import Logo from "~/assets/images/logo/logo2.png";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export function LoginForm() {
+    const [errors,setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [hasValuePassword, setHasValuePassword] = useState(false);
 
@@ -17,12 +20,35 @@ export function LoginForm() {
         password: "",
     });
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
-        const data = new FormData(e.currentTarget);
-        const email = data.get("email");
-        const password = data.get("password");
+
+        const {email,password} = formData;
         alert(`Form submitted:\nEmail: ${email}\nPassword: ${password}`);
+
+        const validationErrors = {};
+        if (!email.trim()) {
+            validationErrors.email = "Email là bắt buộc";
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            validationErrors.email = "Email không hợp lệ";
+        }
+
+        if (!password.trim()) {
+            validationErrors.password = "Mật khẩu là bắt buộc";
+        } else if (password.length < 8) {
+            validationErrors.password = "Mật khẩu phải có ít nhất 8 kí tự";
+        }
+
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length === 0) {
+            try{
+                const response = await axios.post("http://localhost:9001/api/auth/authenticate", formData);
+                console.log("Login success:", response.data);
+                toast.success(response.data.message);
+            }catch(err){
+                console.log("Error fetching server: ",err);
+            }  
+        }
     }
 
     function handleChange(e) {
@@ -58,6 +84,8 @@ export function LoginForm() {
                     name="email"
                     autoComplete="email"
                     autoFocus
+                    onChange={handleChange}
+                    value={formData.email}
                     required
                 />
                 <TextField
@@ -69,6 +97,7 @@ export function LoginForm() {
                     id="password"
                     onChange={handleChange}
                     autoComplete="current-password"
+                    value={formData.password}
                     required
                     InputProps={{
                         endAdornment: hasValuePassword && (

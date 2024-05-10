@@ -1,4 +1,6 @@
+import axios from 'axios';
 import Box from "@mui/material/Box";
+import {toast} from 'react-toastify';
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import { useState, React } from "react";
@@ -8,8 +10,11 @@ import Logo from "~/assets/images/logo/logo2.png";
 import Typography from "@mui/material/Typography";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
+
+
+
 export function RegisterForm() {
-    const [errors] = useState({});
+    const [errors,setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [hasValuePassword, setHasValuePassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -21,14 +26,12 @@ export function RegisterForm() {
         password: "",
         confirmPassword: "",
     });
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        const data = new FormData(e.currentTarget);
-        const username = data.get("username");
-        const email = data.get("email");
-        const password = data.get("password");
-        const confirmPassword = data.get("confirm-password");
+    
+    async function handleSubmit(e) {
+        e.preventDefault()
+        
+        // validate
+        const {username,email,password,confirmPassword} = formData;
 
         const validationErrors = {};
         if (!username.trim()) {
@@ -47,10 +50,27 @@ export function RegisterForm() {
             validationErrors.password = "Mật khẩu phải có ít nhất 8 kí tự";
         }
 
+        if (!confirmPassword.trim()){
+            validationErrors.confirmPassword = "Nhập lại mật khẩu là bắt buộc";
+        } else if(confirmPassword !== password){
+            validationErrors.confirmPassword = "Mật khẩu không khớp";
+        }
+          
+        setErrors(validationErrors);
+
+        // fetch api
         if (Object.keys(validationErrors).length === 0) {
-            alert(
-                `Form submitted:\nUsername: ${username}\nEmail: ${email}\nPassword: ${password}\nConfirm Password: ${confirmPassword}`,
-            );
+            try{
+                const response = await axios.post("http://localhost:9001/api/auth/register", {
+                    firstName: formData.username,
+                    email: formData.email,
+                    password: formData.password
+                });
+                console.log("Register success:", response.data);
+                toast.success(response.data.message);
+            }catch(err){
+                console.log("Error fetching server: ",err);
+            }  
         }
     }
 
@@ -60,7 +80,7 @@ export function RegisterForm() {
 
         if (name === "password") {
             setHasValuePassword(value !== "");
-        } else if (name === "confirm-password") {
+        } else if (name === "confirmPassword") {
             setHasValueConfirmPassword(value !== "");
         }
     }
@@ -92,6 +112,7 @@ export function RegisterForm() {
                     name="username"
                     autoComplete="username"
                     onChange={handleChange}
+                    value={formData.username}
                     autoFocus
                 />
                 {errors.username && <Box className="text-sm text-left text-red-500">{errors.username}</Box>}
@@ -103,6 +124,7 @@ export function RegisterForm() {
                     name="email"
                     autoComplete="email"
                     onChange={handleChange}
+                    value={formData.email}
                     autoFocus
                 />
                 {errors.email && <Box className="text-sm text-left text-red-500">{errors.email}</Box>}
@@ -113,6 +135,7 @@ export function RegisterForm() {
                     type={showPassword ? "text" : "password"}
                     id="password"
                     onChange={handleChange}
+                    value={formData.password}
                     autoComplete="current-password"
                     InputProps={{
                         endAdornment: hasValuePassword && (
@@ -129,11 +152,12 @@ export function RegisterForm() {
                 {errors.password && <Box className="text-sm text-left text-red-500">{errors.password}</Box>}
                 <TextField
                     margin="normal"
-                    name="confirm-password"
+                    name="confirmPassword"
                     label="Nhập lại mật khẩu"
                     type={showConfirmPassword ? "text" : "password"}
-                    id="confirm-password"
+                    id="confirmPassword"
                     onChange={handleChange}
+                    value={formData.confirmPassword}
                     autoComplete="current-password"
                     InputProps={{
                         endAdornment: hasValueConfirmPassword && (

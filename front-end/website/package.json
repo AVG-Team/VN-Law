@@ -19,6 +19,7 @@
         "@testing-library/react": "^13.4.0",
         "@testing-library/user-event": "^13.5.0",
         "antd": "^5.16.2",
+        "axios": "^1.6.8",
         "js-cookie": "^3.0.5",
         "lottie-react": "^2.4.0",
         "normalize.css": "^8.0.1",
