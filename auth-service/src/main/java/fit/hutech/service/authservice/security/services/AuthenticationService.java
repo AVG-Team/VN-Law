@@ -61,7 +61,10 @@ public class AuthenticationService {
         user.setEnabled(false);
         repository.save(savedUser);
 
-        emailSenderService.sendEmailWithToken(savedUser.getEmail(),verificationCode);
+        Thread emailThread = new Thread(() -> {
+            emailSenderService.sendEmailWithToken(savedUser.getEmail(),verificationCode);
+        });
+        emailThread.start();
 
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)

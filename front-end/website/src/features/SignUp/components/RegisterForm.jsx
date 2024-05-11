@@ -5,21 +5,20 @@ import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import { useState, React } from "react";
 import Button from "@mui/material/Button";
+import { useNavigate } from 'react-router-dom'
 import TextField from "@mui/material/TextField";
 import Logo from "~/assets/images/logo/logo2.png";
 import Typography from "@mui/material/Typography";
+import { register } from '../../../api/auth-service/authClient';
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
-
-
-
 export function RegisterForm() {
+    const navigate = useNavigate();
     const [errors,setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [hasValuePassword, setHasValuePassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [hasValueConfirmPassword, setHasValueConfirmPassword] = useState(false);
-
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -28,11 +27,11 @@ export function RegisterForm() {
     });
     
     async function handleSubmit(e) {
-        e.preventDefault()
-        
-        // validate
+        e.preventDefault();
+
         const {username,email,password,confirmPassword} = formData;
 
+        // validate
         const validationErrors = {};
         if (!username.trim()) {
             validationErrors.username = "Tên người dùng là bắt buộc";
@@ -61,13 +60,15 @@ export function RegisterForm() {
         // fetch api
         if (Object.keys(validationErrors).length === 0) {
             try{
-                const response = await axios.post("http://localhost:9001/api/auth/register", {
+                const response = await register({
                     firstName: formData.username,
                     email: formData.email,
                     password: formData.password
                 });
-                console.log("Register success:", response.data);
-                toast.success(response.data.message);
+                toast.success(response.data.message,{
+                    onClose: () => navigate('/dang-nhap')
+                }) ;
+                
             }catch(err){
                 console.log("Error fetching server: ",err);
             }  
