@@ -65,7 +65,8 @@
 // // }
 
 import axios from 'axios';
-import { ACCESS_TOKEN, API_BASE_URL, REFRESH_TOKEN } from "../../common/constants";
+import Cookies from "js-cookie";
+import { StorageKeys, API_BASE_URL } from '../../common/constants/keys'
 
 const request = axios.create({
   baseURL: API_BASE_URL,
@@ -76,7 +77,7 @@ const request = axios.create({
 
 request.interceptors.request.use(
   config => {
-    const token = localStorage.getItem(ACCESS_TOKEN);
+    const token = Cookies.get(StorageKeys.ACCESS_TOKEN);
     if (token) {
       config.headers['Authorization'] = 'Bearer ' + token;
     }

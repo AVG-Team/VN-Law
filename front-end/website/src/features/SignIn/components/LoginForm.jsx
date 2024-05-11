@@ -1,21 +1,19 @@
-import axios from 'axios'
+import Cookies from "js-cookie";
 import Box from "@mui/material/Box";
 import {toast} from 'react-toastify';
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import { useState, React } from "react";
 import Button from "@mui/material/Button";
-import { useNavigate } from 'react-router-dom'
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Logo from "~/assets/images/logo/logo2.png";
-import { ACCESS_TOKEN } from "../../../common/constants";
+import { StorageKeys } from "../../../common/constants/keys";
 import { authenticate } from '../../../api/auth-service/authClient';
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export function LoginForm() {
-    const navigate = useNavigate();
-    const [errors,setErrors] = useState({});
+    const [,setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [hasValuePassword, setHasValuePassword] = useState(false);
 
@@ -51,9 +49,8 @@ export function LoginForm() {
             try{
                 const response = await authenticate(formData);                
                 const {access_token} = response.data;
-                localStorage.setItem(ACCESS_TOKEN, response.data.access_token);
+                Cookies.set(StorageKeys.ACCESS_TOKEN, access_token);
                 toast.success(response.data.message);
-                navigate('/gioi-thieu');
             }catch(err){
                 console.log("Error fetching server: ",err);
             }  

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import Box from "@mui/material/Box";
 import {toast} from 'react-toastify';
 import Grid from "@mui/material/Grid";
