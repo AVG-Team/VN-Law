@@ -13,10 +13,8 @@ public class EmailSenderService {
     public void sendEmailWithToken(String to, String verificationCode){
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(to);
-        mail.setSubject("Account Activation");
-        mail.setText("Please click the link to activate your account: http://localhost:9001/api/auth/confirm?verificationCode=" + verificationCode);
+        mail.setSubject("Kích hoạt tài khoản");
+        mail.setText("Vui lòng nhấp vào liên kết để kích hoạt tài khoản: http://localhost:9001/api/auth/confirm?verificationCode=" + verificationCode);
         mailSender.send(mail);
-
-        System.out.println("Email has been sent");
     }
 }

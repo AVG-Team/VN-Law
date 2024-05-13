@@ -69,7 +69,12 @@ export function RegisterForm() {
                 }) ;
                 
             }catch(err){
-                console.log("Error fetching server: ",err);
+                if(err.response && err.response.status === 401){
+                    toast.error(err.response.data);
+                }
+                else{
+                    console.log("Error fetching server: ",err);
+                }
             }  
         }
     }

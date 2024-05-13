@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -30,14 +31,14 @@ public class AuthenticationController {
     ) {
         try {
             AuthenticationResponse authResponse = authService.register(request);
-            if (authResponse.getMessage().equals("Email is already registered")) {
+            if (authResponse.getMessage().equals("Email đã được đăng ký")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(authResponse.getMessage());
             }
             return ResponseEntity.ok(authResponse);
-        } catch (Exception e) {
+        } catch (DisabledException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Registration failed");
+                    .body("Email đã được đăng ký");
         }
     }
 
@@ -47,14 +48,17 @@ public class AuthenticationController {
     ) {
         try {
             AuthenticationResponse authResponse = authService.authenticate(request);
-            if (authResponse.getMessage().equals("Account has not been activated")) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            if (authResponse.getMessage().equals("Tài khoản chưa được kích hoạt")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(authResponse.getMessage());
             }
             return ResponseEntity.ok(authResponse);
+        } catch (DisabledException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Tài khoản chưa được kích hoạt");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Login failed");
+                    .body("Tài khoản hoặc mật khẩu không đúng");
         }
     }
 
@@ -74,12 +78,12 @@ public class AuthenticationController {
         User user = userRepository.findByVerificationCode(verificationCode)
                 .orElseThrow(() -> new IllegalStateException("Invalid code"));
         if(user.isEnabled()){
-            return ResponseEntity.badRequest().body("Account is already activated");
+            return ResponseEntity.badRequest().body("Tài khoản đã được kích hoạt");
         }
         user.setEnabled(true);
         user.setVerificationCode(verificationCode);
         userRepository.save(user);
 
-        return ResponseEntity.ok("Account activated successfully");
+        return ResponseEntity.ok("Tài khoản được kích hoạt thành công");
     }
 }

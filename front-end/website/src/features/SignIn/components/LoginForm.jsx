@@ -52,7 +52,15 @@ export function LoginForm() {
                 Cookies.set(StorageKeys.ACCESS_TOKEN, access_token);
                 toast.success(response.data.message);
             }catch(err){
-                console.log("Error fetching server: ",err);
+                if(err.response && err.response.status === 401){
+                    toast.error(err.response.data);
+                }
+                else if(err.response && err.response.status === 400){
+                    toast.error(err.response.data);
+                }
+                else{
+                    console.log("Error fetching server: ",err);
+                }
             }  
         }
     }

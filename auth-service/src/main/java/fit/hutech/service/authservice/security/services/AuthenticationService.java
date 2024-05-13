@@ -40,7 +40,7 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) {
         if (repository.findByEmail(request.getEmail()).isPresent()) {
             return AuthenticationResponse.builder()
-                    .message("Email is already registered")
+                    .message("Email đã được đăng ký")
                     .build();
         }
 
@@ -69,7 +69,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .message("Register success. Please check your email to activate your account.")
+                .message("Đăng ký thành công. Hãy kiểm tra email để kích hoạt tài khoản của bạn.")
                 .build();
     }
 
@@ -83,7 +83,7 @@ public class AuthenticationService {
         var user = repository.findByEmail(request.getEmail()).orElseThrow();
         if(!user.isEnabled()){
             return AuthenticationResponse.builder()
-                    .message("Account has not been activated")
+                    .message("Tài khoản chưa được kích hoạt")
                     .build();
         }
 
@@ -95,7 +95,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .message("Login Success")
+                .message("Đăng nhập thành công")
                 .build();
     }
     private void saveUserToken(User user, String jwtToken) {
@@ -119,7 +119,6 @@ public class AuthenticationService {
         });
         tokenRepository.saveAll(validUserTokens);
     }
-
     public void refreshToken(
             HttpServletRequest request,
             HttpServletResponse response
