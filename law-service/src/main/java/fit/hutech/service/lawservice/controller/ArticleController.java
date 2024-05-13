@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/article")
+@RequestMapping("/law-service/article")
 public class ArticleController {
     private final ArticleService articleService;
 
@@ -22,8 +22,10 @@ public class ArticleController {
         this.articleService = articleService;
     }
 
-    @GetMapping("/{articleId}")
-    public ResponseEntity<Object> getArticleByChapter(@PathVariable String chapterId, Optional<Integer> pageNo, Optional<Integer>pageSize){
+    @GetMapping("/chapter/{chapterId}")
+    public ResponseEntity<Object> getArticleByChapter(@PathVariable String chapterId,
+                                                      @RequestParam(name = "pageNo", value="pageNo") Optional<Integer> pageNo,
+                                                      @RequestParam(name = "pageSize", value="pageSize") Optional<Integer> pageSize){
         return ResponseHandler.responseBuilder("Complete",
                 HttpStatus.OK,articleService.getArticleByChapter(chapterId,pageNo,pageSize));
     }
