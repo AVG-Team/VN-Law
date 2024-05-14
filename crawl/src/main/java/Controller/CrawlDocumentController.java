@@ -27,8 +27,7 @@ public class CrawlDocumentController {
     EntityTransaction transaction = null;
     EntityManager entityManager = null;
 
-    public void crawlDocument() {
-
+    private List<String> filterData(){
         List<String> data = getData();
         System.out.println(data.size());
 
@@ -42,10 +41,77 @@ public class CrawlDocumentController {
                 .collect(Collectors.toList());
         System.out.println(unique.size());
 
+        return unique;
+    }
+
+    public void updateDocument(){
+        List<String> uniqueData = filterData();
+        List<String> ids = new ArrayList<>();
+        List<String> numbers = new ArrayList<>();
+        List<String> title = new ArrayList<>();
+        int count = 0 ;
+        for(String item: uniqueData){
+            String id= item;
+            System.out.println(id);
+            String urlContent =  "https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID="+id;
+
+            try{
+                try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+                    HttpGet request = new HttpGet(urlContent);
+                    CloseableHttpResponse response = httpClient.execute(request);
+
+                    try {
+                        // Kiểm tra mã trạng thái của phản hồi
+                        int statusCode = response.getStatusLine().getStatusCode();
+                        if (statusCode == 200) {
+                            // Đọc nội dung của phản hồi
+                            String htmlContent = EntityUtils.toString(response.getEntity());
+
+                            // Phân tích HTML bằng JSoup
+                            Document document = Jsoup.parse(htmlContent);
+
+                            // Tìm các thẻ div có class là 'fulltext'
+                            Elements divTexts = document.select("div.fulltext");
+                            if (!divTexts.isEmpty()) {
+
+                                Element divText = divTexts.get(0);
+
+                                // Lấy phần tử div thứ hai bên trong div fulltext
+                                Element contentHtml = divText.select("div").get(2);
+                                Element tableHtml = contentHtml.select("table").get(0);
+                                Element numberHtml = tableHtml.select("div").get(2);
+                                String number = numberHtml.text().split(": ")[1];
+                                System.out.println(number);
+                                ids.add(id);
+                                numbers.add(number);
+                            }
+                        }
+                    } finally {
+                        response.close();
+                    }
+                }
+            }catch (Exception ex){
+                continue;
+            }
+            if(count % 10 == 0){
+//                updateData(ids,numbers);
+                System.out.println("sss");
+                ids.clear();
+                numbers.clear();
+            }
+            count += 1;
+            System.out.println(count);
+        }
+//        updateData(ids,numbers);
+        System.out.println("successfully");
+    }
+
+    public void crawlDocument() {
+        List<String> uniqueData = filterData();
         List<String> ids = new ArrayList<>();
         List<String> contents = new ArrayList<>();
         int count = 0;
-        for(String item : unique){
+        for(String item : uniqueData){
 
             String id = item;
             String urlContent = "https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID="+id;
@@ -153,6 +219,47 @@ public class CrawlDocumentController {
             e.printStackTrace();
         } finally {
             if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+    }
+
+    public void updateData(List<String> ids, List<String> contents){
+        try{
+            entityManager = HibernateUtil.getEntityManagerFactory().createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+
+            for(int i = 0 ; i < ids.size() ; i++){
+
+                String id = ids.get(i);
+                String content = contents.get(i);
+
+                Vbqppl vbqppl = entityManager.find(Vbqppl.class, id);
+
+                if (vbqppl == null) {
+                    // Nếu đối tượng không tồn tại, tạo đối tượng mới và lưu vào cơ sở dữ liệu
+                    vbqppl = new Vbqppl();
+                    vbqppl.setId(id);
+                    vbqppl.setContent(content);
+                    entityManager.persist(vbqppl);
+                } else {
+                    // Nếu đối tượng đã tồn tại, cập nhật nội dung
+                    vbqppl.setNumber(content);
+
+                    entityManager.merge(vbqppl);
+                }
+            }
+
+            transaction.commit();
+
+        }catch (Exception e){
+            if(transaction != null && transaction.isActive()){
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }finally {
+            if(entityManager != null && entityManager.isOpen()){
                 entityManager.close();
             }
         }

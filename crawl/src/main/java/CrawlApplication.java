@@ -45,8 +45,7 @@ public class CrawlApplication {
 
         CrawlDocumentController crawlDocumentController = new CrawlDocumentController();
         SplitDocumentController splitDocumentController = new SplitDocumentController();
-
-        splitDocumentController.splitDocument();
+        crawlDocumentController.updateDocument();
 
     }
 }
