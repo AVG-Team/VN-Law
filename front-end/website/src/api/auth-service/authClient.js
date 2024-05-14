@@ -60,12 +60,14 @@ export const useCheckTokenExpiration = () => {
             if (accessToken) {
                 const decodedToken = jwtDecode(accessToken);
                 const expirationToken = decodedToken.exp * 1000;
-                const currentTime = Date.now().getTime();
+                const currentTime = new Date().getTime();
 
                 if (expirationToken <= currentTime) {
                     handleTokenExpiration();
                 }
             }
         };
-    });
+        const interval = setInterval(checkTokenExpiration, 60000);
+        return () => clearInterval(interval);
+    }, [navigate]);
 };

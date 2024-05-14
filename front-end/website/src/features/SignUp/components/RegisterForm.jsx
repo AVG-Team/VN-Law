@@ -65,7 +65,9 @@ export function RegisterForm() {
                     password: formData.password
                 });
                 toast.success(response.data.message,{
-                    onClose: () => navigate('/dang-nhap')
+                    onClose: () => navigate('/dang-nhap'),
+                    autoClose: 2000,
+                    buttonClose: false
                 }) ;
                 
             }catch(err){

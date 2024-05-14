@@ -50,7 +50,9 @@ export function LoginForm() {
             try{
                 const response = await authenticate(formData);                
                 toast.success(response.data.message,{
-                    onClose: () => navigate('/')
+                    onClose: () => navigate('/'),
+                    autoClose: 1000,
+                    buttonClose: false
                 }) ;
             }catch(err){
                 if(err.response && err.response.status === 401){
