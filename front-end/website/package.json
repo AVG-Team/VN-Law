@@ -21,6 +21,7 @@
         "antd": "^5.16.2",
         "axios": "^1.6.8",
         "js-cookie": "^3.0.5",
+        "jwt-decode": "^4.0.0",
         "lottie-react": "^2.4.0",
         "normalize.css": "^8.0.1",
         "pdfjs-dist": "^3.4.120",
