@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,4 +32,11 @@ public class VbqpplServiceImpl implements VbqpplService {
         ));
         return optionalVbqppl.orElse(null);
     }
+
+    @Override
+    public List<Vbqppl> getAll() {
+        return vbqpplRepository.findAll();
+    }
+
+
 }

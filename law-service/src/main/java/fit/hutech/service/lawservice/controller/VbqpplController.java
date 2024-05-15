@@ -33,5 +33,11 @@ public class VbqpplController {
                 HttpStatus.OK,this.vbqpplService.getVbqpplById(vbqpplId));
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<Object> getAll(){
+        return ResponseHandler.responseBuilder("Complete",
+                HttpStatus.OK,this.vbqpplService.getAll());
+    }
+
 
 }

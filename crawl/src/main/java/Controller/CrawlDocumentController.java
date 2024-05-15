@@ -46,15 +46,13 @@ public class CrawlDocumentController {
 
     public void updateDocument(){
         List<String> uniqueData = filterData();
-        List<String> ids = new ArrayList<>();
-        List<String> numbers = new ArrayList<>();
-        List<String> title = new ArrayList<>();
+        List<Vbqppl> vbqppls = new ArrayList<>();
         int count = 0 ;
-        for(String item: uniqueData){
+       for(String item: uniqueData){
             String id= item;
             System.out.println(id);
             String urlContent =  "https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID="+id;
-
+            Vbqppl newItem = new Vbqppl();
             try{
                 try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
                     HttpGet request = new HttpGet(urlContent);
@@ -78,12 +76,67 @@ public class CrawlDocumentController {
 
                                 // Lấy phần tử div thứ hai bên trong div fulltext
                                 Element contentHtml = divText.select("div").get(2);
+                                Element elementHtml = contentHtml.getElementById("toanvancontent");
+                                Element typeHtml = null;
+                                if(elementHtml.child(0).tag().toString().equals("table")){
+                                    Element check = elementHtml.child(0).tagName("table");
+                                    Element nextElement = check.nextElementSibling();
+                                    if(nextElement.tagName().equals("p") &&  nextElement.attr("align").equals("center")){
+                                        typeHtml = nextElement;
+                                    }else{
+                                        typeHtml = nextElement.nextElementSibling();
+                                    }
+                                }else if (elementHtml.child(0).tag().toString().equals("div")){
+                                    Element pE = elementHtml.child(0).tagName("div");
+                                    if(!pE.select("p").isEmpty()){
+                                        typeHtml = pE.select("p").first();
+                                    }else{
+                                        typeHtml = elementHtml.child(0).tagName("div");
+                                    }
+
+                                }
+                                else{
+                                    Element check = elementHtml.select("p[align=center]").first();
+                                    String fullTexts = check.html();
+                                    String[] parts = fullTexts.split("<br>");
+                                    System.out.println("check:"+parts.length);
+                                    if(parts.length == 1){
+                                        if(elementHtml.select("p[align=center]").first() != null){
+                                            Element pE = check.select("span").first();
+                                            if(pE != null){
+                                                typeHtml = pE;
+                                            }else{
+                                                typeHtml = elementHtml.select("p[align=center]").first();
+                                            }
+                                        }
+                                        if(elementHtml.select("p").first() != null &&
+                                        elementHtml.select("p").first() != elementHtml.select("p[align=center]").first()){
+
+                                            typeHtml = elementHtml.select("p").first();
+                                        }
+                                    }else{
+                                        Element checkE = check.child(0).tagName("strong");
+                                        String text = checkE.html();
+                                        String[] checks = text.split("<br>");
+                                        if(checks.length > 1){
+                                            String desiredText = checks[0].trim();
+                                            System.out.println(desiredText);
+                                            newItem.setType(desiredText);
+                                        }else{
+                                            typeHtml = checkE;
+                                        }
+                                    }
+                                }
+                                System.out.println(typeHtml.text());
                                 Element tableHtml = contentHtml.select("table").get(0);
                                 Element numberHtml = tableHtml.select("div").get(2);
                                 String number = numberHtml.text().split(": ")[1];
-                                System.out.println(number);
-                                ids.add(id);
-                                numbers.add(number);
+                                newItem.setId(id);
+                                newItem.setContent(contentHtml.text());
+                                newItem.setHtml(contentHtml.toString());
+                                newItem.setType(typeHtml.text());
+                                newItem.setNumber(number);
+                                vbqppls.add(newItem);
                             }
                         }
                     } finally {
@@ -94,15 +147,14 @@ public class CrawlDocumentController {
                 continue;
             }
             if(count % 10 == 0){
-//                updateData(ids,numbers);
+                updateData(vbqppls);
                 System.out.println("sss");
-                ids.clear();
-                numbers.clear();
+                vbqppls.clear();
             }
             count += 1;
             System.out.println(count);
         }
-//        updateData(ids,numbers);
+        updateData(vbqppls);
         System.out.println("successfully");
     }
 
@@ -138,7 +190,7 @@ public class CrawlDocumentController {
 
                                 // Lấy phần tử div thứ hai bên trong div fulltext
                                 Element contentHtml = divText.select("div").get(2);
-                                String content = contentHtml.toString();
+                                String content = contentHtml.text();
                                 System.out.println(content);
 
                                    ids.add(id);
@@ -224,33 +276,23 @@ public class CrawlDocumentController {
         }
     }
 
-    public void updateData(List<String> ids, List<String> contents){
-        try{
+    public void updateData(List<Vbqppl> vbqppls){
+        try {
             entityManager = HibernateUtil.getEntityManagerFactory().createEntityManager();
             transaction = entityManager.getTransaction();
             transaction.begin();
 
-            for(int i = 0 ; i < ids.size() ; i++){
-
-                String id = ids.get(i);
-                String content = contents.get(i);
-
-                Vbqppl vbqppl = entityManager.find(Vbqppl.class, id);
-
-                if (vbqppl == null) {
-                    // Nếu đối tượng không tồn tại, tạo đối tượng mới và lưu vào cơ sở dữ liệu
-                    vbqppl = new Vbqppl();
-                    vbqppl.setId(id);
-                    vbqppl.setContent(content);
-                    entityManager.persist(vbqppl);
-                } else {
-                    // Nếu đối tượng đã tồn tại, cập nhật nội dung
-                    vbqppl.setNumber(content);
-
+            for(Vbqppl item : vbqppls){
+                Vbqppl vbqppl = entityManager.find(Vbqppl.class,item.getId());
+                if(vbqppl != null){
+                    vbqppl.setType(item.getType());
+                    vbqppl.setNumber(item.getNumber());
+                    vbqppl.setHtml(item.getHtml());
                     entityManager.merge(vbqppl);
+                }else{
+                    entityManager.persist(item);
                 }
             }
-
             transaction.commit();
 
         }catch (Exception e){

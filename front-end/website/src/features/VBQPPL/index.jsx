@@ -1,14 +1,34 @@
 import { useEffect, useState } from "react";
-import { vbqppl } from "~/mock/vbqppl.data";
+import VbqpplApi from "~/api/law-service/vbqpplApi";
 import { DocumentIcon } from "@heroicons/react/24/solid";
 import linkFile from "./components/linkFile";
+import { Card } from "@mui/material";
+import { Col, Pagination, Row } from "antd";
+import MarkdownIt from "markdown-it";
+
+const md = new MarkdownIt({ html: true });
 
 export default function VBQPPL(props) {
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(9);
+    const [total, setTotal] = useState(0);
+    const [content, setContent] = useState([]);
     const [isValueCategory, setIsValueCategory] = useState(false);
     const [nameFilter, setNameFilter] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("");
 
     const title = props.title;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await VbqpplApi.getAllByPage({ page, pageSize });
+            console.log(response);
+            setContent(response.content);
+            setTotal(response.totalElements);
+        };
+        fetchData();
+    }, [page, pageSize]);
+
     useEffect(() => {
         document.title = title ? `${title}` : "Trang không tồn tại";
     }, [title]);
@@ -52,15 +72,15 @@ export default function VBQPPL(props) {
     };
 
     return (
-        <div className="lg:px-20 px-10 py-8">
+        <div className="px-10 py-8 lg:px-20">
             <div>
                 <p className="text-2xl font-bold">Xem danh sách các văn bản quy phạm pháp luật</p>
-                <p className="italic text-sm">
+                <p className="text-sm italic">
                     *Nhiều văn bản pháp luật hiện nay vẫn chưa được pháp điển hoá cụ thể. Dưới đây là chỉ sự sắp xếp
                     nhưng văn bản đó do hệ thống tự tính toán, không phải chính thức từ chính chủ*
                 </p>
             </div>
-            <div className="grid lg:grid-cols-3 grid-cols-2 lg:gap-4 gap-2 mt-3">
+            <div className="grid grid-cols-2 gap-2 mt-3 lg:grid-cols-3 lg:gap-4">
                 <select
                     name="category"
                     id="search_category"
@@ -88,28 +108,47 @@ export default function VBQPPL(props) {
                     className="rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
             </div>
-            <div className="grid lg:grid-cols-3 grid-cols-1 lg:gap-4 mt-3">
-                {vbqppl.filter(filterItems).map((item) => (
-                    <div
+            <div className="grid grid-cols-1 mt-3 lg:grid-cols-3 lg:gap-4">
+                {content.map((item) => (
+                    <Card
                         key={item.id}
-                        className="border border-gray-300 rounded-md p-3 my-3 hover:shadow-md transition duration-300 ease-in-out flex flex-col justify-around cursor-pointer"
+                        className="flex flex-col justify-around p-3 my-3 transition duration-300 ease-in-out border border-gray-300 rounded-md cursor-pointer hover:shadow-md"
                         onClick={() => window.open(`/vbqppl/${item.number.replace(/\//g, "_")}`, "_self")}
                     >
-                        <p className="font-bold">{item.title}</p>
+                        <p className="font-bold">{item.name}</p>
+                        <div dangerouslySetInnerHTML={{ __html: item.html }}></div>
                         <p className="text-sm text-gray-500">{item.number}</p>
-                        <p className="text-sm text-gray-500">{item.category}</p>
+                        {/* <p className="text-sm text-gray-500">{item.category}</p> */}
                         <a
                             href={linkFile(item.file)}
                             target="_blank"
                             rel="noreferrer"
                             download={linkFile(item.file)}
-                            className="text-blue-500 flex items-center justify-center mt-4 hover:text-blue-700"
+                            className="flex items-center justify-center mt-4 text-blue-500 hover:text-blue-700"
                         >
                             <DocumentIcon className="w-6 h-6" />
                             Tải xuống văn bản
                         </a>
-                    </div>
+                    </Card>
                 ))}
+            </div>
+            <div>
+                <Row justify="end">
+                    <Col className="flex justify-center mt-5" span={24}>
+                        <Pagination
+                            defaultCurrent={0}
+                            current={page}
+                            onChange={setPage}
+                            // pageSizeOptions={[6, 9]}
+                            pageSize={pageSize}
+                            onShowSizeChange={(current, size) => {
+                                setPageSize(size);
+                                setPage(0);
+                            }}
+                            total={total}
+                        />
+                    </Col>
+                </Row>
             </div>
         </div>
     );

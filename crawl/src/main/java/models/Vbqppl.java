@@ -11,14 +11,17 @@ public class Vbqppl {
     @Column(name = "content", nullable = true, length = -1)
     private String content;
     @Basic
-    @Column(name = "name", nullable = false, length = 255)
+    @Column(name = "name", nullable = true, length = 255)
     private String name;
     @Basic
-    @Column(name = "type", nullable = false, length = 255)
+    @Column(name = "type", nullable = true, length = 255)
     private String type;
     @Basic
     @Column(name = "number", nullable = true, length = 255)
     private String number;
+    @Basic
+    @Column(name = "html", nullable = true, length = -1)
+    private String html;
 
     public String getId() {
         return id;
@@ -60,6 +63,14 @@ public class Vbqppl {
         this.number = number;
     }
 
+    public String getHtml() {
+        return html;
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -72,6 +83,7 @@ public class Vbqppl {
         if (name != null ? !name.equals(vbqppl.name) : vbqppl.name != null) return false;
         if (type != null ? !type.equals(vbqppl.type) : vbqppl.type != null) return false;
         if (number != null ? !number.equals(vbqppl.number) : vbqppl.number != null) return false;
+        if (html != null ? !html.equals(vbqppl.html) : vbqppl.html != null) return false;
 
         return true;
     }
@@ -83,6 +95,7 @@ public class Vbqppl {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (number != null ? number.hashCode() : 0);
+        result = 31 * result + (html != null ? html.hashCode() : 0);
         return result;
     }
 }
