@@ -14,7 +14,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export function LoginForm() {
     const navigate = useNavigate();
-    const [,setErrors] = useState({});
+    const [errors,setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [hasValuePassword, setHasValuePassword] = useState(false);
 
@@ -105,6 +105,8 @@ export function LoginForm() {
                     value={formData.email}
                     required
                 />
+                {errors.email && <Box className="text-sm text-left text-red-500">{errors.email}</Box>}
+
                 <TextField
                     margin="normal"
                     fullWidth
@@ -128,6 +130,8 @@ export function LoginForm() {
                         ),
                     }}
                 />
+                {errors.password && <Box className="text-sm text-left text-red-500">{errors.password}</Box>}
+
                 <Button type="submit" variant="contained" className="!mx-auto !my-8">
                     Đăng nhập
                 </Button>

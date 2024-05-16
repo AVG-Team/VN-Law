@@ -3,23 +3,24 @@ package fit.hutech.service.authservice.security.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fit.hutech.service.authservice.payloads.request.AuthenticationRequest;
+import fit.hutech.service.authservice.payloads.request.ForgotPasswordRequest;
 import fit.hutech.service.authservice.payloads.response.AuthenticationResponse;
 import fit.hutech.service.authservice.payloads.request.RegisterRequest;
 import fit.hutech.service.authservice.enums.Role;
 import fit.hutech.service.authservice.enums.TokenType;
 import fit.hutech.service.authservice.models.Token;
 import fit.hutech.service.authservice.models.User;
+import fit.hutech.service.authservice.payloads.response.ForgotPasswordResponse;
 import fit.hutech.service.authservice.repositories.TokenRepository;
 import fit.hutech.service.authservice.repositories.UserRepository;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -144,5 +145,57 @@ public class AuthenticationService {
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
+    }
+
+    public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest request) {
+        try {
+            User user = repository.findByEmail(request.getEmail())
+                    .orElseThrow(
+                            () -> new RuntimeException("Email " + request.getEmail() + " chưa được đăng ký")
+                    );
+            if(!user.isEnabled()){
+                throw new RuntimeException("Tài khoản chưa được kích hoạt");
+            }
+
+            String resetToken = UUID.randomUUID().toString();
+            user.setResetPasswordToken(resetToken);
+
+            repository.save(user);
+            emailSenderService.sendSetPasswordEmail(request.getEmail(),resetToken);
+        }catch (MessagingException e){
+            throw new RuntimeException("Unable to send set password email please try again");
+        }
+        return ForgotPasswordResponse
+                .builder()
+                .message("Mã xác thực đã được gửi")
+                .build();
+    }
+    public boolean verifyResetPasswordToken(ForgotPasswordRequest request){
+        User user = repository.findByEmail(request.getEmail())
+                .orElseThrow(
+                        () -> new RuntimeException("User not found with this email: " + request.getResetPasswordToken())
+                );
+        if (user.getResetPasswordToken() == null) {
+            throw new RuntimeException("User has not requested a password reset.");
+        }
+        if(!request.getResetPasswordToken().equals(user.getResetPasswordToken())){
+            throw new RuntimeException("Mã xác thực không hợp lệ");
+        }
+        return true;
+    }
+    public ForgotPasswordResponse setPassword(ForgotPasswordRequest request) {
+        User user = repository.findByEmail(request.getEmail())
+                .orElseThrow(
+                        () -> new RuntimeException("User not found with this email: " + request.getEmail())
+                );
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        verifyResetPasswordToken(request);
+        user.setResetPasswordToken(null);
+        repository.save(user);
+        return ForgotPasswordResponse
+                .builder()
+                .message("Thay đổi mật khẩu thành công.")
+                .build();
     }
 }

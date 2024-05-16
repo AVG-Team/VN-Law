@@ -39,6 +39,9 @@ public class User implements UserDetails {
 
     private boolean enabled;
 
+    @Column(name = "reset_password_token", length = 64)
+    private String resetPasswordToken;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();

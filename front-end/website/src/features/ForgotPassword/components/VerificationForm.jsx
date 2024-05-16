@@ -1,34 +1,33 @@
-import {toast} from 'react-toastify';
 import Box from "@mui/material/Box";
+import {toast} from 'react-toastify';
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
-import { React, useState } from "react";
 import Button from "@mui/material/Button";
+import { useLocation } from 'react-router-dom'
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Logo from "~/assets/images/logo/logo2.png";
-import { forgotPassword } from "../../../api/auth-service/authClient";
+import { React, useState, useEffect } from "react";
+import { verifyTokenResetPassword } from "../../../api/auth-service/authClient";
 
-export function ForgotForm({ changePage }) {
-    const [email, setEmail] = useState("");
-    
-    async function handleSubmit(e) {
+
+export function VerificationForm({ changePage, email }) {
+    const [verificationCode, setVerificationCode] = useState("");
+
+    function handleSubmit(e) {
         e.preventDefault();
-        
-        try{
-            const response = await forgotPassword(email);
-            toast.success(response.message,{
-                onClose: () => changePage("verify", email),
-                autoClose: 2000,
-                buttonClose: false
-            }) ;
-        } catch(err){
-            toast.error(err.response.data.message);
-        }
+        const response = verifyTokenResetPassword(email, verificationCode);
+        response.then((data) => {
+            console.log(data);
+            toast.success(data);
+            changePage("reset", email, verificationCode);
+        }).catch((error) => {
+            toast.error(error.response.data); 
+        });
     }
 
     function handleChange(e){
-        setEmail(e.target.value);
+        setVerificationCode(e.target.value);
     }
 
     return (
@@ -45,13 +44,12 @@ export function ForgotForm({ changePage }) {
                 <TextField
                     margin="normal"
                     fullWidth
-                    id="email"
-                    type="email"
-                    label="Email"
-                    name="email"
-                    value={email}
+                    id="verificationCode"
+                    type="verificationCode"
+                    value={verificationCode}
+                    label="Mã xác thực"
+                    name="verificationCode"
                     onChange={handleChange}
-                    autoComplete="email"
                     autoFocus
                     required
                 />
@@ -59,16 +57,6 @@ export function ForgotForm({ changePage }) {
                     Xác nhận
                 </Button>
             </Box>
-            <Grid container className="justify-between">
-                <Grid item className="flex flex-row">
-                    <Typography className="left-0 px-1 pt-[2px]" variant="body2">
-                        Bạn muốn đăng nhập?
-                    </Typography>
-                    <Link underline="none" className="!mt-[2px]" href="/dang-nhap" variant="body2">
-                        Đăng nhập
-                    </Link>
-                </Grid>
-            </Grid>
         </Box>
     );
 }

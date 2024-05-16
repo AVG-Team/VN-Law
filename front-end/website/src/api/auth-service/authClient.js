@@ -71,3 +71,40 @@ export const useCheckTokenExpiration = () => {
         return () => clearInterval(interval);
     }, [navigate]);
 };
+
+export const forgotPassword = async (email) =>{
+    try{
+        const response = await request.post("/auth/forgot-password",{email});
+        return response.data;
+    }catch(err){
+        console.log("Forgot password error: ", err);
+        throw err;
+    }
+}
+
+export const verifyTokenResetPassword = async (email, resetPasswordToken) => {
+    try{
+        const response = await request.post("/auth/verify-token",{
+            email, 
+            resetPasswordToken
+        });
+        return response.data;
+    }catch(err){
+        console.log("Verify error: ", err);
+        throw err;
+    }
+}
+
+export const resetPassword = async (email, newPassword, resetPasswordToken) => {
+    try{
+        const response = await request.post("/auth/set-new-password",{
+            email,
+            newPassword,
+            resetPasswordToken
+        });
+        return response.data;
+    }catch(err){
+        console.log("ResetPassword error: ", err);
+        throw err;
+    }
+}
