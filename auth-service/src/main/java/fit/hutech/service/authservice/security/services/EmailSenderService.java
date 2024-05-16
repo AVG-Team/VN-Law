@@ -24,12 +24,12 @@ public class EmailSenderService {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
         mimeMessageHelper.setTo(email);
-        mimeMessageHelper.setSubject("Đặt lại mật khẩu");
+        mimeMessageHelper.setSubject("Quên mật khẩu");
         mimeMessageHelper.setText(
                 String.format(
                         "<div>" +
-                                "Mã đặt lại mật khẩu của bạn là: <strong>%s</strong>" +
-                                    "</div>",
+                                "Mã xác thực:  <strong>%s</strong>" +
+                        "</div>",
                         resetPasswordToken
                 ),
                 true

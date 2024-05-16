@@ -10,9 +10,8 @@ import { ResetPasswordForm } from "./components/ResetPasswordForm";
 
 export default function ForgotPassword(props) {
     const defaultTheme = createTheme();
-
-    const [page, setPage] = useState("forgot"); // Mặc định là trang forgot
     const [email, setEmail] = useState("");
+    const [page, setPage] = useState("forgot");
     const [verificationCode, setVerificationCode] = useState("");
 
     function changePage(nextPage, emailValue = "", verificationCodeValue = "") {

@@ -19,7 +19,7 @@ export function ForgotForm({ changePage }) {
             const response = await forgotPassword(email);
             toast.success(response.message,{
                 onClose: () => changePage("verify", email),
-                autoClose: 2000,
+                autoClose: 1500,
                 buttonClose: false
             }) ;
         } catch(err){

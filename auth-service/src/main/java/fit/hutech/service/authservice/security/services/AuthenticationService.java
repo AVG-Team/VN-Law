@@ -159,16 +159,24 @@ public class AuthenticationService {
 
             String resetToken = UUID.randomUUID().toString();
             user.setResetPasswordToken(resetToken);
-
             repository.save(user);
-            emailSenderService.sendSetPasswordEmail(request.getEmail(),resetToken);
-        }catch (MessagingException e){
-            throw new RuntimeException("Unable to send set password email please try again");
+
+            Thread emailThread = new Thread(() -> {
+                try {
+                    emailSenderService.sendSetPasswordEmail(user.getEmail(),resetToken);
+                } catch (MessagingException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            emailThread.start();
+
+            return ForgotPasswordResponse
+                    .builder()
+                    .message("Mã xác thực đã được gửi")
+                    .build();
+        }catch (Exception e){
+            throw e;
         }
-        return ForgotPasswordResponse
-                .builder()
-                .message("Mã xác thực đã được gửi")
-                .build();
     }
     public boolean verifyResetPasswordToken(ForgotPasswordRequest request){
         User user = repository.findByEmail(request.getEmail())

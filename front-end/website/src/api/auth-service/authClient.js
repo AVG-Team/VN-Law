@@ -80,7 +80,7 @@ export const forgotPassword = async (email) =>{
         console.log("Forgot password error: ", err);
         throw err;
     }
-}
+};
 
 export const verifyTokenResetPassword = async (email, resetPasswordToken) => {
     try{
@@ -93,7 +93,7 @@ export const verifyTokenResetPassword = async (email, resetPasswordToken) => {
         console.log("Verify error: ", err);
         throw err;
     }
-}
+};
 
 export const resetPassword = async (email, newPassword, resetPasswordToken) => {
     try{
@@ -107,4 +107,4 @@ export const resetPassword = async (email, newPassword, resetPasswordToken) => {
         console.log("ResetPassword error: ", err);
         throw err;
     }
-}
+};

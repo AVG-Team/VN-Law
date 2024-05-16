@@ -1,14 +1,11 @@
 import Box from "@mui/material/Box";
 import {toast} from 'react-toastify';
-import Grid from "@mui/material/Grid";
-import Link from "@mui/material/Link";
 import { useState, React } from "react";
 import Button from "@mui/material/Button";
 import { useNavigate } from 'react-router-dom'
 import TextField from "@mui/material/TextField";
 import Logo from "~/assets/images/logo/logo2.png";
 import Typography from "@mui/material/Typography";
-import { register } from '../../../api/auth-service/authClient';
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { resetPassword } from "../../../api/auth-service/authClient";
 
@@ -57,7 +54,7 @@ export function ResetPasswordForm({email, verificationCode}) {
                     console.log(data);
                         toast.success(data.message, {
                             onClose: () => navigate('/dang-nhap'),
-                            autoClose: 2000,
+                            autoClose: 1500,
                             buttonClose: false
                         });
                 }).catch((error) => {       
