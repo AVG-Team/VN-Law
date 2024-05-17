@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.4.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  chroma:
+    image: ghcr.io/chroma-core/chroma:latest
+    restart: always
+    ports:
+      - "3307:8000"  # ChromaDB Port
+    volumes:
+      - chroma_data:/var/lib/chroma
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "9000:9000"
+
+volumes:
+  mysql_data:
+  chroma_data:
