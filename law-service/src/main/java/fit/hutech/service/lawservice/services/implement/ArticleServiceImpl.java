@@ -36,9 +36,9 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public Page<ArticleDTO> getArticleByChapter(String chapterId, Optional<Integer> pageNo, Optional<Integer> pageSize) {
         Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(10));
-        Page<ArticleDTO> list = articleRepository.findAllByChapter_IdOrderByOrder(chapterId,pageable);
+        Page<ArticleDTOINT> list = articleRepository.findAllByChapter_IdOrderByOrder(chapterId,pageable);
         List<ArticleDTO> contents =  new ArrayList<>();
-        for(ArticleDTO item : list.getContent()) {
+        for(ArticleDTOINT item : list.getContent()) {
             String articleId = item.getId();
             List<FileDTO> files = fileRepository.findAllByArticle_IdOrderByArticle(articleId);
             List<TableDTO> tables = tableRepository.findAllByArticle_IdOrderByArticle(articleId);

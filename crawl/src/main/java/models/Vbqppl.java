@@ -10,6 +10,18 @@ public class Vbqppl {
     @Basic
     @Column(name = "content", nullable = true, length = -1)
     private String content;
+    @Basic
+    @Column(name = "name", nullable = true, length = 255)
+    private String name;
+    @Basic
+    @Column(name = "type", nullable = true, length = 255)
+    private String type;
+    @Basic
+    @Column(name = "number", nullable = true, length = 255)
+    private String number;
+    @Basic
+    @Column(name = "html", nullable = true, length = -1)
+    private String html;
 
     public String getId() {
         return id;
@@ -27,6 +39,38 @@ public class Vbqppl {
         this.content = content;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getHtml() {
+        return html;
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -36,6 +80,10 @@ public class Vbqppl {
 
         if (id != null ? !id.equals(vbqppl.id) : vbqppl.id != null) return false;
         if (content != null ? !content.equals(vbqppl.content) : vbqppl.content != null) return false;
+        if (name != null ? !name.equals(vbqppl.name) : vbqppl.name != null) return false;
+        if (type != null ? !type.equals(vbqppl.type) : vbqppl.type != null) return false;
+        if (number != null ? !number.equals(vbqppl.number) : vbqppl.number != null) return false;
+        if (html != null ? !html.equals(vbqppl.html) : vbqppl.html != null) return false;
 
         return true;
     }
@@ -44,6 +92,10 @@ public class Vbqppl {
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (content != null ? content.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (number != null ? number.hashCode() : 0);
+        result = 31 * result + (html != null ? html.hashCode() : 0);
         return result;
     }
 }

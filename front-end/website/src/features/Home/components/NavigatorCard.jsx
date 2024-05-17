@@ -7,6 +7,7 @@ export default function NavigatorCard({ item }) {
         item: PropTypes.shape({
             title: PropTypes.string.isRequired,
             animationData: PropTypes.object.isRequired,
+            link: PropTypes.string.isRequired,
         }).isRequired,
     };
     return (
@@ -21,7 +22,7 @@ export default function NavigatorCard({ item }) {
             </CardContent>
             <CardActions className="flex justify-center ">
                 <div className="flex justify-center">
-                    <Button className="!bg-indigo-600 !text-white hover:!bg-indigo-500" type="primary">
+                    <Button className="!bg-indigo-600 !text-white hover:!bg-indigo-500" type="primary" href={item.link}>
                         Truy Cập
                     </Button>
                 </div>

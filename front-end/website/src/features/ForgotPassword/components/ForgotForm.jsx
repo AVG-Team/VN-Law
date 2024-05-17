@@ -1,18 +1,34 @@
-import { React } from "react";
+import {toast} from 'react-toastify';
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
+import { React, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Logo from "~/assets/images/logo/logo2.png";
+import { forgotPassword } from "../../../api/auth-service/authClient";
 
-export function ForgotForm() {
-    function handleSubmit(e) {
+export function ForgotForm({ changePage }) {
+    const [email, setEmail] = useState("");
+    
+    async function handleSubmit(e) {
         e.preventDefault();
-        const data = new FormData(e.currentTarget);
-        const email = data.get("email");
-        alert(`Form submitted:\nEmail: ${email}`);
+        
+        try{
+            const response = await forgotPassword(email);
+            toast.success(response.message,{
+                onClose: () => changePage("verify", email),
+                autoClose: 1500,
+                buttonClose: false
+            }) ;
+        } catch(err){
+            toast.error(err.response.data.message);
+        }
+    }
+
+    function handleChange(e){
+        setEmail(e.target.value);
     }
 
     return (
@@ -33,6 +49,8 @@ export function ForgotForm() {
                     type="email"
                     label="Email"
                     name="email"
+                    value={email}
+                    onChange={handleChange}
                     autoComplete="email"
                     autoFocus
                     required

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/subject")
+@RequestMapping("/law-service/subject")
 public class SubjectController {
 
     final SubjectService subjectService;

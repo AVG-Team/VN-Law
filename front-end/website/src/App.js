@@ -104,10 +104,10 @@ function App() {
                 </Route>
                 <Route element={<ContentLayout />}>
                     <Route
-                        path="/danh-sach-van-ban-phap-luat"
+                        path="/phap-dien"
                         element={
                             <Suspense fallback={<CircularProgress />}>
-                                <TreeLaw title="Danh sách văn bản pháp luật" />
+                                <TreeLaw title="Pháp Điển" />
                             </Suspense>
                         }
                     />
