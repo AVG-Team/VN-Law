@@ -6,6 +6,11 @@ eureka:
     serviceURL:
       defaultZone: http://localhost:8761/eureka
 
+logging:
+  level:
+    io.netty: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+
 spring:
   application:
     name: api-gateway
@@ -25,7 +30,7 @@ spring:
               allowedHeaders: '*'
               maxAge: 30
         - id: law-service
-          uri: lb://law-service
+          uri: http://localhost:9002
           predicates:
             - Path=/law-service/**
           metadata:
