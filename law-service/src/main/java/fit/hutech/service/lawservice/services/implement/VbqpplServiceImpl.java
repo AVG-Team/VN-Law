@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,4 +32,23 @@ public class VbqpplServiceImpl implements VbqpplService {
         ));
         return optionalVbqppl.orElse(null);
     }
+
+    @Override
+    public List<Vbqppl> getAll() {
+        return vbqpplRepository.findAll();
+    }
+
+    @Override
+    public List<Vbqppl> getVbqpplByType(String type, Optional<Integer> pageNo, Optional<Integer> pageSize) {
+        Pageable pageable = PageRequest.of(pageNo.orElse(0), pageSize.orElse(9));
+        return vbqpplRepository.findAllByType(type,pageable);
+    }
+
+    @Override
+    public List<Vbqppl> getVbqpplByName(String name , Optional<Integer> pageNo, Optional<Integer> pageSize) {
+        Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(9));
+        return vbqpplRepository.findAllByName(name,pageable);
+    }
+
+
 }

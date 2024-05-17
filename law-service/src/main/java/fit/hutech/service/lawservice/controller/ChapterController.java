@@ -10,7 +10,7 @@ import fit.hutech.service.lawservice.config.response.ResponseHandler;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/chapter")
+@RequestMapping("/law-service/chapter")
 public class ChapterController {
 
     final ChapterService chapterService;
@@ -31,7 +31,7 @@ public class ChapterController {
                 HttpStatus.OK,this.chapterService.getChaptersBySubject(subjectId));
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public ResponseEntity<Object> getAllChapters() throws NotFoundException {
         return ResponseHandler.responseBuilder("Complete",
                 HttpStatus.OK,this.chapterService.getAllChapters());

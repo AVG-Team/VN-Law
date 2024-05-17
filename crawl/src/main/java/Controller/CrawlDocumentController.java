@@ -27,8 +27,7 @@ public class CrawlDocumentController {
     EntityTransaction transaction = null;
     EntityManager entityManager = null;
 
-    public void crawlDocument() {
-
+    private List<String> filterData(){
         List<String> data = getData();
         System.out.println(data.size());
 
@@ -42,10 +41,129 @@ public class CrawlDocumentController {
                 .collect(Collectors.toList());
         System.out.println(unique.size());
 
+        return unique;
+    }
+
+    public void updateDocument(){
+        List<String> uniqueData = filterData();
+        List<Vbqppl> vbqppls = new ArrayList<>();
+        int count = 0 ;
+       for(String item: uniqueData){
+            String id= item;
+            System.out.println(id);
+            String urlContent =  "https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID="+id;
+            Vbqppl newItem = new Vbqppl();
+            try{
+                try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+                    HttpGet request = new HttpGet(urlContent);
+                    CloseableHttpResponse response = httpClient.execute(request);
+
+                    try {
+                        // Kiểm tra mã trạng thái của phản hồi
+                        int statusCode = response.getStatusLine().getStatusCode();
+                        if (statusCode == 200) {
+                            // Đọc nội dung của phản hồi
+                            String htmlContent = EntityUtils.toString(response.getEntity());
+
+                            // Phân tích HTML bằng JSoup
+                            Document document = Jsoup.parse(htmlContent);
+
+                            // Tìm các thẻ div có class là 'fulltext'
+                            Elements divTexts = document.select("div.fulltext");
+                            if (!divTexts.isEmpty()) {
+
+                                Element divText = divTexts.get(0);
+
+                                // Lấy phần tử div thứ hai bên trong div fulltext
+                                Element contentHtml = divText.select("div").get(2);
+                                Element elementHtml = contentHtml.getElementById("toanvancontent");
+                                Element typeHtml = null;
+                                if(elementHtml.child(0).tag().toString().equals("table")){
+                                    Element check = elementHtml.child(0).tagName("table");
+                                    Element nextElement = check.nextElementSibling();
+                                    if(nextElement.tagName().equals("p") &&  nextElement.attr("align").equals("center")){
+                                        typeHtml = nextElement;
+                                    }else{
+                                        typeHtml = nextElement.nextElementSibling();
+                                    }
+                                }else if (elementHtml.child(0).tag().toString().equals("div")){
+                                    Element pE = elementHtml.child(0).tagName("div");
+                                    if(!pE.select("p").isEmpty()){
+                                        typeHtml = pE.select("p").first();
+                                    }else{
+                                        typeHtml = elementHtml.child(0).tagName("div");
+                                    }
+
+                                }
+                                else{
+                                    Element check = elementHtml.select("p[align=center]").first();
+                                    String fullTexts = check.html();
+                                    String[] parts = fullTexts.split("<br>");
+                                    System.out.println("check:"+parts.length);
+                                    if(parts.length == 1){
+                                        if(elementHtml.select("p[align=center]").first() != null){
+                                            Element pE = check.select("span").first();
+                                            if(pE != null){
+                                                typeHtml = pE;
+                                            }else{
+                                                typeHtml = elementHtml.select("p[align=center]").first();
+                                            }
+                                        }
+                                        if(elementHtml.select("p").first() != null &&
+                                        elementHtml.select("p").first() != elementHtml.select("p[align=center]").first()){
+
+                                            typeHtml = elementHtml.select("p").first();
+                                        }
+                                    }else{
+                                        Element checkE = check.child(0).tagName("strong");
+                                        String text = checkE.html();
+                                        String[] checks = text.split("<br>");
+                                        if(checks.length > 1){
+                                            String desiredText = checks[0].trim();
+                                            System.out.println(desiredText);
+                                            newItem.setType(desiredText);
+                                        }else{
+                                            typeHtml = checkE;
+                                        }
+                                    }
+                                }
+                                System.out.println(typeHtml.text());
+                                Element tableHtml = contentHtml.select("table").get(0);
+                                Element numberHtml = tableHtml.select("div").get(2);
+                                String number = numberHtml.text().split(": ")[1];
+                                newItem.setId(id);
+                                newItem.setContent(contentHtml.text());
+                                newItem.setHtml(contentHtml.toString());
+                                newItem.setType(typeHtml.text());
+                                newItem.setNumber(number);
+                                vbqppls.add(newItem);
+                            }
+                        }
+                    } finally {
+                        response.close();
+                    }
+                }
+            }catch (Exception ex){
+                continue;
+            }
+            if(count % 10 == 0){
+                updateData(vbqppls);
+                System.out.println("sss");
+                vbqppls.clear();
+            }
+            count += 1;
+            System.out.println(count);
+        }
+        updateData(vbqppls);
+        System.out.println("successfully");
+    }
+
+    public void crawlDocument() {
+        List<String> uniqueData = filterData();
         List<String> ids = new ArrayList<>();
         List<String> contents = new ArrayList<>();
         int count = 0;
-        for(String item : unique){
+        for(String item : uniqueData){
 
             String id = item;
             String urlContent = "https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID="+id;
@@ -72,7 +190,7 @@ public class CrawlDocumentController {
 
                                 // Lấy phần tử div thứ hai bên trong div fulltext
                                 Element contentHtml = divText.select("div").get(2);
-                                String content = contentHtml.toString();
+                                String content = contentHtml.text();
                                 System.out.println(content);
 
                                    ids.add(id);
@@ -153,6 +271,37 @@ public class CrawlDocumentController {
             e.printStackTrace();
         } finally {
             if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+    }
+
+    public void updateData(List<Vbqppl> vbqppls){
+        try {
+            entityManager = HibernateUtil.getEntityManagerFactory().createEntityManager();
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+
+            for(Vbqppl item : vbqppls){
+                Vbqppl vbqppl = entityManager.find(Vbqppl.class,item.getId());
+                if(vbqppl != null){
+                    vbqppl.setType(item.getType());
+                    vbqppl.setNumber(item.getNumber());
+                    vbqppl.setHtml(item.getHtml());
+                    entityManager.merge(vbqppl);
+                }else{
+                    entityManager.persist(item);
+                }
+            }
+            transaction.commit();
+
+        }catch (Exception e){
+            if(transaction != null && transaction.isActive()){
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }finally {
+            if(entityManager != null && entityManager.isOpen()){
                 entityManager.close();
             }
         }

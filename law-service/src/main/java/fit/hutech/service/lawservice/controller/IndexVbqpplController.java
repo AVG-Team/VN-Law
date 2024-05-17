@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/indexvbqppl")
+@RequestMapping("/law-service/indexvbqppl")
 @RequiredArgsConstructor
 public class IndexVbqpplController {
 

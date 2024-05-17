@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface ArticleRepository extends JpaRepository<Article,String> {
 
-    Page<ArticleDTO> findAllByChapter_IdOrderByOrder(String chapterId, Pageable pageable);
+    Page<ArticleDTOINT> findAllByChapter_IdOrderByOrder(String chapterId, Pageable pageable);
     List<ArticleDTOINT> findAllByChapter_IdOrderByOrder(String chapterId);
 
     @Query("select new fit.hutech.service.lawservice.DTO.ArticleDTO(a.id,a.name,a.content,a.index,a.vbqppl,a.vbqpplLink,a.order)" +
