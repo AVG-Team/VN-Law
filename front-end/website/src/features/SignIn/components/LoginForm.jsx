@@ -1,14 +1,20 @@
 import Box from "@mui/material/Box";
+import {toast} from 'react-toastify';
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import { useState, React } from "react";
 import Button from "@mui/material/Button";
+import { useNavigate } from 'react-router-dom'
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Logo from "~/assets/images/logo/logo2.png";
+import { StorageKeys } from "../../../common/constants/keys";
+import { authenticate } from '../../../api/auth-service/authClient';
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export function LoginForm() {
+    const navigate = useNavigate();
+    const [errors,setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [hasValuePassword, setHasValuePassword] = useState(false);
 
@@ -17,12 +23,49 @@ export function LoginForm() {
         password: "",
     });
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
-        const data = new FormData(e.currentTarget);
-        const email = data.get("email");
-        const password = data.get("password");
-        alert(`Form submitted:\nEmail: ${email}\nPassword: ${password}`);
+
+        const {email,password} = formData;
+
+        // validate
+        const validationErrors = {};
+
+        if (!email.trim()) {
+            validationErrors.email = "Email là bắt buộc";
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            validationErrors.email = "Email không hợp lệ";
+        }
+
+        if (!password.trim()) {
+            validationErrors.password = "Mật khẩu là bắt buộc";
+        } else if (password.length < 8) {
+            validationErrors.password = "Mật khẩu phải có ít nhất 8 kí tự";
+        }
+
+        setErrors(validationErrors);
+
+        //fetch api
+        if (Object.keys(validationErrors).length === 0) {
+            try{
+                const response = await authenticate(formData);                
+                toast.success(response.data.message,{
+                    onClose: () => navigate('/'),
+                    autoClose: 1000,
+                    buttonClose: false
+                }) ;
+            }catch(err){
+                if(err.response && err.response.status === 401){
+                    toast.error(err.response.data);
+                }
+                else if(err.response && err.response.status === 400){
+                    toast.error(err.response.data);
+                }
+                else{
+                    console.log("Error fetching server: ",err);
+                }
+            }  
+        }
     }
 
     function handleChange(e) {
@@ -58,8 +101,12 @@ export function LoginForm() {
                     name="email"
                     autoComplete="email"
                     autoFocus
+                    onChange={handleChange}
+                    value={formData.email}
                     required
                 />
+                {errors.email && <Box className="text-sm text-left text-red-500">{errors.email}</Box>}
+
                 <TextField
                     margin="normal"
                     fullWidth
@@ -69,6 +116,7 @@ export function LoginForm() {
                     id="password"
                     onChange={handleChange}
                     autoComplete="current-password"
+                    value={formData.password}
                     required
                     InputProps={{
                         endAdornment: hasValuePassword && (
@@ -82,6 +130,8 @@ export function LoginForm() {
                         ),
                     }}
                 />
+                {errors.password && <Box className="text-sm text-left text-red-500">{errors.password}</Box>}
+
                 <Button type="submit" variant="contained" className="!mx-auto !my-8">
                     Đăng nhập
                 </Button>

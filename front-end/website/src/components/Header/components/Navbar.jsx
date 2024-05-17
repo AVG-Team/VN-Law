@@ -2,6 +2,7 @@ import Cookies from "js-cookie";
 import { Fragment } from "react";
 import { NavLink } from "react-router-dom";
 import Logo from "../../../assets/images/logo/logo2.png";
+import { StorageKeys } from "../../../common/constants/keys";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { menus, pages, toggleButton } from "../../../mock/header.data";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -11,8 +12,11 @@ function classNames(...classes) {
 }
 
 export function Navbar() {
-    const isAuthtenticated = !!Cookies.get("StorageKeys.ACCESS_TOKEN");
-    return (
+    const isAuthtenticated = !!Cookies.get(StorageKeys.ACCESS_TOKEN);
+    const handleLogout = () => {
+        Cookies.remove(StorageKeys.ACCESS_TOKEN);
+    }
+     return (
         <Disclosure as="nav" className="bg-white shadow-md">
             {({ open }) => (
                 <>
@@ -63,6 +67,7 @@ export function Navbar() {
                                         <NavLink
                                             type="button"
                                             className="relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 mr-1 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            onClick={handleLogout}
                                             to={"/dang-xuat"}
                                         >
                                             Đăng xuất
@@ -81,7 +86,8 @@ export function Navbar() {
                                     )}
                                 </div>
                                 <div className="hidden md:ml-4 md:flex md:flex-shrink-0 md:items-center">
-                                    <button
+                                    {isAuthtenticated ? (
+                                        <button
                                         type="button"
                                         className="relative p-1 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                     >
@@ -89,9 +95,11 @@ export function Navbar() {
                                         <span className="sr-only">View notifications</span>
                                         <BellIcon className="w-6 h-6" aria-hidden="true" />
                                     </button>
+                                    ):null}
 
                                     {/* Profile dropdown */}
-                                    <Menu as="div" className="relative ml-3">
+                                    {isAuthtenticated ? (
+                                        <Menu as="div" className="relative ml-3">
                                         <div>
                                             <Menu.Button className="relative flex text-sm bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                                 <span className="absolute -inset-1.5" />
@@ -131,6 +139,7 @@ export function Navbar() {
                                             </Menu.Items>
                                         </Transition>
                                     </Menu>
+                                    ):null}
                                 </div>
                             </div>
                         </div>
