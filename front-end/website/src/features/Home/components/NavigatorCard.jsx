@@ -10,7 +10,7 @@ export default function NavigatorCard({ item }) {
         }).isRequired,
     };
     return (
-        <Card hoverable className="m-3 shadow-md">
+        <Card className="m-3 shadow-md">
             <CardHeader
                 title={item.title}
                 titleTypographyProps={{ fontSize: "1.15rem", fontWeight: "semibold" }}

@@ -1,10 +1,20 @@
 import { useState, useEffect, useRef } from "react";
+import socketIOClient from "socket.io-client";
 import TextareaAutosize from "react-textarea-autosize";
-import { ChevronLeftIcon, ChevronRightIcon, EllipsisVerticalIcon, PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import {
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    EllipsisVerticalIcon,
+    PaperAirplaneIcon,
+    StopCircleIcon,
+} from "@heroicons/react/24/solid";
 import { TopQuestions } from "./LawQuestions";
 import VersionChatbot from "./VersionChatbot";
 import MenuMobile from "./MenuMobile";
-import Logo from "../../../assets/images/logo/logo-no-bg.png";
+import TypewriterText from "./TypewriterText";
+import Logo from "~/assets/images/logo/logo-no-bg.png";
+
+const host = "http://localhost:9000";
 
 function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, activeChat, setActiveChat }) {
     const [isHoveredIconMenu, setIsHoveredIconMenu] = useState(false);
@@ -12,7 +22,9 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
     const [showIconSend, setShowIconSend] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [textareaValue, setTextareaValue] = useState("");
+    const [pendingReplyServer, setPendingReplyServer] = useState(false);
     const messagesEndRef = useRef(null);
+    const socketRef = useRef();
 
     const handleResize = () => {
         setWindowWidth(window.innerWidth);
@@ -20,8 +32,16 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
 
     useEffect(() => {
         window.addEventListener("resize", handleResize);
+        socketRef.current = socketIOClient.connect(host);
+
+        socketRef.current.on("sendDataServer", (dataGot) => {
+            fetchReply(dataGot);
+            setTextareaValue("");
+        });
+
         return () => {
             window.removeEventListener("resize", handleResize);
+            socketRef.current.disconnect();
         };
     }, []);
 
@@ -36,9 +56,6 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
             setIsOpenMenuNavbar(false);
         }
     };
-
-    const Reply =
-        "Theo quy định tại Điều 251, Bộ luật Hình sự 2015 thì tội mua bán trái phép chất ma tuý bị xử lý Hình sự như sau: 1. Người nào mua bán trái phép chất ma túy, thì bị phạt tù từ 02 năm đến 07 năm.";
 
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
@@ -61,18 +78,19 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
             };
             setActiveChat(true);
             setMessages((prevMessages) => [...prevMessages, newMessage]);
-            fetchFakeReply(newMessage);
-
-            setTextareaValue("");
+            socketRef.current.emit("sendDataClient", content);
+            setPendingReplyServer(true);
         }
     };
 
-    const fetchFakeReply = (message) => {
+    const fetchReply = (message) => {
         const fakeReply = {
             id: messages.length + 2,
-            content: Reply,
+            content: message,
             type: "reply",
         };
+
+        console.log(message)
 
         setMessages((prevMessages) => [...prevMessages, fakeReply]);
     };
@@ -148,9 +166,9 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                     <p className="mt-3 text-2xl font-bold">Tôi có thể giúp gì cho bạn ?</p>
                 </div>
                 <div className="flex flex-col h-full overflow-scroll lg:py-10">
-                    {messages.map((message) => (
+                    {messages.map((message, index) => (
                         <div
-                            key={message.id}
+                            key={index}
                             className={`message-chat ${
                                 message.type === "question" ? "question" : "reply"
                             } w-full flex justify-${message.type === "question" ? "end" : "start"} px-3 mt-5`}
@@ -160,13 +178,16 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                                     message.type === "question" ? "bg-cyan-300" : "bg-gray-100"
                                 } p-4`}
                             >
-                                <p
-                                    className={`${
-                                        message.type === "question" ? "text-gray-100" : "text-black"
-                                    } text-lg`}
-                                >
-                                    {message.content}
-                                </p>
+                                {message.type === "question" ? (
+                                    <p className="text-white text-lg">{message.content}</p>
+                                ) : (
+                                    <TypewriterText
+                                        key={message.content}
+                                        text={message.content}
+                                        pendingReplyServer={pendingReplyServer}
+                                        setPendingReplyServer={setPendingReplyServer}
+                                    />
+                                )}
                             </div>
                         </div>
                     ))}
@@ -183,15 +204,22 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                         placeholder="Đặt câu hỏi cho chúng tôi tại đây..."
                         minRows={1}
                         maxRows={5}
+                        readOnly={pendingReplyServer}
                         value={textareaValue}
                         onChange={handleQuestionChange}
                         onKeyDown={handleKeyDown}
                     />
                     {showIconSend && (
-                        <PaperAirplaneIcon
-                            className="w-6 h-6 text-gray-400 absolute right-[9.5%] bottom-12 cursor-pointer hover:text-gray-900"
-                            onClick={handleSendQuestion}
-                        />
+                        <>
+                            {!pendingReplyServer ? (
+                                <PaperAirplaneIcon
+                                    className="w-6 h-6 text-gray-400 absolute right-[9.5%] bottom-12 cursor-pointer hover:text-gray-900 icon-input-message"
+                                    onClick={handleSendQuestion}
+                                />
+                            ) : (
+                                <StopCircleIcon className="w-6 h-6 text-gray-400 absolute right-[9.5%] bottom-12 cursor-progress icon-input-message" />
+                            )}
+                        </>
                     )}
                 </div>
                 <p className="text-base opacity-50">

@@ -37,5 +37,5 @@ build/
 ### Mac OS ###
 .DS_Store
 front-end/website/src/mock/test.js
-/crawler/src/main/java/LawDirection/
-
+/crawl/src/main/java/law_direction/
+node_modules

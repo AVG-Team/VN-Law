@@ -70,7 +70,7 @@ function App() {
                 </Route>
                 <Route element={<ContentLayout />}>
                     <Route
-                        path="/chat-bot"
+                        path="/chatbot"
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <Chatbot title="Chat Bot" />
