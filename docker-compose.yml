@@ -27,6 +27,14 @@ services:
     ports:
       - "9000:9000"
 
+  discovery-server:
+    build:
+      context: ./discovery-server
+      dockerfile: Dockerfile
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+
 volumes:
   mysql_data:
   chroma_data:
