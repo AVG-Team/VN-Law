@@ -1,17 +1,16 @@
 import Box from "@mui/material/Box";
 import {toast} from 'react-toastify';
-import Grid from "@mui/material/Grid";
-import Link from "@mui/material/Link";
 import { useState, React } from "react";
 import Button from "@mui/material/Button";
 import { useNavigate } from 'react-router-dom'
 import TextField from "@mui/material/TextField";
 import Logo from "~/assets/images/logo/logo2.png";
 import Typography from "@mui/material/Typography";
-import { register } from '../../../api/auth-service/authClient';
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { resetPassword } from "../../../api/auth-service/authClient";
 
-export function RegisterForm() {
+
+export function ResetPasswordForm({email, verificationCode}) {
     const navigate = useNavigate();
     const [errors,setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
@@ -28,28 +27,19 @@ export function RegisterForm() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        const {username,email,password,confirmPassword} = formData;
+        const {password,confirmPassword} = formData;
 
         // validate
         const validationErrors = {};
-        if (!username.trim()) {
-            validationErrors.username = "Tên người dùng là bắt buộc";
-        }
-
-        if (!email.trim()) {
-            validationErrors.email = "Email là bắt buộc";
-        } else if (!/\S+@\S+\.\S+/.test(email)) {
-            validationErrors.email = "Email không hợp lệ";
-        }
 
         if (!password.trim()) {
-            validationErrors.password = "Mật khẩu là bắt buộc";
+            validationErrors.password = "Mật khẩu mới là bắt buộc";
         } else if (password.length < 8) {
-            validationErrors.password = "Mật khẩu phải có ít nhất 8 kí tự";
+            validationErrors.password = "Mật khẩu mới phải có ít nhất 8 kí tự";
         }
 
         if (!confirmPassword.trim()){
-            validationErrors.confirmPassword = "Nhập lại mật khẩu là bắt buộc";
+            validationErrors.confirmPassword = "Nhập lại mật khẩu mới là bắt buộc";
         } else if(confirmPassword !== password){
             validationErrors.confirmPassword = "Mật khẩu không khớp";
         }
@@ -58,26 +48,21 @@ export function RegisterForm() {
 
         // fetch api
         if (Object.keys(validationErrors).length === 0) {
-            try{
-                const response = await register({
-                    firstName: formData.username,
-                    email: formData.email,
-                    password: formData.password
+            try {
+                const response = resetPassword(email, password, verificationCode);
+                response.then((data) => {
+                    console.log(data);
+                        toast.success(data.message, {
+                            onClose: () => navigate('/dang-nhap'),
+                            autoClose: 1500,
+                            buttonClose: false
+                        });
+                }).catch((error) => {       
+                                
                 });
-                toast.success(response.data.message,{
-                    onClose: () => navigate('/dang-nhap'),
-                    autoClose: 2000,
-                    buttonClose: false
-                }) ;
-                
-            }catch(err){
-                if(err.response && err.response.status === 401){
-                    toast.error(err.response.data);
-                }
-                else{
-                    console.log("Error fetching server: ",err);
-                }
-            }  
+            }catch (err) {
+                console.log('Fetch reset password error: ',err);
+            }            
         }
     }
 
@@ -113,37 +98,12 @@ export function RegisterForm() {
             <Box component="form" validate="true" onSubmit={handleSubmit} className="flex flex-col mt-1 text-center">
                 <TextField
                     margin="normal"
-                    id="username"
-                    type="username"
-                    label="Tên người dùng"
-                    name="username"
-                    autoComplete="username"
-                    onChange={handleChange}
-                    value={formData.username}
-                    autoFocus
-                />
-                {errors.username && <Box className="text-sm text-left text-red-500">{errors.username}</Box>}
-                <TextField
-                    margin="normal"
-                    id="email"
-                    type="email"
-                    label="Email"
-                    name="email"
-                    autoComplete="email"
-                    onChange={handleChange}
-                    value={formData.email}
-                    autoFocus
-                />
-                {errors.email && <Box className="text-sm text-left text-red-500">{errors.email}</Box>}
-                <TextField
-                    margin="normal"
                     name="password"
-                    label="Mật khẩu"
+                    label="Mật khẩu mới"
                     type={showPassword ? "text" : "password"}
                     id="password"
                     onChange={handleChange}
                     value={formData.password}
-                    autoComplete="current-password"
                     InputProps={{
                         endAdornment: hasValuePassword && (
                             <Button className="eye-button" onClick={togglePassword}>
@@ -160,12 +120,11 @@ export function RegisterForm() {
                 <TextField
                     margin="normal"
                     name="confirmPassword"
-                    label="Nhập lại mật khẩu"
+                    label="Nhập lại mật khẩu mới"
                     type={showConfirmPassword ? "text" : "password"}
                     id="confirmPassword"
                     onChange={handleChange}
                     value={formData.confirmPassword}
-                    autoComplete="current-password"
                     InputProps={{
                         endAdornment: hasValueConfirmPassword && (
                             <Button className="eye-button" onClick={toggleConfirmPassword}>
@@ -182,18 +141,8 @@ export function RegisterForm() {
                     <Box className="text-sm text-left text-red-500">{errors.confirmPassword}</Box>
                 )}
                 <Button type="submit" variant="contained" className="!mx-auto !my-8">
-                    Đăng ký
+                    Xác nhận
                 </Button>
-                <Grid container className="justify-center mt-5">
-                    <Grid item className="flex flex-row">
-                        <Typography className="mr-0.5 px-1" variant="body2">
-                            Bạn đã có tài khoản?
-                        </Typography>
-                        <Link underline="none" href="/dang-nhap" variant="body2">
-                            Đăng nhập
-                        </Link>
-                    </Grid>
-                </Grid>
             </Box>
         </Box>
     );
