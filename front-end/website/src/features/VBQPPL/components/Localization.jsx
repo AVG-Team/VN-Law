@@ -7,7 +7,7 @@ import "@react-pdf-viewer/toolbar/lib/styles/index.css";
 
 import vi_VN from "~/mock/VBQPPL/react_pdf_viewer_vi_VN.json";
 
-const Localization = ({ fileUrl }) => {
+const Localization = ({ item }) => {
     const toolbarPluginInstance = toolbarPlugin();
     const { Toolbar } = toolbarPluginInstance;
 
@@ -18,7 +18,7 @@ const Localization = ({ fileUrl }) => {
     const themeContext = { currentTheme, setCurrentTheme };
 
     return (
-        <ThemeContext.Provider value={themeContext}>
+        <ThemeContext.Provider value={themeContext} className="flex justify-center">
             <LocalizationContext.Provider value={localizationContext}>
                 <div
                     className={`rpv-core__viewer rpv-core__viewer--${currentTheme} lg:w-2/3 w-full h-[950px] flex flex-col border border-[#0000004d]`}
@@ -34,13 +34,8 @@ const Localization = ({ fileUrl }) => {
                     >
                         <Toolbar />
                     </div>
-                    <div
-                        style={{
-                            flex: 1,
-                            overflow: "hidden",
-                        }}
-                    >
-                        <Viewer fileUrl={fileUrl} plugins={[toolbarPluginInstance]} />
+                    <div className="justify-center flex-1 overflow-auto">
+                        <div className="mx-3" dangerouslySetInnerHTML={{ __html: item }}></div>
                     </div>
                 </div>
             </LocalizationContext.Provider>

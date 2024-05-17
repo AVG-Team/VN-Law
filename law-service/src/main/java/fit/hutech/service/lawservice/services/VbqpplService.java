@@ -11,4 +11,6 @@ public interface VbqpplService{
     public Page<Vbqppl> getAllVbqppl(Optional<Integer> pageNo, Optional<Integer> pageSize);
     public Vbqppl getVbqpplById(Integer idVbqppl);
     public List<Vbqppl> getAll();
+    public List<Vbqppl> getVbqpplByType(String type , Optional<Integer> pageNo, Optional<Integer> pageSize);
+    public List<Vbqppl> getVbqpplByName(String name, Optional<Integer> pageNo, Optional<Integer> pageSize);
 }

@@ -38,5 +38,17 @@ public class VbqpplServiceImpl implements VbqpplService {
         return vbqpplRepository.findAll();
     }
 
+    @Override
+    public List<Vbqppl> getVbqpplByType(String type, Optional<Integer> pageNo, Optional<Integer> pageSize) {
+        Pageable pageable = PageRequest.of(pageNo.orElse(0), pageSize.orElse(9));
+        return vbqpplRepository.findAllByType(type,pageable);
+    }
+
+    @Override
+    public List<Vbqppl> getVbqpplByName(String name , Optional<Integer> pageNo, Optional<Integer> pageSize) {
+        Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(9));
+        return vbqpplRepository.findAllByName(name,pageable);
+    }
+
 
 }

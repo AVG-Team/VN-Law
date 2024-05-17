@@ -1,63 +1,67 @@
+import PropTypes from "prop-types";
+import MarkdownIt from "markdown-it";
 import { Card, Spin, Input } from "antd";
 import { useEffect, useState } from "react";
-import MarkdownIt from "markdown-it";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import articleApi from "~/api/law-service/articleApi";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 const { Search } = Input;
 const md = new MarkdownIt({ html: true });
 let loaded = false;
 
-const ReaderProps = {
-    selectedChuong: null, // Khởi tạo bằng giá trị mặc định tùy ý
-    setSelectedChuong: null, // Khởi tạo bằng giá trị mặc định tùy ý
-};
-export default function Reader({
-    selectedChapter = ReaderProps.selectedChuong,
-    setSeletedChapter = ReaderProps.setSelectedChuong,
-}) {
+export default function Reader({ selectedChapter, setSeletedChapter }) {
     const [autoAnimateParent] = useAutoAnimate();
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
 
+    Reader.propTypes = {
+        selectedChapter: PropTypes.object,
+        setSeletedChapter: PropTypes.func,
+    };
     useEffect(() => {
-        loaded = false;
-        window.scrollTo(0, 0);
-        setPage(1);
+        resetState();
     }, [selectedChapter]);
 
     useEffect(() => {
-        async function fetchAll() {
-            if (!selectedChapter.id || loaded) return;
-            const articles = await articleApi.getAllByChapter(selectedChapter.id.toString(), page);
-            if (!articles.content.length) {
-                loaded = true;
-                return;
-            }
-            setSeletedChapter({
-                ...selectedChapter,
-                articles: [...selectedChapter.articles, ...articles.content],
-            });
-            setPage(page + 1);
-        }
-
-        let isFetching = false;
-        async function handleScroll() {
-            const windowHeight = window.innerHeight;
-            const scrollableHeight = document.body.scrollHeight;
-
-            if (window.scrollY + windowHeight >= scrollableHeight) {
-                if (isFetching) return;
-                isFetching = true;
+        const handleScroll = async () => {
+            if (isBottomOfPage() && !loading) {
                 setLoading(true);
-                await fetchAll();
+                await fetchArticles();
                 setLoading(false);
-                isFetching = false;
             }
-        }
+        };
+
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, [selectedChapter, page, setSeletedChapter]);
+    }, [selectedChapter, page, loading]);
+
+    const resetState = () => {
+        loaded = false;
+        window.scrollTo(0, 0);
+        setPage(1);
+    };
+
+    const isBottomOfPage = () => {
+        const windowHeight = window.innerHeight;
+        const scrollableHeight = document.body.scrollHeight;
+        return window.scrollY + windowHeight >= scrollableHeight;
+    };
+
+    const fetchArticles = async () => {
+        if (!selectedChapter.id || loaded) return;
+
+        const articles = await articleApi.getAllByChapter(selectedChapter.id.toString(), page);
+        if (!articles.content.length) {
+            loaded = true;
+            return;
+        }
+
+        setSeletedChapter((prevChapter) => ({
+            ...prevChapter,
+            articles: [...prevChapter.articles, ...articles.content],
+        }));
+        setPage((prevPage) => prevPage + 1);
+    };
     return (
         <Card style={{ marginRight: 20 }}>
             <div
