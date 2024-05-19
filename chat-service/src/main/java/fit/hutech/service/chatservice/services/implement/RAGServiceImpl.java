@@ -12,8 +12,7 @@ import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import fit.hutech.service.chatservice.DTO.ArticleDTO;
 import fit.hutech.service.chatservice.DTO.FileDTO;
-import fit.hutech.service.chatservice.models.AnswerResult;
-import fit.hutech.service.chatservice.models.Chroma;
+import fit.hutech.service.chatservice.models.*;
 import fit.hutech.service.chatservice.repositories.ArticleRepository;
 import fit.hutech.service.chatservice.repositories.FileRepository;
 import fit.hutech.service.chatservice.services.RAGService;
@@ -21,7 +20,6 @@ import dev.langchain4j.model.openai.OpenAiTokenizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
@@ -67,6 +65,26 @@ public class RAGServiceImpl implements RAGService {
         );
     }
 
+    private Vbqppl createVbqppl(EmbeddingMatch<TextSegment> match) {
+        Metadata metadata = match.embedded().metadata();
+        return new Vbqppl(
+                Integer.valueOf(metadata.get("id")),
+                metadata.get("content"),
+                metadata.get("type"),
+                metadata.get("name"),
+                metadata.get("number"),
+                metadata.get("html")
+        );
+    }
+
+    private Question createQuestion(EmbeddingMatch<TextSegment> match) {
+        Metadata metadata = match.embedded().metadata();
+        return new Question(
+                metadata.get("question"),
+                metadata.get("answer")
+        );
+    }
+
     private List<Metadata> getMetadataList(List<EmbeddingMatch<TextSegment>> relevantEmbeddings) {
         return relevantEmbeddings.stream()
                 .map(match -> match.embedded().metadata())
@@ -79,10 +97,12 @@ public class RAGServiceImpl implements RAGService {
         Embedding questionEmbedding = embeddingModel.embed(question).content();
 
         int maxResults = 3;
-        double minScore = 0.7;
+        double minScore = 0.9;
 
         List<EmbeddingMatch<TextSegment>> relevantEmbeddings
                 = embeddingStore.findRelevant(questionEmbedding, maxResults, minScore);
+
+        System.out.println(Chroma.chromaUrl);
 
         PromptTemplate promptTemplate = PromptTemplate.from(
                 "Trả lời câu hỏi sau theo khả năng tốt nhất của bạn và dùng các từ có tính tôn trọng:\n"
@@ -90,11 +110,14 @@ public class RAGServiceImpl implements RAGService {
                         + "Câu hỏi:\n"
                         + "{{question}}\n"
                         + "\n"
-                        + "Dựa trên câu trả lời sau : \n"
+                        + "Luôn bám sát câu trả lời và câu hỏi sau : \n"
                         + "{{contents}}" + "\n"
                         + "\n"
                         + "Và bạn luôn phải trả lời bằng tiếng việt" + "\n"
         );
+        if ((long) relevantEmbeddings.size() == 0) {
+            return new AnswerResult("Câu hỏi nằm ngoài khả năng của tôi.Tôi chỉ hỗ trợ những câu hỏi liên quan tới pháp luật của Việt Nam.", null, TypeAnswerResult.NOANSWER);
+        }
 
         String information = relevantEmbeddings.stream()
                 .map(match -> match.embedded().text())
@@ -117,11 +140,32 @@ public class RAGServiceImpl implements RAGService {
 
         AiMessage aiMessage = chatModel.generate(prompt.toUserMessage()).content();
 
-        List<ArticleDTO> listArticleDTO = relevantEmbeddings.stream()
-                .map(this::createArticleDTO)
-                .toList();
+        EmbeddingMatch<TextSegment> match = relevantEmbeddings.stream().toList().getFirst();
+        String isArticle = match.embedded().metadata().get("vbqppl");
+        String isVbqppl = match.embedded().metadata().get("number");
+        System.out.println(" article " + isArticle + "vbq : " + isVbqppl);
+        if (isArticle != null) {
+            TypeAnswerResult type = TypeAnswerResult.ARTICLE;
 
-        return new AnswerResult(aiMessage.text(), listArticleDTO);
+            List<ArticleDTO> listArticleDTO = relevantEmbeddings.stream()
+                    .map(this::createArticleDTO)
+                    .toList();
+
+            return new AnswerResult(aiMessage.text(), listArticleDTO, TypeAnswerResult.ARTICLE);
+        } else if (isVbqppl != null) {
+            TypeAnswerResult type = TypeAnswerResult.VBQPPL;
+
+            List<Vbqppl> listVbqppl= relevantEmbeddings.stream()
+                    .map(this::createVbqppl)
+                    .toList();
+            return new AnswerResult(aiMessage.text(), listVbqppl, TypeAnswerResult.VBQPPL);
+        } else {
+            TypeAnswerResult type = TypeAnswerResult.QUESTION;
+            List<Question> listQuestion = relevantEmbeddings.stream()
+                    .map(this::createQuestion)
+                    .toList();
+            return new AnswerResult(aiMessage.text(), listQuestion, TypeAnswerResult.QUESTION);
+        }
     }
 
     private boolean isBeyondTokenLimit(ArticleDTO articleDTO) {

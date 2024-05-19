@@ -3,10 +3,13 @@ package fit.hutech.service.chatservice.services.implement;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import fit.hutech.service.chatservice.DTO.ArticleDTO;
+import fit.hutech.service.chatservice.DTO.VbqpplDTO;
 import fit.hutech.service.chatservice.models.Chroma;
+import fit.hutech.service.chatservice.models.Vbqppl;
 import fit.hutech.service.chatservice.services.ArticleService;
 import fit.hutech.service.chatservice.services.ChromaService;
 import dev.langchain4j.model.openai.OpenAiTokenizer;
+import fit.hutech.service.chatservice.services.VbqpplService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.amikos.chromadb.Client;
@@ -28,6 +31,7 @@ import static fit.hutech.service.chatservice.models.Chroma.*;
 @RequiredArgsConstructor
 public class ChromaServiceImpl implements ChromaService {
     private final ArticleService articleService;
+    private final VbqpplService vbqpplService;
     private static final OpenAiTokenizer tokenizer = new OpenAiTokenizer("text-embedding-ada-002"); // Khởi tạo tokenizer chỉ 1 lần
 
     private static List<String> splitContentIntoChunks(String content) {
@@ -56,11 +60,20 @@ public class ChromaServiceImpl implements ChromaService {
         return tokenizer.estimateTokenCountInText(text);
     }
 
-    private static void createAndStoreEmbedding(ArticleDTO articleDTO, String content) {
+    private static void createAndStoreEmbeddingArticle(ArticleDTO articleDTO, String content) {
         TextSegment segment = processData(
                 articleDTO.getId(), articleDTO.getName(), articleDTO.getSubjectName(),
                 articleDTO.getChapterName(), articleDTO.getTopicName(), content,
                 articleDTO.getIndex(), articleDTO.getVbqppl(), articleDTO.getVbqpplLink(), articleDTO.getOrder()
+        );
+
+        Embedding embedding = embeddingModel.embed(segment).content();
+        embeddingStore.add(embedding, segment);
+    }
+
+    private static void createAndStoreEmbeddingVbqppl(Vbqppl vbqppl, String content) {
+        TextSegment segment = processData(
+                vbqppl.getId(), content, vbqppl.getName(), vbqppl.getType(), vbqppl.getNumber(), vbqppl.getHtml()
         );
 
         Embedding embedding = embeddingModel.embed(segment).content();
@@ -101,16 +114,54 @@ public class ChromaServiceImpl implements ChromaService {
                     if(count_token > Chroma.TOKEN_LIMIT) {
                         List<String> contentsAfterChunk = splitContentIntoChunks(content);
                         for(String tmp : contentsAfterChunk) {
-                            createAndStoreEmbedding(articleDTO, tmp);
+                            createAndStoreEmbeddingArticle(articleDTO, tmp);
                             System.out.println("success " + tmp);
                         }
                     } else {
-                        createAndStoreEmbedding(articleDTO, content);
+                        createAndStoreEmbeddingArticle(articleDTO, content);
                         System.out.println("success " + articleDTO.getId());
                     }
                 } catch (Exception e) {
                     failed.add(articleDTO.getId());
                     System.out.println("failed " + articleDTO.getId());
+                }
+            }
+            flag ++;
+            System.out.println(flag);
+        }
+        return failed;
+    }
+
+    @Override
+    public List<String> importDataFromVbqppl() throws ApiException
+    {
+        Set<String> existingIds = getExistingIds();
+
+        List<String> failed = new ArrayList<>();
+        List<Vbqppl> vbqppls = vbqpplService.getAll();
+        Integer flag = 0;
+        for (Vbqppl vbqppl : vbqppls) {
+            if(existingIds.contains(String.valueOf(vbqppl.getId()))) {
+                System.out.println("skipped " + vbqppl.getId());
+                continue;
+            } else {
+                try {
+                    int count_token = countTokens(vbqppl.getContent());
+                    String content = vbqppl.getContent();
+
+                    if(count_token > Chroma.TOKEN_LIMIT) {
+                        List<String> contentsAfterChunk = splitContentIntoChunks(content);
+                        for(String tmp : contentsAfterChunk) {
+                            createAndStoreEmbeddingVbqppl(vbqppl, tmp);
+                            System.out.println("success " + tmp);
+                        }
+                    } else {
+                        createAndStoreEmbeddingVbqppl(vbqppl, content);
+                        System.out.println("success " + vbqppl.getId());
+                    }
+                } catch (Exception e) {
+                    failed.add(String.valueOf(vbqppl.getId()));
+                    System.out.println("failed " + vbqppl.getId());
                 }
             }
             flag ++;

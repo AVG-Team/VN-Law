@@ -24,4 +24,10 @@ public class Vbqppl {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String number;
+
+    @Column(nullable = false)
+    private String html;
+
 }

@@ -1,6 +1,9 @@
 package fit.hutech.service.chatservice.controllers;
 
 import fit.hutech.service.chatservice.models.AnswerResult;
+import fit.hutech.service.chatservice.models.Chroma;
+import fit.hutech.service.chatservice.models.Vbqppl;
+import fit.hutech.service.chatservice.repositories.VbqpplRepository;
 import fit.hutech.service.chatservice.services.ChromaService;
 import fit.hutech.service.chatservice.services.RAGService;
 import fit.hutech.service.chatservice.services.ArticleService;
@@ -13,6 +16,7 @@ import tech.amikos.chromadb.Client;
 import tech.amikos.chromadb.Collection;
 import tech.amikos.chromadb.EmbeddingFunction;
 import tech.amikos.chromadb.OpenAIEmbeddingFunction;
+import tech.amikos.chromadb.handler.ApiClient;
 import tech.amikos.chromadb.handler.ApiException;
 
 import java.util.HashMap;
@@ -24,7 +28,7 @@ import static fit.hutech.service.chatservice.models.Chroma.*;
 
 
 @RestController
-@RequestMapping("/rag")
+@RequestMapping("/chat-service/rag")
 public class RAGController {
     private final ArticleService articleService;
     private final RAGService ragService;
@@ -36,30 +40,49 @@ public class RAGController {
         this.chromaService = chromaService;
     }
 
-    @GetMapping("/get-all")
-    public ResponseEntity<ArticleDTO> getAllArticles() {
-        List<ArticleDTO> articles = articleService.getArticlesWithRelatedInfo();
-        return new ResponseEntity<>(articles.getFirst(), HttpStatus.OK);
-    }
+//    @GetMapping("/get-all")
+//    public ResponseEntity<ArticleDTO> getAllArticles() {
+//        List<ArticleDTO> articles = articleService.getArticlesWithRelatedInfo();
+//        return new ResponseEntity<>(articles.getFirst(), HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/get-all-data-chroma")
+//    public ResponseEntity<?> getTest() throws ApiException {
+//        Client client = new Client(chromaUrl);
+//        String serverName = "localhost";
+//        int port = 8080;
+//
+//        System.out.println(client.version());
+//
+//        ApiClient apiClient = new ApiClient();
+//        apiClient.setBasePath(chromaUrl);
+//
+//
+//        System.out.println(apiKey + " " + chromaUrl);
+//        System.out.println(client);
+//        EmbeddingFunction ef = new OpenAIEmbeddingFunction(apiKey);
+//        System.out.println(ef);
+//
+//        Collection collection = client.getCollection(System.getenv("CHROMA_COLLECTION_NAME"), ef);
+//        return new ResponseEntity<>(collection.get().getIds().getFirst(), HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/import-data-from-article")
+//    public ResponseEntity<List<String>> ImportDataFromArticle() throws ApiException {
+//        List<String> failed = chromaService.importDataFromArticle();
+//        return new ResponseEntity<>(failed, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/import-data-from-vbqppl")
+//    public ResponseEntity<?> ImportDataFromVbqppl() throws ApiException {
+//        List<String> failed = chromaService.importDataFromVbqppl();
+//        return new ResponseEntity<>(failed, HttpStatus.OK);
+//    }
 
-    @GetMapping("/get-all-data-chroma")
-    public ResponseEntity<?> getTest() throws ApiException {
-        Client client = new Client(System.getenv("CHROMA_URL"));
-        String apiKey = System.getenv("OPENAI_API_KEY");
-
-        System.out.println(apiKey + " " + System.getenv("CHROMA_URL"));
-        System.out.println(client);
-        EmbeddingFunction ef = new OpenAIEmbeddingFunction(apiKey);
-        System.out.println(ef);
-
-        Collection collection = client.getCollection(System.getenv("CHROMA_COLLECTION_NAME"), ef);
-        return new ResponseEntity<>(collection.get(), HttpStatus.OK);
-    }
-
-    @GetMapping("/import-data-from-article")
-    public ResponseEntity<List<String>> ImportDataFromArticle() throws ApiException {
-        List<String> failed = chromaService.importDataFromArticle();
-        return new ResponseEntity<>(failed, HttpStatus.OK);
+    @GetMapping("test")
+    public ResponseEntity<String> helloWorld()
+    {
+        return ResponseEntity.ok("Hello World 123");
     }
 
     @GetMapping("/get-map")
@@ -70,7 +93,6 @@ public class RAGController {
 
     @GetMapping("/get-answer")
     public ResponseEntity<AnswerResult> getAnswer(@RequestParam String question) {
-//        String question = "mức phụ cấp hàng tháng đối với các chức danh như nào ?";
         AnswerResult answer = ragService.getAnswer(question);
         return new ResponseEntity<>(answer, HttpStatus.OK);
     }
