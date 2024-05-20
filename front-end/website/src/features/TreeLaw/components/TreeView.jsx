@@ -36,6 +36,7 @@ export default function TreeView({ setChapterSelected }) {
     useEffect(() => {
         const fetchAllTopics = async () => {
             const topicList = await topicApi.getAll();
+            console.log(topicList);
             const data = topicList.map((topic) => {
                 return {
                     title: `Chủ đề ${topic.order}: ${topic.name}`,

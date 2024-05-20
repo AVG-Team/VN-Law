@@ -1,19 +1,19 @@
 import Box from "@mui/material/Box";
-import {toast} from 'react-toastify';
+import { toast } from "react-toastify";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import { useState, React } from "react";
 import Button from "@mui/material/Button";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Logo from "~/assets/images/logo/logo2.png";
 import Typography from "@mui/material/Typography";
-import { register } from '../../../api/auth-service/authClient';
+import { register } from "../../../api/auth-service/authClient";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export function RegisterForm() {
     const navigate = useNavigate();
-    const [errors,setErrors] = useState({});
+    const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [hasValuePassword, setHasValuePassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -24,11 +24,11 @@ export function RegisterForm() {
         password: "",
         confirmPassword: "",
     });
-    
+
     async function handleSubmit(e) {
         e.preventDefault();
 
-        const {username,email,password,confirmPassword} = formData;
+        const { username, email, password, confirmPassword } = formData;
 
         // validate
         const validationErrors = {};
@@ -48,36 +48,35 @@ export function RegisterForm() {
             validationErrors.password = "Mật khẩu phải có ít nhất 8 kí tự";
         }
 
-        if (!confirmPassword.trim()){
+        if (!confirmPassword.trim()) {
             validationErrors.confirmPassword = "Nhập lại mật khẩu là bắt buộc";
-        } else if(confirmPassword !== password){
+        } else if (confirmPassword !== password) {
             validationErrors.confirmPassword = "Mật khẩu không khớp";
         }
-          
+
         setErrors(validationErrors);
 
         // fetch api
         if (Object.keys(validationErrors).length === 0) {
-            try{
+            try {
+                console.log("formData: ", formData);
                 const response = await register({
                     firstName: formData.username,
                     email: formData.email,
-                    password: formData.password
+                    password: formData.password,
                 });
-                toast.success(response.data.message,{
-                    onClose: () => navigate('/dang-nhap'),
-                    autoClose: 2000,
-                    buttonClose: false
-                }) ;
-                
-            }catch(err){
-                if(err.response && err.response.status === 401){
+                toast.success(response.message, {
+                    onClose: () => navigate("/dang-nhap"),
+                    autoClose: 1000,
+                    buttonClose: false,
+                });
+            } catch (err) {
+                if (err.response && err.response.status === 401) {
                     toast.error(err.response.data);
+                } else {
+                    console.log("Error fetching server: ", err);
                 }
-                else{
-                    console.log("Error fetching server: ",err);
-                }
-            }  
+            }
         }
     }
 

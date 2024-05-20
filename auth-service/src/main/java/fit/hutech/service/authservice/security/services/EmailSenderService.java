@@ -17,7 +17,7 @@ public class EmailSenderService {
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(to);
         mail.setSubject("Kích hoạt tài khoản");
-        mail.setText("Vui lòng nhấp vào liên kết để kích hoạt tài khoản: http://localhost:9001/api/auth/confirm?verificationCode=" + verificationCode);
+        mail.setText("Vui lòng nhấp vào liên kết để kích hoạt tài khoản: http://localhost:9000/auth-service/auth/confirm?verificationCode=" + verificationCode);
         mailSender.send(mail);
     }
     public void sendSetPasswordEmail(String email, String resetPasswordToken) throws MessagingException {

@@ -19,6 +19,15 @@ services:
     volumes:
       - chroma_data:/var/lib/chroma
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/var/lib/redis
+
+
   api-gateway:
     build:
       context: ./api-gateway
