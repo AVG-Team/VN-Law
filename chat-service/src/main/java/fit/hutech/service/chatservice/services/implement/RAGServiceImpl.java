@@ -123,6 +123,8 @@ public class RAGServiceImpl implements RAGService {
                 .map(match -> match.embedded().text())
                 .collect(joining("\n\n"));
 
+        System.out.println("information : " + information);
+
         Map<String, Object> variables = new HashMap<>();
         variables.put("question", question);
         variables.put("contents", information);

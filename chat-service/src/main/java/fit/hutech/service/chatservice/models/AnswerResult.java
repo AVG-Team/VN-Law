@@ -25,6 +25,15 @@ public class AnswerResult {
         this.type = resultType;
     }
 
+    public AnswerResult(String answer, TypeAnswerResult resultType) {
+        this.answer = answer;
+        this.articles = null;
+        this.vbqppls = null;
+        this.questions = null;
+        this.fullAnswer = fullAnswer();
+        this.type = resultType;
+    }
+
     public String reference()
     {
         StringBuilder reference = new StringBuilder();
@@ -38,7 +47,7 @@ public class AnswerResult {
                         stringFiles.append(file.getLink()).append(" ");
                     }
                 }
-                reference.append(article.getVbqppl()).append("\nNguồn: ").append(article.getVbqpplLink());
+                reference.append("\n").append(article.getVbqppl()).append("\nNguồn: ").append(article.getVbqpplLink());
 
                 if(!stringFiles.isEmpty())
                     reference.append("\nTài liệu: ").append(stringFiles).append("\n");
@@ -58,9 +67,9 @@ public class AnswerResult {
     }
 
     public String fullAnswer() {
-        if(questions != null)
+        if(questions != null || articles == null && vbqppls == null)
             return answer;
         return answer + "\n" +
-                "Tham khảo \n:" + reference();
+                "Tham khảo :" + reference();
     }
 }

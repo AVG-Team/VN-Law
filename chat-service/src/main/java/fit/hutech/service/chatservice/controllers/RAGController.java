@@ -2,6 +2,7 @@ package fit.hutech.service.chatservice.controllers;
 
 import fit.hutech.service.chatservice.models.AnswerResult;
 import fit.hutech.service.chatservice.models.Chroma;
+import fit.hutech.service.chatservice.models.TypeAnswerResult;
 import fit.hutech.service.chatservice.models.Vbqppl;
 import fit.hutech.service.chatservice.repositories.VbqpplRepository;
 import fit.hutech.service.chatservice.services.ChromaService;
@@ -82,17 +83,25 @@ public class RAGController {
     @GetMapping("test")
     public ResponseEntity<String> helloWorld()
     {
-        return ResponseEntity.ok("Hello World 123");
+        return ResponseEntity.ok("Hello World 12345");
     }
 
-    @GetMapping("/get-map")
-    public ResponseEntity<?> getMap() throws ApiException {
-        Set<String> map = chromaService.getExistingIds();
-        return new ResponseEntity<>(map, HttpStatus.OK);
+    @GetMapping("test-answer")
+    public ResponseEntity<AnswerResult> getTestAnswer()
+    {
+        AnswerResult answer = new AnswerResult("Test Answer", TypeAnswerResult.NOANSWER);
+        return new ResponseEntity<>(answer, HttpStatus.OK);
     }
+
+//    @GetMapping("/get-map")
+//    public ResponseEntity<?> getMap() throws ApiException {
+//        Set<String> map = chromaService.getExistingIds();
+//        return new ResponseEntity<>(map, HttpStatus.OK);
+//    }
 
     @GetMapping("/get-answer")
     public ResponseEntity<AnswerResult> getAnswer(@RequestParam String question) {
+        System.out.println("Question RAG: " + question);
         AnswerResult answer = ragService.getAnswer(question);
         return new ResponseEntity<>(answer, HttpStatus.OK);
     }

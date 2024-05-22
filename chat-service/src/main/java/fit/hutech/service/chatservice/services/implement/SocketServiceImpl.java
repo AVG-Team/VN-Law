@@ -12,11 +12,11 @@ import javax.annotation.PostConstruct;
 @Service
 public class SocketServiceImpl implements SocketService {
 
-    @PostConstruct
-    public void init() {
-        Test();
-        handleSocketService();
-    }
+//    @PostConstruct
+//    public void init() {
+//        Test();
+//        handleSocketService();
+//    }
 
     private final SocketIOServer server;
 
