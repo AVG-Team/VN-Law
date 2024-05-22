@@ -63,7 +63,11 @@ public class AuthenticationService {
         repository.save(savedUser);
 
         Thread emailThread = new Thread(() -> {
-            emailSenderService.sendEmailWithToken(savedUser.getEmail(),verificationCode);
+            try {
+                emailSenderService.sendEmailWithToken(savedUser.getEmail(),verificationCode);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
         });
         emailThread.start();
 

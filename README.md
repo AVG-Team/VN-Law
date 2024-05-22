@@ -60,10 +60,8 @@ Project tập trung vào các chức năng chính như sau:
 
 Backend của hệ thống được thiết kế theo kiến trúc microservices, với các công nghệ sử dụng như sau:
 
--   [ReactJS](https://react.dev/): Xây dựng web-app, hỗ trợ SEO, SSR, SSG.
--   [Kong API Gateway](https://konghq.com/kong/): API Gateway cho hệ thống.
--   [SpringBoot](https://spring.io/projects/spring-boot): Dựng API cho Law Service, Authentication Service
--   [Flask](https://flask.palletsprojects.com/en/2.0.x/): Dựng API cho Q&A - RAG Service.
+-   [ReactJS](https://react.dev/): Xây dựng web-app.
+-   [SpringBoot](https://spring.io/projects/spring-boot): Dựng API cho Law Service, Authentication Service, Chat Service, Api Gateway, Crawl,...
 -   [LangChain](https://www.langchain.com/): Sử dụng để truy vấn các context là tri thức luật.
 -   [MySQL](https://www.mysql.com/): Cơ sở dữ liệu quan hệ.
 -   [Redis](https://redis.io/): Cơ sở dữ liệu NoSQL in-memory dạng key-value.
@@ -75,13 +73,13 @@ Backend của hệ thống được thiết kế theo kiến trúc microservices
 -   [Grafana](https://grafana.com/): WebUI hiển thị metrics.
 -   [Transformer.js](https://github.com/xenova/transformers.js/): Thư viện transformer cho JS, load trực tiếp trên trình duyệt web.
 
-<img loading="lazy" src="./front-end/docs/static/img/system_architecture.svg" alt="Architecture" width="100%" height=600>
+<img loading="lazy" src="./front-end/docs/static/img/system_architecture.jpg" alt="Architecture">
 
 ### RAG
 
 Hệ thống Tăng Cường Trí Tuệ (RAG) đại diện cho một mô hình đổi mới tiên tiến tận dụng sức mạnh kết hợp của [ChatGPT Api](https://openai.com/api/), [LangChain](https://www.langchain.com/) và [Weaviate](https://weaviate.io/). Sự tích hợp tinh vi này cho phép sự kết hợp hài hòa giữa việc truy xuất thông tin và tạo nội dung, tạo ra các kết quả không chỉ chính xác và mạch lạc mà còn đầy sáng tạo và sâu sắc.
 
-<img loading="lazy" src="./front-end/docs/static/img/docs/diagram/rag-perform.png" alt="Architecture">
+<img loading="lazy" src="./front-end/docs/static/img/docs/diagram/rag-perform.png" alt="rag-perform">
 
 
 Thiết kế Hệ thống hỏi đáp như hình vẽ bên dưới:
