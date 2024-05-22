@@ -19,6 +19,14 @@ services:
     volumes:
       - chroma_data:/var/lib/chroma
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/var/lib/redis
+
   api-gateway:
     build:
       context: ./api-gateway
@@ -26,15 +34,21 @@ services:
     container_name: api-gateway
     ports:
       - "9000:9000"
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka
+    depends_on:
+      - eureka-server
 
-  discovery-server:
-    build:
-      context: ./discovery-server
-      dockerfile: Dockerfile
-    container_name: discovery-server
+  eureka-server:
+    container_name: eureka
+    image: ./eureka-server
     ports:
       - "8761:8761"
+    networks:
+      - eureka
 
 volumes:
   mysql_data:
   chroma_data:
+networks:
+  eureka:
