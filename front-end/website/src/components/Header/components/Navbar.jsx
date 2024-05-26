@@ -62,7 +62,7 @@ export function Navbar() {
                                 </div>
                             </div>
                             <div className="flex items-center">
-                                <div className="flex-shrink-0">
+                                <div className="flex-shrink-0 hidden md:flex">
                                     {isAuthtenticated ? (
                                         <NavLink
                                             type="button"
@@ -170,7 +170,8 @@ export function Navbar() {
                                 ),
                             )}
                         </div>
-                        <div className="pt-4 pb-3 border-t border-gray-200">
+                        {isAuthtenticated ? (
+                            <div className="pt-4 pb-3 border-t border-gray-200">
                             <div className="flex items-center px-4 sm:px-6">
                                 <div className="flex-shrink-0">
                                     <img
@@ -205,6 +206,7 @@ export function Navbar() {
                                 ))}
                             </div>
                         </div>
+                        ) : null} 
                     </Disclosure.Panel>
                 </>
             )}
