@@ -20,6 +20,7 @@ import tech.amikos.chromadb.OpenAIEmbeddingFunction;
 import tech.amikos.chromadb.handler.ApiException;
 
 
+import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,7 @@ public class ChromaServiceImpl implements ChromaService {
 //    }
 
 
-    public static List<String> splitContentIntoChunks(String content) {
+    public static List<String> splitContentIntoChunksArticle(String content) {
         List<String> segments = new ArrayList<>();
         String[] sentences = content.split("\n");
 
@@ -91,6 +92,49 @@ public class ChromaServiceImpl implements ChromaService {
         return segments;
     }
 
+
+    public static List<String> splitContentIntoChunksVbqppl(String content) {
+        List<String> segments = new ArrayList<>();
+        String[] sentences = content.split("\\.");
+
+        StringBuilder currentSegment = new StringBuilder();
+        int currentTokenCount = 0;
+        String previousSentence = "";
+        String secondPreviousSentence = ""; // Lưu câu trước nữa để nối nếu cần
+
+        for (String sentence : sentences) {
+            int sentenceTokenCount = tokenizer.estimateTokenCountInText(sentence);
+
+            if (currentTokenCount + sentenceTokenCount > TOKEN_LIMIT) {
+                segments.add((currentSegment.toString()));
+
+                // Kiểm tra độ dài của đoạn mới
+                if (previousSentence.length() < 10 && secondPreviousSentence != null) {
+                    // Nếu đoạn mới quá ngắn, nối thêm câu trước nữa vào đầu đoạn
+                    currentSegment = new StringBuilder(secondPreviousSentence).append(".").append(previousSentence).append(".");
+                    currentTokenCount = tokenizer.estimateTokenCountInText(secondPreviousSentence) +
+                            tokenizer.estimateTokenCountInText(previousSentence);
+
+                } else {
+                    currentSegment = new StringBuilder(previousSentence).append(".");
+                    currentTokenCount = tokenizer.estimateTokenCountInText(previousSentence);
+                }
+            }
+
+            currentSegment.append(sentence).append(".");
+            currentTokenCount += sentenceTokenCount;
+            secondPreviousSentence = previousSentence; // Cập nhật câu trước nữa
+            previousSentence = sentence;
+        }
+
+        if (currentTokenCount > 0) {
+            segments.add((currentSegment.toString()));
+        }
+
+        segments.removeIf(segment -> segment.length() < 10); // Loại bỏ các đoạn quá ngắn
+
+        return segments;
+    }
     private static int countTokens(String text) {
         return tokenizer.estimateTokenCountInText(text);
     }
@@ -106,14 +150,14 @@ public class ChromaServiceImpl implements ChromaService {
         embeddingStore.add(embedding, segment);
     }
 
-//    private static void createAndStoreEmbeddingVbqppl(Vbqppl vbqppl, String content) {
-//        TextSegment segment = processData(
-//                vbqppl.getId(), content, vbqppl.getName(), vbqppl.getType(), vbqppl.getNumber(), vbqppl.getHtml()
-//        );
-//
-//        Embedding embedding = embeddingModel.embed(segment).content();
-//        embeddingStore.add(embedding, segment);
-//    }
+    private static void createAndStoreEmbeddingVbqppl(Vbqppl vbqppl, String content) {
+        TextSegment segment = processData(
+                vbqppl.getId(), content, vbqppl.getName(), vbqppl.getType(), vbqppl.getNumber(), vbqppl.getHtml()
+        );
+
+        Embedding embedding = embeddingModel.embed(segment).content();
+        embeddingStore.add(embedding, segment);
+    }
 
     @Override
     public Set<String> getExistingIds() throws ApiException {
@@ -130,6 +174,21 @@ public class ChromaServiceImpl implements ChromaService {
         return metaData.stream().map(m -> m.get("id").toString()).collect(Collectors.toSet());
     }
 
+    private String getLogFileName() {
+        String baseName = "D:\\VNLaw\\log";
+        String extension = ".txt";
+        int counter = 0;
+        String fileName = baseName + extension;
+
+        while (new File(fileName).exists()) {
+            counter++;
+            fileName = baseName + "_" + counter + extension;
+        }
+
+        return fileName;
+    }
+
+
     @Override
     public List<String> importDataFromArticle() throws ApiException {
         Set<String> existingIds = getExistingIds();
@@ -137,10 +196,13 @@ public class ChromaServiceImpl implements ChromaService {
         List<String> failed = new ArrayList<>();
         List<ArticleDTO> articles = articleService.getArticlesWithRelatedInfo();
         Integer flag = 0;
+        PrintStream fileOut = null;
+
+        System.out.println("Test");
 
         try {
-            PrintStream fileOut = new PrintStream("D:\\\\logVnLaw\\\\log.txt");
-            System.setOut(fileOut);
+            String logFileName = getLogFileName(); // Lấy tên file log phù hợp
+            fileOut = new PrintStream(logFileName);
             for (ArticleDTO articleDTO : articles) {
                 if(articleDTO.getIsEmbedded() || existingIds.contains(articleDTO.getId())) {
                     System.out.println("skipped " + articleDTO.getId());
@@ -151,7 +213,7 @@ public class ChromaServiceImpl implements ChromaService {
                         String content = articleDTO.getContent();
 
                         if(count_token > Chroma.TOKEN_LIMIT) {
-                            List<String> contentsAfterChunk = splitContentIntoChunks(content);
+                            List<String> contentsAfterChunk = splitContentIntoChunksArticle(content);
                             for(String tmp : contentsAfterChunk) {
                                 createAndStoreEmbeddingArticle(articleDTO, tmp);
                                 System.out.println("success " + tmp);
@@ -171,6 +233,7 @@ public class ChromaServiceImpl implements ChromaService {
                         failed.add(failedMsg);
                         System.out.println("failed " + articleDTO.getId());
                         System.out.println("failed msg : " + e.getMessage());
+                        fileOut.println(failedMsg);
                     }
                 }
                 flag ++;
@@ -179,45 +242,71 @@ public class ChromaServiceImpl implements ChromaService {
             fileOut.close();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+        } finally {
+            if (fileOut != null) {
+                fileOut.close();
+            }
         }
         return failed;
     }
 
-//    @Override
-//    public List<String> importDataFromVbqppl() throws ApiException
-//    {
-//        Set<String> existingIds = getExistingIds();
-//
-//        List<String> failed = new ArrayList<>();
-//        List<Vbqppl> vbqppls = vbqpplService.getAll();
-//        Integer flag = 0;
-//        for (Vbqppl vbqppl : vbqppls) {
-//            if(existingIds.contains(String.valueOf(vbqppl.getId()))) {
-//                System.out.println("skipped " + vbqppl.getId());
-//                continue;
-//            } else {
-//                try {
-//                    int count_token = countTokens(vbqppl.getContent());
-//                    String content = vbqppl.getContent();
-//
-//                    if(count_token > Chroma.TOKEN_LIMIT) {
-//                        List<String> contentsAfterChunk = splitContentIntoChunks(content);
-//                        for(String tmp : contentsAfterChunk) {
-//                            createAndStoreEmbeddingVbqppl(vbqppl, tmp);
-//                            System.out.println("success " + tmp);
-//                        }
-//                    } else {
-//                        createAndStoreEmbeddingVbqppl(vbqppl, content);
-//                        System.out.println("success " + vbqppl.getId());
-//                    }
-//                } catch (Exception e) {
-//                    failed.add(String.valueOf(vbqppl.getId()));
-//                    System.out.println("failed " + vbqppl.getId());
-//                }
-//            }
-//            flag ++;
-//            System.out.println(flag);
-//        }
-//        return failed;
-//    }
+    @Override
+    public List<String> importDataFromVbqppl() throws ApiException
+    {
+        Set<String> existingIds = getExistingIds();
+
+        List<String> failed = new ArrayList<>();
+        List<Vbqppl> vbqppls = vbqpplService.getAll();
+        Integer flag = 0;
+        PrintStream fileOut = null;
+
+        System.out.println("Test");
+
+        try {
+            String logFileName = getLogFileName(); // Lấy tên file log phù hợp
+            fileOut = new PrintStream(logFileName);
+
+            for (Vbqppl vbqppl : vbqppls) {
+                if (! vbqppl.getContent().isEmpty()) {
+                    if(existingIds.contains(String.valueOf(vbqppl.getId()))) {
+                        System.out.println("skipped " + vbqppl.getId());
+                        continue;
+                    } else {
+                        try {
+                            int count_token = countTokens(vbqppl.getContent());
+                            String content = vbqppl.getContent();
+
+                            if(count_token > Chroma.TOKEN_LIMIT) {
+                                List<String> contentsAfterChunk = splitContentIntoChunksVbqppl(content);
+                                for(String tmp : contentsAfterChunk) {
+                                    createAndStoreEmbeddingVbqppl(vbqppl, tmp);
+                                    System.out.println("success " + tmp);
+                                }
+                            } else {
+                                createAndStoreEmbeddingVbqppl(vbqppl, content);
+                                System.out.println("success " + vbqppl.getId());
+                            }
+                        } catch (Exception e) {
+                            String failedMsg = "failed " + vbqppl.getId() + " " + e.getMessage();
+                            failed.add(failedMsg);
+                            System.out.println("failed " + vbqppl.getId());
+                            System.out.println("failed msg : " + e.getMessage());
+                            fileOut.println(failedMsg);
+                        }
+                    }
+                }
+                flag ++;
+                System.out.println(flag);
+            }
+
+            fileOut.close();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        } finally {
+            if (fileOut != null) {
+                fileOut.close();
+            }
+        }
+        return failed;
+    }
 }

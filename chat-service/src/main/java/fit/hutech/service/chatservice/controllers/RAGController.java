@@ -67,7 +67,7 @@ public class RAGController {
         System.out.println(ef);
 
         Collection collection = client.getCollection(System.getenv("CHROMA_COLLECTION_NAME"), ef);
-        return new ResponseEntity<>(collection.get().getIds().getFirst(), HttpStatus.OK);
+        return new ResponseEntity<>(collection.get().getMetadatas(), HttpStatus.OK);
     }
 //
     @GetMapping("/import-data-from-article")
@@ -76,11 +76,11 @@ public class RAGController {
         return new ResponseEntity<>(failed, HttpStatus.OK);
     }
 
-//    @GetMapping("/import-data-from-vbqppl")
-//    public ResponseEntity<?> ImportDataFromVbqppl() throws ApiException {
-//        List<String> failed = chromaService.importDataFromVbqppl();
-//        return new ResponseEntity<>(failed, HttpStatus.OK);
-//    }
+    @GetMapping("/import-data-from-vbqppl")
+    public ResponseEntity<?> ImportDataFromVbqppl() throws ApiException {
+        List<String> failed = chromaService.importDataFromVbqppl();
+        return new ResponseEntity<>(failed, HttpStatus.OK);
+    }
 
     @GetMapping("test")
     public ResponseEntity<String> helloWorld()

@@ -9,5 +9,5 @@ public interface ChromaService {
     Set<String> getExistingIds() throws ApiException;
 
     public List<String> importDataFromArticle() throws ApiException;
-//    public List<String> importDataFromVbqppl() throws ApiException;
+    public List<String> importDataFromVbqppl() throws ApiException;
 }
