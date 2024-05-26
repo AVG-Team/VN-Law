@@ -1,9 +1,7 @@
 package fit.hutech.service.chatservice.controllers;
 
-import fit.hutech.service.chatservice.models.AnswerResult;
-import fit.hutech.service.chatservice.models.Chroma;
-import fit.hutech.service.chatservice.models.TypeAnswerResult;
-import fit.hutech.service.chatservice.models.Vbqppl;
+import fit.hutech.service.chatservice.models.*;
+import fit.hutech.service.chatservice.repositories.ArticleRepository;
 import fit.hutech.service.chatservice.repositories.VbqpplRepository;
 import fit.hutech.service.chatservice.services.ChromaService;
 import fit.hutech.service.chatservice.services.RAGService;
@@ -20,6 +18,8 @@ import tech.amikos.chromadb.OpenAIEmbeddingFunction;
 import tech.amikos.chromadb.handler.ApiClient;
 import tech.amikos.chromadb.handler.ApiException;
 
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,11 +34,13 @@ public class RAGController {
     private final ArticleService articleService;
     private final RAGService ragService;
     private final ChromaService chromaService;
+    private final ArticleRepository articleRepository;
 
-    public RAGController(ArticleService articleService, RAGService ragService, ChromaService chromaService) {
+    public RAGController(ArticleService articleService, RAGService ragService, ChromaService chromaService, ArticleRepository articleRepository) {
         this.articleService = articleService;
         this.ragService = ragService;
         this.chromaService = chromaService;
+        this.articleRepository = articleRepository;
     }
 
 //    @GetMapping("/get-all")
@@ -47,33 +49,33 @@ public class RAGController {
 //        return new ResponseEntity<>(articles.getFirst(), HttpStatus.OK);
 //    }
 //
-//    @GetMapping("/get-all-data-chroma")
-//    public ResponseEntity<?> getTest() throws ApiException {
-//        Client client = new Client(chromaUrl);
-//        String serverName = "localhost";
-//        int port = 8080;
+    @GetMapping("/get-all-data-chroma")
+    public ResponseEntity<?> getTest() throws ApiException {
+        Client client = new Client(chromaUrl);
+        String serverName = "localhost";
+        int port = 8080;
+
+        System.out.println(client.version());
+
+        ApiClient apiClient = new ApiClient();
+        apiClient.setBasePath(chromaUrl);
+
+
+        System.out.println(apiKey + " " + chromaUrl);
+        System.out.println(client);
+        EmbeddingFunction ef = new OpenAIEmbeddingFunction(apiKey);
+        System.out.println(ef);
+
+        Collection collection = client.getCollection(System.getenv("CHROMA_COLLECTION_NAME"), ef);
+        return new ResponseEntity<>(collection.get().getIds().getFirst(), HttpStatus.OK);
+    }
 //
-//        System.out.println(client.version());
-//
-//        ApiClient apiClient = new ApiClient();
-//        apiClient.setBasePath(chromaUrl);
-//
-//
-//        System.out.println(apiKey + " " + chromaUrl);
-//        System.out.println(client);
-//        EmbeddingFunction ef = new OpenAIEmbeddingFunction(apiKey);
-//        System.out.println(ef);
-//
-//        Collection collection = client.getCollection(System.getenv("CHROMA_COLLECTION_NAME"), ef);
-//        return new ResponseEntity<>(collection.get().getIds().getFirst(), HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/import-data-from-article")
-//    public ResponseEntity<List<String>> ImportDataFromArticle() throws ApiException {
-//        List<String> failed = chromaService.importDataFromArticle();
-//        return new ResponseEntity<>(failed, HttpStatus.OK);
-//    }
-//
+    @GetMapping("/import-data-from-article")
+    public ResponseEntity<List<String>> ImportDataFromArticle() throws ApiException {
+        List<String> failed = chromaService.importDataFromArticle();
+        return new ResponseEntity<>(failed, HttpStatus.OK);
+    }
+
 //    @GetMapping("/import-data-from-vbqppl")
 //    public ResponseEntity<?> ImportDataFromVbqppl() throws ApiException {
 //        List<String> failed = chromaService.importDataFromVbqppl();
@@ -84,6 +86,26 @@ public class RAGController {
     public ResponseEntity<String> helloWorld()
     {
         return ResponseEntity.ok("Hello World 12345");
+    }
+
+    @GetMapping("test-save-file")
+    public ResponseEntity<String> saveFile() throws FileNotFoundException {
+        System.out.println(123);
+        PrintStream fileOut = new PrintStream("D:\\\\logVnLaw\\\\log.txt");
+        System.setOut(fileOut);
+        System.out.println("Hello World");
+        fileOut.close();
+        return ResponseEntity.ok("Save File Success");
+    }
+
+    @GetMapping("test-save-article")
+    public ResponseEntity<String> saveArticle()
+    {
+        Article article = articleRepository.findById("0100100000000000100000100000000000000000").get();
+        System.out.println(article);
+        article.setIsEmbedded(true);
+        articleService.save(article);
+        return ResponseEntity.ok("Save Article Success");
     }
 
     @GetMapping("test-answer")
