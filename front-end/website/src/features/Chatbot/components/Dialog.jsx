@@ -24,6 +24,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
     const [textareaValue, setTextareaValue] = useState("");
     const [pendingReplyServer, setPendingReplyServer] = useState(false);
     const messagesEndRef = useRef(null);
+    const [isWaiting, setIsWaiting] = useState(false);
     const socketRef = useRef();
     let i = 0;
 
@@ -32,7 +33,6 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
     };
 
     const baseUrl = axiosClient.defaults.baseURL;
-    console.log(baseUrl)
 
     useEffect(() => {
         const connectToSocket = async () => {
@@ -57,7 +57,6 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
 
         const fetchData = async () => {
             const socket = await connectToSocket();
-            console.log(socketRef.current, socket)
             if(socketRef.current.connected) {
                 socket.subscribe('/server/public', response => {
                     console.log(response.body);
@@ -66,20 +65,17 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                 socket.subscribe('/server/sendData', response => {
                     let parsedResponse = JSON.parse(response.body);
                     let answer = JSON.parse(parsedResponse.body).fullAnswer;
-                    console.log(answer);
                     fetchReply(answer);
                     setTextareaValue("");
                 });
             }
             i++
-            console.log(i)
         };
         fetchData();
         window.addEventListener("resize", handleResize);
 
         return () => {
             window.removeEventListener("resize", handleResize);
-            console.log(socketRef.current, socketRef.current.connected)
             if (socketRef.current && socketRef.current.connected) {
                 socketRef.current.disconnect();
             }
@@ -118,9 +114,9 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                 type: "question",
             };
             setActiveChat(true);
+            setIsWaiting(true);
             setMessages((prevMessages) => [...prevMessages, newMessage]);
             socketRef.current.send('/web/sendMessage', {}, content);
-            console.log(socketRef.current)
             setPendingReplyServer(true);
         }
     };
@@ -133,6 +129,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
         };
 
         setMessages((prevMessages) => [...prevMessages, fakeReply]);
+        setIsWaiting(false);
     };
 
     useEffect(() => {
@@ -231,11 +228,27 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                             </div>
                         </div>
                     ))}
+                    {isWaiting && (
+                        <div
+                            className={`message-chat reply w-full flex justify-start px-3 mt-5`}
+                        >
+                            <div
+                                className={`flex rounded-lg bg-gray-100 p-4`}
+                            >
+                                <div className="lds-ellipsis">
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     <div ref={messagesEndRef}/>
                 </div>
             </div>
             <div className="w-[100%] text-center mb-2">
-                <TopQuestions sendQuestion={sendQuestion}/>
+            <TopQuestions sendQuestion={sendQuestion}/>
                 <div className="position">
                     <TextareaAutosize
                         name="question"

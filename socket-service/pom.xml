@@ -8,7 +8,7 @@
         <version>3.2.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>org.example</groupId>
+    <groupId>fit.hutech.service</groupId>
     <artifactId>socket-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>socket-service</name>

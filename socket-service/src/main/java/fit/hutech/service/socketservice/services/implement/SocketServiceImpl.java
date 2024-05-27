@@ -24,6 +24,7 @@ public class SocketServiceImpl implements SocketService {
     @Override
     public String getAnswer(String question) {
         String url = "http://localhost:9000/chat-service/rag/get-answer?question=" + question;
+//        String url = "http://localhost:9000/chat-service/rag/test-answer";
         System.out.println(url);
         ResponseEntity<String> responseEntity  = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<String>() {});
         String jsonResponse = responseEntity.getBody();
