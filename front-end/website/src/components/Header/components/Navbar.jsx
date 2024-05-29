@@ -63,16 +63,7 @@ export function Navbar() {
                             </div>
                             <div className="flex items-center">
                                 <div className="flex-shrink-0 hidden md:flex">
-                                    {isAuthtenticated ? (
-                                        <NavLink
-                                            type="button"
-                                            className="relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 mr-1 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            onClick={handleLogout}
-                                            to={"/dang-xuat"}
-                                        >
-                                            Đăng xuất
-                                        </NavLink>
-                                    ) : (
+                                    {!isAuthtenticated ? (
                                         toggleButton.map((button) => (
                                             <NavLink
                                                 key={button.id}
@@ -83,7 +74,7 @@ export function Navbar() {
                                                 {button.name}
                                             </NavLink>
                                         ))
-                                    )}
+                                    ) : null }
                                 </div>
                                 <div className="hidden md:ml-4 md:flex md:flex-shrink-0 md:items-center">
                                     {isAuthtenticated ? (
@@ -126,6 +117,7 @@ export function Navbar() {
                                                         {({ active }) => (
                                                             <a
                                                                 href={menu.href}
+                                                                onClick={menu.name === "Đăng xuất" ? handleLogout : null}
                                                                 className={classNames(
                                                                     active ? "bg-gray-100" : "",
                                                                     "block px-4 py-2 text-sm text-gray-700",
@@ -199,6 +191,7 @@ export function Navbar() {
                                         as="a"
                                         href={item.href}
                                         key={item.key}
+                                        onClick={item.name === "Đăng xuất" ? handleLogout : null}
                                         className="block px-4 py-2 text-base font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-800 sm:px-6"
                                     >
                                         {item.name}
@@ -206,7 +199,22 @@ export function Navbar() {
                                 ))}
                             </div>
                         </div>
-                        ) : null} 
+                        ) : (
+                            <div className="pb-3 border-t border-gray-200">
+                                <div className="mt-3 space-y-1">
+                                    {toggleButton.map((button) => (
+                                        <Disclosure.Button
+                                            as={NavLink}
+                                            to={button.link}
+                                            key={button.id}
+                                            className="block px-4 py-2 text-base font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-800 sm:px-6"
+                                        >
+                                            {button.name}
+                                        </Disclosure.Button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </Disclosure.Panel>
                 </>
             )}

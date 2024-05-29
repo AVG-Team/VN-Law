@@ -10,9 +10,9 @@ export const pages = [
 ];
 
 export const menus = [
-    { key: "1", name: "Profile", href: "#" },
-    { key: "2", name: "Settings", href: "#" },
-    { key: "3", name: "Sign out", href: "#" },
+    { key: "1", name: "Trang cá nhân", href: "#" },
+    { key: "2", name: "Cài đặt", href: "#" },
+    { key: "3", name: "Đăng xuất", href: "#" },
 ];
 
 export const banner = [
