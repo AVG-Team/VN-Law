@@ -6,6 +6,7 @@ const axiosClient = axios.create({
     baseURL: "http://localhost:9000",
     headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer YOUR_JWT_TOKEN`,
     },
 });
 
@@ -20,6 +21,7 @@ axiosClient.interceptors.request.use(
         return config;
     },
     (error) => {
+        console.log(error);
         Promise.reject(error);
     },
 );
@@ -34,6 +36,7 @@ axiosClient.interceptors.response.use(
     function (error) {
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         // Do something with response error
+        console.log(error);
         return Promise.reject(new Error(error));
     },
 );

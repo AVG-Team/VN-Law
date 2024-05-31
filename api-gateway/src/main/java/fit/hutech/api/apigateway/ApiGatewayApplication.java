@@ -17,19 +17,5 @@ public class ApiGatewayApplication {
         SpringApplication.run(ApiGatewayApplication.class, args);
     }
 
-//    @Bean
-//    public WebMvcConfigurer corsConfigurer() {
-//        System.out.println("123");
-//        return new WebMvcConfigurer() {
-//            @Override
-//            public void addCorsMappings( CorsRegistry registry) {
-//                registry.addMapping("/**")
-//                        .allowedOrigins("http://localhost:3000")
-//                        .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS")
-//                        .allowedHeaders("*")
-//                        .allowCredentials(false);
-//            }
-//        };
-//    }
 
 }

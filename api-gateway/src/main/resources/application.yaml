@@ -43,7 +43,7 @@ spring:
               enabled: true
               allowedHeaders: "*"
               allowedMethods: "*"
-              allowedOrigins: "*"
+              allowedOrigins: "http://localhost:3000"
         - id: chat-service
           uri: lb://chat-service
           predicates:
