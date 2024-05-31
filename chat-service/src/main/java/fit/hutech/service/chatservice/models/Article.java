@@ -28,7 +28,7 @@ public class Article {
     @Column(nullable = false)
     private String vbqppl;
 
-    @Column(nullable = false)
+    @Column()
     private String vbqpplLink;
 
     @Column(name = "`order`", nullable = false)

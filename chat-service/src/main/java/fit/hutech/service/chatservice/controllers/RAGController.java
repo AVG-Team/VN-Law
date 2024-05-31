@@ -43,15 +43,10 @@ public class RAGController {
         this.articleRepository = articleRepository;
     }
 
-//    @GetMapping("/get-all")
-//    public ResponseEntity<ArticleDTO> getAllArticles() {
-//        List<ArticleDTO> articles = articleService.getArticlesWithRelatedInfo();
-//        return new ResponseEntity<>(articles.getFirst(), HttpStatus.OK);
-//    }
-//
     @GetMapping("/get-all-data-chroma")
     public ResponseEntity<?> getTest() throws ApiException {
         Client client = new Client(chromaUrl);
+        client.setTimeout(1000);
         String serverName = "localhost";
         int port = 8080;
 
@@ -76,6 +71,12 @@ public class RAGController {
         return new ResponseEntity<>(failed, HttpStatus.OK);
     }
 
+    @GetMapping("/import-data-from-file-article")
+    public ResponseEntity<List<String>> ImportDataFromFileArticle() throws ApiException {
+        List<String> failed = chromaService.importDataFromArticle();
+        return new ResponseEntity<>(failed, HttpStatus.OK);
+    }
+
     @GetMapping("/import-data-from-vbqppl")
     public ResponseEntity<?> ImportDataFromVbqppl() throws ApiException {
         List<String> failed = chromaService.importDataFromVbqppl();
@@ -86,26 +87,6 @@ public class RAGController {
     public ResponseEntity<String> helloWorld()
     {
         return ResponseEntity.ok("Hello World 12345");
-    }
-
-    @GetMapping("test-save-file")
-    public ResponseEntity<String> saveFile() throws FileNotFoundException {
-        System.out.println(123);
-        PrintStream fileOut = new PrintStream("D:\\\\logVnLaw\\\\log.txt");
-        System.setOut(fileOut);
-        System.out.println("Hello World");
-        fileOut.close();
-        return ResponseEntity.ok("Save File Success");
-    }
-
-    @GetMapping("test-save-article")
-    public ResponseEntity<String> saveArticle()
-    {
-        Article article = articleRepository.findById("0100100000000000100000100000000000000000").get();
-        System.out.println(article);
-        article.setIsEmbedded(true);
-        articleService.save(article);
-        return ResponseEntity.ok("Save Article Success");
     }
 
     @GetMapping("test-answer")

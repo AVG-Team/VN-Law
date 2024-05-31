@@ -18,6 +18,8 @@ import fit.hutech.service.chatservice.repositories.FileRepository;
 import fit.hutech.service.chatservice.services.RAGService;
 import dev.langchain4j.model.openai.OpenAiTokenizer;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,10 +37,22 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class RAGServiceImpl implements RAGService {
 
+    private static final Logger log = LoggerFactory.getLogger(RAGServiceImpl.class);
     private final ArticleRepository articleRepository;
     private final FileRepository fileRepository;
 
     private static final OpenAiTokenizer tokenizer = new OpenAiTokenizer("text-embedding-ada-002"); // Khởi tạo tokenizer chỉ 1 lần
+
+
+
+    private boolean isBeyondTokenLimit(ArticleDTO articleDTO) {
+        System.out.println("Counting tokens in article: " + articleDTO.getId());
+        return articleDTO.getContent() != null && countTokens(articleDTO.getContent()) > Chroma.TOKEN_LIMIT;
+    }
+
+    private static int countTokens(String text) {
+        return tokenizer.estimateTokenCountInText(text);
+    }
 
     @Override
     public List<ArticleDTO> getDataBeyondToken() {
@@ -73,7 +87,8 @@ public class RAGServiceImpl implements RAGService {
                 metadata.get("type"),
                 metadata.get("name"),
                 metadata.get("number"),
-                metadata.get("html")
+                metadata.get("html"),
+                false
         );
     }
 
@@ -145,6 +160,7 @@ public class RAGServiceImpl implements RAGService {
         EmbeddingMatch<TextSegment> match = relevantEmbeddings.stream().toList().getFirst();
         String isArticle = match.embedded().metadata().get("vbqppl");
         String isVbqppl = match.embedded().metadata().get("number");
+        System.out.println(isVbqppl);
         System.out.println(" article " + isArticle + "vbq : " + isVbqppl);
         if (isArticle != null) {
             TypeAnswerResult type = TypeAnswerResult.ARTICLE;
@@ -168,14 +184,5 @@ public class RAGServiceImpl implements RAGService {
                     .toList();
             return new AnswerResult(aiMessage.text(), listQuestion, TypeAnswerResult.QUESTION);
         }
-    }
-
-    private boolean isBeyondTokenLimit(ArticleDTO articleDTO) {
-        System.out.println("Counting tokens in article: " + articleDTO.getId());
-        return articleDTO.getContent() != null && countTokens(articleDTO.getContent()) > Chroma.TOKEN_LIMIT;
-    }
-
-    private static int countTokens(String text) {
-        return tokenizer.estimateTokenCountInText(text);
     }
 }

@@ -37,29 +37,6 @@ public class ChromaServiceImpl implements ChromaService {
     private final VbqpplService vbqpplService;
     private static final OpenAiTokenizer tokenizer = new OpenAiTokenizer("text-embedding-ada-002"); // Khởi tạo tokenizer chỉ 1 lần
 
-//    private static List<String> splitContentIntoChunks(String content) {
-//        List<String> chunks = new ArrayList<>();
-//        String[] words = content.split(" ");
-//        StringBuilder chunk = new StringBuilder();
-//
-//        for (String word : words) {
-//            if (chunk.length() + word.length() + 1 > TOKEN_LIMIT) {
-//                chunks.add(chunk.toString());
-//                chunk.setLength(0);
-//            }
-//            if (chunk.length() > 0) {
-//                chunk.append(" ");
-//            }
-//            chunk.append(word);
-//        }
-//        if (chunk.length() > 0) {
-//            chunks.add(chunk.toString());
-//        }
-//
-//        return chunks;
-//    }
-
-
     public static List<String> splitContentIntoChunksArticle(String content) {
         List<String> segments = new ArrayList<>();
         String[] sentences = content.split("\n");
@@ -191,7 +168,7 @@ public class ChromaServiceImpl implements ChromaService {
 
     @Override
     public List<String> importDataFromArticle() throws ApiException {
-        Set<String> existingIds = getExistingIds();
+//        Set<String> existingIds = getExistingIds();
 
         List<String> failed = new ArrayList<>();
         List<ArticleDTO> articles = articleService.getArticlesWithRelatedInfo();
@@ -204,36 +181,48 @@ public class ChromaServiceImpl implements ChromaService {
             String logFileName = getLogFileName(); // Lấy tên file log phù hợp
             fileOut = new PrintStream(logFileName);
             for (ArticleDTO articleDTO : articles) {
-                if(articleDTO.getIsEmbedded() || existingIds.contains(articleDTO.getId())) {
+//                if(articleDTO.getIsEmbedded() || existingIds.contains(articleDTO.getId())) {
+                if(articleDTO.getIsEmbedded()) {
                     System.out.println("skipped " + articleDTO.getId());
                     continue;
                 } else {
-                    try {
-                        int count_token = countTokens(articleDTO.getContent());
-                        String content = articleDTO.getContent();
-
-                        if(count_token > Chroma.TOKEN_LIMIT) {
-                            List<String> contentsAfterChunk = splitContentIntoChunksArticle(content);
-                            for(String tmp : contentsAfterChunk) {
-                                createAndStoreEmbeddingArticle(articleDTO, tmp);
-                                System.out.println("success " + tmp);
-                            }
-                        } else {
-                            createAndStoreEmbeddingArticle(articleDTO, content);
-                            System.out.println("success " + articleDTO.getId());
-                        }
+                    if (articleDTO.getContent().isEmpty()) {
+                        System.out.println("id : " + articleDTO.getId());
                         Article articleNew = articleService.getArticleById(articleDTO.getId());
                         if (articleNew != null) {
                             articleNew.setIsEmbedded(true);
                             articleService.save(articleNew);
                         }
+                        continue;
+                    } else {
 
-                    } catch (Exception e) {
-                        String failedMsg = "failed " + articleDTO.getId() + e.getMessage();
-                        failed.add(failedMsg);
-                        System.out.println("failed " + articleDTO.getId());
-                        System.out.println("failed msg : " + e.getMessage());
-                        fileOut.println(failedMsg);
+                        try {
+                            int count_token = countTokens(articleDTO.getContent());
+                            String content = articleDTO.getContent();
+
+                            if(count_token > Chroma.TOKEN_LIMIT) {
+                                List<String> contentsAfterChunk = splitContentIntoChunksArticle(content);
+                                for(String tmp : contentsAfterChunk) {
+                                    createAndStoreEmbeddingArticle(articleDTO, tmp);
+                                    System.out.println("success " + tmp);
+                                }
+                            } else {
+                                createAndStoreEmbeddingArticle(articleDTO, content);
+                                System.out.println("success " + articleDTO.getId());
+                            }
+                            Article articleNew = articleService.getArticleById(articleDTO.getId());
+                            if (articleNew != null) {
+                                articleNew.setIsEmbedded(true);
+                                articleService.save(articleNew);
+                            }
+
+                        } catch (Exception e) {
+                            String failedMsg = "\nfailed " + articleDTO.getId() + " " + e.getMessage();
+                            failed.add(failedMsg);
+                            System.out.println("failed " + articleDTO.getId());
+                            System.out.println("failed msg : " + e.getMessage());
+                            fileOut.println(failedMsg);
+                        }
                     }
                 }
                 flag ++;
@@ -248,6 +237,11 @@ public class ChromaServiceImpl implements ChromaService {
             }
         }
         return failed;
+    }
+
+    @Override
+    public List<String> importDataFromFileArticle() throws ApiException {
+        return List.of();
     }
 
     @Override

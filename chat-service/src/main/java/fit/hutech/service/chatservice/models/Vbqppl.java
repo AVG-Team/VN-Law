@@ -30,4 +30,6 @@ public class Vbqppl {
     @Column(nullable = false)
     private String html;
 
+    @Column(nullable = false)
+    private Boolean isEmbedded;
 }

@@ -13,7 +13,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ArticleRepository extends JpaRepository<Article,String> {
+public interface
+ArticleRepository extends JpaRepository<Article,String> {
     @Query("SELECT new fit.hutech.service.chatservice.DTO.ArticleDTO(a.id, a.name, a.content, a.index, a.vbqppl, a.vbqpplLink, a.order, a.isEmbedded , a.subject.name, a.chapter.name, a.topic.name)" +
             " FROM Article a")
     List<ArticleDTO> getArticlesWithRelatedInfo();
