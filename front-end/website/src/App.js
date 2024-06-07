@@ -22,10 +22,10 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route element={<AuthLayout />}>
-                    <Route path="/dang-xuat" element={<SignOut />} />
-                    {/* <Route path="/chat-bot" element={<Chatbot />} /> */}
-                </Route>
+                {/*<Route element={<AuthLayout />}>*/}
+                {/*    <Route path="/dang-xuat" element={<SignOut />} />*/}
+                {/*    /!* <Route path="/chat-bot" element={<Chatbot />} /> *!/*/}
+                {/*</Route>*/}
                 <Route element={<BasicLayout />}>
                     <Route
                         index

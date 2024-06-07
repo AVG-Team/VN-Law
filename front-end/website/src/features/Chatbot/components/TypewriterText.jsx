@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 
-const TypewriterText = ({ text, pendingReplyServer, setPendingReplyServer }) => {
+const TypewriterText = ({text, pendingReplyServer, setPendingReplyServer}) => {
     const [displayedText, setDisplayedText] = useState("");
-    console.log(text);
     useEffect(() => {
         let charIndex = 0;
         const interval = setInterval(() => {
@@ -13,12 +12,26 @@ const TypewriterText = ({ text, pendingReplyServer, setPendingReplyServer }) => 
                 clearInterval(interval);
                 setPendingReplyServer(false);
             }
-        }, 25);
+        }, 5);
 
         return () => clearInterval(interval);
     }, [text, setPendingReplyServer]);
 
-    return <p className="text-black text-lg">{displayedText}</p>;
+        const formatLinks = (text) => {
+            const urlPattern = /(\bhttps?:\/\/[^\s]+)/g;
+            return text.split('\n').map((line, index) => (
+                <React.Fragment key={index}>
+                    {line.split(urlPattern).map((part, i) => (
+                        urlPattern.test(part) ? <a key={i} href={part} target="_blank" rel="noopener noreferrer"
+                                                   style={{color: 'blue'}}>{part}</a> : part
+                    ))}
+                    <br/>
+                </React.Fragment>
+            ));
+        };
+    const formattedText = formatLinks(displayedText);
+
+    return <p className="text-black text-lg">{formattedText}</p>;
 };
 
 export default TypewriterText;

@@ -8,6 +8,7 @@ public interface ArticleDTOINT {
     String getIndex();
     String getVbqppl();
     String getVbqpplLink();
+    Boolean getIsEmbedded();
 
     // Add these methods
     String getSubjectName();
