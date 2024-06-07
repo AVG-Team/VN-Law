@@ -12,6 +12,7 @@ import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import fit.hutech.service.chatservice.DTO.ArticleDTO;
 import fit.hutech.service.chatservice.DTO.FileDTO;
+import fit.hutech.service.chatservice.DTO.VbqpplDTO;
 import fit.hutech.service.chatservice.models.*;
 import fit.hutech.service.chatservice.repositories.ArticleRepository;
 import fit.hutech.service.chatservice.repositories.FileRepository;
@@ -24,13 +25,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import dev.langchain4j.store.embedding.EmbeddingMatch;
+
 import static fit.hutech.service.chatservice.models.Chroma.embeddingModel;
 import static fit.hutech.service.chatservice.models.Chroma.embeddingStore;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.stream.Collectors.joining;
+
 import java.time.Duration;
 
 @Service
@@ -42,7 +47,6 @@ public class RAGServiceImpl implements RAGService {
     private final FileRepository fileRepository;
 
     private static final OpenAiTokenizer tokenizer = new OpenAiTokenizer("text-embedding-ada-002"); // Khởi tạo tokenizer chỉ 1 lần
-
 
 
     private boolean isBeyondTokenLimit(ArticleDTO articleDTO) {
@@ -79,16 +83,15 @@ public class RAGServiceImpl implements RAGService {
         );
     }
 
-    private Vbqppl createVbqppl(EmbeddingMatch<TextSegment> match) {
+    private VbqpplDTO createVbqppl(EmbeddingMatch<TextSegment> match) {
         Metadata metadata = match.embedded().metadata();
-        return new Vbqppl(
-                Integer.valueOf(metadata.get("id")),
+        return new VbqpplDTO(
+                metadata.get("id"),
                 metadata.get("content"),
                 metadata.get("type"),
                 metadata.get("name"),
                 metadata.get("number"),
-                metadata.get("html"),
-                false
+                metadata.get("html")
         );
     }
 
@@ -173,7 +176,7 @@ public class RAGServiceImpl implements RAGService {
         } else if (isVbqppl != null) {
             TypeAnswerResult type = TypeAnswerResult.VBQPPL;
 
-            List<Vbqppl> listVbqppl= relevantEmbeddings.stream()
+            List<VbqpplDTO> listVbqppl = relevantEmbeddings.stream()
                     .map(this::createVbqppl)
                     .toList();
             return new AnswerResult(aiMessage.text(), listVbqppl, TypeAnswerResult.VBQPPL);

@@ -3,7 +3,6 @@ package fit.hutech.service.chatservice.services.implement;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import fit.hutech.service.chatservice.DTO.ArticleDTO;
-import fit.hutech.service.chatservice.DTO.VbqpplDTO;
 import fit.hutech.service.chatservice.models.Article;
 import fit.hutech.service.chatservice.models.Chroma;
 import fit.hutech.service.chatservice.models.Vbqppl;
