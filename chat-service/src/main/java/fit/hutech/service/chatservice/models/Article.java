@@ -22,17 +22,20 @@ public class Article {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(name = "`index`", nullable = false)
     private String index;
 
     @Column(nullable = false)
     private String vbqppl;
 
-    @Column(nullable = false)
+    @Column()
     private String vbqpplLink;
 
-    @Column(nullable = false)
+    @Column(name = "`order`", nullable = false)
     private Integer order;
+
+    @Column(nullable = false)
+    private Boolean isEmbedded;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
@@ -48,5 +51,4 @@ public class Article {
     @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "id_chapter",nullable = false)
     private Chapter chapter;
-
 }

@@ -77,17 +77,21 @@ public class AuthenticationController {
             @RequestParam("verificationCode")
             String verificationCode
     ){
-        User user = userRepository.findByVerificationCode(verificationCode)
-                .orElseThrow(() -> new IllegalStateException("Invalid code"));
-        if(user.isEnabled()){
-            return ResponseEntity.badRequest().body("Tài khoản đã được kích hoạt");
-        }
-        user.setEnabled(true);
-        user.setVerificationCode(verificationCode);
-        userRepository.save(user);
+        try{
+            User user = userRepository.findByVerificationCode(verificationCode)
+                    .orElseThrow(() -> new IllegalStateException("Tài khoản đã được kích hoạt hoặc chưa được đăng ký"));
 
-        return ResponseEntity.ok("Tài khoản được kích hoạt thành công");
+            user.setEnabled(true);
+            user.setVerificationCode(null);
+            userRepository.save(user);
+
+            return ResponseEntity.ok("Tài khoản được kích hoạt thành công");
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
     }
+
+
 
 //    @PutMapping("/forgot-password")
 //    public ResponseEntity<?> forgotPassword(@RequestParam String email){

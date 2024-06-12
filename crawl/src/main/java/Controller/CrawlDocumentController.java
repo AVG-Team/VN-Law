@@ -47,7 +47,7 @@ public class CrawlDocumentController {
     public void updateDocument(){
         List<String> uniqueData = filterData();
         List<Vbqppl> vbqppls = new ArrayList<>();
-        int count = 0 ;
+        int count = 0 ; 
        for(String item: uniqueData){
             String id= item;
             System.out.println(id);

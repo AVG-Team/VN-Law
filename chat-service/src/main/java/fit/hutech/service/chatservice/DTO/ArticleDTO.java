@@ -18,6 +18,7 @@ public class ArticleDTO implements ArticleDTOINT {
     private String vbqppl;
     private String vbqpplLink;
     private Integer order;
+    private Boolean isEmbedded;
 
     // Add these fields
     private String subjectName;
@@ -49,7 +50,7 @@ public class ArticleDTO implements ArticleDTOINT {
         this.tables = tables;
     }
 
-    public ArticleDTO(String id, String name, String content, String index, String vbqppl, String vbqpplLink, Integer order, String subjectName, String chapterName, String topicName){
+    public ArticleDTO(String id, String name, String content, String index, String vbqppl, String vbqpplLink, Integer order, Boolean isEmbedded, String subjectName, String chapterName, String topicName){
         this.id = id;
         this.name = name;
         this.content = content;
@@ -60,6 +61,7 @@ public class ArticleDTO implements ArticleDTOINT {
         this.subjectName = subjectName;
         this.chapterName = chapterName;
         this.topicName = topicName;
+        this.isEmbedded = isEmbedded;
     }
 
     public ArticleDTO(String id, String name, String content, String index, String vbqppl, String vbqpplLink, Integer order, String subjectName, String chapterName, String topicName, List<FileDTO> files){

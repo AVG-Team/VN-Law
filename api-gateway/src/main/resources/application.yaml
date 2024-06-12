@@ -45,9 +45,31 @@ spring:
               allowedMethods: "*"
               allowedOrigins: "http://localhost:3000"
         - id: chat-service
-          uri: lb://chat-service
+          uri: http://localhost:9003
           predicates:
             - Path=/chat-service/**
+          metadata:
+            cors:
+              allowedOrigins: '*'
+              allowedMethods:
+                - GET
+                - POST
+              allowedHeaders: '*'
+              maxAge: 30
+        - id: socket-service
+          uri: http://localhost:9004
+          predicates:
+              - Path=/socket-service/**
+          filters:
+            - StripPrefix=1
+          metadata:
+            cors:
+              allowedOrigins: 'http://localhost:3000'
+              allowedMethods:
+                - GET
+                - POST
+              allowedHeaders: '*'
+              maxAge: 3
         - id: recommend-service
           uri: lb://recommend-service
           predicates:

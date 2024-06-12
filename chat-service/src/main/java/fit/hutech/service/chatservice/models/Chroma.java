@@ -6,14 +6,6 @@ import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.chroma.ChromaEmbeddingStore;
 import dev.langchain4j.data.document.Metadata;
-import dev.langchain4j.data.embedding.Embedding;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Chroma {
 
@@ -66,39 +58,19 @@ public class Chroma {
         return TextSegment.from(vbqppl, metadata);
     }
 
-    public static void importDataFromMySQL() {
-        System.out.println("Connected!");
-        String hostname = "localhost";
-        String port = "3006";
-        String database = "testlaw";
-
-        String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + database;
-        String username = "root";
-        String password = "password";
-
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
-            System.out.println("Connected to database!");
-
-            // Thực hiện các truy vấn và cập nhật của bạn ở đây
-
-            connection.close();
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-
-//        try (Connection conn = DriverManager.getConnection(jdbcUrl, username, password)) {
-//            String query = "SELECT pdarticle.id,pdarticle.name,pdsubject.name AS subject_name,pdchapter.name AS chapter_name,pdtopic.name AS topic_name,pdarticle.content,pdarticle.`index`,pdarticle.vbqppl,pdarticle.vbqppl_link,pdarticle.`order` FROM pdarticle INNER JOIN pdsubject ON pdarticle.id_subject = pdsubject.id INNER JOIN pdchapter ON pdarticle.id_chapter = pdchapter.id INNER JOIN pdtopic ON pdarticle.id_topic = pdtopic.id";
-//            ResultSet rs = conn.createStatement().executeQuery(query);
-//            System.out.println("Connected to database!");
-//            while (rs.next()) {
-//                TextSegment segment = processData(rs.getString("id"), rs.getString("name"), ..., rs.getString("order")); // Adjust column names
-//                Embedding embedding = embeddingModel.embed(segment).content();
-//                embeddingStore.add(embedding, segment);
-//            }
-//        } catch (SQLException e) {
-//            System.out.println("Error");
-//        }
+    public static TextSegment processData(Integer id, String content, String name, String type, String number, String html)
+    {
+        Metadata metadata = new Metadata();
+        if (id != null)
+            metadata.add("id", String.valueOf(id));
+        if (name != null && !name.isEmpty())
+            metadata.add("name", name);
+        if (type != null && !type.isEmpty())
+            metadata.add("type", type);
+        if (number != null && !number.isEmpty())
+            metadata.add("number", number);
+        if (html != null && !html.isEmpty())
+            metadata.add("html", html);
+        return TextSegment.from(content, metadata);
     }
 }
