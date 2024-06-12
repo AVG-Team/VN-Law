@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 import { Fragment } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import Logo from "../../../assets/images/logo/logo2.png";
 import { StorageKeys } from "../../../common/constants/keys";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
@@ -12,11 +12,12 @@ function classNames(...classes) {
 }
 
 export function Navbar() {
+    const location = useLocation();
     const isAuthtenticated = !!Cookies.get(StorageKeys.ACCESS_TOKEN);
     const handleLogout = () => {
         Cookies.remove(StorageKeys.ACCESS_TOKEN);
-    }
-     return (
+    };   
+    return (
         <Disclosure as="nav" className="bg-white shadow-md">
             {({ open }) => (
                 <>
@@ -40,25 +41,19 @@ export function Navbar() {
                                 </NavLink>
                                 <div className="hidden md:ml-6 md:flex md:space-x-8">
                                     {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
-                                    {pages.map((page) =>
-                                        page.current ? (
-                                            <a
-                                                key={page.key}
-                                                href={page.href}
-                                                className="inline-flex items-center px-1 pt-1 text-sm font-semibold text-gray-900 border-b-2 border-indigo-500"
-                                            >
-                                                {page.name}
-                                            </a>
-                                        ) : (
-                                            <a
-                                                key={page.key}
-                                                href={page.href}
-                                                className="inline-flex items-center px-1 pt-1 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
-                                            >
-                                                {page.name}
-                                            </a>
-                                        ),
-                                    )}
+                                    {pages.map((page) => (
+                                        <NavLink
+                                            key={page.key}
+                                            to={page.href}
+                                            className={`inline-flex items-center px-1 pt-1 text-sm font-semibold border-b-2 ${
+                                                location.pathname === page.href
+                                                    ? 'text-gray-900 border-indigo-500'
+                                                    : 'text-gray-500 border-transparent hover:border-gray-300 hover:text-gray-700'
+                                            }`}
+                                        >
+                                            {page.name}
+                                        </NavLink>
+                                    ))}
                                 </div>
                             </div>
                             <div className="flex items-center">
