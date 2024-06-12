@@ -60,10 +60,10 @@ export function LoginForm() {
                     buttonClose: false,
                 });
             } catch (err) {
-                if (err.response && err.response.status === 401) {
-                    toast.error(err.response);
-                } else if (err.response && err.response.status === 400) {
-                    toast.error(err.response);
+                if (err.status === 401) {
+                    toast.error(err.message);
+                } else if (err.status === 400) {
+                    toast.error(err.message);
                 } else {
                     console.log("Error fetching server: ", err);
                 }
