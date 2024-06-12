@@ -19,6 +19,7 @@ public class SocketIOConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS(); // Endpoint WebSocket và hỗ trợ SockJS
+        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:3000").withSockJS();
     }
 
     @Bean

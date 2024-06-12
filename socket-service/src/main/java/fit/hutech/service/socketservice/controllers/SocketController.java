@@ -1,8 +1,6 @@
 package fit.hutech.service.socketservice.controllers;
 
-import fit.hutech.service.chatservice.models.AnswerResult;
 import fit.hutech.service.socketservice.services.SocketService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;

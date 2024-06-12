@@ -12,6 +12,8 @@
         <module>law-service</module>
         <module>chat-service</module>
         <module>recommend-service</module>
+        <module>socket-service</module>
+        <module>api-gateway</module>
         <module>crawl</module>
     </modules>
 

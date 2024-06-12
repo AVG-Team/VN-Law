@@ -9,7 +9,7 @@ services:
     ports:
       - "3306:3306"
     networks:
-      - db-network
+      - vn-law_db-network
     volumes:
       - mysql_data:/var/lib/mysql
 
@@ -19,13 +19,85 @@ services:
     ports:
       - "3307:8000"  # ChromaDB Port
     networks:
-      - db-network
+      - vn-law_db-network
     volumes:
       - chroma_data:/chroma/chroma
+
+  eureka-server:
+    build:
+      context: ./discovery-server
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - vn-law_db-network
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    depends_on: # Đợi Eureka khởi động trước
+      - eureka-server
+    ports:
+      - "9000:9000"
+    environment:
+      eureka.client.serviceUrl.defaultZone: http://eureka-server:8761/eureka
+    networks:
+      - vn-law_db-network
+
+  chat-service:
+    build:
+      context: ./chat-service
+      dockerfile: Dockerfile
+    container_name: chat-service
+    ports:
+      - "9003:9003"
+    depends_on:
+      - mysql-db
+      - chroma
+      - eureka-server
+    environment:
+      spring.application.name: chat-service
+      spring.datasource.url: jdbc:mysql://mysql-db:3306/law_service?useSSL=false&allowPublicKeyRetrieval=true
+      spring.datasource.username: root
+      spring.datasource.password: password
+      spring.jpa.hibernate.ddl-auto: update
+      spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+      logging.level.org.springframework.web: DEBUG
+      eureka.client.enabled: false
+      CHROMA_COLLECTION_NAME: chat-service
+      CHROMA_URL: http://chroma:8000
+      DB_NAME: law_service
+      OPENAI_API_KEY:
+    networks:
+      - vn-law_db-network
+
+  socket-service:
+    build:
+      context: ./socket-service
+      dockerfile: Dockerfile
+    container_name: socket-service
+    depends_on:
+      - mysql-db
+      - eureka-server
+      - chat-service
+    ports:
+      - "9004:9004"
+    environment:
+      spring.datasource.url: jdbc:mysql://mysql-db:3306/law_service?useSSL=false&allowPublicKeyRetrieval=true
+      spring.datasource.username: root
+      spring.datasource.password: password
+      spring.jpa.hibernate.ddl-auto: update
+      spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+      eureka.client.serviceUrl.defaultZone: http://eureka-server:8761/eureka
+    networks:
+      - vn-law_db-network
 
 volumes:
   mysql_data:
   chroma_data:
 networks:
-  db-network:
-    driver: bridge
+  vn-law_db-network:
+    external: true

@@ -8,9 +8,11 @@ import fit.hutech.service.chatservice.services.RAGService;
 import fit.hutech.service.chatservice.services.ArticleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import fit.hutech.service.chatservice.DTO.ArticleDTO;
+import org.springframework.web.client.RestTemplate;
 import tech.amikos.chromadb.Client;
 import tech.amikos.chromadb.Collection;
 import tech.amikos.chromadb.EmbeddingFunction;
@@ -104,7 +106,26 @@ public class RAGController {
 
     @GetMapping("/get-answer")
     public ResponseEntity<AnswerResult> getAnswer(@RequestParam String question) {
+        System.out.println("start test");
+        System.out.println(" TEst ENV : " + System.getenv("CHROMA_URL"));
         System.out.println("Question RAG: " + question);
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            String response = restTemplate.getForObject(chromaUrl, String.class);
+            System.out.println("Chroma connection is OK: " + response);
+        } catch (Exception e) {
+            System.err.println("Chroma connection failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        JdbcTemplate jdbcTemplate = new JdbcTemplate();
+        try {
+            jdbcTemplate.execute("SELECT 1");
+            System.out.println("MySQL connection is OK");
+        } catch (Exception e) {
+            System.err.println("MySQL connection failed: " + e.getMessage());
+            e.printStackTrace();
+        }
         AnswerResult answer = ragService.getAnswer(question);
         return new ResponseEntity<>(answer, HttpStatus.OK);
     }
