@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import socketIOClient from "socket.io-client";
+import {useEffect, useRef, useState} from "react";
 import TextareaAutosize from "react-textarea-autosize";
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
@@ -8,15 +9,14 @@ import {
     PaperAirplaneIcon,
     StopCircleIcon,
 } from "@heroicons/react/24/solid";
-import { TopQuestions } from "./LawQuestions";
+import {TopQuestions} from "./LawQuestions";
 import VersionChatbot from "./VersionChatbot";
 import MenuMobile from "./MenuMobile";
 import TypewriterText from "./TypewriterText";
 import Logo from "~/assets/images/logo/logo-no-bg.png";
+import axiosClient from "../../../api/axiosClient";
 
-const host = "http://localhost:9000";
-
-function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, activeChat, setActiveChat }) {
+function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, activeChat, setActiveChat}) {
     const [isHoveredIconMenu, setIsHoveredIconMenu] = useState(false);
     const [isHiddenRight, setHiddenRight] = useState(true);
     const [showIconSend, setShowIconSend] = useState(false);
@@ -24,24 +24,61 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
     const [textareaValue, setTextareaValue] = useState("");
     const [pendingReplyServer, setPendingReplyServer] = useState(false);
     const messagesEndRef = useRef(null);
+    const [isWaiting, setIsWaiting] = useState(false);
     const socketRef = useRef();
+    let i = 0;
 
     const handleResize = () => {
         setWindowWidth(window.innerWidth);
     };
 
-    useEffect(() => {
-        window.addEventListener("resize", handleResize);
-        socketRef.current = socketIOClient.connect(host);
+    const baseUrl = axiosClient.defaults.baseURL;
 
-        socketRef.current.on("sendDataServer", (dataGot) => {
-            fetchReply(dataGot);
-            setTextareaValue("");
-        });
+    useEffect(() => {
+        const connectToSocket = async () => {
+            if (!socketRef.current) {
+                let socket = new SockJS(baseUrl + 'socket-service/ws');
+                Stomp.over(socket).debug = () => {
+                };
+
+                return new Promise((resolve, reject) => {
+                    socketRef.current = Stomp.over(socket);
+                    socketRef.current.debug = () => {
+                    };
+                    socketRef.current.connect({}, () => {
+                        resolve(socketRef.current);
+                    }, error => {
+                        reject(error);
+                    });
+                });
+            }
+            return socketRef.current;
+        }
+
+        const fetchData = async () => {
+            const socket = await connectToSocket();
+            if(socketRef.current.connected) {
+                socket.subscribe('/server/public', response => {
+                    console.log(response.body);
+                });
+
+                socket.subscribe('/server/sendData', response => {
+                    let parsedResponse = JSON.parse(response.body);
+                    let answer = JSON.parse(parsedResponse.body).fullAnswer;
+                    fetchReply(answer);
+                    setTextareaValue("");
+                });
+            }
+            i++
+        };
+        fetchData();
+        window.addEventListener("resize", handleResize);
 
         return () => {
             window.removeEventListener("resize", handleResize);
-            socketRef.current.disconnect();
+            if (socketRef.current && socketRef.current.connected) {
+                socketRef.current.disconnect();
+            }
         };
     }, []);
 
@@ -77,8 +114,9 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                 type: "question",
             };
             setActiveChat(true);
+            setIsWaiting(true);
             setMessages((prevMessages) => [...prevMessages, newMessage]);
-            socketRef.current.emit("sendDataClient", content);
+            socketRef.current.send('/web/sendMessage', {}, content);
             setPendingReplyServer(true);
         }
     };
@@ -90,9 +128,8 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
             type: "reply",
         };
 
-        console.log(message)
-
         setMessages((prevMessages) => [...prevMessages, fakeReply]);
+        setIsWaiting(false);
     };
 
     useEffect(() => {
@@ -103,7 +140,7 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
 
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+            messagesEndRef.current.scrollIntoView({behavior: "smooth"});
         }
     };
 
@@ -123,7 +160,7 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                 setIsOpenMenuNavbar={setIsOpenMenuNavbar}
                 clearMessages={clearMessages}
             />
-            <hr />
+            <hr/>
             <div className="hidden lg:block absolute top-[50%]">
                 {isHoveredIconMenu ? (
                     isHiddenRight ? (
@@ -162,7 +199,7 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                     isOpenMenuNavbar={isOpenMenuNavbar}
                 />
                 <div className="flex flex-col items-center justify-center h-full logo-chat">
-                    <img src={Logo} alt="icon" className="w-20" />
+                    <img src={Logo} alt="icon" className="w-20"/>
                     <p className="mt-3 text-2xl font-bold">Tôi có thể giúp gì cho bạn ?</p>
                 </div>
                 <div className="flex flex-col h-full overflow-scroll lg:py-10">
@@ -191,11 +228,27 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                             </div>
                         </div>
                     ))}
-                    <div ref={messagesEndRef} />
+                    {isWaiting && (
+                        <div
+                            className={`message-chat reply w-full flex justify-start px-3 mt-5`}
+                        >
+                            <div
+                                className={`flex rounded-lg bg-gray-100 p-4`}
+                            >
+                                <div className="lds-ellipsis">
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <div ref={messagesEndRef}/>
                 </div>
             </div>
             <div className="w-[100%] text-center mb-2">
-                <TopQuestions sendQuestion={sendQuestion} />
+            <TopQuestions sendQuestion={sendQuestion}/>
                 <div className="position">
                     <TextareaAutosize
                         name="question"
@@ -217,7 +270,8 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                                     onClick={handleSendQuestion}
                                 />
                             ) : (
-                                <StopCircleIcon className="w-6 h-6 text-gray-400 absolute right-[9.5%] bottom-12 cursor-progress icon-input-message" />
+                                <StopCircleIcon
+                                    className="w-6 h-6 text-gray-400 absolute right-[9.5%] bottom-12 cursor-progress icon-input-message"/>
                             )}
                         </>
                     )}
