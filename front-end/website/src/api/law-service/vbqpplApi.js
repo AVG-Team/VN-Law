@@ -12,6 +12,9 @@ const VbqpplApi = {
     getAll() {
         return axiosClient.get("/law-service/vbqppl/all");
     },
+    filter(params) {
+        return axiosClient.get("/law-service/vbqppl/filter", { params });
+    },
 };
 
 export default VbqpplApi;

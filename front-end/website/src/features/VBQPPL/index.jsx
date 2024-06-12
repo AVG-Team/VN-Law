@@ -1,62 +1,60 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import VbqpplApi from "~/api/law-service/vbqpplApi";
 import { Col, Pagination, Row, Card, Tag } from "antd";
+import VbqpplApi from "~/api/law-service/vbqpplApi";
 
-export default function VBQPPL(props) {
-    const [page, setPage] = useState(0);
+const categories = [
+    { id: "1", name: "Luật" },
+    { id: "2", name: "Nghị Định" },
+    { id: "3", name: "Quyết Định" },
+    { id: "4", name: "Thông Tư" },
+    { id: "5", name: "Thông Tư Liên Tịch" },
+    { id: "6", name: "Chính trị" },
+];
+
+const VBQPPL = (props) => {
+    const [page, setPage] = useState(1); // Sửa từ 0 thành 1 vì API thường sử dụng trang bắt đầu từ 1
     const [pageSize, setPageSize] = useState(9);
     const [total, setTotal] = useState(0);
     const [content, setContent] = useState([]);
-    const [isValueCategory, setIsValueCategory] = useState(false);
-    const [nameFilter, setNameFilter] = useState("");
-    const [categoryFilter, setCategoryFilter] = useState("");
+    const [type, setType] = useState("");
 
+    // Xác nhận props
     VBQPPL.propTypes = {
         title: PropTypes.string.isRequired,
     };
 
-    const title = props.title;
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const { content, totalElements, size } = await VbqpplApi.getAllByPage({ page, pageSize });
-            setContent(content);
-            setTotal(Math.ceil(totalElements / size));
-        };
-        fetchData();
-    }, [page, pageSize]);
+    // Lấy tiêu đề từ props và đặt tiêu đề trang web
+    const { title } = props;
 
     useEffect(() => {
         document.title = title || "Trang không tồn tại";
     }, [title]);
 
-    const categories = [
-        { id: "1", name: "Luật" },
-        { id: "2", name: "Nghị Định" },
-        { id: "3", name: "Quyết Định" },
-        { id: "4", name: "Thông Tư" },
-        { id: "5", name: "Thông Tư Liên Tịch" },
-        { id: "6", name: "Chính trị" },
-    ];
-
-    const filteredContent = content.filter((item) => {
-        const matchesName = item.title;
-        if (categoryFilter === "-1") return matchesName;
-        const matchesCategory =
-            categoryFilter === "" || getCategoryNameById(categoryFilter).toLowerCase() === item.category.toLowerCase();
-        return matchesName && matchesCategory;
-    });
-
-    const getCategoryNameById = (categoryId) => {
-        const category = categories.find((cat) => cat.id === categoryId);
-        return category ? category.name : "Văn bản khác";
-    };
-
+    // Xử lý khi người dùng thay đổi categoryFilter
     const handleCategoryChange = (value) => {
-        setCategoryFilter(value);
-        setIsValueCategory(value !== "-1");
+        setType(value);
+        setPage(1); // Reset page to 1 when category changes
     };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const { content, totalElements, size } = await VbqpplApi.filter({
+                    type,
+                    pageNo: page,
+                    pageSize,
+                });
+                console.log(content);
+                setContent(content);
+                setTotal(Math.ceil(totalElements / size));
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+    }, [type, page, pageSize]);
 
     return (
         <div className="px-10 py-8 lg:px-20">
@@ -71,29 +69,17 @@ export default function VBQPPL(props) {
                 <select
                     name="category"
                     id="search_category"
-                    value={categoryFilter}
-                    className={`rounded-md border-0 p-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 ${
-                        isValueCategory ? "text-gray-900" : "text-gray-400"
-                    }`}
-                    onChange={handleCategoryChange}
+                    value={type}
+                    className="rounded-md border-0 p-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    onChange={(e) => handleCategoryChange(e.target.value)}
                 >
-                    <option value="-1" className="text-gray-400">
-                        Tìm kiếm theo thể loại...
-                    </option>
+                    <option value="">Tìm kiếm theo thể loại...</option>
                     {categories.map((item) => (
-                        <option key={item.id} value={item.id} className="text-gray-900">
+                        <option key={item.id} value={item.name}>
                             {item.name}
                         </option>
                     ))}
                 </select>
-                <input
-                    name="name"
-                    id="search_name"
-                    placeholder="Tìm kiếm theo tên..."
-                    value={nameFilter}
-                    onChange={(e) => setNameFilter(e.target.value)}
-                    className="rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
             </div>
             <Row gutter={[16, 16]} className="mt-5">
                 {content.map((item) => (
@@ -118,19 +104,21 @@ export default function VBQPPL(props) {
             <Row justify="end">
                 <Col className="flex justify-center mt-5" span={24}>
                     <Pagination
-                        defaultCurrent={1}
+                        defaultCurrent={0}
                         current={page}
-                        onChange={(page, size) => {
-                            setPage(page);
-                            setPageSize(size);
-                        }}
+                        onChange={setPage}
                         pageSizeOptions={[6, 9]}
                         pageSize={pageSize}
+                        onShowSizeChange={(current, size) => {
+                            setPageSize(size);
+                            setPage(0);
+                        }}
                         total={total}
-                        showSizeChanger
                     />
                 </Col>
             </Row>
         </div>
     );
-}
+};
+
+export default VBQPPL;
