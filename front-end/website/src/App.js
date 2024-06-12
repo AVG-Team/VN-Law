@@ -8,13 +8,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const Home = loadable(() => import("~/features/Home"));
 const About = loadable(() => import("~/features/About"));
-const TreeLaw = loadable(() => import("~/features/TreeLaw"));
 const SignUp = loadable(() => import("~/features/SignUp"));
 const VBQPPL = loadable(() => import("~/features/VBQPPL"));
 const SignIn = loadable(() => import("~/features/SignIn"));
+const TreeLaw = loadable(() => import("~/features/TreeLaw"));
 const SignOut = loadable(() => import("~/features/SignOut"));
 const Contact = loadable(() => import("~/features/Contact"));
 const Chatbot = loadable(() => import("~/features/Chatbot"));
+const VerifyEmail = loadable(() => import("~/features/VerifyEmail"));
 const VBBQPPLDetail = loadable(() => import("~/features/VBQPPL/detail"));
 const ForgotPassword = loadable(() => import("~/features/ForgotPassword"));
 const Form = loadable(() => import("~/features/Form"));
@@ -25,14 +26,6 @@ function App() {
                 <Route element={<AuthLayout />}>
                     <Route path="/dang-xuat" element={<SignOut />} />
                     {/* <Route path="/chat-bot" element={<Chatbot />} /> */}
-                    <Route
-                        path="/chatbot"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <Chatbot title="Chat Bot" />
-                            </Suspense>
-                        }
-                    />
                 </Route>
                 <Route element={<BasicLayout />}>
                     <Route
@@ -114,6 +107,22 @@ function App() {
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <TreeLaw title="Pháp Điển" />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/xac-thuc"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <VerifyEmail />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/chatbot"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <Chatbot title="Chat Bot" />
                             </Suspense>
                         }
                     />

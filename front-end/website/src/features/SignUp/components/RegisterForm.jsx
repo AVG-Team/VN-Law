@@ -71,11 +71,7 @@ export function RegisterForm() {
                     buttonClose: false,
                 });
             } catch (err) {
-                if (err.response && err.response.status === 401) {
-                    toast.error(err.response.data);
-                } else {
-                    console.log("Error fetching server: ", err);
-                }
+                toast.error("Email đã tồn tại");
             }
         }
     }

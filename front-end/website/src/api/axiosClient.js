@@ -36,8 +36,32 @@ axiosClient.interceptors.response.use(
     function (error) {
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         // Do something with response error
-        console.log(error);
-        return Promise.reject(new Error(error));
+        console.log("Response error: ", error);
+
+        if (error.response) {
+            // Server trả về lỗi
+            const status = error.response.status;
+            const data = error.response.data;
+
+            if (status === 401) {
+                return Promise.reject({
+                    status: 401,
+                    message: data.message || "Tài khoản hoặc mật khẩu không đúng",
+                });
+            } else if (status === 400) {
+                return Promise.reject({
+                    status: 400,
+                    message: data.message || "Tài khoản chưa được kích hoạt",
+                });
+            } else {
+                // Xử lý các trường hợp lỗi khác nếu cần
+                return Promise.reject(error);
+            }
+        } else {
+            // Xử lý lỗi khi không nhận được phản hồi từ server
+            console.log("Network error: ", error.message);
+            return Promise.reject(error);
+        }
     },
 );
 

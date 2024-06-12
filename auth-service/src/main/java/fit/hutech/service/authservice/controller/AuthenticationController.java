@@ -81,6 +81,7 @@ public class AuthenticationController {
             User user = userRepository.findByVerificationCode(verificationCode)
                     .orElseThrow(() -> new IllegalStateException("Tài khoản đã được kích hoạt hoặc chưa được đăng ký"));
 
+            System.out.printf("hehe %s", user.getEmail());
             user.setEnabled(true);
             user.setVerificationCode(null);
             userRepository.save(user);
@@ -91,22 +92,6 @@ public class AuthenticationController {
         }
     }
 
-
-
-//    @PutMapping("/forgot-password")
-//    public ResponseEntity<?> forgotPassword(@RequestParam String email){
-//        return ResponseEntity.status(HttpStatus.OK).body(authService.forgotPassword(email));
-//    }
-//
-//    @PutMapping("/set-new-password")
-//    public ResponseEntity<?> setNewPassword(@RequestBody ForgotPasswordRequest request){
-//        try{
-//            return ResponseEntity.status(HttpStatus.OK).body(authService.setPassword(request.getEmail(), request.getResetPasswordToken(), request.getNewPassword())) ;
-//        }
-//        catch (Exception e){
-//            throw e;
-//        }
-//    }
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         try {
@@ -148,6 +133,11 @@ public class AuthenticationController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/test")
+    public String test(){
+        return "Hello";
     }
 
 

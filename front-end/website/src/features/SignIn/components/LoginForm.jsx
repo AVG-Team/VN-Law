@@ -13,7 +13,6 @@ import { authenticate } from "../../../api/auth-service/authClient";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import ActivateAccountButton from "./ActivateAccountButton";
 
-
 export function LoginForm() {
     const navigate = useNavigate();
     const [errors, setErrors] = useState({});
@@ -61,10 +60,10 @@ export function LoginForm() {
                     buttonClose: false,
                 });
             } catch (err) {
-                if (err.response && err.response.status === 401) {
-                    toast.error(err.response);
-                } else if (err.response && err.response.status === 400) {
-                    toast.error(err.response);
+                if (err.status === 401) {
+                    toast.error(err.message);
+                } else if (err.status === 400) {
+                    toast.error(err.message);
                 } else {
                     console.log("Error fetching server: ", err);
                 }
@@ -87,7 +86,6 @@ export function LoginForm() {
 
     return (
         <Box className="px-5 mx-auto rounded shadow-2xl py-7 sm:w-6/12 lg:w-4/12">
-            <ActivateAccountButton />
             <div className="mb-2 text-center">
                 <div className="flex justify-center ">
                     <img loading="lazy" className="!w-2/4 " src={Logo} alt="Logo" />
