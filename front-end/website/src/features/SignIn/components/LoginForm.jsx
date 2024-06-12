@@ -1,22 +1,22 @@
 import Box from "@mui/material/Box";
-import {toast} from 'react-toastify';
+import { toast } from "react-toastify";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
 import { useState, React } from "react";
 import Button from "@mui/material/Button";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Logo from "~/assets/images/logo/logo2.png";
 import { StorageKeys } from "../../../common/constants/keys";
-import { authenticate } from '../../../api/auth-service/authClient';
+import { authenticate } from "../../../api/auth-service/authClient";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import ActivateAccountButton from "./ActivateAccountButton";
 
 
 export function LoginForm() {
     const navigate = useNavigate();
-    const [errors,setErrors] = useState({});
+    const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [hasValuePassword, setHasValuePassword] = useState(false);
 
@@ -28,7 +28,7 @@ export function LoginForm() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        const {email,password} = formData;
+        const { email, password } = formData;
 
         // validate
         const validationErrors = {};
@@ -49,24 +49,26 @@ export function LoginForm() {
 
         //fetch api
         if (Object.keys(validationErrors).length === 0) {
-            try{
-                const response = await authenticate(formData);                
-                toast.success(response.data.message,{
-                    onClose: () => navigate('/'),
+            try {
+                const response = await authenticate({
+                    email: formData.email,
+                    password: formData.password,
+                });
+                console.log("response: ", response);
+                toast.success(response.message, {
+                    onClose: () => navigate("/"),
                     autoClose: 1000,
-                    buttonClose: false
-                }) ;
-            }catch(err){
-                if(err.response && err.response.status === 401){
-                    toast.error(err.response.data);
+                    buttonClose: false,
+                });
+            } catch (err) {
+                if (err.response && err.response.status === 401) {
+                    toast.error(err.response);
+                } else if (err.response && err.response.status === 400) {
+                    toast.error(err.response);
+                } else {
+                    console.log("Error fetching server: ", err);
                 }
-                else if(err.response && err.response.status === 400){
-                    toast.error(err.response.data);
-                }
-                else{
-                    console.log("Error fetching server: ",err);
-                }
-            }  
+            }
         }
     }
 

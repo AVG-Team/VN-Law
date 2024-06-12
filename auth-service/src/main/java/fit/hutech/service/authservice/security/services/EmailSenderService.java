@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 public class EmailSenderService {
     private final JavaMailSender mailSender;
 
+
     public void sendEmailWithToken(String email, String verificationCode) throws MessagingException{
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);

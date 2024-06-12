@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/auth-service/auth")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthenticationController {
@@ -36,17 +36,12 @@ public class AuthenticationController {
     public ResponseEntity<?> register(
             @RequestBody RegisterRequest request
     ) {
-        try {
             AuthenticationResponse authResponse = authService.register(request);
             if (authResponse.getMessage().equals("Email đã được đăng ký")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(authResponse.getMessage());
             }
             return ResponseEntity.ok(authResponse);
-        } catch (DisabledException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Email đã được đăng ký");
-        }
     }
 
     @PostMapping("/authenticate")
@@ -154,4 +149,6 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+
 }

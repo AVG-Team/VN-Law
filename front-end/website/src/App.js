@@ -22,10 +22,18 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                {/*<Route element={<AuthLayout />}>*/}
-                {/*    <Route path="/dang-xuat" element={<SignOut />} />*/}
-                {/*    /!* <Route path="/chat-bot" element={<Chatbot />} /> *!/*/}
-                {/*</Route>*/}
+                <Route element={<AuthLayout />}>
+                    <Route path="/dang-xuat" element={<SignOut />} />
+                    {/* <Route path="/chat-bot" element={<Chatbot />} /> */}
+                    <Route
+                        path="/chatbot"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <Chatbot title="Chat Bot" />
+                            </Suspense>
+                        }
+                    />
+                </Route>
                 <Route element={<BasicLayout />}>
                     <Route
                         index
@@ -78,14 +86,6 @@ function App() {
                 </Route>
                 <Route element={<ContentLayout />}>
                     <Route
-                        path="/chatbot"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <Chatbot title="Chat Bot" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
                         path="/dang-nhap"
                         element={
                             <Suspense fallback={<CircularProgress />}>
@@ -109,8 +109,6 @@ function App() {
                             </Suspense>
                         }
                     />
-                </Route>
-                <Route element={<ContentLayout />}>
                     <Route
                         path="/phap-dien"
                         element={

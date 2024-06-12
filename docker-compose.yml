@@ -22,7 +22,6 @@ services:
       - db-network
     volumes:
       - chroma_data:/chroma/chroma
-
 volumes:
   mysql_data:
   chroma_data:
