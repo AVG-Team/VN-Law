@@ -20,12 +20,19 @@ public class TableController {
 
     private final TableService tableService;
 
+    @GetMapping("/all")
+    public ResponseEntity<Object> getAllTable(
+            @RequestParam(name = "pageNo", value = "pageNo") Optional<Integer> pageNo,
+            @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize){
+        return ResponseHandler.responseBuilder("Complete",
+                HttpStatus.OK,tableService.getAllTable(pageNo,pageSize));
+    }
     @GetMapping("/filter")
     public ResponseEntity<Object> getAllTableByFilter(
             @RequestParam(name = "content", value = "content") Optional<String> content,
             @RequestParam(name = "pageNo", value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize){
         return ResponseHandler.responseBuilder("Complete",
-                HttpStatus.OK,tableService.getAllTable(content,pageNo,pageSize));
+                HttpStatus.OK,tableService.getAllTableByFilter(content,pageNo,pageSize));
     }
 }

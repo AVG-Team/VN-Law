@@ -17,7 +17,7 @@ const Contact = loadable(() => import("~/features/Contact"));
 const Chatbot = loadable(() => import("~/features/Chatbot"));
 const VBBQPPLDetail = loadable(() => import("~/features/VBQPPL/detail"));
 const ForgotPassword = loadable(() => import("~/features/ForgotPassword"));
-
+const Form = loadable(() => import("~/features/Form"));
 function App() {
     return (
         <BrowserRouter>
@@ -56,6 +56,14 @@ function App() {
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <VBQPPL title="Văn Bản Quy Phạm Pháp Luật" />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/bang-bieu"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <Form title="Bảng Biểu" />
                             </Suspense>
                         }
                     />

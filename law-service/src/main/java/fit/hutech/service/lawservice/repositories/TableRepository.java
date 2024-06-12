@@ -17,4 +17,8 @@ public interface TableRepository extends JpaRepository<Tables,String> {
             " from Tables t " +
             " where ?1 = '' OR t.html like %?1%")
     public Page<TableDTO> findAllByFilter(String content, Pageable pageable);
+
+    @Query(" select new fit.hutech.service.lawservice.DTO.TableDTO(t.id,t.html)" +
+            " from Tables t ")
+    public Page<TableDTO> findAllTable(Pageable pageable);
 }
