@@ -16,7 +16,7 @@ export function Navbar() {
     const isAuthtenticated = !!Cookies.get(StorageKeys.ACCESS_TOKEN);
     const handleLogout = () => {
         Cookies.remove(StorageKeys.ACCESS_TOKEN);
-    };   
+    }
     return (
         <Disclosure as="nav" className="bg-white shadow-md">
             {({ open }) => (
@@ -40,20 +40,25 @@ export function Navbar() {
                                     <img className="w-40" src={Logo} alt="Logo" />
                                 </NavLink>
                                 <div className="hidden md:ml-6 md:flex md:space-x-8">
-                                    {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
-                                    {pages.map((page) => (
-                                        <NavLink
-                                            key={page.key}
-                                            to={page.href}
-                                            className={`inline-flex items-center px-1 pt-1 text-sm font-semibold border-b-2 ${
-                                                location.pathname === page.href
-                                                    ? 'text-gray-900 border-indigo-500'
-                                                    : 'text-gray-500 border-transparent hover:border-gray-300 hover:text-gray-700'
-                                            }`}
-                                        >
-                                            {page.name}
-                                        </NavLink>
-                                    ))}
+                                    {pages.map((page) =>
+                                        page.href === location.pathname ? (
+                                            <a
+                                                key={page.key}
+                                                href={page.href}
+                                                className="inline-flex items-center px-1 pt-1 text-sm font-semibold text-gray-900 border-b-2 border-indigo-500"
+                                            >
+                                                {page.name}
+                                            </a>
+                                        ) : (
+                                            <a
+                                                key={page.key}
+                                                href={page.href}
+                                                className="inline-flex items-center px-1 pt-1 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
+                                            >
+                                                {page.name}
+                                            </a>
+                                        ),
+                                    )}
                                 </div>
                             </div>
                             <div className="flex items-center">
@@ -134,9 +139,8 @@ export function Navbar() {
 
                     <Disclosure.Panel className="md:hidden">
                         <div className="pt-2 pb-3 space-y-1">
-                            {/* Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" */}
                             {pages.map((page) =>
-                                page.current ? (
+                                page.href === location.pathname ? (
                                     <Disclosure.Button
                                         as="a"
                                         href={page.href}
