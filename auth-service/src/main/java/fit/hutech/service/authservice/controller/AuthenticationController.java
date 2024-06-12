@@ -36,11 +36,8 @@ public class AuthenticationController {
     public ResponseEntity<?> register(
             @RequestBody RegisterRequest request
     ) {
-        System.out.println("sssd");
             AuthenticationResponse authResponse = authService.register(request);
-        System.out.println("hehe");
             if (authResponse.getMessage().equals("Email đã được đăng ký")) {
-                System.out.println("11");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(authResponse.getMessage());
             }
@@ -149,8 +146,5 @@ public class AuthenticationController {
         }
     }
 
-    @GetMapping("/test")
-    public String test(){
-        return "Test con cac ne ";
-    }
+
 }
