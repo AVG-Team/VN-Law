@@ -22,6 +22,16 @@ export const authenticate = async (authenticateRequest) => {
     }
 };
 
+export const confirmToken = async (token) => {
+    try {
+        const url = `/auth-service/confirm/${token}`;
+        return axiosClient.get(url, { token });
+    } catch (err) {
+        console.log("Verify token error: ", err);
+        throw err;
+    }
+};
+
 export const register = (registerRequest) => {
     return axiosClient.post("/auth-service/auth/register", registerRequest);
 };

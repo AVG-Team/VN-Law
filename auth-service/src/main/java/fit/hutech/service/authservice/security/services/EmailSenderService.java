@@ -26,7 +26,7 @@ public class EmailSenderService {
                         "<html>" +
                                 "<body>" +
                                     "<p>Vui lòng nhấn vào nút bên dưới để kích hoạt tài khoản:</p>" +
-                                    "<a href='http://localhost:3000/dang-nhap?verificationCode=%s' style='display: inline-block; padding: 10px 20px; background-color: blue; color: white; text-decoration: none; border-radius: 4px;'>Kích hoạt tài khoản</a>" +
+                                    "<a href='http://localhost:3000/xac-thuc?verificationCode=%s' style='display: inline-block; padding: 10px 20px; background-color: blue; color: white; text-decoration: none; border-radius: 4px;'>Kích hoạt tài khoản</a>" +
                                 "</body>" +
                         "</html>",
                         verificationCode

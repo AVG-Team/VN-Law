@@ -32,7 +32,7 @@ spring:
               enabled: true
               allowedHeaders: "*"
               allowedMethods: "*"
-              allowedOrigins: "*"
+              allowedOrigins: "http://localhost:3000"
 
         - id: law-service
           uri: http://localhost:9002
