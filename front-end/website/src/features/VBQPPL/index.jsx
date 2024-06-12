@@ -8,8 +8,7 @@ const categories = [
     { id: "2", name: "Nghị Định" },
     { id: "3", name: "Quyết Định" },
     { id: "4", name: "Thông Tư" },
-    { id: "5", name: "Thông Tư Liên Tịch" },
-    { id: "6", name: "Chính trị" },
+    { id: "5", name: "Chính trị" },
 ];
 
 const VBQPPL = (props) => {

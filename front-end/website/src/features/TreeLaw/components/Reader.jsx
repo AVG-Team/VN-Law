@@ -75,7 +75,7 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
                     borderRadius: 4,
                 }}
             >
-                <Search placeholder="Tìm kiếm một điều mục..." loading={loading} />
+                {/* <Search placeholder="Tìm kiếm một điều mục..." loading={loading} /> */}
                 {/* <h1 style={{ textAlign: "center" }}>{selectedChapter.title}</h1> */}
             </div>
             <div style={{ scrollBehavior: "smooth" }} ref={autoAnimateParent}>
