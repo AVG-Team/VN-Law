@@ -7,7 +7,7 @@ export default function Contact(props) {
             <div className="max-w-screen-lg py-4 mx-auto lg:py-12 pe-2 ps-2">
                 <h2 className="mb-4 text-4xl font-extrabold tracking-tight text-center dark:text-gray-900">Liên hệ</h2>
                 <p className="mb-8 font-light text-center text-gray-400 lg:mb-5 dark:text-gray-3000 sm:text-xl">
-                    Chúng tôi mong muốn lắng nghe ý kiến của quý khách. Vui lòng gửi mọi yêu cầu thắc mắc theo thông tin
+                    Chúng tôi mong muốn lắng nghe ý kiến của bạn. Vui lòng gửi mọi yêu cầu thắc mắc theo thông tin
                     bên dưới, chúng tôi sẽ liên lạc với bạn sớm nhất có thể.{" "}
                 </p>
                 <div className="flex flex-col lg:flex-row">
