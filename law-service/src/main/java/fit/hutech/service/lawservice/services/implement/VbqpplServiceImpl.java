@@ -1,5 +1,6 @@
 package fit.hutech.service.lawservice.services.implement;
 
+import fit.hutech.service.lawservice.DTO.VbqpplDTO;
 import fit.hutech.service.lawservice.exception.NotFoundException;
 import fit.hutech.service.lawservice.models.Vbqppl;
 import fit.hutech.service.lawservice.repositories.VbqpplRepository;
@@ -39,16 +40,13 @@ public class VbqpplServiceImpl implements VbqpplService {
     }
 
     @Override
-    public List<Vbqppl> getVbqpplByType(String type, Optional<Integer> pageNo, Optional<Integer> pageSize) {
+    public Page<VbqpplDTO> getVbqpplByType(Optional<String> type, Optional<Integer> pageNo, Optional<Integer> pageSize) {
         Pageable pageable = PageRequest.of(pageNo.orElse(0), pageSize.orElse(9));
-        return vbqpplRepository.findAllByType(type,pageable);
+        if(type.isPresent()){
+            return vbqpplRepository.findAllByType(Optional.of(type.get()),pageable);
+        }else {
+            return vbqpplRepository.findAllByType(Optional.of(""),pageable);
+        }
+
     }
-
-    @Override
-    public List<Vbqppl> getVbqpplByName(String name , Optional<Integer> pageNo, Optional<Integer> pageSize) {
-        Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(9));
-        return vbqpplRepository.findAllByName(name,pageable);
-    }
-
-
 }

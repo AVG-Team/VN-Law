@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -41,24 +42,16 @@ public class VbqpplController {
                 HttpStatus.OK,this.vbqpplService.getAll());
     }
 
-    @GetMapping("/filter/{type}")
+    @GetMapping("/filter")
     public ResponseEntity<Object> getAllByType(
-            @PathVariable String type,
+            @RequestParam(name = "type", value = "type") Optional<String> type,
             @RequestParam(name = "pageNo",value = "pageNo") Optional<Integer> pageNo,
-            @RequestParam(name = "pageSize",value = "pageSize") Optional<Integer> pageSize){
-        String encodedType = URLEncoder.encode(type, StandardCharsets.UTF_8);
-        return ResponseHandler.responseBuilder("Complete",
-                HttpStatus.OK,this.vbqpplService.getVbqpplByType(encodedType,pageNo,pageSize));
-    }
-
-    @GetMapping("/filter/{name}")
-    public ResponseEntity<Object> getAllByName(
-            @PathVariable String name,
-            @RequestParam(name = "pageNo", value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize
     ){
+
+        String decodedType = URLDecoder.decode(type.orElse(""),StandardCharsets.UTF_8);
         return ResponseHandler.responseBuilder("Complete",
-                HttpStatus.OK,this.vbqpplService.getVbqpplByName(name,pageNo,pageSize));
+                HttpStatus.OK,this.vbqpplService.getVbqpplByType(Optional.of(decodedType.toUpperCase()),pageNo,pageSize));
     }
 
 

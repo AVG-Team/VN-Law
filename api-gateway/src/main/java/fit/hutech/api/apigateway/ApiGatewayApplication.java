@@ -9,7 +9,6 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableDiscoveryClient
-@EnableZuulProxy
 @SpringBootApplication
 public class ApiGatewayApplication {
 
