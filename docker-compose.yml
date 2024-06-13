@@ -95,6 +95,13 @@ services:
     networks:
       - vn-law_db-network
 
+  react-app:
+    build: ./front-end/website
+    ports:
+      - "3000:80"
+    networks:
+       - vn-law_db-network
+
 volumes:
   mysql_data:
   chroma_data:

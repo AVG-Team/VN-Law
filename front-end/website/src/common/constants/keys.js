@@ -3,6 +3,6 @@ const StorageKeys = {
     REFRESH_TOKEN: "REFRESH_TOKEN"
 };
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:9001/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://api-gateway:9001/api';
 
 export { StorageKeys, API_BASE_URL };

@@ -22,7 +22,7 @@ public class SocketServiceImpl implements SocketService {
 
     public SocketServiceImpl() {
         Configuration config = new Configuration();
-        config.setHostname("localhost");
+        config.setHostname("socket-service");
         config.setPort(9004);
         server = new SocketIOServer(config);
     }
