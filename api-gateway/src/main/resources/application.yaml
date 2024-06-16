@@ -16,6 +16,17 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+            '[/**]':
+                allowedOrigins: "*"
+                allowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                allowedHeaders: "*"
+                maxAge: 3600
       routes:
         - id: auth-service
           uri: lb://auth-service
@@ -61,7 +72,7 @@ spring:
             - StripPrefix=1
           metadata:
             cors:
-              allowedOrigins: 'http://react-app:80'
+              allowedOrigins: 'http://localhost:80'
               allowedMethods:
                 - GET
                 - POST
@@ -79,8 +90,6 @@ spring:
                 - POST
               allowedHeaders: '*'
               maxAge: 30
-      default-filters:
-        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
   devtools:
     restart:
       enabled: true

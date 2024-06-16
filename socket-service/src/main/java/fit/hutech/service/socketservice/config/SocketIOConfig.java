@@ -19,12 +19,8 @@ public class SocketIOConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         String reactUrl = System.getenv("REACT_URL");
-        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS(); // Endpoint WebSocket và hỗ trợ SockJS
-        registry.addEndpoint("/ws").setAllowedOrigins(reactUrl).withSockJS();
-        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:3000").withSockJS();
+        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
         registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:80").withSockJS();
-        registry.addEndpoint("/ws").setAllowedOrigins("http://react-app:3000").withSockJS();
-        registry.addEndpoint("/ws").setAllowedOrigins("http://react-app:80").withSockJS();
     }
 
     @Bean

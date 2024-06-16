@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = process.env.REACT_APP_API_GATEWAY_URL + '/' || "http://api-gateway:9000/";
+const baseUrl = process.env.REACT_APP_API_GATEWAY_URL + '/' || "http://localhost:9000/";
 const axiosClient = axios.create({
     baseURL: baseUrl,
 });
