@@ -1,7 +1,8 @@
 import axios from "axios";
 
+const baseUrl = process.env.REACT_APP_API_GATEWAY_URL + '/' || "http://api-gateway:9000/";
 const axiosClient = axios.create({
-    baseURL: "http://api-gateway:9000/",
+    baseURL: baseUrl,
 });
 
 // Interceptors

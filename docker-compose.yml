@@ -38,7 +38,7 @@ services:
       context: ./api-gateway
       dockerfile: Dockerfile
     container_name: api-gateway
-    depends_on: # Đợi Eureka khởi động trước
+    depends_on:
       - eureka-server
     ports:
       - "9000:9000"
@@ -66,7 +66,7 @@ services:
       spring.jpa.hibernate.ddl-auto: update
       spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
       logging.level.org.springframework.web: DEBUG
-      eureka.client.enabled: false
+      eureka.client.serviceUrl.defaultZone: http://eureka-server:8761/eureka
       CHROMA_COLLECTION_NAME: chat-service
       CHROMA_URL: http://chroma:8000
       DB_NAME: law_service
@@ -92,15 +92,25 @@ services:
       spring.jpa.hibernate.ddl-auto: update
       spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
       eureka.client.serviceUrl.defaultZone: http://eureka-server:8761/eureka
+      REACT_URL: http://react-app:80
     networks:
       - vn-law_db-network
 
   react-app:
     build: ./front-end/website
+    depends_on:
+      - api-gateway
+      - eureka-server
+      - chat-service
+      - socket-service
     ports:
-      - "3000:80"
+      - "80:80"
     networks:
        - vn-law_db-network
+    env_file:
+      - ./front-end/website/.env
+    volumes:
+      - ./front-end/website/build:/usr/share/nginx/html
 
 volumes:
   mysql_data:

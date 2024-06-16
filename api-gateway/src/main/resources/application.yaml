@@ -61,7 +61,7 @@ spring:
             - StripPrefix=1
           metadata:
             cors:
-              allowedOrigins: 'http://localhost:3000'
+              allowedOrigins: 'http://react-app:80'
               allowedMethods:
                 - GET
                 - POST
@@ -81,3 +81,6 @@ spring:
               maxAge: 30
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+  devtools:
+    restart:
+      enabled: true
