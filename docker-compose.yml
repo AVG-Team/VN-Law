@@ -92,7 +92,7 @@ services:
       spring.jpa.hibernate.ddl-auto: update
       spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
       eureka.client.serviceUrl.defaultZone: http://eureka-server:8761/eureka
-      REACT_URL: http://localhost:80
+      REACT_URL: http://127.0.0.1:80
     networks:
       - vn-law_db-network
 

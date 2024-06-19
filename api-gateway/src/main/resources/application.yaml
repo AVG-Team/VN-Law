@@ -72,7 +72,7 @@ spring:
             - StripPrefix=1
           metadata:
             cors:
-              allowedOrigins: 'http://localhost:80'
+              allowedOrigins: 'http://127.0.0.1:80'
               allowedMethods:
                 - GET
                 - POST
