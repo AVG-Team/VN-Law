@@ -10,7 +10,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>law</module>
-        <module>chat-service</module>
         <module>crawl</module>
     </modules>
 
