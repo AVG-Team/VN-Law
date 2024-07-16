@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>law-service</module>
+        <module>law</module>
         <module>chat-service</module>
         <module>crawl</module>
     </modules>
