@@ -26,49 +26,24 @@ ChatGPT API, được phát triển bởi OpenAI, là một mô hình xử lý n
 
 ### LangChain (OpenAI)
 
-LangChain, một phần của bộ công cụ mô hình ngôn ngữ của OpenAI, đóng vai trò là một công cụ trung gian mạnh mẽ trong khung RAG, cho phép tích hợp và giao tiếp liền mạch giữa các thành phần khác nhau. Nó hoạt động như một cầu nối, tạo điều kiện cho việc chuyển giao thông tin và dữ liệu giữa ChatGPT API và Weaviate, đảm bảo một luồng công việc trơn tru và hiệu quả. Các khả năng xử lý ngôn ngữ tiên tiến của LangChain cải thiện hiệu suất tổng thể và khả năng tương tác của hệ thống RAG, cho phép việc tạo nội dung một cách hiệu quả và liền mạch hơn.
-
-### Weaviate
-
-Weaviate là một hệ thống đồ thị tri thức đổi mới cung cấp các khả năng quản lý và truy xuất dữ liệu mạnh mẽ. Nó là một kho lưu trữ toàn diện để tổ chức và lưu trữ dữ liệu có cấu trúc và không có cấu trúc, cho phép truy xuất thông tin và tổng hợp nội dung hiệu quả trong khung RAG. Với các tính năng tìm kiếm và truy vấn tiên tiến, Weaviate tạo điều kiện cho việc truy xuất thông tin liên quan và phù hợp về ngữ cảnh, làm giàu quá trình tạo nội dung và cải thiện tính chính xác và sâu sắc tổng thể của các đầu ra được tạo ra bởi hệ thống RAG.
-
-## Tăng Cường Tính Quan Sát
-
-Sự tăng cường tính quan sát của RAG được thực hiện thông qua việc tích hợp các công cụ sau:
+LangChain, một phần của bộ công cụ mô hình ngôn ngữ của OpenAI, đóng vai trò là một công cụ trung gian mạnh mẽ trong khung RAG, cho phép tích hợp và giao tiếp liền mạch giữa các thành phần khác nhau. Nó hoạt động như một cầu nối, tạo điều kiện cho việc chuyển giao thông tin và dữ liệu giữa ChatGPT API và Chroma, đảm bảo một luồng công việc trơn tru và hiệu quả. Các khả năng xử lý ngôn ngữ tiên tiến của LangChain cải thiện hiệu suất tổng thể và khả năng tương tác của hệ thống RAG, cho phép việc tạo nội dung một cách hiệu quả và liền mạch hơn.
 
 <img
     loading="lazy"
-    src={require("../../static/img/docs/diagram/o11y.png").default}
-    alt="observability"
+    src={require("../../static/img/qa.png").default}
+    alt="retreival augmented generation"
     style={{ width: "100%", height: "auto" }}
 />
 
-### OpenTelemetry
+### Chroma DB
 
-OpenTelemetry cho phép thu thập các dấu vết phân tán và các số liệu, cung cấp thông tin toàn diện về hiệu suất và hành vi của các thành phần tích hợp.
+Chroma DB là một kho lưu trữ vectơ có nguồn mở và được sử dụng để lưu trữ và truy xuất các phần nhúng vectơ. Mục đích chính của nó là lưu trữ các phần nhúng và siêu dữ liệu liên quan để các mô hình ngôn ngữ mở rộng sử dụng trong tương lai. Hơn nữa, nó cũng có thể được sử dụng cho các công cụ tìm kiếm ngữ nghĩa hoạt động trên dữ liệu văn bản. Nó là một kho lưu trữ toàn diện để tổ chức và lưu trữ dữ liệu có cấu trúc và không có cấu trúc, cho phép truy xuất thông tin và tổng hợp nội dung hiệu quả trong khung RAG. Với các tính năng tìm kiếm và truy vấn tiên tiến, Chroma tạo điều kiện cho việc truy xuất thông tin liên quan và phù hợp về ngữ cảnh, làm giàu quá trình tạo nội dung và cải thiện tính chính xác và sâu sắc tổng thể của các đầu ra được tạo ra bởi hệ thống RAG.
 
-### Promtail
-
-Promtail cung cấp các khả năng quản lý log, cho phép thu thập và xử lý trung tâm dữ liệu log từ các nguồn khác nhau.
-
-### Loki
-
-Loki, một hệ thống tổng hợp log có khả năng mở rộng theo chiều ngang và có sẵn nhiều, đảm bảo việc lưu trữ và truy vấn log hiệu quả.
-
-### Tempo
-
-Tempo, một hệ thống phân tán theo dõi với khối lượng lớn, tích hợp dễ dàng với OpenTelemetry để cung cấp khả năng nhìn thấy toàn diện về hiệu suất của khung RAG. Cơ chế lưu trữ và truy xuất hiệu quả của nó cho phép theo dõi và phân tích các dấu vết phân tán, tạo điều kiện cho việc xác định các chướng ngại và tối ưu hiệu suất.
-
-### Grafana
-
-Grafana, một nền tảng quan sát linh hoạt, bổ sung cho khung RAG bằng cách cung cấp một bảng điều khiển tùy chỉnh và tương tác để hiển thị các số liệu và dấu vết khác nhau được thu thập bởi OpenTelemetry và Prometheus.
-
-### Prometheus
-
-Prometheus, một công cụ giám sát và cảnh báo mạnh mẽ, cung cấp các khả năng lưu trữ và truy vấn dữ liệu chuỗi thời gian cho hiệu suất của hệ thống RAG. Điều này cho phép theo dõi hiệu quả các chỉ số hiệu suất chính và phát hiện các biến thể bất thường trong hệ thống RAG.
-
-## Lợi Ích của Tích Hợp Quan Sát
-
-Bằng cách tích hợp một cách liền mạch các công cụ quan sát tiên tiến vào khung RAG, hệ thống không chỉ đảm bảo tính tin cậy và hiệu quả của các hoạt động mà còn cho phép nhận được thông tin thời gian thực và quản lý chủ động về hiệu suất của nó, từ đó trang bị cho người dùng khả năng tận dụng hết tiềm năng của nó trong việc tạo ra các đầu ra chính xác, mạch lạc và sáng tạo.
+<img
+    loading="lazy"
+    src={require("../../static/img/chroma.png").default}
+    alt="retreival augmented generation"
+    style={{ width: "100%", height: "auto" }}
+/>
 
 </p>

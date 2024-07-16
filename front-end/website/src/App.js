@@ -26,6 +26,14 @@ function App() {
                 <Route element={<AuthLayout />}>
                     <Route path="/dang-xuat" element={<SignOut />} />
                     {/* <Route path="/chat-bot" element={<Chatbot />} /> */}
+                    <Route
+                        path="/chatbot"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <Chatbot title="Chat Bot" />
+                            </Suspense>
+                        }
+                    />
                 </Route>
                 <Route element={<BasicLayout />}>
                     <Route
@@ -118,14 +126,7 @@ function App() {
                             </Suspense>
                         }
                     />
-                    <Route
-                        path="/chatbot"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <Chatbot title="Chat Bot" />
-                            </Suspense>
-                        }
-                    />
+
                 </Route>
             </Routes>
         </BrowserRouter>

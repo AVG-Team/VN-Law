@@ -108,4 +108,9 @@ public class RAGController {
         AnswerResult answer = ragService.getAnswer(question);
         return new ResponseEntity<>(answer, HttpStatus.OK);
     }
+
+    public String createCrhomaData() {
+
+        return "Create Chroma Data";
+    }
 }

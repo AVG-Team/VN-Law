@@ -37,7 +37,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
     useEffect(() => {
         const connectToSocket = async () => {
             if (!socketRef.current) {
-                let socket = new SockJS(baseUrl + 'socket-service/ws');
+                let socket = new SockJS(baseUrl + '/socket-service/ws');
                 Stomp.over(socket).debug = () => {
                 };
 

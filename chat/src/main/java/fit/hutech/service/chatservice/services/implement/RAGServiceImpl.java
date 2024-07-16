@@ -131,7 +131,7 @@ public class RAGServiceImpl implements RAGService {
                         + "Luôn bám sát câu trả lời và câu hỏi sau : \n"
                         + "{{contents}}" + "\n"
                         + "\n"
-                        + "Và bạn luôn phải trả lời bằng tiếng việt" + "\n"
+                        + "Và bạn luôn phải trả lời bằng tiếng việt " + "\n"
         );
         if ((long) relevantEmbeddings.size() == 0) {
             return new AnswerResult("Câu hỏi nằm ngoài khả năng của tôi.Tôi chỉ hỗ trợ những câu hỏi liên quan tới pháp luật của Việt Nam.", null, TypeAnswerResult.NOANSWER);

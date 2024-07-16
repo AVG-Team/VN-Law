@@ -13,7 +13,7 @@ const config = {
     favicon: "img/logo-circle.ico",
 
     // Set the production url of your site here
-    url: "https://vn-law-docs.netlify.app/",
+    url: "https://vn-law-docs.netlify.app/#",
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
     baseUrl: "/",
@@ -64,6 +64,7 @@ const config = {
                 logo: {
                     alt: "VN Law Logo",
                     src: "img/logo-circle.png",
+                    href: "https://vn-law-docs.netlify.app/#",
                 },
                 items: [
                     {
@@ -109,8 +110,8 @@ const config = {
                                 href: "https://openai.com/",
                             },
                             {
-                                label: "Weaviate",
-                                href: "https://weaviate.io/",
+                                label: "Chroma",
+                                href: "https://www.trychroma.com/",
                             },
                         ],
                     },

@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>fit.hutech.service</groupId>
-    <artifactId>chat-service</artifactId>
+    <artifactId>chat</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>chat-service</name>
     <description>chat-service</description>
