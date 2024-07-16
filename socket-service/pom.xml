@@ -46,7 +46,7 @@
         </dependency>
         <dependency>
             <groupId>fit.hutech.service</groupId>
-            <artifactId>chat</artifactId>
+            <artifactId>chat-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

@@ -10,8 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>law-service</module>
-        <module>chat</module>
-        <module>recommend-service</module>
+        <module>chat-service</module>
         <module>crawl</module>
     </modules>
 
