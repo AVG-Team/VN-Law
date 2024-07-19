@@ -18,8 +18,9 @@ export function RegisterForm() {
     const [hasValuePassword, setHasValuePassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [hasValueConfirmPassword, setHasValueConfirmPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        username: "",
+        name: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -28,12 +29,12 @@ export function RegisterForm() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        const { username, email, password, confirmPassword } = formData;
+        const { name, email, password, confirmPassword } = formData;
 
         // validate
         const validationErrors = {};
-        if (!username.trim()) {
-            validationErrors.username = "Tên người dùng là bắt buộc";
+        if (!name.trim()) {
+            validationErrors.name = "Tên người dùng là bắt buộc";
         }
 
         if (!email.trim()) {
@@ -59,19 +60,24 @@ export function RegisterForm() {
         // fetch api
         if (Object.keys(validationErrors).length === 0) {
             try {
-                console.log("formData: ", formData);
+                setLoading(true);
                 const response = await register({
-                    firstName: formData.username,
+                    name: formData.name,
                     email: formData.email,
                     password: formData.password,
                 });
-                toast.success(response.message, {
+                console.log(response);
+                console.log(response.message);
+                let message = response.message;
+                toast.success(message, {
                     onClose: () => navigate("/dang-nhap"),
                     autoClose: 1000,
                     buttonClose: false,
                 });
             } catch (err) {
-                toast.error("Email đã tồn tại");
+                toast.error(err.message);
+            } finally {
+                setLoading(false)
             }
         }
     }
@@ -108,16 +114,16 @@ export function RegisterForm() {
             <Box component="form" validate="true" onSubmit={handleSubmit} className="flex flex-col mt-1 text-center">
                 <TextField
                     margin="normal"
-                    id="username"
-                    type="username"
+                    id="name"
+                    type="name"
                     label="Tên người dùng"
-                    name="username"
-                    autoComplete="username"
+                    name="name"
+                    autoComplete="name"
                     onChange={handleChange}
-                    value={formData.username}
+                    value={formData.name}
                     autoFocus
                 />
-                {errors.username && <Box className="text-sm text-left text-red-500">{errors.username}</Box>}
+                {errors.name && <Box className="text-sm text-left text-red-500">{errors.name}</Box>}
                 <TextField
                     margin="normal"
                     id="email"
@@ -143,9 +149,9 @@ export function RegisterForm() {
                         endAdornment: hasValuePassword && (
                             <Button className="eye-button" onClick={togglePassword}>
                                 {showPassword ? (
-                                    <EyeIcon className="block w-5 h-5 text-black" aria-hidden="true" />
-                                ) : (
                                     <EyeSlashIcon className="block w-5 h-5 text-black" aria-hidden="true" />
+                                ) : (
+                                    <EyeIcon className="block w-5 h-5 text-black" aria-hidden="true" />
                                 )}
                             </Button>
                         ),
@@ -165,9 +171,9 @@ export function RegisterForm() {
                         endAdornment: hasValueConfirmPassword && (
                             <Button className="eye-button" onClick={toggleConfirmPassword}>
                                 {showConfirmPassword ? (
-                                    <EyeIcon className="block w-5 h-5 text-black" aria-hidden="true" />
-                                ) : (
                                     <EyeSlashIcon className="block w-5 h-5 text-black" aria-hidden="true" />
+                                ) : (
+                                    <EyeIcon className="block w-5 h-5 text-black" aria-hidden="true" />
                                 )}
                             </Button>
                         ),
@@ -176,7 +182,16 @@ export function RegisterForm() {
                 {errors.confirmPassword && (
                     <Box className="text-sm text-left text-red-500">{errors.confirmPassword}</Box>
                 )}
-                <Button type="submit" variant="contained" className="!mx-auto !my-8">
+                <Button type="submit" variant="contained" className={`!mx-auto !my-8 transition duration-300 ease-in-out ${loading ? "!bg-gray-300" : "!bg-indigo-500 hover:!bg-indigo-700"}`}>
+                    {loading && (
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                             fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                            <path className="opacity-75" fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    )}
                     Đăng ký
                 </Button>
                 <Grid container className="justify-center mt-5">

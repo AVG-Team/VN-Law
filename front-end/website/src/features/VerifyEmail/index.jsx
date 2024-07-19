@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { confirmToken } from "~/api/auth-service/authClient";
+import { verifyEmail } from "../../api/auth-service/authClient";
 
 export default function VerifyEmail() {
     const [searchParams] = useSearchParams();
@@ -18,7 +18,7 @@ export default function VerifyEmail() {
         const activateAccount = async () => {
             if (verificationCode) {
                 try {
-                    const response = await confirmToken(verificationCode);
+                    const response = await verifyEmail(verificationCode);
                     toast.success(response);
                 } catch (err) {
                     toast.error(err.response);

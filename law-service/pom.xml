@@ -8,11 +8,11 @@
 		<version>3.3.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>avg.hijob</groupId>
-	<artifactId>law-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>law-service</name>
-	<description>law-service</description>
+	<groupId>avg.vnlaw</groupId>
+	<artifactId>law-service-auth</artifactId>
+	<version>0.0.2-SNAPSHOT</version>
+	<name>law-service-auth</name>
+	<description>law-service-auth</description>
 	<url/>
 	<licenses>
 		<license/>

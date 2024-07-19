@@ -12,8 +12,9 @@ import { StorageKeys } from "../../../common/constants/keys";
 import { authenticate } from "../../../api/auth-service/authClient";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import ActivateAccountButton from "./ActivateAccountButton";
+import Oauth2 from "../Oauth2";
 
-export function LoginForm() {
+export default function LoginForm() {
     const navigate = useNavigate();
     const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
@@ -57,16 +58,12 @@ export function LoginForm() {
                 toast.success(response.message, {
                     onClose: () => navigate("/"),
                     autoClose: 1000,
-                    buttonClose: false,
                 });
             } catch (err) {
-                if (err.status === 401) {
-                    toast.error(err.message);
-                } else if (err.status === 400) {
-                    toast.error(err.message);
-                } else {
-                    console.log("Error fetching server: ", err);
-                }
+                toast.error(err.message, {
+                    autoClose: 1000,
+                });
+                console.log(err.message);
             }
         }
     }
@@ -139,6 +136,7 @@ export function LoginForm() {
                     Đăng nhập
                 </Button>
             </Box>
+            <Oauth2 />
             <Grid container className="justify-between">
                 <Grid item>
                     <Link underline="none" href="/quen-mat-khau" variant="body2">

@@ -7,7 +7,7 @@ import TextField from "@mui/material/TextField";
 import Logo from "~/assets/images/logo/logo2.png";
 import Typography from "@mui/material/Typography";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import { resetPassword } from "../../../api/auth-service/authClient";
+import { forgotPassword } from "../../../api/auth-service/authClient";
 
 
 export function ResetPasswordForm({email, verificationCode}) {
@@ -49,7 +49,7 @@ export function ResetPasswordForm({email, verificationCode}) {
         // fetch api
         if (Object.keys(validationErrors).length === 0) {
             try {
-                const response = resetPassword(email, password, verificationCode);
+                const response = forgotPassword(email, password, verificationCode);
                 response.then((data) => {
                     console.log(data);
                         toast.success(data.message, {

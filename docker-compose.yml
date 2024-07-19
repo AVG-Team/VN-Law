@@ -13,15 +13,6 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
-  chroma:
-    image: ghcr.io/chroma-core/chroma:latest
-    restart: always
-    ports:
-      - "3307:8000"  # ChromaDB Port
-    networks:
-      - db-network
-    volumes:
-      - chroma_data:/chroma/chroma
 volumes:
   mysql_data:
   chroma_data:

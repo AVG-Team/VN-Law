@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Logo from "~/assets/images/logo/logo2.png";
 import { React, useState, useEffect } from "react";
-import { verifyTokenResetPassword } from "../../../api/auth-service/authClient";
+import { verifyEmail } from "../../../api/auth-service/authClient";
 
 
 export function VerificationForm({ changePage, email }) {
@@ -16,7 +16,7 @@ export function VerificationForm({ changePage, email }) {
 
     function handleSubmit(e) {
         e.preventDefault();
-        const response = verifyTokenResetPassword(email, verificationCode);
+        const response = verifyEmail(email, verificationCode);
         response.then((data) => {
             console.log(data);
             toast.success(data);

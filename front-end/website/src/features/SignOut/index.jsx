@@ -1,17 +1,19 @@
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { StorageKeys } from '../../../services/key/keys.js';
+import Cookies from "js-cookie";
+
 export default function SignOut() {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        Cookies.remove(StorageKeys.ACCESS_TOKEN);
+        navigate('/');
+    }, [navigate]);
+
     return (
         <div>
-            <p>
-                Edit <code>src/App.js</code> and save to reload.
-            </p>
-            <a
-                className="text-blue-400 hover:text-blue-200"
-                href="https://reactjs.org"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Learn React
-            </a>
+            <p>Đăng xuất</p>
         </div>
     );
-}
+};
