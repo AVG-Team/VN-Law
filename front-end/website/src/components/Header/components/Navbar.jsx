@@ -7,7 +7,6 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { menus, pages, toggleButton } from "../../../mock/header.data";
 import { Bars3Icon, BellIcon, XMarkIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { getUserInfo } from "../../../mock/auth";
-import { debounce } from "lodash";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -19,27 +18,33 @@ export function Navbar() {
 
     const [isSticky, setIsSticky] = useState(false);
 
-
-    window.addEventListener("scroll", () => {
-        console.log(231423423);
-    });
-    
     useEffect(() => {
+        const scrollPosition = document.body.scrollTop;
+        console.log("scroll : "  + scrollPosition);
         const handleScroll = () => {
-            console.log('scrolling');
+            const scrollPosition = document.body.scrollTop;
+            console.log("scroll : "  + scrollPosition);
+            if (scrollPosition > 0) {
+                console.log(123);
+                setIsSticky(true);
+            } else {
+                console.log(456);
+                setIsSticky(false);
+            }
         };
 
-        window.addEventListener("scroll", () => {
-            console.log(231423423);
-        });
-        window.addEventListener("scroll", handleScroll);
+        document.body.addEventListener('scroll', handleScroll);
+
+        return () => {
+            document.body.removeEventListener('scroll', handleScroll);
+        };
     }, []);
 
     const handleLogout = () => {
         Cookies.remove(StorageKeys.ACCESS_TOKEN);
     };
     return (
-        <Disclosure as="nav" className={`z-99 bg-white fixed top-0 left-0 w-full transition-all duration-300 ease-in-out ${isSticky ? 'bg-gray-800 shadow-lg' : 'bg-transparent'}`}>
+        <Disclosure as="nav" className={`z-99 bg-white top-0 left-0 w-full transition-all duration-300 ease-in-out ${isSticky ? 'bg-gray-800 shadow-lg fixed' : 'bg-transparent relative'}`}>
             {({ open }) => (
                 <>
                     <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
