@@ -9,6 +9,6 @@ import lombok.Setter;
 @Builder
 public class ChangePasswordRequest {
     private String token;
-    private String currentPassword;
-    private String newPassword;
+    private String password;
+    private String recaptchaToken;
 }

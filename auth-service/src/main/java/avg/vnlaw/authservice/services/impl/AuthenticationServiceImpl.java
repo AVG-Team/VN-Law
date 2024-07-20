@@ -112,10 +112,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .build();
         }
 
-        System.out.println(customUserDetail.getUser().getName());
-
         String jwtToken = jwtService.generateToken(customUserDetail, true);
-        System.out.println(jwtToken);
         String refreshToken = jwtService.generateRefreshToken(customUserDetail);
 
         tokenService.revokedAllUserTokens(user);
@@ -204,6 +201,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .message("Email not found")
                     .build();
         }
+
+        if (!user.isActive()) {
+            return MessageResponse.builder()
+                    .type(HttpStatus.BAD_REQUEST)
+                    .message("Account is not activated")
+                    .build();
+        }
+
+        if (user.getPasswordResetTokens().size() == 10) {
+            return MessageResponse.builder()
+                    .type(HttpStatus.BAD_REQUEST)
+                    .message("You have reached the limit of password reset, Please contact admin to reactivate")
+                    .build();
+        }
+
         String token = "AVG_" + UUID.randomUUID() + System.currentTimeMillis() + "_VNLAW";
         setPasswordResetToken(user, TokenTypeForgotPasswordEnum.PASSWORD_RESET, token);
 

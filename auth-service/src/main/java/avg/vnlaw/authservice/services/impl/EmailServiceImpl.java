@@ -85,7 +85,7 @@ public class EmailServiceImpl implements EmailService {
 
         String title = "Forgot Password!!! ";
         String message = "You have requested to reset your password. Please click the button below to reset your password.";
-        String url = this.url + "/change-password?token=" + token;
+        String url = this.url + "/quen-mat-khau?token=" + token + "&type=doi-mat-khau";
 
         thymeleafContext.setVariable("title", title);
         thymeleafContext.setVariable("message", message);

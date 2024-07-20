@@ -2,11 +2,9 @@ package avg.vnlaw.authservice.controllers;
 
 import avg.vnlaw.authservice.enums.AuthenticationResponseEnum;
 import avg.vnlaw.authservice.requests.*;
-import avg.vnlaw.authservice.responses.AuthenticationResponse;
-import avg.vnlaw.authservice.responses.GetCurrentUserByAccessTokenResponse;
-import avg.vnlaw.authservice.responses.MessageResponse;
-import avg.vnlaw.authservice.responses.ResponseHandler;
+import avg.vnlaw.authservice.responses.*;
 import avg.vnlaw.authservice.services.AuthenticationService;
+import avg.vnlaw.authservice.services.ReCaptchaService;
 import avg.vnlaw.authservice.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,12 +19,16 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthenticationService authService;
     private final UserService userService;
-//    private final ReCaptchaService reCaptchaService;
+    private final ReCaptchaService reCaptchaService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(
             @RequestBody RegisterRequest request
     ) {
+        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+        if (!reCaptchaResponse.isSuccess()) {
+            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
+        }
         String message;
         AuthenticationResponse authResponse = authService.register(request);
         if (authResponse.getType() == AuthenticationResponseEnum.EMAIL_ALREADY_REGISTERED) {
@@ -42,6 +44,10 @@ public class AuthController {
     public ResponseEntity<?> authenticate(
             @RequestBody AuthenticationRequest request
     ) {
+        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+        if (!reCaptchaResponse.isSuccess()) {
+            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
+        }
         String message;
         AuthenticationResponse authResponse = authService.authenticate(request);
         try {
@@ -53,7 +59,6 @@ public class AuthController {
             message = "Account authenticated successfully";
             return ResponseHandler.responseOk(message, authResponse);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             message = "Account or password is incorrect";
             return ResponseHandler.responseBuilder(message, HttpStatus.UNAUTHORIZED);
         }
@@ -71,11 +76,10 @@ public class AuthController {
     public ResponseEntity<?> forgotPassword(
             @RequestBody PasswordResetTokenRequest request
     ) {
-        System.out.println("Captcha response: " + request.getRecaptchaToken());
-//        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
-//        if (!reCaptchaResponse.isSuccess()) {
-//            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
-//        }
+        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+        if (!reCaptchaResponse.isSuccess()) {
+            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
+        }
 
         MessageResponse authResponse = authService.forgotPassword(request.getEmail());
         return ResponseHandler.responseBuilder(authResponse.getMessage(), authResponse.getType());
@@ -85,7 +89,11 @@ public class AuthController {
     public ResponseEntity<?> changePassword(
             @RequestBody ChangePasswordRequest request
     ) {
-        MessageResponse authResponse = authService.changePassword(request.getToken(), request.getNewPassword());
+        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+        if (!reCaptchaResponse.isSuccess()) {
+            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
+        }
+        MessageResponse authResponse = authService.changePassword(request.getToken(), request.getPassword());
         return ResponseHandler.responseBuilder(authResponse.getMessage(), authResponse.getType());
     }
 

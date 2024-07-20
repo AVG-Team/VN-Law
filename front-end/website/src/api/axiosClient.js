@@ -22,7 +22,7 @@ axiosClient.interceptors.request.use(
         return config;
     },
     (error) => {
-        console.log(error);
+        console.error(error);
         Promise.reject(error);
     },
 );

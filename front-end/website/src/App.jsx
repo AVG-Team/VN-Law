@@ -125,7 +125,7 @@ function App() {
                         path="/quen-mat-khau"
                         element={
                             <Suspense fallback={<CircularProgress />}>
-                                <ForgotPassword title="Đăng ký" />
+                                <ForgotPassword title="Quên Mật Khẩu" />
                             </Suspense>
                         }
                     />

@@ -2,28 +2,35 @@ import Box from "@mui/material/Box";
 import { toast } from "react-toastify";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
-import { useState, React } from "react";
+import { useState } from "react";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Logo from "~/assets/images/logo/logo2.png";
-import { StorageKeys } from "../../../common/constants/keys";
-import { authenticate } from "../../../api/auth-service/authClient";
+import { authenticate } from "~/api/auth-service/authClient";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import ActivateAccountButton from "./ActivateAccountButton";
 import Oauth2 from "../Oauth2";
+import { GoogleReCaptchaProvider, GoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 export default function LoginForm() {
     const navigate = useNavigate();
     const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [hasValuePassword, setHasValuePassword] = useState(false);
+    const [recaptchaToken, setRecaptchaToken] = useState(null);
+    const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+    const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
+
+    const handleVerify = (token) => {
+        setRecaptchaToken(token);
+    };
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -50,11 +57,12 @@ export default function LoginForm() {
         //fetch api
         if (Object.keys(validationErrors).length === 0) {
             try {
+                setLoading(true);
                 const response = await authenticate({
                     email: formData.email,
                     password: formData.password,
+                    recaptchaToken: recaptchaToken,
                 });
-                console.log("response: ", response);
                 toast.success(response.message, {
                     onClose: () => navigate("/"),
                     autoClose: 1000,
@@ -63,7 +71,9 @@ export default function LoginForm() {
                 toast.error(err.message, {
                     autoClose: 1000,
                 });
-                console.log(err.message);
+                console.error(err.message);
+            } finally {
+                setLoading(false);
             }
         }
     }
@@ -91,7 +101,9 @@ export default function LoginForm() {
                     Tri Thức Pháp Luật Việt Nam
                 </Typography>
             </div>
+            <GoogleReCaptchaProvider reCaptchaKey={siteKey} language="vi">
             <Box component="form" validate="true" onSubmit={handleSubmit} className="mt-1 text-center">
+                <GoogleReCaptcha onVerify={handleVerify} />
                 <TextField
                     margin="normal"
                     fullWidth
@@ -133,9 +145,19 @@ export default function LoginForm() {
                 {errors.password && <Box className="text-sm text-left text-red-500">{errors.password}</Box>}
 
                 <Button type="submit" variant="contained" className="!mx-auto !my-8">
+                    {loading && (
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                             fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    )}
                     Đăng nhập
                 </Button>
             </Box>
+            </GoogleReCaptchaProvider>
             <Oauth2 />
             <Grid container className="justify-between">
                 <Grid item>

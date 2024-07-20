@@ -19,16 +19,11 @@ export function Navbar() {
     const [isSticky, setIsSticky] = useState(false);
 
     useEffect(() => {
-        const scrollPosition = document.body.scrollTop;
-        console.log("scroll : "  + scrollPosition);
         const handleScroll = () => {
             const scrollPosition = document.body.scrollTop;
-            console.log("scroll : "  + scrollPosition);
             if (scrollPosition > 0) {
-                console.log(123);
                 setIsSticky(true);
             } else {
-                console.log(456);
                 setIsSticky(false);
             }
         };
@@ -39,10 +34,6 @@ export function Navbar() {
             document.body.removeEventListener('scroll', handleScroll);
         };
     }, []);
-
-    const handleLogout = () => {
-        Cookies.remove(StorageKeys.ACCESS_TOKEN);
-    };
     return (
         <Disclosure as="nav" className={`z-99 bg-white top-0 left-0 w-full transition-all duration-300 ease-in-out ${isSticky ? 'bg-gray-800 shadow-lg fixed' : 'bg-transparent relative'}`}>
             {({ open }) => (
@@ -175,7 +166,6 @@ export function Navbar() {
                                                             {({ active }) => (
                                                                 <a
                                                                     href={menu.href}
-                                                                    onClick={menu.name === 3 ? handleLogout : null}
                                                                     className={classNames(
                                                                         active ? "bg-gray-100" : "",
                                                                         "block px-4 py-2 text-sm text-gray-700",
@@ -253,7 +243,6 @@ export function Navbar() {
                                             as="a"
                                             href={item.href}
                                             key={item.key}
-                                            onClick={item.key === 3 ? handleLogout : null}
                                             className="block px-4 py-2 text-base font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-800 sm:px-6"
                                         >
                                             {item.name}

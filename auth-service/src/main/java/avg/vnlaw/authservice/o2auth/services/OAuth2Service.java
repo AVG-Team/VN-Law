@@ -82,7 +82,7 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         Role role = roleRepository.findById(1)
                 .orElse(roleRepository.findFirstByOrderByIdAsc());
 
-        String password = "AVG_" + new Random().nextInt(1000) + "_HIJOB";
+        String password = "AVG_" + new Random().nextInt(1000) + "_VNLAW";
 
         String passwordEnc = passwordEncoder.encode(password);
         User userRegister = new User();
@@ -93,7 +93,6 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         userRepository.save(userRegister);
 
         try {
-            System.out.println("Send mail : " + email + " ; full name : " + fullName + " ; password : " + password);
             emailService.sendEmailRegisterWithPassword(email, fullName, password);
         } catch (Exception e) {
             System.out.println("error send mail: " + e.getMessage());

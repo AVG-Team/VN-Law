@@ -14,8 +14,6 @@ export const checkAuth = () => {
 };
 
 export const checkAdmin = () => {
-    console.log("role: " + localStorage.getItem(StorageKeys.USER_ROLE) === "ADMIN")
-    console.log("token : " + !!Cookies.get(StorageKeys.ACCESS_TOKEN))
     return !!Cookies.get(StorageKeys.ACCESS_TOKEN) && localStorage.getItem(StorageKeys.USER_ROLE) === "ADMIN";
 }
 

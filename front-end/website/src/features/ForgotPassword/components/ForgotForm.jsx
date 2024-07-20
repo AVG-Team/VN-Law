@@ -1,4 +1,4 @@
-import {toast} from 'react-toastify';
+import { toast } from "react-toastify";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
@@ -8,26 +8,40 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Logo from "~/assets/images/logo/logo2.png";
 import { forgotPassword } from "../../../api/auth-service/authClient";
+import { useNavigate } from "react-router-dom";
+import { GoogleReCaptchaProvider, GoogleReCaptcha } from "react-google-recaptcha-v3";
 
-export function ForgotForm({ changePage }) {
+export function ForgotForm() {
     const [email, setEmail] = useState("");
-    
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [recaptchaToken, setRecaptchaToken] = useState(null);
+    const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
+    const handleVerify = (token) => {
+        setRecaptchaToken(token);
+    };
+
     async function handleSubmit(e) {
         e.preventDefault();
-        
-        try{
-            const response = await forgotPassword(email);
-            toast.success(response.message,{
-                onClose: () => changePage("verify", email),
-                autoClose: 1500,
-                buttonClose: false
-            }) ;
-        } catch(err){
-            toast.error(err.response.data.message);
+
+        try {
+            setLoading(true);
+            const response = await forgotPassword({ email, recaptchaToken });
+            toast.success(response.message, {
+                onClose: () => navigate("/dang-nhap"),
+                autoClose: 1000,
+                buttonClose: false,
+            });
+        } catch (err) {
+            console.error(err);
+            toast.error(err.message);
+        } finally {
+            setLoading(false);
         }
     }
 
-    function handleChange(e){
+    function handleChange(e) {
         setEmail(e.target.value);
     }
 
@@ -41,24 +55,37 @@ export function ForgotForm({ changePage }) {
                     Tri Thức Pháp Luật Việt Nam
                 </Typography>
             </div>
-            <Box component="form" validate="true" onSubmit={handleSubmit} className="mt-1 text-center">
-                <TextField
-                    margin="normal"
-                    fullWidth
-                    id="email"
-                    type="email"
-                    label="Email"
-                    name="email"
-                    value={email}
-                    onChange={handleChange}
-                    autoComplete="email"
-                    autoFocus
-                    required
-                />
-                <Button type="submit" variant="contained" className="!mx-auto !my-8">
-                    Xác nhận
-                </Button>
-            </Box>
+            <GoogleReCaptchaProvider reCaptchaKey={siteKey} language="vi">
+                <Box component="form" validate="true" onSubmit={handleSubmit} className="mt-1 text-center">
+                    <GoogleReCaptcha onVerify={handleVerify} />
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        id="email"
+                        type="email"
+                        label="Email"
+                        name="email"
+                        value={email}
+                        onChange={handleChange}
+                        autoComplete="email"
+                        autoFocus
+                        required
+                    />
+                    <Button type="submit" variant="contained" className="!mx-auto !my-8">
+                        {loading && (
+                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor"
+                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        )}
+                        Xác nhận
+                    </Button>
+                </Box>
+            </GoogleReCaptchaProvider>
             <Grid container className="justify-between">
                 <Grid item className="flex flex-row">
                     <Typography className="left-0 px-1 pt-[2px]" variant="body2">

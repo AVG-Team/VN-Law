@@ -132,14 +132,11 @@ public class JwtService {
     }
 
     private Key getSignInKey(){
-        System.out.println("JWT : " + JWT_SECRET);
         try {
             String key = hexToHex(JWT_SECRET);
-            System.out.println("key : " + key);
             byte[] keyBytes = Decoders.BASE64.decode(key);
             return Keys.hmacShaKeyFor(keyBytes);
         } catch (NoSuchAlgorithmException e) {
-            System.out.println(e.getMessage());
             return null;
         }
     }

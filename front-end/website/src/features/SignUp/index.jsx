@@ -6,8 +6,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { RegisterForm } from "./components/RegisterForm";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-
-
 export default function SignUp(props) {
     const defaultTheme = createTheme();
 

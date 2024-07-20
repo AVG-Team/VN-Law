@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { StorageKeys } from '../../../services/key/keys.js';
+import { StorageKeys } from "~/common/constants/keys";
 import Cookies from "js-cookie";
 
 export default function SignOut() {
