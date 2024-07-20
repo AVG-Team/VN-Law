@@ -19,6 +19,9 @@ const VerifyEmail = loadable(() => import("~/features/VerifyEmail"));
 const VBBQPPLDetail = loadable(() => import("~/features/VBQPPL/detail"));
 const ForgotPassword = loadable(() => import("~/features/ForgotPassword"));
 const Form = loadable(() => import("~/features/Form"));
+const Notify = loadable(() => import("~/features/Notify"));
+const Confirm = loadable(() => import("~/features/Confirm"));
+
 function App() {
     return (
         <BrowserRouter>
@@ -103,10 +106,26 @@ function App() {
                         }
                     />
                     <Route
+                        path="/thong-bao"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <Notify title="Thông Báo" />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/oauth2/redirect"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <Confirm title="Đang Xác Minh..." />
+                            </Suspense>
+                        }
+                    />
+                    <Route
                         path="/quen-mat-khau"
                         element={
                             <Suspense fallback={<CircularProgress />}>
-                                <ForgotPassword title="Đăng ký" />
+                                <ForgotPassword title="Quên Mật Khẩu" />
                             </Suspense>
                         }
                     />

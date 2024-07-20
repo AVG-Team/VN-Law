@@ -11,7 +11,7 @@ export const pages = [
 export const menus = [
     { key: "1", name: "Trang cá nhân", href: "#" },
     { key: "2", name: "Cài đặt", href: "#" },
-    { key: "3", name: "Đăng xuất", href: "#" },
+    { key: "3", name: "Đăng xuất", href: "/dang-xuat" },
 ];
 
 export const banner = [

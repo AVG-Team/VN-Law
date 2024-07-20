@@ -2,11 +2,12 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { StorageKeys } from "../common/constants/keys";
 
+const baseURL = import.meta.env.VITE_API_BASE_URL + "/api" || "http://localhost:9001/api";
+
 const axiosClient = axios.create({
-    baseURL: "http://localhost:9000",
+    baseURL: baseURL,
     headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer YOUR_JWT_TOKEN`,
     },
 });
 
@@ -21,7 +22,7 @@ axiosClient.interceptors.request.use(
         return config;
     },
     (error) => {
-        console.log(error);
+        console.error(error);
         Promise.reject(error);
     },
 );
@@ -31,7 +32,7 @@ axiosClient.interceptors.response.use(
     function (response) {
         // Any status code that lie within the range of 2xx cause this function to trigger
         // Do something with response data
-        return response.data.data || response.data;
+        return response.data || response.data.data;
     },
     function (error) {
         // Any status codes that falls outside the range of 2xx cause this function to trigger

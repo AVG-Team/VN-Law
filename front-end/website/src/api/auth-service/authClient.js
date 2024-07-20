@@ -4,96 +4,55 @@ import { jwtDecode } from "jwt-decode";
 import axiosClient from "../axiosClient";
 import { useNavigate } from "react-router-dom";
 import { StorageKeys } from "../../common/constants/keys";
+import { setToken } from "../../mock/auth";
 
 export const authenticate = async (authenticateRequest) => {
     try {
-        const response = await axiosClient.post("/auth-service/auth/authenticate", authenticateRequest);
+        const url = "auth/authenticate";
+        const response = await axiosClient.post(url, authenticateRequest);
 
-        const { access_token } = response;
-        const decodedToken = jwtDecode(access_token);
-        const expirationTime = decodedToken.exp * 1000;
-
-        Cookies.set(StorageKeys.ACCESS_TOKEN, access_token, { expires: new Date(expirationTime) });
+        const { access_token, name, role } = response.data;
+        setToken(access_token, name, role);
 
         return response;
     } catch (error) {
-        console.log("Authenticate: ", error);
+        console.error("Authenticate: ", error);
         throw error;
     }
 };
 
-export const confirmToken = async (token) => {
-    try {
-        const url = `/auth-service/auth/confirm?verificationCode=${token}`;
-        return axiosClient.get(url, { token });
-    } catch (err) {
-        console.log("Verify token error: ", err);
-        throw err;
-    }
+export const verifyEmail = (verifyRequest) => {
+    const url = "/auth/confirm-email";
+    return axiosClient.post(url, verifyRequest);
 };
 
 export const register = (registerRequest) => {
-    return axiosClient.post("/auth-service/auth/register", registerRequest);
+    return axiosClient.post("/auth/register", registerRequest);
 };
 
-export const useCheckTokenExpiration = () => {
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const handleTokenExpiration = () => {
-            Cookies.remove(StorageKeys.ACCESS_TOKEN);
-        };
-
-        const checkTokenExpiration = () => {
-            const accessToken = Cookies.get(StorageKeys.ACCESS_TOKEN);
-            if (accessToken) {
-                const decodedToken = jwtDecode(accessToken);
-                const expirationToken = decodedToken.exp * 1000;
-                const currentTime = new Date().getTime();
-
-                if (expirationToken <= currentTime) {
-                    handleTokenExpiration();
-                }
-            }
-        };
-        const interval = setInterval(checkTokenExpiration, 60000);
-        return () => clearInterval(interval);
-    }, [navigate]);
-};
-
-export const forgotPassword = async (email) => {
+export const getCurrentUser = async (request) => {
     try {
-        const response = await axiosClient.post("/auth-service/auth/forgot-password", { email });
-        return response.data;
-    } catch (err) {
-        console.log("Forgot password error: ", err);
-        throw err;
-    }
-};
+        const url = "auth/get-current-user";
+        const response = await axiosClient.post(url, request);
 
-export const verifyTokenResetPassword = async (email, resetPasswordToken) => {
-    try {
-        const response = await axiosClient.post("/auth-service/auth/verify-token", {
-            email,
-            resetPasswordToken,
-        });
-        return response.data;
-    } catch (err) {
-        console.log("Verify error: ", err);
-        throw err;
-    }
-};
+        console.log(response)
 
-export const resetPassword = async (email, newPassword, resetPasswordToken) => {
-    try {
-        const response = await axiosClient.post("/auth-service/auth/set-new-password", {
-            email,
-            newPassword,
-            resetPasswordToken,
-        });
-        return response.data;
-    } catch (err) {
-        console.log("ResetPassword error: ", err);
-        throw err;
+        const { name, role } = response.data;
+        setToken(request.token, name, role);
+
+        return response;
+    } catch (error) {
+        console.error("Authenticate: ", error);
+        throw error;
     }
-};
+}
+
+export const forgotPassword = (forgotPasswordRequest) => {
+    const url = "/auth/forgot-password";
+    return axiosClient.post(url, forgotPasswordRequest);
+}
+
+export const changePassword = (changePasswordRequest) => {
+    const url = "/auth/change-password";
+    return axiosClient.post(url, changePasswordRequest);
+}
