@@ -1,6 +1,33 @@
 version: '3.8'
 
 services:
+  kong:
+    image: kong:latest
+    restart: always
+    networks:
+      - db-network
+    environment:
+      KONG_DATABASE: off
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+      KONG_LOG_LEVEL: debug
+      KONG_PLUGINS: bundled,cors
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "8444:8444"
+      - "8002:8002"
+      - "8445:8445"
+      - "8003:8003"
+      - "8004:8004"
+    volumes:
+      - ./api-gateway/kong.yml:/usr/local/kong/declarative/kong.yml
+
   mysql-db:
     image: mysql:8.4.0
     restart: always
@@ -13,9 +40,33 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
+  chroma:
+    image: ghcr.io/chroma-core/chroma:latest
+    restart: always
+    ports:
+      - "3307:8000"  # ChromaDB Port
+    networks:
+      - db-network
+    volumes:
+      - chroma_data:/chroma/chroma
+  law-service:
+    build: ./law-service
+    restart: always
+    depends_on:
+      - mysql-db
+    networks:
+      - db-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/law_service
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+    ports:
+      - "9002:9002"
+
 volumes:
   mysql_data:
   chroma_data:
+
 networks:
   db-network:
     driver: bridge

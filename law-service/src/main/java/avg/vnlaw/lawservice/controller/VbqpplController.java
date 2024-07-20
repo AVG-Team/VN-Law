@@ -2,7 +2,7 @@ package avg.vnlaw.lawservice.controller;
 
 
 import avg.vnlaw.lawservice.exception.NotFoundException;
-import avg.vnlaw.lawservice.response.ResponseHandler;
+import avg.vnlaw.lawservice.responses.ResponseHandler;
 import avg.vnlaw.lawservice.services.VbqpplService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/law-service/vbqppl")
+@RequestMapping("/api/v1/vbqppl")
 @RequiredArgsConstructor
 public class VbqpplController {
 

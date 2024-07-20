@@ -1,11 +1,11 @@
-package avg.vnlaw.lawservice.DTO;
+package avg.vnlaw.lawservice.responses;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class VbqpplDTO {
+public class ResponseVbqppl {
     private Integer id;
     private String content;
     private String name;
@@ -13,7 +13,7 @@ public class VbqpplDTO {
     private String type;
     private String html;
 
-    public VbqpplDTO(Integer id, String content, String name, String number, String type, String html) {
+    public ResponseVbqppl(Integer id, String content, String name, String number, String type, String html) {
         this.id = id;
         this.content = content;
         this.name = name;

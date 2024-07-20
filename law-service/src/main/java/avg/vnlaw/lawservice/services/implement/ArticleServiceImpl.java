@@ -1,7 +1,7 @@
 package avg.vnlaw.lawservice.services.implement;
 
 
-import avg.vnlaw.lawservice.DTO.*;
+import avg.vnlaw.lawservice.responses.*;
 import avg.vnlaw.lawservice.entities.Article;
 import avg.vnlaw.lawservice.entities.Chapter;
 import avg.vnlaw.lawservice.entities.Subject;
@@ -33,16 +33,16 @@ public class ArticleServiceImpl implements ArticleService {
     private final TopicRepository topicRepository;
 
     @Override
-    public Page<ArticleDTO> getArticleByChapter(String chapterId, Optional<Integer> pageNo, Optional<Integer> pageSize) {
+    public Page<ResponseArticle> getArticleByChapter(String chapterId, Optional<Integer> pageNo, Optional<Integer> pageSize) {
         Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(10));
-        Page<ArticleDTOINT> list = articleRepository.findAllByChapter_IdOrderByOrder(chapterId,pageable);
-        List<ArticleDTO> contents =  new ArrayList<>();
-        for(ArticleDTOINT item : list.getContent()) {
+        Page<ResponseArticleInt> list = articleRepository.findAllByChapter_IdOrderByOrder(chapterId,pageable);
+        List<ResponseArticle> contents =  new ArrayList<>();
+        for(ResponseArticleInt item : list.getContent()) {
             String articleId = item.getId();
-            List<FileDTO> files = fileRepository.findAllByArticle_IdOrderByArticle(articleId);
-            List<TableDTO> tables = tableRepository.findAllByArticle_IdOrderByArticle(articleId);
+            List<ResponseFile> files = fileRepository.findAllByArticle_IdOrderByArticle(articleId);
+            List<ResponseTable> tables = tableRepository.findAllByArticle_IdOrderByArticle(articleId);
 
-            ArticleDTO articleDTO = new ArticleDTO(
+            ResponseArticle responseArticle = new ResponseArticle(
                     item.getId(),
                     item.getName(),
                     item.getContent(),
@@ -53,13 +53,13 @@ public class ArticleServiceImpl implements ArticleService {
                     files,
                     tables
             );
-            contents.add(articleDTO);
+            contents.add(responseArticle);
         }
         return new PageImpl<>(contents,list.getPageable(),list.getTotalElements());
     }
 
     @Override
-    public Page<ArticleDTO> getArticleByFilter(Optional<String> subjectId, Optional<String> name, Optional<Integer> pageNo, Optional<Integer> pageSize) {
+    public Page<ResponseArticle> getArticleByFilter(Optional<String> subjectId, Optional<String> name, Optional<Integer> pageNo, Optional<Integer> pageSize) {
         Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(10));
         if(subjectId.isPresent()){
             return articleRepository.findAllFilterWithSubject(subjectId.get(),name.orElse(""),pageable);
@@ -68,19 +68,19 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public ListTreeViewDTO getTreeViewByArticleId(String articleId) {
+    public ResponseListTree getTreeViewByArticleId(String articleId) {
         Article article = articleRepository.findById(articleId).orElseThrow(
                 () -> new NotFoundException("Not Exist")
         );
         Chapter chapter = article.getChapter();
-        List<ArticleDTOINT> articleDTOS = articleRepository.findAllByChapter_IdOrderByOrder(chapter.getId());
-        List<ArticleTreeViewDTO> treeViews = new ArrayList<>();
-        for(ArticleDTOINT item  : articleDTOS){
+        List<ResponseArticleInt> articleDTOS = articleRepository.findAllByChapter_IdOrderByOrder(chapter.getId());
+        List<ResponseArticleTree> treeViews = new ArrayList<>();
+        for(ResponseArticleInt item  : articleDTOS){
             articleId = item.getId();
-            List<FileDTO> files = fileRepository.findAllByArticle_IdOrderByArticle(articleId);
-            List<TableDTO> tables = tableRepository.findAllByArticle_IdOrderByArticle(articleId);
+            List<ResponseFile> files = fileRepository.findAllByArticle_IdOrderByArticle(articleId);
+            List<ResponseTable> tables = tableRepository.findAllByArticle_IdOrderByArticle(articleId);
 
-            ArticleTreeViewDTO treeViewDTO = ArticleTreeViewDTO.builder()
+            ResponseArticleTree treeViewDTO = ResponseArticleTree.builder()
                     .id(articleId)
                     .name(item.getName())
                     .content(item.getContent())
@@ -97,7 +97,7 @@ public class ArticleServiceImpl implements ArticleService {
         Topic topic = topicRepository.findById(article.getTopic().getId()).orElseThrow(
                 () -> new NotFoundException("Topic Not Exist")
         );
-        return ListTreeViewDTO.builder()
+        return ResponseListTree.builder()
                 .id(chapter.getId())
                 .chapter(
                         Chapter.builder()
