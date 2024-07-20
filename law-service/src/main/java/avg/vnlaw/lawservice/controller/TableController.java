@@ -4,6 +4,7 @@ package avg.vnlaw.lawservice.controller;
 import avg.vnlaw.lawservice.responses.ResponseHandler;
 import avg.vnlaw.lawservice.services.TableService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +19,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TableController {
 
-    private final TableService tableService;
+    @Autowired
+    private TableService tableService;
 
-    @GetMapping("/")
-    public ResponseEntity<Object> getAllTable(
+    @GetMapping("")
+    public ResponseEntity<Object> getAllTables(
             @RequestParam(name = "pageNo", value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize){
         return ResponseHandler.responseBuilder("Complete",

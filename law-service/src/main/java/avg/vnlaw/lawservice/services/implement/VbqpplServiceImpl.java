@@ -22,23 +22,19 @@ public class VbqpplServiceImpl implements VbqpplService {
     private final VbqpplRepository vbqpplRepository;
 
     @Override
-    public Page<Vbqppl> getAllVbqppl(Optional<Integer> pageNo, Optional<Integer> pageSize) {
+    public Page<ResponseVbqppl> getAllVbqppl(Optional<Integer> pageNo, Optional<Integer> pageSize) {
         Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(10));
-        return vbqpplRepository.findAll(pageable);
+        return vbqpplRepository.findAllVbs(pageable);
     }
 
     @Override
-    public Vbqppl getVbqpplById(Integer idVbqppl) {
-        Optional<Vbqppl> optionalVbqppl = Optional.ofNullable(vbqpplRepository.findById(idVbqppl).orElseThrow(
-                () -> new NotFoundException("Not Found")
-        ));
-        return optionalVbqppl.orElse(null);
+    public ResponseVbqppl getVbqpplById(Integer idVbqppl) {
+        if(vbqpplRepository.findById(idVbqppl).isEmpty()){
+            throw new NotFoundException("Not Found");
+        }
+        return vbqpplRepository.findVbById(idVbqppl);
     }
 
-    @Override
-    public List<Vbqppl> getAll() {
-        return vbqpplRepository.findAll();
-    }
 
     @Override
     public Page<ResponseVbqppl> getVbqpplByType(Optional<String> type, Optional<Integer> pageNo, Optional<Integer> pageSize) {

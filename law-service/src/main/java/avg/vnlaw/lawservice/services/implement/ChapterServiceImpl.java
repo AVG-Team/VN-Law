@@ -6,6 +6,7 @@ import avg.vnlaw.lawservice.entities.Chapter;
 import avg.vnlaw.lawservice.exception.NotFoundException;
 import avg.vnlaw.lawservice.repositories.ChapterRepository;
 import avg.vnlaw.lawservice.services.ChapterService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,28 +16,26 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ChapterServiceImpl implements ChapterService {
 
     final ChapterRepository chapterRepository;
 
-    public ChapterServiceImpl(ChapterRepository chapterRepository){
-        this.chapterRepository = chapterRepository;
-    }
 
     @Override
-    public Chapter getChapter(String chapterId) {
+    public ResponseChapter getChapter(String chapterId) {
         chapterRepository.findById(chapterId).orElseThrow(
                 () -> new NotFoundException("Chapter doesn't exist")
         );
-        return chapterRepository.findById(chapterId).get();
+        return chapterRepository.findChapterById(chapterId);
     }
 
     @Override
-    public List<Chapter> getAllChapters() {
+    public List<ResponseChapter> getAllChapters() {
         if(chapterRepository.findAll().isEmpty()){
             throw new NotFoundException("Chapters are empty");
         }
-        return chapterRepository.findAll();
+        return chapterRepository.findAllChapters();
     }
 
     @Override

@@ -3,6 +3,7 @@ package avg.vnlaw.lawservice.controller;
 
 import avg.vnlaw.lawservice.responses.ResponseHandler;
 import avg.vnlaw.lawservice.services.TopicService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/topic")
 public class TopicController {
 
-    final TopicService topicService;
+    @Autowired
+    private TopicService topicService;
 
     public TopicController(TopicService topicService){
         this.topicService = topicService;

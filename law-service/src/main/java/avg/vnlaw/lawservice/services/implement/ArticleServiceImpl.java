@@ -1,6 +1,5 @@
 package avg.vnlaw.lawservice.services.implement;
 
-
 import avg.vnlaw.lawservice.responses.*;
 import avg.vnlaw.lawservice.entities.Article;
 import avg.vnlaw.lawservice.entities.Chapter;
@@ -33,7 +32,10 @@ public class ArticleServiceImpl implements ArticleService {
     private final TopicRepository topicRepository;
 
     @Override
-    public Page<ResponseArticle> getArticleByChapter(String chapterId, Optional<Integer> pageNo, Optional<Integer> pageSize) {
+    public Page<ResponseArticle> getArticleByChapter(String chapterId,
+                                                     Optional<Integer> pageNo,
+                                                     Optional<Integer> pageSize) {
+
         Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(10));
         Page<ResponseArticleInt> list = articleRepository.findAllByChapter_IdOrderByOrder(chapterId,pageable);
         List<ResponseArticle> contents =  new ArrayList<>();
@@ -42,24 +44,27 @@ public class ArticleServiceImpl implements ArticleService {
             List<ResponseFile> files = fileRepository.findAllByArticle_IdOrderByArticle(articleId);
             List<ResponseTable> tables = tableRepository.findAllByArticle_IdOrderByArticle(articleId);
 
-            ResponseArticle responseArticle = new ResponseArticle(
-                    item.getId(),
-                    item.getName(),
-                    item.getContent(),
-                    item.getIndex(),
-                    item.getVbqppl(),
-                    item.getVbqpplLink(),
-                    item.getOrder(),
-                    files,
-                    tables
-            );
+            ResponseArticle responseArticle = ResponseArticle.builder()
+                    .id(item.getId())
+                    .name(item.getName())
+                    .content(item.getContent())
+                    .index(item.getIndex())
+                    .vbqppl(item.getVbqppl())
+                    .vbqpplLink(item.getVbqpplLink())
+                    .order(item.getOrder())
+                    .files(files)
+                    .tables(tables).build();
             contents.add(responseArticle);
         }
         return new PageImpl<>(contents,list.getPageable(),list.getTotalElements());
     }
 
     @Override
-    public Page<ResponseArticle> getArticleByFilter(Optional<String> subjectId, Optional<String> name, Optional<Integer> pageNo, Optional<Integer> pageSize) {
+    public Page<ResponseArticle> getArticleByFilter(Optional<String> subjectId,
+                                                    Optional<String> name,
+                                                    Optional<Integer> pageNo,
+                                                    Optional<Integer> pageSize) {
+
         Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(10));
         if(subjectId.isPresent()){
             return articleRepository.findAllFilterWithSubject(subjectId.get(),name.orElse(""),pageable);

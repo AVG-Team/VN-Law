@@ -9,11 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SubjectService {
-    public String createSubject(Subject subject);
-    public String updateSubject(Subject subject);
-    public String deleteSubject(String subjectId);
-    public Subject getSubject(String subjectId);
-    public List<Subject> getAllSubjects();
+    public ResponseSubject getSubject(String subjectId);
     public List<ResponseSubject> getSubjectByTopic(String topicId);
-    public Page<ResponseSubject> getAllSubject(Optional<String> name , Optional<Integer> pageNo, Optional<Integer> pageSize);
+    public Page<ResponseSubject> getAllSubjects(Optional<String> name ,
+                                               Optional<Integer> pageNo,
+                                               Optional<Integer> pageSize);
 }
