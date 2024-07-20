@@ -1,7 +1,7 @@
 package avg.vnlaw.lawservice.services.implement;
 
 
-import avg.vnlaw.lawservice.DTO.ChapterDTO;
+import avg.vnlaw.lawservice.responses.ResponseChapter;
 import avg.vnlaw.lawservice.entities.Chapter;
 import avg.vnlaw.lawservice.exception.NotFoundException;
 import avg.vnlaw.lawservice.repositories.ChapterRepository;
@@ -40,7 +40,7 @@ public class ChapterServiceImpl implements ChapterService {
     }
 
     @Override
-    public List<ChapterDTO> getChaptersBySubject(String subjectId) {
+    public List<ResponseChapter> getChaptersBySubject(String subjectId) {
         if(chapterRepository.findChaptersBySubject(subjectId).isEmpty()){
             throw  new NotFoundException("Don't have any chapter of subject");
         }
@@ -48,7 +48,7 @@ public class ChapterServiceImpl implements ChapterService {
     }
 
     @Override
-    public Page<ChapterDTO> getAllChapters(Optional<String> name, Optional<Integer> pageNo, Optional<Integer> pageSize) {
+    public Page<ResponseChapter> getAllChapters(Optional<String> name, Optional<Integer> pageNo, Optional<Integer> pageSize) {
         Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(5) );
         if(chapterRepository.findAll(name.orElse(""),pageable).isEmpty()){
             throw new NotFoundException("Don't have any chapter");

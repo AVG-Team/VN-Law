@@ -1,7 +1,7 @@
 package avg.vnlaw.lawservice.services.implement;
 
 
-import avg.vnlaw.lawservice.DTO.VbqpplDTO;
+import avg.vnlaw.lawservice.responses.ResponseVbqppl;
 import avg.vnlaw.lawservice.entities.Vbqppl;
 import avg.vnlaw.lawservice.exception.NotFoundException;
 import avg.vnlaw.lawservice.repositories.VbqpplRepository;
@@ -41,7 +41,7 @@ public class VbqpplServiceImpl implements VbqpplService {
     }
 
     @Override
-    public Page<VbqpplDTO> getVbqpplByType(Optional<String> type, Optional<Integer> pageNo, Optional<Integer> pageSize) {
+    public Page<ResponseVbqppl> getVbqpplByType(Optional<String> type, Optional<Integer> pageNo, Optional<Integer> pageSize) {
         Pageable pageable = PageRequest.of(pageNo.orElse(0), pageSize.orElse(9));
         if(type.isPresent()){
             return vbqpplRepository.findAllByType(Optional.of(type.get()),pageable);

@@ -1,4 +1,4 @@
-package avg.vnlaw.lawservice.response;
+package avg.vnlaw.lawservice.responses;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

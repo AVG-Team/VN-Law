@@ -1,4 +1,4 @@
-package avg.vnlaw.lawservice.DTO;
+package avg.vnlaw.lawservice.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class ArticleDTO implements ArticleDTOINT{
+public class ResponseArticle implements ResponseArticleInt {
     private String id;
     private String name;
     private String content;
@@ -16,10 +16,10 @@ public class ArticleDTO implements ArticleDTOINT{
     private String vbqpplLink;
     private Integer order;
 
-    private List<FileDTO> files;
-    private List<TableDTO> tables;
+    private List<ResponseFile> files;
+    private List<ResponseTable> tables;
 
-    public ArticleDTO(String id, String name, String content, String index, String vbqppl, String vbqpplLink, Integer order){
+    public ResponseArticle(String id, String name, String content, String index, String vbqppl, String vbqpplLink, Integer order){
         this.id = id;
         this.name = name;
         this.content = content;

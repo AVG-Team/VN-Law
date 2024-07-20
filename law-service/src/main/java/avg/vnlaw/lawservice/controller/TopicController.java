@@ -1,7 +1,7 @@
 package avg.vnlaw.lawservice.controller;
 
 
-import avg.vnlaw.lawservice.response.ResponseHandler;
+import avg.vnlaw.lawservice.responses.ResponseHandler;
 import avg.vnlaw.lawservice.services.TopicService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/law-service/topic")
+@RequestMapping("/api/v1/topic")
 public class TopicController {
 
     final TopicService topicService;
