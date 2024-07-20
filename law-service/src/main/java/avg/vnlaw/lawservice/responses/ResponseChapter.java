@@ -1,11 +1,11 @@
-package avg.vnlaw.lawservice.DTO;
+package avg.vnlaw.lawservice.responses;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class ChapterDTO {
+public class ResponseChapter {
     private String id ;
     private String name;
     private String index;

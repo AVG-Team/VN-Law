@@ -1,4 +1,4 @@
-package avg.vnlaw.lawservice.DTO;
+package avg.vnlaw.lawservice.responses;
 
 import avg.vnlaw.lawservice.entities.Chapter;
 import avg.vnlaw.lawservice.entities.Subject;
@@ -14,12 +14,12 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ListTreeViewDTO {
+public class ResponseListTree {
     private String id;
     private Subject subject;
     private Chapter chapter;
     private Topic topic;
 
-    private List<ArticleTreeViewDTO> articles;
+    private List<ResponseArticleTree> articles;
 
 }

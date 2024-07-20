@@ -2,7 +2,7 @@ package avg.vnlaw.lawservice.controller;
 
 
 import avg.vnlaw.lawservice.exception.NotFoundException;
-import avg.vnlaw.lawservice.response.ResponseHandler;
+import avg.vnlaw.lawservice.responses.ResponseHandler;
 import avg.vnlaw.lawservice.services.ChapterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/law-service/chapter")
+@RequestMapping("/api/v1/chapter")
 public class ChapterController {
 
     final ChapterService chapterService;
@@ -26,7 +26,7 @@ public class ChapterController {
                 HttpStatus.OK,this.chapterService.getChapter(chapterId));
     }
 
-    @GetMapping("/subject/{subjectId}")
+    @GetMapping("/{subjectId}")
     public ResponseEntity<Object> getChapterBySubject(@PathVariable(name = "subjectId") String subjectId) throws NotFoundException{
         return ResponseHandler.responseBuilder("Complete",
                 HttpStatus.OK,this.chapterService.getChaptersBySubject(subjectId));

@@ -2,7 +2,7 @@ package avg.vnlaw.lawservice.controller;
 
 
 import avg.vnlaw.lawservice.exception.NotFoundException;
-import avg.vnlaw.lawservice.response.ResponseHandler;
+import avg.vnlaw.lawservice.responses.ResponseHandler;
 import avg.vnlaw.lawservice.services.IndexVbqpplService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/law-service/indexvbqppl")
+@RequestMapping("/api/v1/index-vbqppl")
 @RequiredArgsConstructor
 public class IndexVbqpplController {
 

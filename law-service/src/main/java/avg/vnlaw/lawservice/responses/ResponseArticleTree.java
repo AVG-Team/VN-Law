@@ -1,4 +1,4 @@
-package avg.vnlaw.lawservice.DTO;
+package avg.vnlaw.lawservice.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleTreeViewDTO {
+public class ResponseArticleTree {
     private String id;
     private String name;
     private String content;
@@ -20,6 +20,6 @@ public class ArticleTreeViewDTO {
     private String vbqpplLink;
     private Integer order;
 
-    private List<FileDTO> files;
-    private List<TableDTO> tables;
+    private List<ResponseFile> files;
+    private List<ResponseTable> tables;
 }

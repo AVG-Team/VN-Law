@@ -1,7 +1,7 @@
 package avg.vnlaw.lawservice.repositories;
 
 
-import avg.vnlaw.lawservice.DTO.TableDTO;
+import avg.vnlaw.lawservice.responses.ResponseTable;
 import avg.vnlaw.lawservice.entities.Tables;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,14 +14,14 @@ import java.util.List;
 @Repository
 public interface TableRepository extends JpaRepository<Tables,String> {
 
-    public List<TableDTO> findAllByArticle_IdOrderByArticle(String articleId);
+    public List<ResponseTable> findAllByArticle_IdOrderByArticle(String articleId);
 
-    @Query(" select new avg.vnlaw.lawservice.DTO.TableDTO(t.id,t.html)" +
+    @Query(" select new avg.vnlaw.lawservice.responses.ResponseTable(t.id,t.html)" +
             " from Tables t " +
             " where ?1 = '' OR t.html like %?1%")
-    public Page<TableDTO> findAllByFilter(String content, Pageable pageable);
+    public Page<ResponseTable> findAllByFilter(String content, Pageable pageable);
 
-    @Query(" select new avg.vnlaw.lawservice.DTO.TableDTO(t.id,t.html)" +
+    @Query(" select new avg.vnlaw.lawservice.responses.ResponseTable(t.id,t.html)" +
             " from Tables t ")
-    public Page<TableDTO> findAllTable(Pageable pageable);
+    public Page<ResponseTable> findAllTable(Pageable pageable);
 }

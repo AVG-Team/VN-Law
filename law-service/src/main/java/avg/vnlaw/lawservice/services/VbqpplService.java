@@ -1,7 +1,7 @@
 package avg.vnlaw.lawservice.services;
 
 
-import avg.vnlaw.lawservice.DTO.VbqpplDTO;
+import avg.vnlaw.lawservice.responses.ResponseVbqppl;
 import avg.vnlaw.lawservice.entities.Vbqppl;
 import org.springframework.data.domain.Page;
 
@@ -12,5 +12,5 @@ public interface VbqpplService{
     public Page<Vbqppl> getAllVbqppl(Optional<Integer> pageNo, Optional<Integer> pageSize);
     public Vbqppl getVbqpplById(Integer idVbqppl);
     public List<Vbqppl> getAll();
-    public Page<VbqpplDTO> getVbqpplByType(Optional<String> type , Optional<Integer> pageNo, Optional<Integer> pageSize);
+    public Page<ResponseVbqppl> getVbqpplByType(Optional<String> type , Optional<Integer> pageNo, Optional<Integer> pageSize);
 }

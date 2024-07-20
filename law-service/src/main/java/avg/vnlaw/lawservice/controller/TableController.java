@@ -1,7 +1,7 @@
 package avg.vnlaw.lawservice.controller;
 
 
-import avg.vnlaw.lawservice.response.ResponseHandler;
+import avg.vnlaw.lawservice.responses.ResponseHandler;
 import avg.vnlaw.lawservice.services.TableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/law-service/table")
+@RequestMapping("/api/v1/table")
 @RequiredArgsConstructor
 public class TableController {
 
     private final TableService tableService;
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public ResponseEntity<Object> getAllTable(
             @RequestParam(name = "pageNo", value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize){
