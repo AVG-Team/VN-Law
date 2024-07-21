@@ -75,7 +75,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ResponseListTree getTreeViewByArticleId(String articleId) {
         Article article = articleRepository.findById(articleId).orElseThrow(
-                () -> new NotFoundException("Not Exist")
+                () -> new NotFoundException("Not Exist Article")
         );
         Chapter chapter = article.getChapter();
         List<ResponseArticleInt> articleDTOS = articleRepository.findAllByChapter_IdOrderByOrder(chapter.getId());
