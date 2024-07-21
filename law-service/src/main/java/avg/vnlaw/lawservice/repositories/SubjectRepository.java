@@ -22,5 +22,11 @@ public interface SubjectRepository extends JpaRepository<Subject, String> {
     @Query("Select new avg.vnlaw.lawservice.responses.ResponseSubject(p.id, p.name,p.order)" +
             " from Subject p " +
             " where p.name = '' or p.name like %?1%")
-    Page<ResponseSubject> findAll(String name , Pageable pageable);
+    Page<ResponseSubject> findAllSubjects(String name , Pageable pageable);
+
+    @Query("Select new avg.vnlaw.lawservice.responses.ResponseSubject(p.id, p.name,p.order)" +
+            " from Subject p " +
+            " where p.id = ?1")
+    ResponseSubject findSubjectById(String id);
+
 }

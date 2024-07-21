@@ -4,6 +4,7 @@ package avg.vnlaw.lawservice.controller;
 import avg.vnlaw.lawservice.exception.NotFoundException;
 import avg.vnlaw.lawservice.responses.ResponseHandler;
 import avg.vnlaw.lawservice.services.ArticleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +14,10 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/article")
 public class ArticleController {
-    private final ArticleService articleService;
 
-    public ArticleController(ArticleService articleService){
-        this.articleService = articleService;
-    }
+    @Autowired
+    private ArticleService articleService;
+
 
     @GetMapping("/{chapterId}")
     public ResponseEntity<Object> getArticleByChapter(@PathVariable String chapterId,
