@@ -5,6 +5,7 @@ import avg.vnlaw.lawservice.exception.NotFoundException;
 import avg.vnlaw.lawservice.responses.ResponseHandler;
 import avg.vnlaw.lawservice.services.VbqpplService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class VbqpplController {
 
-    private final VbqpplService vbqpplService;
+    @Autowired
+    private VbqpplService vbqpplService;
 
     @GetMapping("")
     public ResponseEntity<Object> getAllVbqppl(
@@ -33,12 +35,6 @@ public class VbqpplController {
     public ResponseEntity<Object> getVbqpplById(@PathVariable Integer vbqpplId) throws NotFoundException {
         return ResponseHandler.responseBuilder("Complete",
                 HttpStatus.OK,this.vbqpplService.getVbqpplById(vbqpplId));
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<Object> getAll(){
-        return ResponseHandler.responseBuilder("Complete",
-                HttpStatus.OK,this.vbqpplService.getAll());
     }
 
     @GetMapping("/filter")

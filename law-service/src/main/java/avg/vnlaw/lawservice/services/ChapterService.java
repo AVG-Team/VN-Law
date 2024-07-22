@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChapterService {
-    public Chapter getChapter(String chapterId);
-    public List<Chapter> getAllChapters();
-    public List<ResponseChapter> getChaptersBySubject(String subjectId);
-    public Page<ResponseChapter> getAllChapters(Optional<String> name , Optional<Integer> pageNo, Optional<Integer> pageSize);
+    ResponseChapter getChapter(String chapterId);
+    List<ResponseChapter> getAllChapters();
+    List<ResponseChapter> getChaptersBySubject(String subjectId);
+    Page<ResponseChapter> getAllChapters(Optional<String> name ,
+                                                Optional<Integer> pageNo,
+                                                Optional<Integer> pageSize);
 }

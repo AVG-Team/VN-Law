@@ -18,5 +18,17 @@ public interface VbqpplRepository extends JpaRepository<Vbqppl,Integer> {
             "where ( v.type like %?1%  or ?1 = '') and v.html is not null")
     public Page<ResponseVbqppl> findAllByType (Optional<String> type, Pageable pageable);
 
+    @Query("select new avg.vnlaw.lawservice.responses.ResponseVbqppl(v.id,v.content,v.name,v.number,v.type,v.html)" +
+            "from Vbqppl v " +
+            "where v.html is not null")
+    public Page<ResponseVbqppl> findAllVbs(Pageable pageable);
+
+    @Query("select new avg.vnlaw.lawservice.responses.ResponseVbqppl(v.id,v.content,v.name,v.number,v.type,v.html)" +
+            "from Vbqppl v " +
+            "where v.id = ?1 and v.html is not null")
+    public ResponseVbqppl findVbById(Integer id);
+
+
+
 
 }

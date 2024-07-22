@@ -3,6 +3,7 @@ package avg.vnlaw.lawservice.controller;
 
 import avg.vnlaw.lawservice.responses.ResponseHandler;
 import avg.vnlaw.lawservice.services.SubjectService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,8 @@ import java.util.Optional;
 @RequestMapping("/api/v1/subject")
 public class SubjectController {
 
-    final SubjectService subjectService;
+    @Autowired
+    private SubjectService subjectService;
 
     public SubjectController(SubjectService subjectService){
         this.subjectService = subjectService;
@@ -31,12 +33,6 @@ public class SubjectController {
                 HttpStatus.OK,this.subjectService.getSubject(subjectId));
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<Object> getAllSubjectDetails(){
-        return ResponseHandler.responseBuilder("Complete",
-                HttpStatus.OK,this.subjectService.getAllSubjects());
-    }
-
     @GetMapping("")
     public ResponseEntity<Object> getAllSubjects(
             @RequestParam(name = "pageNo", value = "pageNo", defaultValue = "") Optional<Integer> pageNo,
@@ -44,6 +40,6 @@ public class SubjectController {
             @RequestParam(name = "name", value = "name", defaultValue = "") Optional<String> name
     ){
         return ResponseHandler.responseBuilder("Complete",
-                HttpStatus.OK,this.subjectService.getAllSubject(name,pageNo,pageSize));
+                HttpStatus.OK,this.subjectService.getAllSubjects(name,pageNo,pageSize));
     }
 }

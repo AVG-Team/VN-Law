@@ -1,12 +1,14 @@
 package avg.vnlaw.lawservice.responses;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class ResponseArticle implements ResponseArticleInt {
     private String id;
     private String name;
