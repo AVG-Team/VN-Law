@@ -1,1 +1,0 @@
-import{a as l}from"./axiosClient-AxkGwTzS.js";const p={getAllByPage(e){return l.get("/law-service/vbqppl",{params:e})},getById(e){const r=`/law-service/vbqppl/${e}`;return l.get(r,{vbqpplId:e})},getAll(){return l.get("/law-service/vbqppl/all")},filter(e){return l.get("/law-service/vbqppl/filter",{params:e})}};export{p as V};

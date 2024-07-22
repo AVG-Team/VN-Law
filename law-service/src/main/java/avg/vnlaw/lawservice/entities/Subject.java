@@ -19,7 +19,7 @@ public class Subject {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "`order`", nullable = false)
     private Integer order;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

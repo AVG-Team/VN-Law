@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { StorageKeys } from "../common/constants/keys";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL + "/api" || "http://localhost:9001/api";
+const baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 const axiosClient = axios.create({
     baseURL: baseURL,

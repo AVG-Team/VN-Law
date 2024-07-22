@@ -20,10 +20,10 @@ public class Chapter {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "`index`", nullable = false)
     private String index;
 
-    @Column(nullable = false)
+    @Column(name = "`order`", nullable = false)
     private Integer order;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})

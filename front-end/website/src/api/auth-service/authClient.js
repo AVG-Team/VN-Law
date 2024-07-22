@@ -6,9 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { StorageKeys } from "../../common/constants/keys";
 import { setToken } from "../../mock/auth";
 
+const urlAuth = "auth/api/auth/";
 export const authenticate = async (authenticateRequest) => {
     try {
-        const url = "auth/authenticate";
+        const url = urlAuth + "authenticate";
         const response = await axiosClient.post(url, authenticateRequest);
 
         const { access_token, name, role } = response.data;
@@ -22,21 +23,18 @@ export const authenticate = async (authenticateRequest) => {
 };
 
 export const verifyEmail = (verifyRequest) => {
-    const url = "/auth/confirm-email";
+    const url = urlAuth + "confirm-email";
     return axiosClient.post(url, verifyRequest);
 };
 
 export const register = (registerRequest) => {
-    return axiosClient.post("/auth/register", registerRequest);
+    return axiosClient.post(urlAuth + "register", registerRequest);
 };
 
 export const getCurrentUser = async (request) => {
     try {
-        const url = "auth/get-current-user";
+        const url = urlAuth + "get-current-user";
         const response = await axiosClient.post(url, request);
-
-        console.log(response)
-
         const { name, role } = response.data;
         setToken(request.token, name, role);
 
@@ -48,11 +46,11 @@ export const getCurrentUser = async (request) => {
 }
 
 export const forgotPassword = (forgotPasswordRequest) => {
-    const url = "/auth/forgot-password";
+    const url = urlAuth + "forgot-password";
     return axiosClient.post(url, forgotPasswordRequest);
 }
 
 export const changePassword = (changePasswordRequest) => {
-    const url = "/auth/change-password";
+    const url = urlAuth + "change-password";
     return axiosClient.post(url, changePasswordRequest);
 }
