@@ -17,7 +17,7 @@ public class EmailServiceImpl implements EmailService {
     private final Dotenv dotenv = Dotenv.load();
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
-    private final String url = dotenv.get("Frontend_URL");
+    private final String url = dotenv.get("FRONTEND_URL");
 
     @Override
     public void sendEmailRegister(String email, String name, String token) throws MessagingException {

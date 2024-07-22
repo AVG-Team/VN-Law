@@ -40,15 +40,6 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
-  chroma:
-    image: ghcr.io/chroma-core/chroma:latest
-    restart: always
-    ports:
-      - "3307:8000"  # ChromaDB Port
-    networks:
-      - db-network
-    volumes:
-      - chroma_data:/chroma/chroma
   law-service:
     build: ./law-service
     restart: always
@@ -63,9 +54,41 @@ services:
     ports:
       - "9002:9002"
 
+  auth-service:
+    build: ./auth-service
+    restart: always
+    depends_on:
+      - mysql-db
+    networks:
+      - db-network
+    env_file:
+      - ./auth-service/src/main/resources/.env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/auth_service
+    ports:
+      - "9001:9001"
+
+  react-frontend:
+    build:
+      context: ./front-end/website
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    networks:
+      - db-network
+    depends_on:
+      - kong
+    expose:
+      - "5173"
+      - "3000"
+    volumes:
+      - ./front-end/website:/app
+      - /app/node_modules
+    env_file:
+      - ./front-end/website/.env
+
 volumes:
   mysql_data:
-  chroma_data:
 
 networks:
   db-network:

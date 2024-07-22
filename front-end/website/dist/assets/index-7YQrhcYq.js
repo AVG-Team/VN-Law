@@ -1,0 +1,1 @@
+import{k as s,r as a,o as r,S as i,j as t}from"./index-My25IbSw.js";function o(){const e=s();return a.useEffect(()=>{r.remove(i.ACCESS_TOKEN),e("/")},[e]),t.jsx("div",{children:t.jsx("p",{children:"Đăng xuất"})})}export{o as default};
