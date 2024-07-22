@@ -22,7 +22,7 @@ public class Article {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(name = "`index`", nullable = false)
     private String index;
 
     @Column(nullable = false)
@@ -31,7 +31,7 @@ public class Article {
     @Column(nullable = false)
     private String vbqpplLink;
 
-    @Column(nullable = false)
+    @Column(name = "`order`", nullable = false)
     private Integer order;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

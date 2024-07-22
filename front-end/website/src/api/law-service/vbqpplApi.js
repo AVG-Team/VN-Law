@@ -1,19 +1,19 @@
 import axiosClient from "../axiosClient";
 
+const urlLaw = "law/api/v1/vbqppl";
 const VbqpplApi = {
     getAllByPage(params) {
-        const url = "/law-service/vbqppl";
-        return axiosClient.get(url, { params });
+        return axiosClient.get(urlLaw, { params });
     },
     getById(vbqpplId) {
-        const url = `/law-service/vbqppl/${vbqpplId}`;
+        const url = urlLaw + `/${vbqpplId}`;
         return axiosClient.get(url, { vbqpplId });
     },
     getAll() {
-        return axiosClient.get("/law-service/vbqppl/all");
+        return axiosClient.get(urlLaw + "/all");
     },
     filter(params) {
-        return axiosClient.get("/law-service/vbqppl/filter", { params });
+        return axiosClient.get(urlLaw + "/filter", { params });
     },
 };
 

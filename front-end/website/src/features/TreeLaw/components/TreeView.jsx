@@ -37,7 +37,7 @@ export default function TreeView({ setChapterSelected }) {
         const fetchAllTopics = async () => {
             const topicList = await topicApi.getAll();
             console.log(topicList);
-            const data = topicList.map((topic) => {
+            const data = topicList.data.map((topic) => {
                 return {
                     title: `Chủ đề ${topic.order}: ${topic.name}`,
                     key: `topic_${topic.id.toString()}`,
@@ -54,14 +54,15 @@ export default function TreeView({ setChapterSelected }) {
             if (article && !loading) {
                 setLoading(true);
                 const topicList = await topicApi.getAll();
-                const data = topicList.map((topic) => ({
+                const data = topicList.data.map((topic) => ({
                     title: `Chủ đề ${topic.order}: ${topic.name}`,
                     key: `topic_${topic.id.toString()}`,
                     children: undefined,
                 }));
                 setTreeData(data);
 
-                const { topic, subject, chapter, articles } = await articleApi.getTreeArticle(article);
+                const response = await articleApi.getTreeArticle(article);
+                const { topic, subject, chapter, articles } = response.data;
                 setChapterSelected({ id: chapter.id, name: chapter.name, articles });
                 const keyChapter = `chapter_${chapter.id}`;
                 const keySubject = `subject_${subject.id}`;
@@ -87,7 +88,7 @@ export default function TreeView({ setChapterSelected }) {
         setChapterSelected({
             id: key,
             name: info.node.title,
-            articles: res.content,
+            articles: res.data.content,
         });
     };
 
@@ -99,7 +100,7 @@ export default function TreeView({ setChapterSelected }) {
         if (key.startsWith("topic")) {
             const topicId = key.split("_")[1];
             const subjects = await subjectApi.getByTopic(topicId);
-            const data = subjects.map((subject) => ({
+            const data = subjects.data.map((subject) => ({
                 title: `Đề mục ${subject.order}: ${subject.name}`,
                 key: `subject_${subject.id.toString()}`,
                 name: subject.name,
@@ -109,7 +110,7 @@ export default function TreeView({ setChapterSelected }) {
         } else if (key.startsWith("subject")) {
             const subjectId = key.split("_")[1];
             const chapters = await chapterApi.getBySubject(subjectId);
-            const data = chapters.map((chapter) => ({
+            const data = chapters.data.map((chapter) => ({
                 title: `${chapter.name}`,
                 key: `chapter_${chapter.id.toString()}`,
                 children: undefined,

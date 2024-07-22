@@ -18,8 +18,6 @@ public class Topic {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "`order`", nullable = false)
     private Integer order;
-
-
 }
