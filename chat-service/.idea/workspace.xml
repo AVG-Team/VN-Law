@@ -32,7 +32,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "feat/kong-api",
+    "git-widget-placeholder": "refactor/fix-law",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -79,6 +79,7 @@
       <workItem from="1721137776537" duration="447000" />
       <workItem from="1721139529134" duration="222000" />
       <workItem from="1721144057646" duration="600000" />
+      <workItem from="1721545416719" duration="595000" />
     </task>
     <servers />
   </component>

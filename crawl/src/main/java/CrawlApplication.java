@@ -47,5 +47,7 @@ public class CrawlApplication {
         SplitDocumentController splitDocumentController = new SplitDocumentController();
         crawlDocumentController.updateDocument();
 
+        System.out.println("Tiến Hành Quá Trình Crawl Dữ Liệu Vào Cơ Sở Dữ Liệu...");
+
     }
 }

@@ -2,12 +2,18 @@ package helpers;
 
 
 import com.google.gson.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import models.Pdsubject;
+import repositories.HibernateUtil;
 
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -88,5 +94,32 @@ public class Helpers {
         FileWriter fileWriter = new FileWriter(filePath);
         gson.toJson(jsonObject, fileWriter);
         fileWriter.close();
+    }
+
+    public List<Object> getData(Object object) {
+
+        EntityTransaction transaction = null;
+        EntityManager entityManager = null;
+
+
+        entityManager = HibernateUtil.getEntityManagerFactory().createEntityManager();
+        transaction = entityManager.getTransaction();
+        transaction.begin();
+
+
+        // Thực hiện truy vấn JPA để lấy dữ liệu từ cơ sở dữ liệu
+        List<Object> objects = null;
+        if (object instanceof Pdsubject) {
+            objects = Collections.singletonList(entityManager.createQuery("SELECT e FROM Pdsubject e", Pdsubject.class).getResultList());
+        }
+
+        // Kết thúc transaction
+        entityManager.getTransaction().commit();
+
+        // Đóng EntityManager
+        entityManager.close();
+
+        return objects;
+
     }
 }
