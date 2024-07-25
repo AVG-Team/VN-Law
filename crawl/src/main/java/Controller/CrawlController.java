@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class CrawlController {
+public class CrawlController{
 
     public final Helpers helper;
 
@@ -33,21 +33,12 @@ public class CrawlController {
 
     public JsonArray loadData(String filePath) throws IOException {
         System.out.println("Load Topic from File Json...");
-
         JsonArray jsonArray = helper.readJsonFile(filePath);
-
-      /*  if(jsonArray != null){
-            System.out.println("Result: " + jsonArray.toString());
-        }else{
-            System.out.println("Not exist");
-        }*/
-
         return jsonArray;
     }
 
 
     public List<String> loadDataFromFile(String filePath) throws IOException {
-
         List<String> relationArticle = new ArrayList<String>();
         Files.walk(Paths.get(filePath))
                 .filter(Files::isRegularFile)
@@ -93,11 +84,7 @@ public class CrawlController {
             System.out.println(fileName);
 
             count++;
-            /*if (fileName.equals(checkpoint)) {
-                isSkipping = false;
-            }
-            if (isSkipping) continue;
-*/
+
 
             // danh sach demuc
             Document subjectHtml = Jsoup.parse(file, "UTF-8");
@@ -164,8 +151,6 @@ public class CrawlController {
 
             }
             order = 10;
-
-
 
             // Trường hợp nếu chapter rỗng
             if (chaptersData.isEmpty()) {
@@ -396,6 +381,9 @@ public class CrawlController {
             transaction = entityManager.getTransaction();
             transaction.begin();
 
+            int totalElements = jsonArray.size();
+            int processedElements = 0;
+
             for (JsonElement jsonElement : jsonArray) {
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
 
@@ -427,6 +415,10 @@ public class CrawlController {
                             entityManager.persist(object);
                         }
                     }
+
+                    processedElements++;
+                    int percentage = (int) ((processedElements / (double) totalElements) * 100);
+                    System.out.println("Loading: " + percentage + "%");
                 }
             }
 
@@ -443,6 +435,7 @@ public class CrawlController {
             }
         }
     }
+
 
     public void insertData(Object object) {
 
@@ -505,30 +498,6 @@ public class CrawlController {
         }
     }
 
-    public List<Pdsubject> getData() {
 
-        EntityTransaction transaction = null;
-        EntityManager entityManager = null;
-
-
-        entityManager = HibernateUtil.getEntityManagerFactory().createEntityManager();
-        transaction = entityManager.getTransaction();
-        transaction.begin();
-
-
-
-        // Thực hiện truy vấn JPA để lấy dữ liệu từ cơ sở dữ liệu
-        List<Pdsubject> objects = entityManager.createQuery("SELECT e FROM Pdsubject e", Pdsubject.class).getResultList();
-
-
-        // Kết thúc transaction
-        entityManager.getTransaction().commit();
-
-        // Đóng EntityManager
-        entityManager.close();
-
-        return objects;
-
-    }
 
 }
