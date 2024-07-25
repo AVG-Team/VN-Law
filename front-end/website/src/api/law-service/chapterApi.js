@@ -1,20 +1,20 @@
 import axiosClient from "../axiosClient";
 
+const urlLaw = "law/api/v1/chapter";
 const chapterApi = {
     getAll() {
-        const url = "/law-service/chapter";
-        return axiosClient.get(url);
+        return axiosClient.get(urlLaw);
     },
     getAllByPage(params) {
-        const url = "/law-service/chapter/filter";
+        const url = urlLaw + "/filter";
         return axiosClient.get(url, { params });
     },
     getById(id) {
-        const url = `/law-service/chapter/${id}`;
+        const url = urlLaw + `/${id}`;
         return axiosClient.get(url, { id });
     },
     getBySubject(idSubject) {
-        const url = `/law-service/chapter/subject/${idSubject}`;
+        const url = urlLaw + `/subject/${idSubject}`;
         return axiosClient.get(url, { idSubject });
     },
 };

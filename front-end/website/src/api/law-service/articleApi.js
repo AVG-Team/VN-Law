@@ -1,17 +1,18 @@
 import axiosClient from "../axiosClient";
 
+const urlLaw = "law/api/v1/article";
 const articleApi = {
     getByChapterId(chapterId) {
-        const url = `/law-service/article/chapter/${chapterId}`;
+        const url = urlLaw + `/${chapterId}`;
         return axiosClient.get(url, { chapterId });
     },
 
     getTreeArticle(articleId) {
-        const url = `/law-service/article/tree/${articleId}`;
+        const url = urlLaw + `/tree/${articleId}`;
         return axiosClient.get(url, { articleId });
     },
     getAllByPage(params) {
-        const url = "/law-service/article/filter";
+        const url = urlLaw + "/filter";
         return axiosClient.get(url, { params });
     },
 };

@@ -50,7 +50,8 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
     const fetchArticles = async () => {
         if (!selectedChapter.id || loaded) return;
 
-        const articles = await articleApi.getAllByChapter(selectedChapter.id.toString(), page);
+        const response = await articleApi.getAllByChapter(selectedChapter.id.toString(), page);
+        const articles = response.data;
         if (!articles.content.length) {
             loaded = true;
             return;

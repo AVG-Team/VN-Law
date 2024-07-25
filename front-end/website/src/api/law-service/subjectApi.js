@@ -1,23 +1,23 @@
 import axiosClient from "../axiosClient";
 
+const urlLaw = "law/api/v1/subject";
+
 const subjectApi = {
     getAllByPage(params) {
-        const url = "/law-service/subject";
-        return axiosClient.get(url, { params });
+        return axiosClient.get(urlLaw, { params });
     },
 
     getAll() {
-        const url = "/law-service/subject";
-        return axiosClient.get(url);
+        return axiosClient.get(urlLaw);
     },
 
     getById(id) {
-        const url = `/law-service/subject/${id}`;
+        const url = urlLaw + `/${id}`;
         return axiosClient.get(url, { id });
     },
 
     getByTopic(idTopic) {
-        const url = `/law-service/subject/topic/${idTopic}`;
+        const url = urlLaw + `/${idTopic}`;
         return axiosClient.get(url, { idTopic });
     },
 };

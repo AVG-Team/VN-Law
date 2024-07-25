@@ -29,5 +29,4 @@ public class Vbqppl {
 
     @Column(nullable = false)
     private String html;
-
 }
