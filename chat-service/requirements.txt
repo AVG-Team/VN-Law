@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+sqlalchemy[asyncio]
+aiomysql
+redis
+httpx
+Faker

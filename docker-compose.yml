@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   kong:
     image: kong:latest
@@ -39,6 +37,16 @@ services:
       - db-network
     volumes:
       - mysql_data:/var/lib/mysql
+
+  redis:
+    image: "redis:latest"
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - db-network
+    volumes:
+      - redis_data:/data
 
   law-service:
     build: ./law-service
@@ -89,6 +97,7 @@ services:
 
 volumes:
   mysql_data:
+  redis_data:
 
 networks:
   db-network:
