@@ -17,7 +17,7 @@ export default function MenuMobile({ isOpenMenuNavbar, setIsOpenMenuNavbar, clea
                     setIsOpenMenuNavbar(!isOpenMenuNavbar);
                 }}
             />
-            <VersionChatbot className="flex items-center" />
+            <VersionChatbot className="flex items-center" clearMessages={clearMessages} isOpenMenuNavbar={isOpenMenuNavbar}/>
             <PencilSquareIcon className="w-6 h-6 text-gray-800 cursor-pointer" onClick={clearMessages} />
         </div>
     );

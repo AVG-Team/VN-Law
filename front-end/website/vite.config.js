@@ -9,5 +9,8 @@ export default defineConfig({
             '~': '/src',
         },
     },
+    define: {
+      global: 'window',
+    },
     envPrefix: 'VITE_',
 });

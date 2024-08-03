@@ -3,6 +3,9 @@ import Navbar from "./components/Navbar";
 import Dialog from "./components/Dialog";
 import { useMediaQuery } from "react-responsive";
 import "./components/style.css";
+import { getUserInfo } from "~/mock/auth";
+import { getConversations } from "~/api/chat-service/chat-service";
+import { useNavigate } from "react-router-dom";
 
 export default function Chatbot(props) {
     const title = props.title;
@@ -11,23 +14,37 @@ export default function Chatbot(props) {
         if (title === "Chat Bot") {
             document.body.style.overflowY = "hidden";
         }
+
+        getHistory().then();
     }, [title]);
-    const nameUser = "AVG Nguyễn Tấn Dũng";
+    const nameUser = getUserInfo().name;
 
     const isLargeScreen = useMediaQuery({ query: "(min-width: 1024px)" });
     const boolOpenMenu = isLargeScreen ? true : false;
     const [isOpenMenuNavbar, setIsOpenMenuNavbar] = useState(boolOpenMenu);
     const [messages, setMessages] = useState([]);
     const [activeChat, setActiveChat] = useState(false);
+    const [data, setData] = useState([]);
+    const navigate = useNavigate();
 
     const clearMessages = () => {
+        navigate("/chatbot");
         setActiveChat(false);
         setMessages([]);
     };
 
+    const getHistory = async () => {
+        try {
+            const response = await getConversations();
+            setData(response);
+        } catch (error) {
+            console.error(error.message);
+        }
+    };
+
     return (
         <div className="flex flex-row">
-            <Navbar isOpenMenuNavbar={isOpenMenuNavbar} nameUser={nameUser} clearMessages={clearMessages} />
+            <Navbar isOpenMenuNavbar={isOpenMenuNavbar} nameUser={nameUser} clearMessages={clearMessages} data={data}/>
             <Dialog
                 isOpenMenuNavbar={isOpenMenuNavbar}
                 setIsOpenMenuNavbar={setIsOpenMenuNavbar}

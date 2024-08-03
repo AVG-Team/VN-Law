@@ -2,7 +2,17 @@ import React, { useState } from "react";
 import { lawQuestions } from "~/mock/questions.data";
 import { useMediaQuery } from "react-responsive";
 import { TrashIcon } from "@heroicons/react/24/solid";
-import { isToday, isYesterday, isInLastWeek, isInLastMonth, isInLastYear, convertDateFormat } from "./GetDate";
+import { deleteConversation } from "~/api/chat-service/chat-service";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+    isTodayTimestamp,
+    isYesterdayTimestamp,
+    convertToTimestamp,
+    isInLastMonthTimestamp,
+    isInLastYearTimestamp,
+    isInLastWeekTimestamp,
+} from "./GetDate";
+import { toast } from "react-toastify";
 
 const truncateText = (text, maxLength) => {
     if (text.length > maxLength) {
@@ -36,35 +46,55 @@ export const TopQuestions = ({ sendQuestion }) => {
     );
 };
 
-// Define the custom hook outside the component
-const useQuestionList = (questions) => {
-    const [questionList, setQuestionList] = useState(questions);
+const LawQuestions = ({data}) => {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [questionList, setQuestionList] = useState(data);
 
-    const handleDeleteQuestion = (index) => {
-        const updatedQuestionList = [...questionList];
-        updatedQuestionList.splice(index, 1);
-        setQuestionList(updatedQuestionList);
+    const handleClickQuestion = (questionId) => {
+        const newPath = `/chatbot/${questionId}`;
+        if (location.pathname !== newPath) {
+            navigate(newPath, { replace: true });
+        }
+    }
+
+    const deleteQuestionFromServer = async (questionId) => {
+        try {
+            const response = await deleteConversation(questionId);
+            console.log(response);
+            toast.success("Xoá thành công", {
+                autoClose: 2000,
+                buttonClose: false
+            });
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+
+    const handleDeleteQuestion = (questionId) => {
+        const isConfirmed = window.confirm("Bạn có chắc chắn muốn xóa đoạn chat này không?");
+        if (isConfirmed) {
+            const updatedData = questionList.filter(question => question.id !== questionId);
+            setQuestionList(updatedData);
+            deleteQuestionFromServer(questionId).then();
+        }
     };
 
-    return { questionList, handleDeleteQuestion };
-};
-
-const LawQuestions = () => {
-    const { questionList, handleDeleteQuestion } = useQuestionList(lawQuestions);
-
     const renderQuestionBlocks = (questions, title) => {
-        return (
+        return questions.length <= 0 ? null : (
             <div className="mt-3">
                 <p className="mb-3 ml-2 text-base text-gray-500">{title}</p>
-                {questionList.map((question, index) => (
+                {questions.map((question) => (
                     <div
-                        key={index}
+                        key={question.id} data-id={question.id} onClick={() => handleClickQuestion(question.id)}
                         className="flex items-center justify-between p-2 my-1 cursor-pointer hover:rounded-lg hover:bg-slate-300"
                     >
-                        <p>{truncateText(question.question, maxLength)}</p>
+                        <p>{truncateText(question.title, maxLength)}</p>
                         <TrashIcon
                             className="w-4 h-4 text-black opacity-50 cursor-pointer hover:opacity-100"
-                            onClick={() => handleDeleteQuestion(index)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteQuestion(question.id)}}
                         />
                     </div>
                 ))}
@@ -72,13 +102,13 @@ const LawQuestions = () => {
         );
     };
 
-    const todayQuestions = lawQuestions.filter((question) => isToday(convertDateFormat(question.date)));
-    const yesterdayQuestions = lawQuestions.filter((question) => isYesterday(convertDateFormat(question.date)));
-    const previousSevenDaysQuestions = lawQuestions.filter((question) =>
-        isInLastWeek(convertDateFormat(question.date)),
+    const todayQuestions = questionList.filter((question) => isTodayTimestamp(convertToTimestamp(question.updated_at)));
+    const yesterdayQuestions = questionList.filter((question) => isYesterdayTimestamp(convertToTimestamp(question.updated_at)));
+    const previousSevenDaysQuestions = questionList.filter((question) =>
+        isInLastWeekTimestamp(convertToTimestamp(question.updated_at)),
     );
-    const previousMonthQuestions = lawQuestions.filter((question) => isInLastMonth(convertDateFormat(question.date)));
-    const previousYearQuestions = lawQuestions.filter((question) => isInLastYear(convertDateFormat(question.date)));
+    const previousMonthQuestions = questionList.filter((question) => isInLastMonthTimestamp(convertToTimestamp(question.updated_at)));
+    const previousYearQuestions = questionList.filter((question) => isInLastYearTimestamp(convertToTimestamp(question.updated_at)));
 
     return (
         <>

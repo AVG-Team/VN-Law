@@ -52,3 +52,40 @@ export function convertDateFormat(inputDate) {
     const day = parseInt(parts[0]);
     return new Date(year, month, day);
 }
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+export const isTodayTimestamp = (timestamp) => {
+    const today = new Date().setHours(0, 0, 0, 0);
+    return timestamp >= today && timestamp < today + DAY_IN_MS;
+};
+
+export const isYesterdayTimestamp = (timestamp) => {
+    const today = new Date().setHours(0, 0, 0, 0);
+    const yesterday = today - DAY_IN_MS;
+    return timestamp >= yesterday && timestamp < today;
+};
+
+export const isInLastWeekTimestamp = (timestamp) => {
+    const today = new Date().setHours(0, 0, 0, 0);
+    const weekAgo = today - 7 * DAY_IN_MS;
+    return timestamp >= weekAgo && timestamp < today - DAY_IN_MS;
+};
+
+export const isInLastMonthTimestamp = (timestamp) => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate()).getTime();
+    return timestamp >= lastMonth && timestamp < today - 7 * DAY_IN_MS;
+};
+
+export const isInLastYearTimestamp = (timestamp) => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const lastYear = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()).getTime();
+    return timestamp >= lastYear && timestamp < today - 30 * DAY_IN_MS;
+};
+
+export function convertToTimestamp(inputDate) {
+    return new Date(inputDate).getTime();
+}

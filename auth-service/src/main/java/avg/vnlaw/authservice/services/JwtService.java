@@ -134,6 +134,7 @@ public class JwtService {
     private Key getSignInKey(){
         try {
             String key = hexToHex(JWT_SECRET);
+            System.out.println(key);
             byte[] keyBytes = Decoders.BASE64.decode(key);
             return Keys.hmacShaKeyFor(keyBytes);
         } catch (NoSuchAlgorithmException e) {

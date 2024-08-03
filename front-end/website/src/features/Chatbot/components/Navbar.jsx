@@ -1,8 +1,9 @@
 import LawQuestions from "./LawQuestions";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import Logo from "../../../assets/images/logo/logo-no-bg.png";
+import { lawQuestions } from "~/mock/questions.data";
 
-function Navbar({ isOpenMenuNavbar, nameUser, clearMessages }) {
+function Navbar({ isOpenMenuNavbar, nameUser, clearMessages, data }) {
     return (
         <div
             className={`navbar-container ${
@@ -23,7 +24,7 @@ function Navbar({ isOpenMenuNavbar, nameUser, clearMessages }) {
                     <PencilSquareIcon className="w-6 h-6 text-black" />
                 </div>
                 <div className="px-2">
-                    <LawQuestions />
+                    {data.length > 0 && <LawQuestions data={data} />}
                 </div>
             </div>
             <div className="bg-gray-100">

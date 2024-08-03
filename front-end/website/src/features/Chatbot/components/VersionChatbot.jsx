@@ -9,8 +9,8 @@ export default function VersionChatbot({ className, clearMessages, isOpenMenuNav
                 }`}
                 onClick={clearMessages}
             />
-            <p className="text-lg font-bold mr-2 text-gray-700">AVG Law </p>
-            <p className="text-gray-400 text-lg">1.0</p>
+            <p className="text-lg font-bold mr-2 text-gray-700 group-hover:text-white transition">AVG Law </p>
+            <p className="text-gray-400 text-lg group-hover:text-white transition">1.0</p>
         </div>
     );
 }

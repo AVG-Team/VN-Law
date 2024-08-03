@@ -1,7 +1,6 @@
-import {useEffect, useRef, useState} from "react";
+import React from "react";
+import { useEffect, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
-import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
@@ -9,14 +8,24 @@ import {
     PaperAirplaneIcon,
     StopCircleIcon,
 } from "@heroicons/react/24/solid";
-import {TopQuestions} from "./LawQuestions";
+import { TopQuestions } from "./LawQuestions";
 import VersionChatbot from "./VersionChatbot";
 import MenuMobile from "./MenuMobile";
 import TypewriterText from "./TypewriterText";
 import Logo from "~/assets/images/logo/logo-no-bg.png";
-import axiosClient from "../../../api/axiosClient";
+import Cookies from "js-cookie";
+import { StorageKeys } from "~/common/constants/keys";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { getMessages as getMessagesData } from "~/api/chat-service/chat-service";
 
-function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, activeChat, setActiveChat}) {
+function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, activeChat, setActiveChat }) {
+    if (typeof global === "undefined") {
+        window.global = window;
+    }
+    const { conversationId } = useParams();
+    const [currentConversationId, setCurrentConversationId] = useState(conversationId || "");
+
     const [isHoveredIconMenu, setIsHoveredIconMenu] = useState(false);
     const [isHiddenRight, setHiddenRight] = useState(true);
     const [showIconSend, setShowIconSend] = useState(false);
@@ -25,62 +34,70 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
     const [pendingReplyServer, setPendingReplyServer] = useState(false);
     const messagesEndRef = useRef(null);
     const [isWaiting, setIsWaiting] = useState(false);
-    const socketRef = useRef();
-    let i = 0;
+    const navigate = useNavigate();
+
+    const token = Cookies.get(StorageKeys.ACCESS_TOKEN);
+    const [webSocket, setWebSocket] = useState(null);
 
     const handleResize = () => {
         setWindowWidth(window.innerWidth);
     };
 
-    const baseUrl = axiosClient.defaults.baseURL;
-
     useEffect(() => {
-        const connectToSocket = async () => {
-            if (!socketRef.current) {
-                let socket = new SockJS(baseUrl + '/socket-service/ws');
-                Stomp.over(socket).debug = () => {
-                };
+        const url = "ws://localhost:9004/ws/" + conversationId;
+        const ws = new WebSocket(url);
 
-                return new Promise((resolve, reject) => {
-                    socketRef.current = Stomp.over(socket);
-                    socketRef.current.debug = () => {
-                    };
-                    socketRef.current.connect({}, () => {
-                        resolve(socketRef.current);
-                    }, error => {
-                        reject(error);
-                    });
-                });
-            }
-            return socketRef.current;
-        }
-
-        const fetchData = async () => {
-            const socket = await connectToSocket();
-            if(socketRef.current.connected) {
-                socket.subscribe('/server/public', response => {
-                    console.log(response.body);
-                });
-
-                socket.subscribe('/server/sendData', response => {
-                    let parsedResponse = JSON.parse(response.body);
-                    let answer = JSON.parse(parsedResponse.body).fullAnswer;
-                    fetchReply(answer);
-                    setTextareaValue("");
-                });
-            }
-            i++
+        ws.onopen = (e) => {
+            console.log(e);
+            const messageToSend = JSON.stringify({
+                "message": "Connect to server",
+                "token": token,
+            });
+            ws.send(messageToSend);
         };
-        fetchData();
+
+        ws.onmessage = (e) => {
+            console.log(e);
+        };
+
         window.addEventListener("resize", handleResize);
+        setWebSocket(ws);
+
+        if (conversationId !== "" && conversationId !== undefined) {
+            getMessages().then();
+        }
 
         return () => {
             window.removeEventListener("resize", handleResize);
-            if (socketRef.current && socketRef.current.connected) {
-                socketRef.current.disconnect();
+            if (ws.readyState === 1) {
+                ws.close();
             }
         };
     }, []);
+
+    const getMessages = async () => {
+        try {
+            const response = await getMessagesData(conversationId);
+            setMessages(response.messages);
+            console.log("res",response);
+        } catch (error) {
+            toast.error("Có lỗi xảy ra khi lấy dữ liệu", {
+                autoClose: 1000,
+            });
+            console.error(error.message);
+        } finally {
+            setActiveChat(true);
+        }
+    };
+
+    useEffect(() => {
+        if (conversationId !== currentConversationId) {
+            setCurrentConversationId(conversationId || "");
+            if (conversationId !== "" && conversationId !== undefined) {
+                getMessages().then();
+            }
+        }
+    }, [conversationId]);
 
     const handleQuestionChange = (e) => {
         const question = e.target.value;
@@ -115,11 +132,26 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
             };
             setActiveChat(true);
             setIsWaiting(true);
+            console.log("message 1",messages);
+            console.log("newMessage",newMessage);
             setMessages((prevMessages) => [...prevMessages, newMessage]);
-            socketRef.current.send('/web/sendMessage', {}, content);
+            console.log("message 2",messages);
+            setMessages([1234,12414]);
+            console.log("message r",messages);
+            webSocket.send(content);
+            webSocket.onmessage = (e) => {
+                console.log(e);
+                setMessages([...messages, e.data]);
+                console.log("message 3",messages);
+            };
             setPendingReplyServer(true);
+            setTextareaValue("");
         }
     };
+
+    useEffect(() => {
+        console.log("Messages đã cập nhật:", messages);
+    }, [messages]);
 
     const fetchReply = (message) => {
         const fakeReply = {
@@ -140,11 +172,12 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
 
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({behavior: "smooth"});
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     };
 
     const clearMessages = () => {
+        navigate("/chatbot");
         setActiveChat(false);
         setMessages([]);
     };
@@ -154,13 +187,14 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
             className={`flex flex-col relative w-[100%] h-screen z-0 ${activeChat ? "active-chat" : ""}`}
             onClick={handleClick}
         >
-            <div className="justify-start justify-end hidden"></div>
+            <div className="justify-start hidden"></div>
+            <div className="justify-end hidden"></div>
             <MenuMobile
                 isOpenMenuNavbar={isOpenMenuNavbar}
                 setIsOpenMenuNavbar={setIsOpenMenuNavbar}
                 clearMessages={clearMessages}
             />
-            <hr/>
+            <hr />
             <div className="hidden lg:block absolute top-[50%]">
                 {isHoveredIconMenu ? (
                     isHiddenRight ? (
@@ -194,39 +228,38 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
             </div>
             <div className="flex-1 overflow-hidden">
                 <VersionChatbot
-                    className="absolute hidden px-2 rounded-lg cursor-pointer lg:flex lg:items-center top-4 left-8 hover:bg-slate-300"
+                    className="group absolute hidden px-2 rounded-lg cursor-pointer lg:flex lg:items-center top-4 left-8 bg-white hover:bg-cyan-400 transition"
                     clearMessages={clearMessages}
                     isOpenMenuNavbar={isOpenMenuNavbar}
                 />
                 <div className="flex flex-col items-center justify-center h-full logo-chat">
-                    <img src={Logo} alt="icon" className="w-20"/>
+                    <img src={Logo} alt="icon" className="w-20" />
                     <p className="mt-3 text-2xl font-bold">Tôi có thể giúp gì cho bạn ?</p>
                 </div>
                 <div className="flex flex-col h-full overflow-scroll lg:py-10">
-                    {messages.map((message, index) => (
-                        <div
-                            key={index}
-                            className={`message-chat ${
-                                message.type === "question" ? "question" : "reply"
-                            } w-full flex justify-${message.type === "question" ? "end" : "start"} px-3 mt-5`}
-                        >
+                    {messages.map((message,index) => (
+                        <React.Fragment key={index}>
                             <div
-                                className={`flex rounded-lg ${
-                                    message.type === "question" ? "bg-cyan-300" : "bg-gray-100"
-                                } p-4`}
+                                className="message-chat question w-full flex justify-end px-3 mt-5"
                             >
-                                {message.type === "question" ? (
-                                    <p className="text-white text-lg">{message.content}</p>
-                                ) : (
-                                    <TypewriterText
-                                        key={message.content}
-                                        text={message.content}
-                                        pendingReplyServer={pendingReplyServer}
-                                        setPendingReplyServer={setPendingReplyServer}
-                                    />
-                                )}
+                                <div
+                                    className="flex rounded-lg bg-cyan-300 p-4"
+                                >
+                                    <p className="text-white text-lg">{message.message}</p>
+                                </div>
                             </div>
-                        </div>
+                            {message.reply && (
+                                <div
+                                    className="message-chat reply w-full flex justify-start px-3 mt-5"
+                                >
+                                    <div
+                                        className="flex rounded-lg bg-gray-200 p-4"
+                                    >
+                                        <p className="text-black text-lg">{message.reply}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </React.Fragment>
                     ))}
                     {isWaiting && (
                         <div
@@ -244,11 +277,11 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                             </div>
                         </div>
                     )}
-                    <div ref={messagesEndRef}/>
+                    <div ref={messagesEndRef} />
                 </div>
             </div>
             <div className="w-[100%] text-center mb-2">
-            <TopQuestions sendQuestion={sendQuestion}/>
+                <TopQuestions sendQuestion={sendQuestion} />
                 <div className="position">
                     <TextareaAutosize
                         name="question"
@@ -271,7 +304,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                                 />
                             ) : (
                                 <StopCircleIcon
-                                    className="w-6 h-6 text-gray-400 absolute right-[9.5%] bottom-12 cursor-progress icon-input-message"/>
+                                    className="w-6 h-6 text-gray-400 absolute right-[9.5%] bottom-12 cursor-progress icon-input-message" />
                             )}
                         </>
                     )}

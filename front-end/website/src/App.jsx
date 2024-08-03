@@ -30,7 +30,7 @@ function App() {
                     <Route path="/dang-xuat" element={<SignOut />} />
                     {/* <Route path="/chat-bot" element={<Chatbot />} /> */}
                     <Route
-                        path="/chatbot"
+                        path="/chatbot/:conversationId?"
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <Chatbot title="Chat Bot" />

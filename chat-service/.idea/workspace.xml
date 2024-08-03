@@ -4,7 +4,35 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c61decd0-867b-4621-a3ab-ec288fabf87f" name="Changes" comment="" />
+    <list default="true" id="1beedb5f-7782-4086-84a8-03f273603fe0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/core/fakerRedis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/helpers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/base.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/conversation.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/websockets/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/websockets/events.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/websockets/manager.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/websockets/router.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front-end/website/src/api/chat-service/chat-service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/services/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/services/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_main.http" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/website/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/website/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/website/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/website/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/components/Dialog.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/components/Dialog.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/components/GetDate.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/components/GetDate.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/components/LawQuestions.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/components/LawQuestions.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/components/MenuMobile.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/components/MenuMobile.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/components/Navbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/components/Navbar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/components/VersionChatbot.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/components/VersionChatbot.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/website/src/features/Chatbot/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/website/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/website/vite.config.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,76 +41,144 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="FastAPI main" />
-        <option value="FastAPI test_main" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 4
 }</component>
-  <component name="ProjectId" id="2jKZYQXwUP4B7fjcvCcgNZ4M6yH" />
+  <component name="ProjectId" id="2jeDxzdwQHUgfApQXqmKZhJ4PTW" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "feat/kong-api",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;FastAPI.Unnamed.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Chat Service.executor&quot;: &quot;Run&quot;,
+    &quot;Python.helpers.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/chat-service&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Project/VN-Law/chat-service/app/core&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RunManager">
-    <configuration name="chat-service" type="Python.FastAPI">
-      <option name="file" value="$PROJECT_DIR$/main.py" />
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Project\VN-Law\chat-service\app\core" />
+      <recent name="D:\Project\VN-Law\chat-service\app" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Project\VN-Law\chat-service\app" />
+      <recent name="D:\Project\VN-Law\chat-service\app\websocket" />
+      <recent name="D:\Project\VN-Law\chat-service\app\models" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.Chat Service">
+    <configuration name="Chat Service" type="PythonConfigurationType" factoryName="Python">
       <module name="chat-service" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (chat-service)" />
+      <option name="WORKING_DIRECTORY" value="D:\Project\VN-Law\chat-service" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="launchJavascriptDebuger" value="false" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/run.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="helpers" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="chat-service" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="D:\Project\VN-Law\chat-service\app\helpers.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.helpers" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-1d06a55b98c1-74d2a5396914-JavaScript-PY-241.14494.241" />
-        <option value="bundled-python-sdk-0509580d9d50-28c9f5db9ffe-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.14494.241" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.18034.82" />
+        <option value="bundled-python-sdk-975db3bf15a3-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.18034.82" />
       </set>
     </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="c61decd0-867b-4621-a3ab-ec288fabf87f" name="Changes" comment="" />
-      <created>1721137775589</created>
+      <changelist id="1beedb5f-7782-4086-84a8-03f273603fe0" name="Changes" comment="" />
+      <created>1721738900736</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1721137775589</updated>
-      <workItem from="1721137776537" duration="447000" />
-      <workItem from="1721139529134" duration="222000" />
-      <workItem from="1721144057646" duration="600000" />
+      <updated>1721738900736</updated>
+      <workItem from="1721738902051" duration="527000" />
+      <workItem from="1721739445526" duration="30238000" />
+      <workItem from="1722006827166" duration="621000" />
+      <workItem from="1722052210301" duration="2000" />
+      <workItem from="1722084768243" duration="22532000" />
+      <workItem from="1722261645215" duration="74700000" />
+      <workItem from="1722697730631" duration="6067000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/chat_service$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1721828580544" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/chat_service$Chat_Service.coverage" NAME="Chat Service Coverage Results" MODIFIED="1722721212502" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="D:\Project\VN-Law\chat-service" />
+    <SUITE FILE_PATH="coverage/chat_service$test.coverage" NAME="helpers Coverage Results" MODIFIED="1722336686660" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
