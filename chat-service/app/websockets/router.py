@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import json
 import logging
 import uuid
@@ -53,7 +54,15 @@ async def websocket_endpoint(
                 data = await asyncio.wait_for(websocket.receive_text(), timeout=30.0)
                 # Process data here
                 print("Data send : ", data)
-                await manager.send_personal_message(f"You wrote: {data}", conversation_id)
+                result = {
+                    "conversation_id": conversation_id,
+                    "id": str(uuid.uuid4()),
+                    "message": data,
+                    "reply": "You wrote: " + data,
+                    "timestamp": datetime.datetime.now().isoformat(),
+                }
+                await asyncio.sleep(10)
+                await manager.send_personal_message(result, conversation_id)
             except asyncio.TimeoutError:
                 logger.info(f"No data received from {conversation_id} for 30 seconds")
                 # You might want to send a ping here to check if the connection is still alive

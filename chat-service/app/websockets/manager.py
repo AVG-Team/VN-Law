@@ -16,9 +16,9 @@ class ConnectionManager:
         if conversation_id in self.active_connections:
             del self.active_connections[conversation_id]
 
-    async def send_personal_message(self, message: str, conversation_id: str):
+    async def send_personal_message(self, message: dict, conversation_id: str):
         if conversation_id in self.active_connections:
-            await self.active_connections[conversation_id].send_text(message)
+            await self.active_connections[conversation_id].send_json(message)
 
     async def broadcast(self, message: str):
         for connection in self.active_connections.values():

@@ -19,6 +19,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getMessages as getMessagesData } from "~/api/chat-service/chat-service";
 
+const generateUniqueId = () => {
+    const timestamp = new Date().getTime();
+    const randomNum = Math.floor(Math.random() * 1000);
+    return `${timestamp}-${randomNum}`;
+};
+
 function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, activeChat, setActiveChat }) {
     if (typeof global === "undefined") {
         window.global = window;
@@ -54,10 +60,6 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
                 "token": token,
             });
             ws.send(messageToSend);
-        };
-
-        ws.onmessage = (e) => {
-            console.log(e);
         };
 
         window.addEventListener("resize", handleResize);
@@ -124,44 +126,37 @@ function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, 
         }
     };
     const sendQuestion = (content) => {
-        if (content !== "") {
-            const newMessage = {
-                id: messages.length + 1,
-                content: content,
-                type: "question",
-            };
-            setActiveChat(true);
-            setIsWaiting(true);
-            console.log("message 1",messages);
-            console.log("newMessage",newMessage);
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
-            console.log("message 2",messages);
-            setMessages([1234,12414]);
-            console.log("message r",messages);
-            webSocket.send(content);
-            webSocket.onmessage = (e) => {
-                console.log(e);
-                setMessages([...messages, e.data]);
-                console.log("message 3",messages);
-            };
-            setPendingReplyServer(true);
-            setTextareaValue("");
-        }
+        if (!content.trim()) return;
+
+        const id = generateUniqueId();
+        const newMessage = { message: content, id };
+
+        setActiveChat(true);
+        setIsWaiting(true);
+        setPendingReplyServer(true);
+        setTextareaValue("");
+        setMessages(prevMessages => [...prevMessages, newMessage]);
+
+        webSocket.send(content);
+        webSocket.onmessage = handleWebSocketMessage(id);
     };
 
-    useEffect(() => {
-        console.log("Messages đã cập nhật:", messages);
-    }, [messages]);
+    const handleWebSocketMessage = (id) => (event) => {
+        let newMessage;
+        try {
+            newMessage = JSON.parse(event.data);
+        } catch (error) {
+            console.error("Error parsing JSON:", error);
+            newMessage = event.data;
+        }
 
-    const fetchReply = (message) => {
-        const fakeReply = {
-            id: messages.length + 2,
-            content: message,
-            type: "reply",
-        };
+        setMessages(prevMessages => [
+            ...prevMessages.filter(message => message.id !== id),
+            newMessage
+        ]);
 
-        setMessages((prevMessages) => [...prevMessages, fakeReply]);
         setIsWaiting(false);
+        setPendingReplyServer(false);
     };
 
     useEffect(() => {

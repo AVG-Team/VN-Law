@@ -19,8 +19,7 @@ export default function Chatbot(props) {
     }, [title]);
     const nameUser = getUserInfo().name;
 
-    const isLargeScreen = useMediaQuery({ query: "(min-width: 1024px)" });
-    const boolOpenMenu = isLargeScreen ? true : false;
+    const boolOpenMenu = useMediaQuery({ query: "(min-width: 1024px)" });
     const [isOpenMenuNavbar, setIsOpenMenuNavbar] = useState(boolOpenMenu);
     const [messages, setMessages] = useState([]);
     const [activeChat, setActiveChat] = useState(false);
