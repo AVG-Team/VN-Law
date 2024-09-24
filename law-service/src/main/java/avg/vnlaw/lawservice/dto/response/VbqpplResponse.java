@@ -1,4 +1,4 @@
-package avg.vnlaw.lawservice.responses;
+package avg.vnlaw.lawservice.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseVbqppl {
+public class VbqpplResponse {
     private Integer id;
     private String content;
     private String name;

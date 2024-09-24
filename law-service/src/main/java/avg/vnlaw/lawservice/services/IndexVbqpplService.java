@@ -1,14 +1,56 @@
 package avg.vnlaw.lawservice.services;
 
 
-import avg.vnlaw.lawservice.entities.IndexVbqppl;
-import avg.vnlaw.lawservice.responses.ResponseIndexVbqppl;
+import avg.vnlaw.lawservice.dto.request.IndexVbqpplRequest;
+import avg.vnlaw.lawservice.dto.response.IndexVbqpplResponse;
+import avg.vnlaw.lawservice.repositories.IndexVbqpplRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-public interface IndexVbqpplService {
-    public ResponseIndexVbqppl getIndexVbqpplbyId(Integer id);
-    public Page<ResponseIndexVbqppl> getAllIndexVbqppl(Optional<Integer> pageNo, Optional<Integer> pageSize);
+@Service
+@RequiredArgsConstructor
+public class IndexVbqpplService implements BaseService <IndexVbqpplRequest,Integer> {
 
+    private final IndexVbqpplRepository indexVbqpplRepository;
+
+
+    public IndexVbqpplResponse getIndexVbqpplbyId(Integer id) {
+
+        if(indexVbqpplRepository.findById(id).isEmpty()){
+            throw new NotFoundException("Not Found");
+        }
+
+        return indexVbqpplRepository.findIndexById(id);
+    }
+
+
+    public Page<IndexVbqpplResponse> getAllIndexVbqppl(Optional<Integer> pageNo, Optional<Integer> pageSize) {
+        Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(10));
+        return this.indexVbqpplRepository.findAllIndex(pageable);
+    }
+
+    @Override
+    public Optional<IndexVbqpplRequest> findById(Integer id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public IndexVbqpplRequest create(IndexVbqpplRequest entity) {
+        return null;
+    }
+
+    @Override
+    public IndexVbqpplRequest update(Integer id, IndexVbqpplRequest entity) {
+        return null;
+    }
+
+    @Override
+    public void delete(Integer id) {
+
+    }
 }

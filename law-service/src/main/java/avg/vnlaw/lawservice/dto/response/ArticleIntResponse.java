@@ -1,6 +1,6 @@
-package avg.vnlaw.lawservice.responses;
+package avg.vnlaw.lawservice.dto.response;
 
-public interface ResponseArticleInt {
+public interface ArticleIntResponse {
     String getId();
     String getName();
     Integer getOrder();

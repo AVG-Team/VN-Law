@@ -1,4 +1,4 @@
-package avg.vnlaw.lawservice.responses;
+package avg.vnlaw.lawservice.dto.response;
 
 import avg.vnlaw.lawservice.entities.Chapter;
 import avg.vnlaw.lawservice.entities.Subject;
@@ -14,12 +14,12 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseListTree {
+public class ListTreeResponse {
     private String id;
     private Subject subject;
     private Chapter chapter;
     private Topic topic;
 
-    private List<ResponseArticleTree> articles;
+    private List<ArticleTreeResponse> articles;
 
 }

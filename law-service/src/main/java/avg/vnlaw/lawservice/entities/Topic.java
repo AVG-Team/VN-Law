@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @Setter
 @Getter
-public class Topic {
+public class Topic extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;

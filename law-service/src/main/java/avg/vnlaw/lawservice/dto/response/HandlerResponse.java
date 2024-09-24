@@ -1,4 +1,4 @@
-package avg.vnlaw.lawservice.responses;
+package avg.vnlaw.lawservice.dto.response;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ResponseHandler {
+public class HandlerResponse {
 
     public static ResponseEntity<Object> responseBuilder(
             String message, HttpStatus httpStatus, Object responseObject

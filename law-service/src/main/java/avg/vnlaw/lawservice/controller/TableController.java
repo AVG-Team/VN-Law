@@ -1,8 +1,10 @@
 package avg.vnlaw.lawservice.controller;
 
 
-import avg.vnlaw.lawservice.responses.ResponseHandler;
+import avg.vnlaw.lawservice.dto.request.TableRequest;
+import avg.vnlaw.lawservice.dto.response.HandlerResponse;
 import avg.vnlaw.lawservice.services.TableService;
+import jakarta.persistence.Table;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,21 +14,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/table")
 @RequiredArgsConstructor
-public class TableController {
+public class TableController extends BaseController<Table, TableRequest,Integer> {
 
-    @Autowired
     private TableService tableService;
 
     @GetMapping("")
     public ResponseEntity<Object> getAllTables(
             @RequestParam(name = "pageNo", value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize){
-        return ResponseHandler.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,tableService.getAllTable(pageNo,pageSize));
     }
     @GetMapping("/filter")
@@ -34,7 +36,32 @@ public class TableController {
             @RequestParam(name = "content", value = "content") Optional<String> content,
             @RequestParam(name = "pageNo", value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize){
-        return ResponseHandler.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,tableService.getAllTableByFilter(content,pageNo,pageSize));
+    }
+
+    @Override
+    public ResponseEntity<Table> create(TableRequest request) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Table> update(Integer id, TableRequest request) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Table> delete(TableRequest request) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Table> get(TableRequest request) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<List<Table>> getAll() {
+        return null;
     }
 }

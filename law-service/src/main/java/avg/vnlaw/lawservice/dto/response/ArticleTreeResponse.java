@@ -1,4 +1,4 @@
-package avg.vnlaw.lawservice.responses;
+package avg.vnlaw.lawservice.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseArticleTree {
+public class ArticleTreeResponse {
     private String id;
     private String name;
     private String content;
@@ -20,6 +20,6 @@ public class ResponseArticleTree {
     private String vbqpplLink;
     private Integer order;
 
-    private List<ResponseFile> files;
-    private List<ResponseTable> tables;
+    private List<FileResponse> files;
+    private List<TableResponse> tables;
 }

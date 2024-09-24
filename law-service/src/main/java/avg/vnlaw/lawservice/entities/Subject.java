@@ -11,7 +11,7 @@ import lombok.*;
 @Setter
 @Getter
 @Builder
-public class Subject {
+public class Subject extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     public String id;

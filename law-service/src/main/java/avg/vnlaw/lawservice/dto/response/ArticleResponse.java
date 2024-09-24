@@ -1,4 +1,4 @@
-package avg.vnlaw.lawservice.responses;
+package avg.vnlaw.lawservice.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Builder
-public class ResponseArticle implements ResponseArticleInt {
+public class ArticleResponse implements ArticleIntResponse {
     private String id;
     private String name;
     private String content;
@@ -18,10 +18,10 @@ public class ResponseArticle implements ResponseArticleInt {
     private String vbqpplLink;
     private Integer order;
 
-    private List<ResponseFile> files;
-    private List<ResponseTable> tables;
+    private List<FileResponse> files;
+    private List<TableResponse> tables;
 
-    public ResponseArticle(String id, String name, String content, String index, String vbqppl, String vbqpplLink, Integer order){
+    public ArticleResponse(String id, String name, String content, String index, String vbqppl, String vbqpplLink, Integer order){
         this.id = id;
         this.name = name;
         this.content = content;

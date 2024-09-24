@@ -1,11 +1,11 @@
-package avg.vnlaw.lawservice.responses;
+package avg.vnlaw.lawservice.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class ResponseFile {
+public class FileResponse {
 
     private Integer id;
     private String link;

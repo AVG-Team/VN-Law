@@ -1,4 +1,4 @@
-package avg.vnlaw.lawservice.responses;
+package avg.vnlaw.lawservice.dto.response;
 
 import lombok.*;
 
@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Setter
 @Getter
-public class ResponseTopic {
+public class TopicResponse {
     private String id;
     private String name;
     private Integer order;
