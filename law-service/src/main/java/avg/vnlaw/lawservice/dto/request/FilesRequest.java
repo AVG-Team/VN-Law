@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FileRequest {
+public class FilesRequest {
     Integer id;
     String link;
     String path;
