@@ -11,7 +11,7 @@ import lombok.*;
 @Setter
 @Getter
 @Builder
-public class Chapter {
+public class Chapter extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

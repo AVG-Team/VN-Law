@@ -1,21 +1,24 @@
 package avg.vnlaw.lawservice.controller;
 
 
-import avg.vnlaw.lawservice.exception.NotFoundException;
-import avg.vnlaw.lawservice.responses.ResponseHandler;
+import avg.vnlaw.lawservice.dto.request.ArticleRequest;
+import avg.vnlaw.lawservice.entities.Article;
+import avg.vnlaw.lawservice.dto.response.HandlerResponse;
+import avg.vnlaw.lawservice.exception.AppException;
 import avg.vnlaw.lawservice.services.ArticleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/article")
-public class ArticleController {
+@RequestMapping("/article")
+@RequiredArgsConstructor
+public class ArticleController extends BaseController<Article, ArticleRequest, String> {
 
-    @Autowired
     private ArticleService articleService;
 
 
@@ -23,13 +26,13 @@ public class ArticleController {
     public ResponseEntity<Object> getArticleByChapter(@PathVariable String chapterId,
                                                       @RequestParam(name = "pageNo", value="pageNo") Optional<Integer> pageNo,
                                                       @RequestParam(name = "pageSize", value="pageSize") Optional<Integer> pageSize){
-        return ResponseHandler.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,articleService.getArticleByChapter(chapterId,pageNo,pageSize));
     }
 
     @GetMapping("/tree/{articleId}")
-    public ResponseEntity<Object> getArticleTreeViewById(@PathVariable String articleId) throws NotFoundException {
-        return ResponseHandler.responseBuilder("Complete",
+    public ResponseEntity<Object> getArticleTreeViewById(@PathVariable String articleId) throws AppException {
+        return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,articleService.getTreeViewByArticleId(articleId));
     }
 
@@ -40,8 +43,33 @@ public class ArticleController {
             @RequestParam(name = "pageNo", value="pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value="pageSize") Optional<Integer> pageSize
     ){
-        return ResponseHandler.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,articleService.getArticleByFilter(subjectId,name,pageNo,pageSize));
     }
 
+
+    @Override
+    public ResponseEntity<Article> create(ArticleRequest request) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Article> update(String id, ArticleRequest request) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Article> delete(ArticleRequest request) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Article> get(ArticleRequest request) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<List<Article>> getAll() {
+        return null;
+    }
 }
