@@ -4,6 +4,7 @@ package avg.vnlaw.lawservice.controller;
 import avg.vnlaw.lawservice.dto.request.ChapterRequest;
 import avg.vnlaw.lawservice.entities.Chapter;
 import avg.vnlaw.lawservice.dto.response.HandlerResponse;
+import avg.vnlaw.lawservice.exception.AppException;
 import avg.vnlaw.lawservice.services.ChapterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,19 +26,19 @@ public class ChapterController extends BaseController <Chapter, ChapterRequest,S
     }
 
     @GetMapping("{chapterId}")
-    public ResponseEntity<Object> getChapterById(@PathVariable(name = "chapterId") String chapterId) throws NotFoundException {
+    public ResponseEntity<Object> getChapterById(@PathVariable(name = "chapterId") String chapterId) throws AppException {
         return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,this.chapterService.getChapter(chapterId));
     }
 
     @GetMapping("/{subjectId}")
-    public ResponseEntity<Object> getChapterBySubject(@PathVariable(name = "subjectId") String subjectId) throws NotFoundException{
+    public ResponseEntity<Object> getChapterBySubject(@PathVariable(name = "subjectId") String subjectId) throws AppException{
         return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,this.chapterService.getChaptersBySubject(subjectId));
     }
 
     @GetMapping("")
-    public ResponseEntity<Object> getAllChapters() throws NotFoundException {
+    public ResponseEntity<Object> getAllChapters() throws AppException {
         return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,this.chapterService.getAllChapters());
     }

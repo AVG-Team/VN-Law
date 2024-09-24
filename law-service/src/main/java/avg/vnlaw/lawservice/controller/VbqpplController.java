@@ -4,6 +4,7 @@ package avg.vnlaw.lawservice.controller;
 import avg.vnlaw.lawservice.dto.request.VbqpplRequest;
 import avg.vnlaw.lawservice.entities.Vbqppl;
 import avg.vnlaw.lawservice.dto.response.HandlerResponse;
+import avg.vnlaw.lawservice.exception.AppException;
 import avg.vnlaw.lawservice.services.VbqpplService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,7 @@ public class VbqpplController extends BaseController<Vbqppl, VbqpplRequest,Integ
     }
 
     @GetMapping("/{vbqpplId}")
-    public ResponseEntity<Object> getVbqpplById(@PathVariable Integer vbqpplId) throws No {
+    public ResponseEntity<Object> getVbqpplById(@PathVariable Integer vbqpplId) throws AppException {
         return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,this.vbqpplService.getVbqpplById(vbqpplId));
     }

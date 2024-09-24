@@ -1,7 +1,7 @@
 package avg.vnlaw.lawservice.exception;
 
 
-import avg.web.backend.enums.ErrorCode;
+import avg.vnlaw.lawservice.enums.ErrorCode;
 import lombok.Getter;
 
 @Getter

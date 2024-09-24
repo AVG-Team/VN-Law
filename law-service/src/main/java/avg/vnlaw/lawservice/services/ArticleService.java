@@ -6,6 +6,8 @@ import avg.vnlaw.lawservice.entities.Article;
 import avg.vnlaw.lawservice.entities.Chapter;
 import avg.vnlaw.lawservice.entities.Subject;
 import avg.vnlaw.lawservice.entities.Topic;
+import avg.vnlaw.lawservice.enums.ErrorCode;
+import avg.vnlaw.lawservice.exception.AppException;
 import avg.vnlaw.lawservice.repositories.ArticleRepository;
 import avg.vnlaw.lawservice.repositories.FileRepository;
 import avg.vnlaw.lawservice.repositories.TableRepository;
@@ -74,7 +76,7 @@ public class ArticleService implements BaseService<ArticleRequest, String> {
 
     public ListTreeResponse getTreeViewByArticleId(String articleId) {
         Article article = articleRepository.findById(articleId).orElseThrow(
-                () -> new NotFoundException("Not Exist Article")
+                () -> new AppException(ErrorCode.ARTICLE_EMPTY)
         );
         Chapter chapter = article.getChapter();
         List<ArticleIntResponse> articleDTOS = articleRepository.findAllByChapter_IdOrderByOrder(chapter.getId());
@@ -99,7 +101,7 @@ public class ArticleService implements BaseService<ArticleRequest, String> {
         }
 
         Topic topic = topicRepository.findById(article.getTopic().getId()).orElseThrow(
-                () -> new NotFoundException("Topic Not Exist")
+                () -> new AppException(ErrorCode.TOPIC_IS_NOT_EXISTED)
         );
         return ListTreeResponse.builder()
                 .id(chapter.getId())

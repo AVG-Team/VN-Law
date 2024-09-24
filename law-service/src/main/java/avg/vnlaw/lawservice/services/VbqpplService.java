@@ -2,6 +2,8 @@ package avg.vnlaw.lawservice.services;
 
 
 import avg.vnlaw.lawservice.dto.response.VbqpplResponse;
+import avg.vnlaw.lawservice.enums.ErrorCode;
+import avg.vnlaw.lawservice.exception.AppException;
 import avg.vnlaw.lawservice.repositories.VbqpplRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,7 +29,7 @@ public class VbqpplService implements BaseService<VbqpplResponse, Integer> {
 
     public VbqpplResponse getVbqpplById(Integer idVbqppl) {
         if(vbqpplRepository.findById(idVbqppl).isEmpty()){
-            throw new NotFoundException("Not Found");
+            throw new AppException(ErrorCode.VBQPPL_IS_NOT_EXISTED);
         }
         return vbqpplRepository.findVbById(idVbqppl);
     }

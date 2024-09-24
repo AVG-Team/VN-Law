@@ -4,6 +4,7 @@ package avg.vnlaw.lawservice.controller;
 import avg.vnlaw.lawservice.dto.request.ArticleRequest;
 import avg.vnlaw.lawservice.entities.Article;
 import avg.vnlaw.lawservice.dto.response.HandlerResponse;
+import avg.vnlaw.lawservice.exception.AppException;
 import avg.vnlaw.lawservice.services.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class ArticleController extends BaseController<Article, ArticleRequest, S
     }
 
     @GetMapping("/tree/{articleId}")
-    public ResponseEntity<Object> getArticleTreeViewById(@PathVariable String articleId) throws NotFoundException {
+    public ResponseEntity<Object> getArticleTreeViewById(@PathVariable String articleId) throws AppException {
         return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,articleService.getTreeViewByArticleId(articleId));
     }

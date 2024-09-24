@@ -3,6 +3,8 @@ package avg.vnlaw.lawservice.services;
 
 import avg.vnlaw.lawservice.dto.request.IndexVbqpplRequest;
 import avg.vnlaw.lawservice.dto.response.IndexVbqpplResponse;
+import avg.vnlaw.lawservice.enums.ErrorCode;
+import avg.vnlaw.lawservice.exception.AppException;
 import avg.vnlaw.lawservice.repositories.IndexVbqpplRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,7 +24,7 @@ public class IndexVbqpplService implements BaseService <IndexVbqpplRequest,Integ
     public IndexVbqpplResponse getIndexVbqpplbyId(Integer id) {
 
         if(indexVbqpplRepository.findById(id).isEmpty()){
-            throw new NotFoundException("Not Found");
+            throw new AppException(ErrorCode.INDEXVBQPPL_IS_NOT_EXISTED);
         }
 
         return indexVbqpplRepository.findIndexById(id);

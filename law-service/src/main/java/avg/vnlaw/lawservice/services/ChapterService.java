@@ -2,6 +2,8 @@ package avg.vnlaw.lawservice.services;
 
 
 import avg.vnlaw.lawservice.dto.response.ChapterResponse;
+import avg.vnlaw.lawservice.enums.ErrorCode;
+import avg.vnlaw.lawservice.exception.AppException;
 import avg.vnlaw.lawservice.repositories.ChapterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,7 +24,7 @@ public class ChapterService implements BaseService<ChapterResponse, String> {
 
     public ChapterResponse getChapter(String chapterId) {
         chapterRepository.findById(chapterId).orElseThrow(
-                () -> new NotFoundException("Chapter doesn't exist")
+                () -> new AppException(ErrorCode.CHAPTER_NOT_FOUND)
         );
         return chapterRepository.findChapterById(chapterId);
     }
@@ -30,7 +32,7 @@ public class ChapterService implements BaseService<ChapterResponse, String> {
 
     public List<ChapterResponse> getAllChapters() {
         if (chapterRepository.findAll().isEmpty()) {
-            throw new NotFoundException("Chapters are empty");
+            throw new AppException(ErrorCode.CHAPTER_EMPTY);
         }
         return chapterRepository.findAllChapters();
     }
@@ -38,7 +40,7 @@ public class ChapterService implements BaseService<ChapterResponse, String> {
 
     public List<ChapterResponse> getChaptersBySubject(String subjectId) {
         if (chapterRepository.findChaptersBySubject(subjectId).isEmpty()) {
-            throw new NotFoundException("Don't have any chapter of subject");
+            throw new AppException(ErrorCode.CHAPTER_EMPTY);
         }
         return chapterRepository.findChaptersBySubject(subjectId);
     }
@@ -47,7 +49,7 @@ public class ChapterService implements BaseService<ChapterResponse, String> {
     public Page<ChapterResponse> getAllChapters(Optional<String> name, Optional<Integer> pageNo, Optional<Integer> pageSize) {
         Pageable pageable = PageRequest.of(pageNo.orElse(0), pageSize.orElse(5));
         if (chapterRepository.findAll(name.orElse(""), pageable).isEmpty()) {
-            throw new NotFoundException("Don't have any chapter");
+            throw new AppException(ErrorCode.CHAPTER_EMPTY);
         }
         return chapterRepository.findAll(name.orElse(""), pageable);
     }

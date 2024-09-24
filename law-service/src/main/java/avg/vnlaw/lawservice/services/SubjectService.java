@@ -2,6 +2,8 @@ package avg.vnlaw.lawservice.services;
 
 
 import avg.vnlaw.lawservice.dto.response.SubjectResponse;
+import avg.vnlaw.lawservice.enums.ErrorCode;
+import avg.vnlaw.lawservice.exception.AppException;
 import avg.vnlaw.lawservice.repositories.SubjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,7 +22,7 @@ public class SubjectService implements BaseService<SubjectResponse, String> {
 
     public SubjectResponse getSubject(String subjectId) {
         if(subjectRepository.findById(subjectId).isEmpty()){
-            throw new NotFoundException("Subject doesn't Exist");
+            throw new AppException(ErrorCode.SUBJECT_IS_NOT_EXISTED);
         }
         return subjectRepository.findSubjectById(subjectId);
     }
