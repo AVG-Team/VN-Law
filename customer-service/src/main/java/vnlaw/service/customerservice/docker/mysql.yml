@@ -1,0 +1,19 @@
+name: hibakery
+services:
+  mysql:
+    image: mysql:9.0.1
+    volumes:
+      - ./config/mysql:/etc/mysql/conf.d
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=hibakery
+    # If you want to expose these ports outside your dev PC,
+    # remove the "127.0.0.1:" prefix
+    ports:
+      - 127.0.0.1:4000:4000
+    command: mysqld --lower_case_table_names=1 --skip-mysqlx --character_set_server=utf8mb4 --explicit_defaults_for_timestamp
+    healthcheck:
+      test: ['CMD', 'mysql', '-e', 'SHOW DATABASES;']
+      interval: 5s
+      timeout: 5s
+      retries: 10
