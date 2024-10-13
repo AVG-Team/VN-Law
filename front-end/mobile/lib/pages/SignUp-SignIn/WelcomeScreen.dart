@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/regScreen.dart';
+import 'package:mobile/pages/SignUp-SignIn//regScreen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'loginScreen.dart';
+import '../../pages/SignUp-SignIn//loginScreen.dart';
 import 'dart:async'; // For Timer
 
 class WelcomeScreen extends StatelessWidget {

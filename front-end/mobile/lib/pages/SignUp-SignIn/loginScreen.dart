@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/regScreen.dart';
+import 'package:mobile/pages/SignUp-SignIn//regScreen.dart';
 import 'typewriter_text.dart'; // Make sure to import your TypewriterText widget file
 
 class LoginScreen extends StatefulWidget {
