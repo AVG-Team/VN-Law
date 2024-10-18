@@ -3,19 +3,23 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
+
 class ChatScreen extends StatefulWidget {
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // Add Scaffold key
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Message> messages = [];
   final TextEditingController _controller = TextEditingController();
+  List<Conversation> conversations = []; // List to store conversations
 
   @override
   void initState() {
     super.initState();
+    _loadConversations(); // Load conversations from local storage
     _addBotMessage("Chào mừng bạn đến với Chatbot!");
     _exampleUserMessage(); // Send example user message
   }
@@ -31,12 +35,20 @@ class _ChatScreenState extends State<ChatScreen> {
 
     setState(() {
       messages.add(Message(text: text, isUser: true)); // Add user message
+      // Save the conversation
+      conversations.add(Conversation(userMessage: text, botMessage: "Đang chờ phản hồi...")); // Placeholder for bot response
     });
 
     _controller.clear();
 
     String response = await _fetchResponseFromAPI(text);
     _addBotMessage(response);
+
+    // Update the last conversation with the bot response
+    setState(() {
+      conversations.last.botMessage = response; // Update bot message
+      _saveConversations(); // Save to local storage
+    });
   }
 
   void _exampleUserMessage() {
@@ -64,10 +76,29 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  // Load conversations from shared preferences
+  Future<void> _loadConversations() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? conversationsJson = prefs.getString('conversations');
+    if (conversationsJson != null) {
+      List<dynamic> jsonList = json.decode(conversationsJson);
+      setState(() {
+        conversations = jsonList.map((e) => Conversation.fromJson(e)).toList();
+      });
+    }
+  }
+
+  // Save conversations to shared preferences
+  Future<void> _saveConversations() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String jsonString = json.encode(conversations);
+    await prefs.setString('conversations', jsonString);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey, // Assign the scaffold key
+      key: _scaffoldKey,
       drawer: Drawer(
         child: SafeArea(
           child: Column(
@@ -89,135 +120,90 @@ class _ChatScreenState extends State<ChatScreen> {
                 },
                 child: ListTile(
                   leading: Image.asset(
-                    'assets/bot_avatar.png', // Path to your bot avatar image
-                    height: 25, // Adjust the height as needed
-                    width: 25,  // Adjust the width as needed
+                    'assets/bot_avatar.png',
+                    height: 25,
+                    width: 25,
                   ),
-                  title: Text('Pages',style: TextStyle(fontWeight: FontWeight.w900)),
+                  title: Text('Pages', style: TextStyle(fontWeight: FontWeight.w900)),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0), // Padding cho toàn bộ phần
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween, // Căn giữa giữa logo và kính lúp
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 16.0), // Thêm khoảng cách bên trái cho Text
+                      padding: const EdgeInsets.only(left: 16.0),
                       child: Text(
                         'Tất cả Cuộc trò chuyện',
                         style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
-                        overflow: TextOverflow.ellipsis, // Truncate with ellipsis
-                        maxLines: 1, // Limit to one line
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(right: 16.0), // Thêm khoảng cách bên phải cho Icon
-                      child: Icon(Icons.search), // Biểu tượng kính lúp bên phải
-                    ), // Biểu tượng kính lúp bên phải
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: Icon(Icons.search),
+                    ),
                   ],
                 ),
               ),
-
-              InkWell(
-                onTap: () {
-                  // Handle tap, e.g., navigate to chat details
-                },
-                child: ListTile(
-                  title: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center, // Căn giữa theo chiều dọc
-                    children: [
-                      // Hình ảnh avatar của bot
-                      Image.asset(
-                        'assets/bot_avatar.png', // Đường dẫn đến avatar của bot
-                        height: 20, // Điều chỉnh kích thước hình ảnh
-                        width: 20,
+              // Display the list of conversations
+              Expanded(
+                child: ListView.builder(
+                  itemCount: conversations.length,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () {
+                        // Handle tap, e.g., navigate to chat details
+                      },
+                      child: ListTile(
+                        title: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/bot_avatar.png',
+                              height: 20,
+                              width: 20,
+                            ),
+                            SizedBox(width: 10),
+                            Text('Monica Bot'),
+                          ],
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              conversations[index].userMessage,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            Text(
+                              '${conversations[index].botMessage}',
+                              style: TextStyle(color: Colors.grey),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
+                        trailing: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(DateFormat.jm().format(DateTime.now())),
+                            SizedBox(height: 8),
+                            Icon(Icons.more_horiz),
+                          ],
+                        ),
                       ),
-                      SizedBox(width: 10), // Khoảng cách giữa hình ảnh và tiêu đề
-                      Text('Monica Bot'),
-                    ],
-                  ),
-                  subtitle: Column( // Giữ Column cho subtitle
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Hello world in Flutter',
-                        overflow: TextOverflow.ellipsis, // Truncate with ellipsis
-                        maxLines: 1, // Limit to one line
-                      ),
-                      Text(
-                        'You: How old are you?',
-                        style: TextStyle(color: Colors.grey),
-                        overflow: TextOverflow.ellipsis, // Truncate with ellipsis
-                        maxLines: 1, // Limit to one line
-                      ),
-                    ],
-                  ),
-                  trailing: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text('10:30 AM'),
-                      SizedBox(height: 8),
-                      Icon(Icons.more_horiz),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
-
-
-              InkWell(
-                onTap: () {
-                  // Handle tap, e.g., navigate to chat details
-                },
-                child: ListTile(
-                  title: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center, // Căn giữa theo chiều dọc
-                    children: [
-                      // Hình ảnh avatar của bot
-                      Image.asset(
-                        'assets/bot_avatar.png', // Đường dẫn đến avatar của bot
-                        height: 20, // Điều chỉnh kích thước hình ảnh
-                        width: 20,
-                      ),
-                      SizedBox(width: 10), // Khoảng cách giữa hình ảnh và tiêu đề
-                      Text('Monica Bot'),
-                    ],
-                  ),
-                  subtitle: Column( // Giữ Column cho subtitle
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Hello world in Flutter',
-                        overflow: TextOverflow.ellipsis, // Truncate with ellipsis
-                        maxLines: 1, // Limit to one line
-                      ),
-                      Text(
-                        'You: How old are you?',
-                        style: TextStyle(color: Colors.grey),
-                        overflow: TextOverflow.ellipsis, // Truncate with ellipsis
-                        maxLines: 1, // Limit to one line
-                      ),
-                    ],
-                  ),
-                  trailing: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text('10:30 AM'),
-                      SizedBox(height: 8),
-                      Icon(Icons.more_horiz),
-                    ],
-                  ),
-                ),
-              ),
-
-
               Spacer(),
             ],
           ),
         ),
       ),
-
-
-
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -232,17 +218,17 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: [
             AppBar(
-              backgroundColor: Colors.white, // White background
+              backgroundColor: Colors.white,
               elevation: 0,
               leading: IconButton(
-                icon: Icon(Icons.menu, color: Colors.black), // Black icons
+                icon: Icon(Icons.menu, color: Colors.black),
                 onPressed: () {
-                  _scaffoldKey.currentState?.openDrawer(); // Open drawer via scaffold key
+                  _scaffoldKey.currentState?.openDrawer();
                 },
               ),
-              centerTitle: true, // Center title/logo
+              centerTitle: true,
               title: Image.asset(
-                'assets/logo.png', // Add your logo asset here
+                'assets/logo.png',
                 height: 50,
               ),
               actions: [
@@ -254,7 +240,7 @@ class _ChatScreenState extends State<ChatScreen> {
               flexibleSpace: Container(
                 decoration: BoxDecoration(
                   border: Border(
-                    bottom: BorderSide(color: Colors.black, width: 2), // Black bottom border
+                    bottom: BorderSide(color: Colors.black, width: 2),
                   ),
                 ),
               ),
@@ -308,13 +294,13 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Row(
         children: [
           Container(
-            width: 40, // Set width of the avatar
-            height: 40, // Set height of the avatar
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              shape: BoxShape.circle, // Make the image circular
+              shape: BoxShape.circle,
               image: DecorationImage(
                 image: AssetImage('assets/bot_avatar.png'),
-                fit: BoxFit.cover, // Ensure the image fits the container
+                fit: BoxFit.cover,
               ),
             ),
           ),
@@ -416,4 +402,26 @@ class Message {
   final bool isUser;
 
   Message({required this.text, required this.isUser});
+}
+
+// Class to store individual conversation
+class Conversation {
+  String userMessage;
+  String botMessage;
+
+  Conversation({required this.userMessage, required this.botMessage});
+
+  factory Conversation.fromJson(Map<String, dynamic> json) {
+    return Conversation(
+      userMessage: json['userMessage'],
+      botMessage: json['botMessage'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userMessage': userMessage,
+      'botMessage': botMessage,
+    };
+  }
 }
