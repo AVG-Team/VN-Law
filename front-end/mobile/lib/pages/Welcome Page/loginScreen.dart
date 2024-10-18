@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/pages/SignUp-SignIn//regScreen.dart';
-import 'typewriter_text.dart'; // Make sure to import your TypewriterText widget file
+import 'package:mobile/pages/Welcome%20Page/regScreen.dart';
+import 'typewriter_text.dart'; // Ensure the import path is correct
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -46,15 +46,23 @@ class _LoginScreenState extends State<LoginScreen> {
                 Color(0xffD6EAF8),
               ]),
             ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 60.0, left: 22),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Use TypewriterText for the typing effect
-                  const TypewriterText(text: 'Hello\nSign in!'), // Typewriter effect
-                ],
-              ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 60.0, left: 22),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Color.fromARGB(255, 116, 192, 252), size: 30), // Increased size for visibility
+                  onPressed: () {
+                    Navigator.pop(context); // Go back to the previous screen
+                  },
+                ),
+                const SizedBox(width: 8), // Add some spacing between the icon and text
+                const TypewriterText(
+                  text: 'Back',
+                  duration: Duration(milliseconds: 150),
+                ),
+              ],
             ),
           ),
           Padding(
@@ -70,46 +78,27 @@ class _LoginScreenState extends State<LoginScreen> {
               height: double.infinity,
               width: double.infinity,
               child: Padding(
-                padding: const EdgeInsets.only(left: 18.0, right: 18),
+                padding: const EdgeInsets.symmetric(horizontal: 18.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextField(
+                    // Email TextField
+                    _buildTextField(
                       controller: _emailController,
-                      decoration: InputDecoration(
-                        suffixIcon: Icon(Icons.check, color: _iconColor),
-                        label: const Text(
-                          'Gmail',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 116, 192, 252),
-                          ),
-                        ),
-                      ),
+                      label: 'Gmail',
+                      suffixIcon: Icons.check,
+                      isValid: _iconColor == Colors.blue,
                     ),
-                    TextField(
+                    // Password TextField
+                    _buildPasswordField(
                       controller: _passwordController,
-                      obscureText: _obscureText,
-                      decoration: InputDecoration(
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureText ? Icons.visibility_off : Icons.visibility,
-                            color: _obscureText ? Colors.grey : const Color.fromARGB(255, 116, 192, 252),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscureText = !_obscureText;
-                            });
-                          },
-                        ),
-                        label: const Text(
-                          'Password',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 116, 192, 252),
-                          ),
-                        ),
-                      ),
+                      label: 'Password',
+                      isVisible: _obscureText,
+                      toggleVisibility: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
                     ),
                     const SizedBox(height: 20),
                     const Align(
@@ -124,6 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 70),
+                    // Sign In Button
                     Container(
                       height: 55,
                       width: 300,
@@ -181,6 +171,100 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData suffixIcon,
+    required bool isValid,
+    TextInputType? keyboardType,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: const Color.fromARGB(255, 116, 192, 252), width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 7,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+            suffixIcon: Icon(
+              suffixIcon,
+              color: isValid ? const Color.fromARGB(255, 116, 192, 252) : Colors.grey,
+            ),
+            label: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 116, 192, 252),
+              ),
+            ),
+            border: InputBorder.none,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String label,
+    required bool isVisible,
+    required VoidCallback toggleVisibility,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: const Color.fromARGB(255, 116, 192, 252), width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 7,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: TextField(
+          controller: controller,
+          obscureText: isVisible,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+            suffixIcon: IconButton(
+              icon: Icon(
+                isVisible ? Icons.visibility_off : Icons.visibility,
+                color: isVisible ? Colors.grey : const Color.fromARGB(255, 116, 192, 252),
+              ),
+              onPressed: toggleVisibility,
+            ),
+            label: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 116, 192, 252),
+              ),
+            ),
+            border: InputBorder.none,
+          ),
+        ),
       ),
     );
   }
