@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile/pages/Welcome%20Page/WelcomeScreen.dart';
 import 'pages/Home/chat_screen.dart'; // Your ChatScreen page
-
+import 'pages/Home/profile_screen.dart'; // Your ChatScreen page
 void main() {
   // Set status bar color to transparent
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "582983299080",
+    "project_id": "vnlaw-bf731",
+    "storage_bucket": "vnlaw-bf731.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582983299080:android:601a8afd93f5fafc2ea1bd",
+        "android_client_info": {
+          "package_name": "com.example.mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "582983299080-q2vslpu7dbdvj9udjdllpot6p8ihr2ge.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAucAXnqMBykGK_lxblqkHPWAMKmZ73WiY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "582983299080-q2vslpu7dbdvj9udjdllpot6p8ihr2ge.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

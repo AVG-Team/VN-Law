@@ -95,115 +95,226 @@ class _ChatScreenState extends State<ChatScreen> {
     await prefs.setString('conversations', jsonString);
   }
 
+  // Method to delete a conversation
+  void _deleteConversation(int index) {
+    setState(() {
+      conversations.removeAt(index); // Remove the selected conversation
+    });
+    _saveConversations(); // Save changes to local storage
+  }
+
+  void _modifyConversation(int index) {
+    // Logic to modify the conversation
+    // For example, show a dialog with a TextField to edit the message
+  }
+
+  void _shareConversation(int index) {
+    // Logic to share the conversation
+    // You can use the Share plugin to share the content
+    // Example: Share.share(conversations[index].userMessage);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
-      drawer: Drawer(
-        child: SafeArea(
-          child: Column(
-            children: <Widget>[
-              // Header section with centered logo
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Image.asset(
-                    'assets/logo.png', // Your logo here
-                    height: 50,
+        key: _scaffoldKey,
+
+        // Left Drawer (unchanged)
+        drawer: Drawer(
+          child: SafeArea(
+            child: Column(
+              children: <Widget>[
+                // Header section with centered logo
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Image.asset(
+                      'assets/logo.png', // Your logo here
+                      height: 50,
+                    ),
                   ),
                 ),
-              ),
-              // Main section of menu with ripple animation
-              InkWell(
-                onTap: () {
-                  // Handle tap, e.g., navigate to chat details
-                },
-                child: ListTile(
-                  leading: Image.asset(
-                    'assets/bot_avatar.png',
-                    height: 25,
-                    width: 25,
-                  ),
-                  title: Text('Pages', style: TextStyle(fontWeight: FontWeight.w900)),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
-                      child: Text(
-                        'Tất cả Cuộc trò chuyện',
-                        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 16.0),
-                      child: Icon(Icons.search),
-                    ),
-                  ],
-                ),
-              ),
-              // Display the list of conversations
-              Expanded(
-                child: ListView.builder(
-                  itemCount: conversations.length,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () {
-                        // Handle tap, e.g., navigate to chat details
-                      },
-                      child: ListTile(
-                        title: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/bot_avatar.png',
-                              height: 20,
-                              width: 20,
-                            ),
-                            SizedBox(width: 10),
-                            Text('Monica Bot'),
-                          ],
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              conversations[index].userMessage,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                            Text(
-                              '${conversations[index].botMessage}',
-                              style: TextStyle(color: Colors.grey),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ],
-                        ),
-                        trailing: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(DateFormat.jm().format(DateTime.now())),
-                            SizedBox(height: 8),
-                            Icon(Icons.more_horiz),
-                          ],
-                        ),
-                      ),
-                    );
+                // Main section of menu with ripple animation
+                InkWell(
+                  onTap: () {
+                    // Handle tap, e.g., navigate to chat details
                   },
+                  child: ListTile(
+                    leading: Image.asset(
+                      'assets/bot_avatar.png',
+                      height: 25,
+                      width: 25,
+                    ),
+                    title: Text('Pages', style: TextStyle(fontWeight: FontWeight.w900)),
+                  ),
                 ),
-              ),
-              Spacer(),
-            ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Text(
+                          'Tất cả Cuộc trò chuyện',
+                          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: Icon(Icons.search),
+                      ),
+                    ],
+                  ),
+                ),
+                // Display the list of conversations
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: conversations.length,
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {
+                          // Handle tap, e.g., navigate to chat details
+                        },
+                        child: ListTile(
+                          title: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/bot_avatar.png',
+                                height: 20,
+                                width: 20,
+                              ),
+                              SizedBox(width: 10),
+                              Text('Monica Bot'),
+                            ],
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                conversations[index].userMessage,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              Text(
+                                '${conversations[index].botMessage}',
+                                style: TextStyle(color: Colors.grey),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ],
+                          ),
+                          trailing: PopupMenuButton<String>(
+                            icon: Icon(Icons.more_horiz, color: Colors.black),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            itemBuilder: (BuildContext context) {
+                              return <PopupMenuEntry<String>>[
+                                PopupMenuItem<String>(
+                                  value: 'modify',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.edit, color: Colors.blue),
+                                      SizedBox(width: 8),
+                                      Text('Modify', style: TextStyle(color: Colors.black)),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem<String>(
+                                  value: 'share',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.share, color: Colors.green),
+                                      SizedBox(width: 8),
+                                      Text('Share', style: TextStyle(color: Colors.black)),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem<String>(
+                                  value: 'delete',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.delete, color: Colors.red),
+                                      SizedBox(width: 8),
+                                      Text('Delete', style: TextStyle(color: Colors.black)),
+                                    ],
+                                  ),
+                                ),
+                              ];
+                            },
+                            onSelected: (String value) {
+                              if (value == 'delete') {
+                                _deleteConversation(index);
+                              } else if (value == 'modify') {
+                                _modifyConversation(index);
+                              } else if (value == 'share') {
+                                _shareConversation(index);
+                              }
+                            },
+                            // Use this to change how the menu opens
+                            elevation: 4,
+                            offset: Offset(0, 40), // Adjusts position
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Spacer(),
+              ],
+            ),
           ),
         ),
-      ),
+
+        // Right Drawer (added)
+        endDrawer: Drawer(
+        child: SafeArea(
+        child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+    // User Profile Section
+    Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: CircleAvatar(
+    radius: 40,
+    backgroundImage: AssetImage('assets/user_avatar.png'), // User avatar image
+    ),
+    ),
+    Text(
+    'John Doe', // User's name
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+    ),
+          SizedBox(height: 8),
+          Text(
+            'johndoe@example.com', // User's email
+            style: TextStyle(color: Colors.grey),
+          ),
+          SizedBox(height: 16),
+          Divider(),
+          ListTile(
+            leading: Icon(Icons.palette, color: Colors.black),
+            title: Text('Chế độ màu sắc'), // Color mode
+            onTap: () {
+              // Logic for changing color mode
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.language, color: Colors.black),
+            title: Text('Ngôn ngữ'), // Language
+            onTap: () {
+              // Logic for changing language
+            },
+          ),
+        ],
+        ),
+        ),
+        ),
+
+      // Main Body (unchanged)
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -233,8 +344,10 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               actions: [
                 IconButton(
-                  icon: Icon(Icons.more_vert, color: Colors.black),
-                  onPressed: () {},
+                  icon: Icon(Icons.account_circle, color: Colors.black), // Changed to user icon
+                  onPressed: () {
+                    _scaffoldKey.currentState?.openEndDrawer(); // Open right drawer
+                  },
                 ),
               ],
               flexibleSpace: Container(
