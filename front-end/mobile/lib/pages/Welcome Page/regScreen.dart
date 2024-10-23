@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'typewriter_text.dart'; // Ensure the import path is correct
-import 'loginScreen.dart'; // Import the login screen
 
 class RegScreen extends StatefulWidget {
   const RegScreen({Key? key}) : super(key: key);
