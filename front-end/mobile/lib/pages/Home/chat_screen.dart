@@ -59,19 +59,6 @@ class ChatScreenState extends State<ChatScreen> {
       conversation_controller.saveConversations(conversations);
     });
   }
-  Future<void> saveInkwell() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String jsonString = json.encode(conversations);
-    await prefs.setString('conversations', jsonString);
-  }
-
-  // Method to delete a conversation
-  void deleteInkwell(int index) {
-    setState(() {
-      conversations.removeAt(index); // Remove the selected conversation
-    });
-    saveInkwell(); // Save changes to local storage
-  }
 
   @override
   Widget build(BuildContext context) {
