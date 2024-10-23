@@ -33,6 +33,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
     };
 
     const baseUrl = axiosClient.defaults.baseURL;
+    console.log(baseUrl);
 
     useEffect(() => {
         const connectToSocket = async () => {

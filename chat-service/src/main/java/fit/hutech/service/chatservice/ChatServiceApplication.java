@@ -15,7 +15,12 @@ import java.util.List;
 
 public class ChatServiceApplication {
 
+    public static String chromaUrl = System.getenv("CHROMA_URL");
+    public static String collectionName = System.getenv("CHROMA_COLLECTION_NAME");
+
     public static void main(String[] args) {
+        System.out.println("Chroma URL: " + chromaUrl);
+        System.out.println("Chroma URL: " + collectionName);
         SpringApplication.run(ChatServiceApplication.class, args);
     }
 
