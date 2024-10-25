@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/Home/typewriter_text.dart';
-import '../Welcome Page/WelcomeScreen.dart';
+
 
 
 class BotMessage extends StatelessWidget {

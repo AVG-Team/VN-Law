@@ -1,11 +1,35 @@
+import 'dart:async' show Future, Timer;
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/Welcome Page/regScreen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../pages/Welcome Page//loginScreen.dart';
-import 'dart:async'; // For Timer
+import 'package:google_sign_in/google_sign_in.dart'; // Add Google Sign-In import
+import '../../pages/Welcome Page/loginScreen.dart';
+import '../../services/google_sign_in_service.dart';
+import '../Home/profile_screen.dart'; // Import your chat screen
 
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({Key? key}) : super(key: key);
+  WelcomeScreen({super.key});
+  final GoogleSignInService _googleSignInService = GoogleSignInService(); // Service defined here
+  Future<void> _handleGoogleSignIn(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignInService.signIn();
+
+      if (googleUser != null) {
+        // If login is successful, navigate to profile_screen.dart with Google name and email
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfileScreen(
+              name: googleUser.displayName ?? 'No name', // Handle null case
+              email: googleUser.email,
+            ),
+          ),
+        );
+      }
+    } catch (error) {
+      print('Error signing in with Google: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,8 +117,8 @@ class WelcomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            Transform.translate(
-              offset: const Offset(0, -10),
+            GestureDetector(
+              onTap: () => _handleGoogleSignIn(context),
               child: SvgPicture.asset(
                 'assets/social.svg',
                 height: 30,
@@ -120,7 +144,7 @@ class TypewriterText extends StatefulWidget {
 class _TypewriterTextState extends State<TypewriterText> {
   String _displayedText = '';
   int _index = 0;
-  late Timer _timer; // Declare the Timer
+  late Timer _timer;
 
   @override
   void initState() {
@@ -136,15 +160,15 @@ class _TypewriterTextState extends State<TypewriterText> {
           _index++;
         });
       } else {
-        _index = 0; // Reset index to start from the beginning
-        _displayedText = ''; // Clear displayed text
+        _index = 0;
+        _displayedText = '';
       }
     });
   }
 
   @override
   void dispose() {
-    _timer.cancel(); // Cancel the timer when the widget is disposed
+    _timer.cancel();
     super.dispose();
   }
 

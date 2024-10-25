@@ -1,9 +1,17 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../services/google_sign_in_service.dart';
+import '../Welcome Page/WelcomeScreen.dart';
+
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  final String name;
+  final String email;
+  final GoogleSignInService _googleSignInService = GoogleSignInService(); // Service defined here
+
+  ProfileScreen({Key? key, required this.name, required this.email}) : super(key: key);
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -17,8 +25,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController.text = '7588_Nguyên Hưng';
-    _emailController.text = 'hung28122003cv@gmail.com';
+    _nameController.text = widget.name; // Set Google name
+    _emailController.text = widget.email; // Set Google email
   }
 
   Future<void> _pickImage() async {
@@ -32,9 +40,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> _logout() async {
-    // Implement your logout logic here
-    print('Logging out...');
+  Future<void> _logout(BuildContext context) async {
+    await widget._googleSignInService.signOut(); // Access the service through widget
+
+    // Navigate to WelcomeScreen and clear navigation stack
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => WelcomeScreen()),
+          (route) => false, // Removes all previous routes
+    );
   }
 
   @override
@@ -117,7 +131,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: SizedBox(
               width: double.infinity, // Ensures width matches TextField
               child: OutlinedButton(
-                onPressed: _logout,
+                onPressed: () async {
+                  await _logout(context); // Call _logout when button is pressed
+                },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Colors.redAccent, width: 1.5), // Red border
                   padding: const EdgeInsets.all(16.0), // Same padding as text fields
@@ -135,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );
