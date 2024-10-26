@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'pages/Home/chat_screen.dart'; // Your ChatScreen page
-void main() {
+import 'package:mobile/pages/notification_example/notification_example.dart';
+import 'package:mobile/services/notification_service.dart';
+import 'pages/Home/chat_screen.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.initializeNotification();
   // Set status bar color to transparent
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
@@ -10,6 +14,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  static var navigatorKey;
+
   const MyApp({super.key});
 
   @override
@@ -57,7 +63,7 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
     // Start animation and navigate to ChatScreen after completion
     _controller.forward().whenComplete(() {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => ChatScreen()),
+        MaterialPageRoute(builder: (context) => NotificationExample()),
       );
     });
   }
