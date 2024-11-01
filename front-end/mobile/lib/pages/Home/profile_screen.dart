@@ -1,17 +1,20 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../../services/google_sign_in_service.dart';
 import '../Welcome Page/WelcomeScreen.dart';
-
+import 'package:flutter/services.dart';
 class ProfileScreen extends StatefulWidget {
   final String name;
   final String email;
-  final GoogleSignInService _googleSignInService = GoogleSignInService(); // Service defined here
-
-  ProfileScreen({Key? key, required this.name, required this.email}) : super(key: key);
+  final String uid;
+  final GoogleSignInService _googleSignInService =
+  GoogleSignInService(); // Service defined here
+  ProfileScreen(
+      {Key? key, required this.name, required this.email, required this.uid})
+      : super(key: key);
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -20,6 +23,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _idController = TextEditingController();
+
   XFile? _profileImage;
 
   @override
@@ -27,6 +32,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _nameController.text = widget.name; // Set Google name
     _emailController.text = widget.email; // Set Google email
+    _idController.text = widget.uid;
   }
 
   Future<void> _pickImage() async {
@@ -38,17 +44,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _profileImage = image;
       });
     }
-  }
-
-  Future<void> _logout(BuildContext context) async {
-    await widget._googleSignInService.signOut(); // Access the service through widget
-
-    // Navigate to WelcomeScreen and clear navigation stack
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => WelcomeScreen()),
-          (route) => false, // Removes all previous routes
-    );
   }
 
   @override
@@ -119,7 +114,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 10),
                   _buildTextField(_emailController, 'Email', Icons.email),
                   const SizedBox(height: 10),
-                  _buildTextField(null, 'ID người dùng', Icons.account_box),
+                  _buildTextField(
+                      _idController, 'ID người dùng', Icons.account_box),
                 ],
               ),
             ),
@@ -127,16 +123,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           // Button Section: Logout at bottom center, matching TextField width
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
             child: SizedBox(
               width: double.infinity, // Ensures width matches TextField
               child: OutlinedButton(
                 onPressed: () async {
-                  await _logout(context); // Call _logout when button is pressed
+                  await widget._googleSignInService.signOut(); // Wait for sign-out to complete
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => WelcomeScreen()),
+                  );
                 },
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.redAccent, width: 1.5), // Red border
-                  padding: const EdgeInsets.all(16.0), // Same padding as text fields
+                  side: const BorderSide(
+                      color: Colors.redAccent, width: 1.5), // Red border
+                  padding:
+                      const EdgeInsets.all(16.0), // Same padding as text fields
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20), // Rounded corners
                   ),
@@ -158,37 +161,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // Helper method to build a styled text field
-  Widget _buildTextField(TextEditingController? controller, String labelText, IconData icon) {
+  Widget _buildTextField(
+      TextEditingController? controller, String labelText, IconData icon) {
     return TextField(
       controller: controller,
+      readOnly: true, // Optional: Make it non-editable if it's only for display and copy
       decoration: InputDecoration(
         labelText: labelText,
         prefixIcon: Icon(icon),
+        suffixIcon: Padding(
+          padding: const EdgeInsets.only(right: 8.0), // Smaller padding for the icon
+          child: GestureDetector(
+            onTap: () {
+              if (controller?.text.isNotEmpty ?? false) {
+                Clipboard.setData(ClipboardData(text: controller!.text));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Đã sao chép')),
+                );
+              }
+            },
+            child: Icon(
+              Icons.copy,
+              size: 18, // Smaller size for a subtler look
+              color: Colors.grey.shade600, // Softer grey color
+            ),
+          ),
+        ),
         contentPadding: const EdgeInsets.all(16.0),
         filled: true,
-        fillColor: Colors.white, // Softer white background
+        fillColor: Colors.white,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20), // Rounded corners
+          borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide(
-            color: Color.fromARGB(255, 116, 192, 252).withOpacity(0.5), // Soft grey border
+            color: Color.fromARGB(255, 116, 192, 252).withOpacity(0.5),
             width: 1,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide(
-            color: Color.fromARGB(255, 116, 192, 252).withOpacity(0.5), // Soft grey border when enabled
+            color: Color.fromARGB(255, 116, 192, 252).withOpacity(0.5),
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide(
-            color: Colors.blueAccent, // Change to a softer blue when focused
+            color: Colors.blueAccent,
             width: 1.5,
           ),
         ),
       ),
+      onTap: () {
+        if (controller?.text.isNotEmpty ?? false) {
+          Clipboard.setData(ClipboardData(text: controller!.text));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Đã sao chép')),
+          );
+        }
+      },
     );
   }
+
+
 }

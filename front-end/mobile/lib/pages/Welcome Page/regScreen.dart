@@ -57,12 +57,12 @@ class _RegScreenState extends State<RegScreen> {
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Color.fromARGB(255, 116, 192, 252), size: 30), // Increased size for visibility
+                  icon: const Icon(Icons.arrow_back, color: Color.fromARGB(255, 116, 192, 252), size: 30),
                   onPressed: () {
                     Navigator.pop(context); // Go back to the previous screen
                   },
                 ),
-                const SizedBox(width: 8), // Add some spacing between the icon and text
+                const SizedBox(width: 8),
                 const TypewriterText(
                   text: 'Back',
                   duration: Duration(milliseconds: 150),
@@ -79,15 +79,16 @@ class _RegScreenState extends State<RegScreen> {
                   topRight: Radius.circular(40),
                 ),
                 color: Colors.white,
-                border: Border.all(color: const Color.fromARGB(255, 116, 192, 252), width: 0.5), // Add outline
+                border: Border.all(color: const Color.fromARGB(255, 116, 192, 252), width: 0.5),
               ),
               height: double.infinity,
               width: double.infinity,
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 18.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    const SizedBox(height: 20),
                     // Full Name TextField
                     _buildTextField(
                       controller: _fullNameController,
