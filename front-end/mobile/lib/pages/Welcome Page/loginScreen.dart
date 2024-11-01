@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile/pages/Welcome%20Page/regScreen.dart';
 import 'typewriter_text.dart'; // Ensure the import path is correct
 import '../../services/google_sign_in_service.dart';
+
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -20,7 +21,8 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     _emailController.addListener(() {
       setState(() {
-        _iconColor = _emailController.text.contains('@') ? Colors.blue : Colors.grey;
+        _iconColor =
+            _emailController.text.contains('@') ? Colors.blue : Colors.grey;
       });
     });
   }
@@ -52,12 +54,15 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Color.fromARGB(255, 116, 192, 252), size: 30), // Increased size for visibility
+                  icon: const Icon(Icons.arrow_back,
+                      color: Color.fromARGB(255, 116, 192, 252),
+                      size: 30), // Increased size for visibility
                   onPressed: () {
                     Navigator.pop(context); // Go back to the previous screen
                   },
                 ),
-                const SizedBox(width: 8), // Add some spacing between the icon and text
+                const SizedBox(
+                    width: 8), // Add some spacing between the icon and text
                 const TypewriterText(
                   text: 'Back',
                   duration: Duration(milliseconds: 150),
@@ -150,10 +155,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const RegScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) => const RegScreen()),
                               );
                             },
-                            child: Text(
+                            child: const Text(
                               "Sign up",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -188,7 +194,8 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: const Color.fromARGB(255, 116, 192, 252), width: 2),
+          border: Border.all(
+              color: const Color.fromARGB(255, 116, 192, 252), width: 2),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
@@ -202,10 +209,13 @@ class _LoginScreenState extends State<LoginScreen> {
           controller: controller,
           keyboardType: keyboardType,
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
             suffixIcon: Icon(
               suffixIcon,
-              color: isValid ? const Color.fromARGB(255, 116, 192, 252) : Colors.grey,
+              color: isValid
+                  ? const Color.fromARGB(255, 116, 192, 252)
+                  : Colors.grey,
             ),
             label: Text(
               label,
@@ -233,7 +243,8 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: const Color.fromARGB(255, 116, 192, 252), width: 2),
+          border: Border.all(
+              color: const Color.fromARGB(255, 116, 192, 252), width: 2),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
@@ -247,11 +258,14 @@ class _LoginScreenState extends State<LoginScreen> {
           controller: controller,
           obscureText: isVisible,
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
             suffixIcon: IconButton(
               icon: Icon(
                 isVisible ? Icons.visibility_off : Icons.visibility,
-                color: isVisible ? Colors.grey : const Color.fromARGB(255, 116, 192, 252),
+                color: isVisible
+                    ? Colors.grey
+                    : const Color.fromARGB(255, 116, 192, 252),
               ),
               onPressed: toggleVisibility,
             ),

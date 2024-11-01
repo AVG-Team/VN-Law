@@ -9,10 +9,12 @@ import '../Home/profile_screen.dart'; // Import your chat screen
 
 class WelcomeScreen extends StatelessWidget {
   WelcomeScreen({super.key});
-  final GoogleSignInService _googleSignInService = GoogleSignInService(); // Service defined here
+  final GoogleSignInService _googleSignInService =
+      GoogleSignInService(); // Service defined here
   Future<void> _handleGoogleSignIn(BuildContext context) async {
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignInService.signIn();
+      final GoogleSignInAccount? googleUser =
+          await _googleSignInService.signIn();
 
       if (googleUser != null) {
         // If login is successful, navigate to profile_screen.dart with Google name and email
@@ -52,7 +54,9 @@ class WelcomeScreen extends StatelessWidget {
               child: Image(image: AssetImage('assets/logo.png')),
             ),
             const SizedBox(height: 100),
-            const TypewriterText(text: 'Tri Thức Pháp Luật Việt Nam'), // Use the typewriter text widget
+            const TypewriterText(
+                text:
+                    'Tri Thức Pháp Luật Việt Nam'), // Use the typewriter text widget
             const SizedBox(height: 30),
             GestureDetector(
               onTap: () {
@@ -135,7 +139,7 @@ class WelcomeScreen extends StatelessWidget {
 class TypewriterText extends StatefulWidget {
   final String text;
 
-  const TypewriterText({Key? key, required this.text}) : super(key: key);
+  const TypewriterText({super.key, required this.text});
 
   @override
   _TypewriterTextState createState() => _TypewriterTextState();
