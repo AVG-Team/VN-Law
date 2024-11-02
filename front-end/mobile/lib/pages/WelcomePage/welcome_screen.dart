@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart'; // Add Google Sign-In import
-import 'package:mobile/pages/Welcome%20Page/reg_screen.dart';
+import 'package:mobile/pages/WelcomePage/reg_screen.dart';
 import '../../services/google_sign_in_service.dart';
 import '../Home/profile_screen.dart';
 import 'login_screen.dart';

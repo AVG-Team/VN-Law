@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/google_sign_in_service.dart';
 import 'package:flutter/services.dart';
-import '../Welcome Page/welcome_screen.dart';
+
+import '../WelcomePage/welcome_screen.dart';
+
 class ProfileScreen extends StatefulWidget {
   final String name;
   final String email;
