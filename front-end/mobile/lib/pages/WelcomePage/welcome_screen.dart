@@ -1,12 +1,12 @@
 import 'dart:async' show Future, Timer;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/pages/Welcome Page/regScreen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart'; // Add Google Sign-In import
-import '../../pages/Welcome Page/loginScreen.dart';
+import 'package:mobile/pages/WelcomePage/reg_screen.dart';
 import '../../services/google_sign_in_service.dart';
-import '../Home/profile_screen.dart'; // Import your chat screen
+import '../Home/profile_screen.dart';
+import 'login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   WelcomeScreen({super.key});
@@ -31,7 +31,7 @@ class WelcomeScreen extends StatelessWidget {
               builder: (ctx, userSnapshot) {
                 if (userSnapshot.connectionState == ConnectionState.waiting) {
                   // Show a loading indicator while waiting for the auth state
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (userSnapshot.hasData) {
                   final user = userSnapshot.data;
@@ -49,7 +49,7 @@ class WelcomeScreen extends StatelessWidget {
       }
 
     } catch (error) {
-      print('Error signing in with Google: $error');
+      throw Exception(error);
     }
   }
 
@@ -162,13 +162,13 @@ class WelcomeScreen extends StatelessWidget {
 class TypewriterText extends StatefulWidget {
   final String text;
 
-  const TypewriterText({Key? key, required this.text}) : super(key: key);
+  const TypewriterText({super.key, required this.text});
 
   @override
-  _TypewriterTextState createState() => _TypewriterTextState();
+  TypewriterTextState createState() => TypewriterTextState(); // Use the public name
 }
 
-class _TypewriterTextState extends State<TypewriterText> {
+class TypewriterTextState extends State<TypewriterText> {
   String _displayedText = '';
   int _index = 0;
   late Timer _timer;

@@ -1,11 +1,9 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/google_sign_in_service.dart';
-import '../Welcome Page/WelcomeScreen.dart';
 import 'package:flutter/services.dart';
+import '../WelcomePage/welcome_screen.dart';
 class ProfileScreen extends StatefulWidget {
   final String name;
   final String email;
@@ -13,11 +11,10 @@ class ProfileScreen extends StatefulWidget {
   final GoogleSignInService _googleSignInService =
   GoogleSignInService(); // Service defined here
   ProfileScreen(
-      {Key? key, required this.name, required this.email, required this.uid})
-      : super(key: key);
+      {super.key, required this.name, required this.email, required this.uid});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
@@ -176,7 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               if (controller?.text.isNotEmpty ?? false) {
                 Clipboard.setData(ClipboardData(text: controller!.text));
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Đã sao chép')),
+                  const SnackBar(content: Text('Đã sao chép')),
                 );
               }
             },
@@ -193,20 +190,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide(
-            color: Color.fromARGB(255, 116, 192, 252).withOpacity(0.5),
+            color: const Color.fromARGB(255, 116, 192, 252).withOpacity(0.5),
             width: 1,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide(
-            color: Color.fromARGB(255, 116, 192, 252).withOpacity(0.5),
+            color: const Color.fromARGB(255, 116, 192, 252).withOpacity(0.5),
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: Colors.blueAccent,
             width: 1.5,
           ),
@@ -216,7 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (controller?.text.isNotEmpty ?? false) {
           Clipboard.setData(ClipboardData(text: controller!.text));
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Đã sao chép')),
+            const SnackBar(content: Text('Đã sao chép')),
           );
         }
       },

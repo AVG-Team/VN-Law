@@ -1,42 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/pages/Welcome%20Page/regScreen.dart';
 import 'typewriter_text.dart'; // Ensure the import path is correct
-import '../../services/google_sign_in_service.dart';
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+
+class RegScreen extends StatefulWidget {
+  const RegScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<RegScreen> createState() => _RegScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
+class _RegScreenState extends State<RegScreen> {
+  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _gmailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  Color _iconColor = Colors.grey; // Default icon color
-  bool _obscureText = true; // Toggle for password visibility
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    _emailController.addListener(() {
-      setState(() {
-        _iconColor = _emailController.text.contains('@') ? Colors.blue : Colors.grey;
-      });
-    });
-  }
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _fullNameController.dispose();
+    _phoneController.dispose();
+    _gmailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  @override
+  bool _isValidPhone(String text) {
+    final validPhonePattern = RegExp(r'^(0[0-9]{9}|(\+84[0-9]{9}))$');
+    return validPhonePattern.hasMatch(text);
+  }
+
+  bool _isValidGmail(String text) {
+    return text.contains('@');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, // Prevent automatic resizing when keyboard appears
       body: Stack(
         children: [
           Container(
@@ -56,13 +59,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 IconButton(
                   icon: const Icon(Icons.arrow_back, color: Color.fromARGB(255, 116, 192, 252), size: 30),
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.pop(context); // Go back to the previous screen
                   },
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  'Back',
-                  style: TextStyle(fontSize: 18, color: Colors.black),
+                const TypewriterText(
+                  text: 'Back',
+                  duration: Duration(milliseconds: 150),
                 ),
               ],
             ),
@@ -70,100 +73,88 @@ class _LoginScreenState extends State<LoginScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 200.0),
             child: Container(
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),
                 ),
                 color: Colors.white,
+                border: Border.all(color: const Color.fromARGB(255, 116, 192, 252), width: 0.5),
               ),
               height: double.infinity,
               width: double.infinity,
               child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 30), // Adjust for initial spacing
-                      _buildTextField(
-                        controller: _emailController,
-                        label: 'Gmail',
-                        suffixIcon: Icons.check,
-                        isValid: true,
+                padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 20),
+                    // Full Name TextField
+                    _buildTextField(
+                      controller: _fullNameController,
+                      label: 'Full Name',
+                      suffixIcon: Icons.check,
+                      isValid: _fullNameController.text.length > 4,
+                    ),
+                    // Phone TextField with validation
+                    _buildTextField(
+                      controller: _phoneController,
+                      label: 'Phone',
+                      suffixIcon: Icons.phone,
+                      isValid: _isValidPhone(_phoneController.text),
+                      keyboardType: TextInputType.phone,
+                    ),
+                    // Gmail TextField with validation
+                    _buildTextField(
+                      controller: _gmailController,
+                      label: 'Gmail',
+                      suffixIcon: Icons.email,
+                      isValid: _isValidGmail(_gmailController.text),
+                    ),
+                    // Password TextField with visibility toggle
+                    _buildPasswordField(
+                      controller: _passwordController,
+                      label: 'Password',
+                      isVisible: _isPasswordVisible,
+                      toggleVisibility: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
+                    // Confirm Password TextField with visibility toggle
+                    _buildPasswordField(
+                      controller: _confirmPasswordController,
+                      label: 'Confirm Password',
+                      isVisible: _isConfirmPasswordVisible,
+                      toggleVisibility: () {
+                        setState(() {
+                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    // Sign Up Button
+                    Container(
+                      height: 55,
+                      width: 300,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: const Color.fromARGB(255, 116, 192, 252),
                       ),
-                      const SizedBox(height: 16),
-                      _buildPasswordField(
-                        controller: _passwordController,
-                        label: 'Password',
-                        isVisible: _obscureText,
-                        toggleVisibility: () {
-                          setState(() {
-                            _obscureText = !_obscureText;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      const Align(
-                        alignment: Alignment.centerRight,
+                      child: const Center(
                         child: Text(
-                          'Forgot Password?',
+                          'SIGN UP',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 17,
-                            color: Color(0xff281537),
+                            fontSize: 20,
+                            color: Colors.white,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 70),
-                      Container(
-                        height: 55,
-                        width: 300,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: const Color.fromARGB(255, 116, 192, 252),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'SIGN IN',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Column(
-                        children: [
-                          const Text(
-                            "Don't have an account?",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const RegScreen()),
-                              );
-                            },
-                            child: const Text(
-                              "Sign up",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 17,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 150),
+                  ],
                 ),
               ),
             ),
@@ -172,7 +163,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
 
   Widget _buildTextField({
     required TextEditingController controller,
@@ -244,13 +234,13 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         child: TextField(
           controller: controller,
-          obscureText: isVisible,
+          obscureText: !isVisible,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
             suffixIcon: IconButton(
               icon: Icon(
-                isVisible ? Icons.visibility_off : Icons.visibility,
-                color: isVisible ? Colors.grey : const Color.fromARGB(255, 116, 192, 252),
+                isVisible ? Icons.visibility : Icons.visibility_off,
+                color: isVisible ? const Color.fromARGB(255, 116, 192, 252) : Colors.grey,
               ),
               onPressed: toggleVisibility,
             ),

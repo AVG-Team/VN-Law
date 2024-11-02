@@ -7,8 +7,7 @@ class GoogleSignInService {
     try {
       return await _googleSignIn.signIn();
     } catch (error) {
-      print('Error signing in: $error');
-      return null;
+      throw Exception(error);
     }
   }
 
@@ -16,8 +15,7 @@ class GoogleSignInService {
     try {
       return await _googleSignIn.signOut();
     } catch (error) {
-      print('Error signing out: $error');
-      return null;
+      throw Exception(error);
     }
   }
 }
