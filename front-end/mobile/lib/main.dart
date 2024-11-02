@@ -1,11 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile/pages/Welcome%20Page/WelcomeScreen.dart';
-void main() {
+import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
+import 'firebase_options.dart';
+
+void main() async{
   // Set status bar color to transparent
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -19,14 +26,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
       ),
-      home: CourtroomSplashScreen(),
+      home: const CourtroomSplashScreen(),
     );
   }
 }
 
 class CourtroomSplashScreen extends StatefulWidget {
+  const CourtroomSplashScreen({super.key});
+
   @override
-  _CourtroomSplashScreenState createState() => _CourtroomSplashScreenState();
+  State<CourtroomSplashScreen> createState() => _CourtroomSplashScreenState();
 }
 
 class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
