@@ -1,8 +1,9 @@
 {
   "project_info": {
     "project_number": "582983299080",
+    "firebase_url": "https://vnlaw-bf731-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "vnlaw-bf731",
-    "storage_bucket": "vnlaw-bf731.appspot.com"
+    "storage_bucket": "vnlaw-bf731.firebasestorage.app"
   },
   "client": [
     {
@@ -13,6 +14,22 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "582983299080-h0ql4p1sm05lfeikoc3p7fb5b6fako02.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mobile",
+            "certificate_hash": "0f234234a7bffa65997e99ac6691f400fc8eed21"
+          }
+        },
+        {
+          "client_id": "582983299080-iuglirppgj737njqlcfpodb69mkr1bpc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mobile",
+            "certificate_hash": "f6b52e9baebdc53c96bf0c14b3a59f1b40be03a0"
+          }
+        },
         {
           "client_id": "582983299080-q2vslpu7dbdvj9udjdllpot6p8ihr2ge.apps.googleusercontent.com",
           "client_type": 3
@@ -29,6 +46,13 @@
             {
               "client_id": "582983299080-q2vslpu7dbdvj9udjdllpot6p8ihr2ge.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "582983299080-ducvvjotac3if6p29vktrlcan7nlu8hc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.mobile"
+              }
             }
           ]
         }
