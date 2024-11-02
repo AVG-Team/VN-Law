@@ -4,7 +4,7 @@ class MessageInput extends StatelessWidget {
   final TextEditingController controller;
   final Function(String) sendMessage;
 
-  const MessageInput({required this.controller, required this.sendMessage, Key? key}) : super(key: key);
+  const MessageInput({required this.controller, required this.sendMessage, super.key});
 
   @override
   Widget build(BuildContext context) {

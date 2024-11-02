@@ -19,6 +19,7 @@ class ConversationController {
     conversations.clear();
     final allConversations = await getConversations();
     conversations.addAll(
+      // ignore: unrelated_type_equality_checks
       allConversations.where((conv) => conv == conversationId),
     );
   }
@@ -42,7 +43,6 @@ class ConversationController {
 
     if (index >= 0 && index < conversations.length) {
       setState(() {
-        print(conversations);
         conversations.removeAt(index);
       });
       saveConversations(conversations); // Save after deletion

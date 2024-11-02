@@ -4,10 +4,10 @@ class TypewriterText extends StatefulWidget {
   final String text;
   final Duration duration;
 
-  const TypewriterText({Key? key, required this.text, this.duration = const Duration(milliseconds: 100)}) : super(key: key);
+  const TypewriterText({super.key, required this.text, this.duration = const Duration(milliseconds: 100)});
 
   @override
-  _TypewriterTextState createState() => _TypewriterTextState();
+  State<TypewriterText> createState() => _TypewriterTextState();
 }
 
 class _TypewriterTextState extends State<TypewriterText> {
