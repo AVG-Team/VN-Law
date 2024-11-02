@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile/pages/Home/homeScreen.dart';
+import 'package:mobile/pages/LegalDocument/legalDocumentScreen.dart';
+import 'package:mobile/pages/VBPL/vbplScreen.dart';
 import 'package:mobile/pages/Welcome%20Page/WelcomeScreen.dart';
 void main() {
   // Set status bar color to transparent
@@ -57,7 +60,7 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
     // Start animation and navigate to ChatScreen after completion
     _controller.forward().whenComplete(() {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => WelcomeScreen()),
+        MaterialPageRoute(builder: (context) => const VbplScreen()),
       );
     });
   }
