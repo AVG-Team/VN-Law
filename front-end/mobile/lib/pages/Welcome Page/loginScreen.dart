@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/Welcome%20Page/regScreen.dart';
 import 'typewriter_text.dart'; // Ensure the import path is correct
-import '../../services/google_sign_in_service.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
