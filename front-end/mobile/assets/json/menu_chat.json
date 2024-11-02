@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Thư viện pháp luật",
+    "content": "Tìm kiếm và truy cập vào thư viện pháp luật.",
+    "icon": "chat_bubble_outline",
+    "screen": "library",
+    "color": "#E1BEE7",
+    "serialnumber": 1
+  },
+  {
+    "title": "Diễn đàn hỏi đáp pháp luật",
+    "content": "Trao đổi và hỏi đáp với cộng đồng pháp luật.",
+    "icon": "auto_awesome",
+    "screen": "forum",
+    "color": "#FFF3E0",
+    "serialnumber": 2
+  },
+  {
+    "title": "Chatbot Pháp Luật",
+    "content": "Hỏi về pháp luật và nhận câu trả lời từ chatbot.",
+    "icon": "smart_toy_outlined",
+    "screen": "chatbot",
+    "color": "#007AFF",
+    "serialnumber": 3
+  }
+]

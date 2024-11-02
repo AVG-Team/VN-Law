@@ -11,10 +11,10 @@ class ProfileScreen extends StatefulWidget {
   final String email;
   final GoogleSignInService _googleSignInService = GoogleSignInService(); // Service defined here
 
-  ProfileScreen({Key? key, required this.name, required this.email}) : super(key: key);
+  ProfileScreen({super.key, required this.name, required this.email});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
@@ -170,20 +170,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20), // Rounded corners
           borderSide: BorderSide(
-            color: Color.fromARGB(255, 116, 192, 252).withOpacity(0.5), // Soft grey border
+            color: const Color.fromARGB(255, 116, 192, 252).withOpacity(0.5), // Soft grey border
             width: 1,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide(
-            color: Color.fromARGB(255, 116, 192, 252).withOpacity(0.5), // Soft grey border when enabled
+            color: const Color.fromARGB(255, 116, 192, 252).withOpacity(0.5), // Soft grey border when enabled
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: Colors.blueAccent, // Change to a softer blue when focused
             width: 1.5,
           ),

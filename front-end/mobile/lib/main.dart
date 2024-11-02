@@ -1,11 +1,16 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile/pages/Welcome%20Page/WelcomeScreen.dart';
-void main() {
+import 'package:mobile/pages/ChatScreen/homepage.dart';
+
+void main() async {
   // Set status bar color to transparent
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));
+  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -19,14 +24,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
       ),
-      home: CourtroomSplashScreen(),
+      home: const CourtroomSplashScreen(),
     );
   }
 }
 
 class CourtroomSplashScreen extends StatefulWidget {
+  const CourtroomSplashScreen({super.key});
+
   @override
-  _CourtroomSplashScreenState createState() => _CourtroomSplashScreenState();
+  State<CourtroomSplashScreen> createState() => _CourtroomSplashScreenState();
 }
 
 class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
@@ -57,7 +64,7 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
     // Start animation and navigate to ChatScreen after completion
     _controller.forward().whenComplete(() {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => WelcomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomePageChatScreen()),
       );
     });
   }
@@ -70,6 +77,7 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
