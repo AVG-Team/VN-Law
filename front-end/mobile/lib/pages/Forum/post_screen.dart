@@ -24,14 +24,14 @@ class _PostScreenState extends State<PostScreen> {
                 children: <Widget>[
                   IconButton(   
                     onPressed: () => Navigator.pop(context),
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_left,
                       size: 20,
                       color: Colors.black,
                     )
                   ),
                   SizedBox(width: 5.0),
-                  Text(
+                  const Text(
                     "View Post",
                     style: TextStyle(
                       fontSize: 20,
@@ -76,20 +76,18 @@ class _PostScreenState extends State<PostScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    Container(  
-                                      child: Text(
-                                        widget.question.author.name,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: .4
-                                        ),
+                                    Text(
+                                      widget.question.author.name,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: .4
                                       ),
                                     ), 
-                                    SizedBox(height: 2.0),
+                                    const SizedBox(height: 2.0),
                                     Text(
                                       widget.question.created_at,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: Colors.grey
                                       ),
                                     )
@@ -107,7 +105,7 @@ class _PostScreenState extends State<PostScreen> {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 15.0),
+                      padding: const EdgeInsets.symmetric(vertical: 15.0),
                       child: Text(
                         widget.question.question,
                         style: TextStyle(
@@ -126,7 +124,7 @@ class _PostScreenState extends State<PostScreen> {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10.0),
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
@@ -138,7 +136,7 @@ class _PostScreenState extends State<PostScreen> {
                                 color: Colors.grey.withOpacity(0.5),
                                 size: 22,
                               ),
-                              SizedBox(width: 4.0),
+                              const SizedBox(width: 4.0),
                               Text(
                                 "${widget.question.votes} votes",
                                 style: TextStyle(
@@ -148,7 +146,7 @@ class _PostScreenState extends State<PostScreen> {
                               )
                             ],
                           ), 
-                          SizedBox(width: 15.0),
+                          const SizedBox(width: 15.0),
                           Row(
                             children: <Widget>[
                               Icon(
@@ -156,7 +154,7 @@ class _PostScreenState extends State<PostScreen> {
                                 color: Colors.grey.withOpacity(0.5),
                                 size: 18,
                               ),
-                              SizedBox(width: 4.0),
+                              const SizedBox(width: 4.0),
                               Text(
                                 "${widget.question.views} views",
                                 style: TextStyle(
@@ -176,10 +174,10 @@ class _PostScreenState extends State<PostScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: 15.0, top: 20.0, bottom: 10.0),
+              padding: const EdgeInsets.only(left: 15.0, top: 20.0, bottom: 10.0),
               child: Text(
                 "Replies (${widget.question.replies.length})",
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
@@ -189,19 +187,19 @@ class _PostScreenState extends State<PostScreen> {
             Column(
               children: widget.question.replies.map((reply) => 
                 Container( 
-                  margin: EdgeInsets.only(left:15.0, right: 15.0, top: 20.0),
+                  margin: const EdgeInsets.only(left:15.0, right: 15.0, top: 20.0),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10.0),
                     boxShadow: [BoxShadow(
                       color: Colors.black26.withOpacity(0.03),
-                      offset: Offset(0.0,6.0),
+                      offset: const Offset(0.0,6.0),
                       blurRadius: 10.0,
                       spreadRadius: 0.10
                     )],
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.all(15.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -223,17 +221,15 @@ class _PostScreenState extends State<PostScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: <Widget>[
-                                        Container(  
-                                          child: Text(
-                                            reply.author.name,
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                              letterSpacing: .4
-                                            ),
+                                        Text(
+                                          reply.author.name,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            letterSpacing: .4
                                           ),
                                         ), 
-                                        SizedBox(height: 2.0),
+                                        const SizedBox(height: 2.0),
                                         Text(
                                           widget.question.created_at,
                                           style: TextStyle(
@@ -266,7 +262,7 @@ class _PostScreenState extends State<PostScreen> {
                               color: Colors.grey.withOpacity(0.5),
                               size: 20,
                             ), 
-                            SizedBox(width: 5.0),
+                            const SizedBox(width: 5.0),
                             Text(
                               "${reply.likes}",
                               style: TextStyle(

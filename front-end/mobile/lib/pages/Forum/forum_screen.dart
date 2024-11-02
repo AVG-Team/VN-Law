@@ -50,7 +50,7 @@ class _ForumScreenState extends State<ForumScreen> {
                               fontSize: 14.0,
                             ),
                           ),
-                          Icon(
+                          const Icon(
                             Icons.search,
                             size: 20,
                             color: Colors.white,
