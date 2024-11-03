@@ -49,35 +49,35 @@ export default function TreeView({ setChapterSelected }) {
         fetchAllTopics();
     }, []);
 
-    useEffect(() => {
-        const fetchArticleData = async () => {
-            if (article && !loading) {
-                setLoading(true);
-                const topicList = await topicApi.getAll();
-                const data = topicList.map((topic) => ({
-                    title: `Chủ đề ${topic.order}: ${topic.name}`,
-                    key: `topic_${topic.id.toString()}`,
-                    children: undefined,
-                }));
-                setTreeData(data);
+    // useEffect(() => {
+    //     const fetchArticleData = async () => {
+    //         if (article && !loading) {
+    //             setLoading(true);
+    //             const topicList = await topicApi.getAll();
+    //             const data = topicList.map((topic) => ({
+    //                 title: `Chủ đề ${topic.order}: ${topic.name}`,
+    //                 key: `topic_${topic.id.toString()}`,
+    //                 children: undefined,
+    //             }));
+    //             setTreeData(data);
+    //             console.log("article ", article);
+    //             const { topic, subject, chapter, articles } = await articleApi.getTreeArticle(article);
+    //             setChapterSelected({ id: chapter.id, name: chapter.name, articles });
+    //             const keyChapter = `chapter_${chapter.id}`;
+    //             const keySubject = `subject_${subject.id}`;
+    //             const keyTopic = `topic_${topic.id}`;
 
-                const { topic, subject, chapter, articles } = await articleApi.getTreeArticle(article);
-                setChapterSelected({ id: chapter.id, name: chapter.name, articles });
-                const keyChapter = `chapter_${chapter.id}`;
-                const keySubject = `subject_${subject.id}`;
-                const keyTopic = `topic_${topic.id}`;
+    //             setExpandedKeys([keyTopic, keySubject, keyChapter]);
+    //             setSelectedKeys([keyChapter]);
 
-                setExpandedKeys([keyTopic, keySubject, keyChapter]);
-                setSelectedKeys([keyChapter]);
+    //             await loadData({ key: keyTopic, name: topic.name });
+    //             await loadData({ key: keySubject, name: subject.name });
 
-                await loadData({ key: keyTopic, name: topic.name });
-                await loadData({ key: keySubject, name: subject.name });
-
-                setLoading(false);
-            }
-        };
-        fetchArticleData();
-    }, [article, loading, setChapterSelected]);
+    //             setLoading(false);
+    //         }
+    //     };
+    //     fetchArticleData();
+    // }, [article, loading, setChapterSelected]);
 
     const onSelect = async (selectedKeys, info) => {
         if (selectedKeys.length === 0) return;
