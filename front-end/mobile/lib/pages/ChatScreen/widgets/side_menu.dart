@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/ChatScreen/homepage.dart';
@@ -7,7 +8,7 @@ import '../../../models/conversation.dart';
 import '../../../models/menu_models.dart';
 import '../../../services/conversations_service.dart';
 import '../../../services/icon_service.dart';
-import '../../Welcome Page/WelcomeScreen.dart';
+import '../../WelcomePage/welcome_screen.dart';
 import '../chat_screen.dart';
 
 class SideMenu extends StatefulWidget {
@@ -38,7 +39,8 @@ class _SideMenuState extends State<SideMenu> {
 
   Future<void> loadConversations() async {
     try {
-      List<Conversation> conversations = await _conversationsService.getAllConversations();
+      String userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
+      List<Conversation> conversations = await _conversationsService.getAllConversations(userId);
       if (kDebugMode) {
         print("Loaded conversations: ${conversations.length}");
       }
@@ -92,7 +94,7 @@ class _SideMenuState extends State<SideMenu> {
                     if (kDebugMode) {
                       print("screen default");
                     }
-                    Widget screenWidget = WelcomeScreen();
+                    Widget screenWidget = const WelcomeScreen();
 
                     switch (screen) {
                       case 'library':
@@ -108,7 +110,7 @@ class _SideMenuState extends State<SideMenu> {
                         }
                         break;
                       default:
-                        screenWidget = WelcomeScreen();
+                        screenWidget = const WelcomeScreen();
                     }
 
                     Navigator.of(context).pushAndRemoveUntil(

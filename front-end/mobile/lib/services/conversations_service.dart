@@ -34,16 +34,25 @@ class ConversationsService {
     }
   }
 
-  Future<Conversation?> getFirstConversation() async {
+  Future<Conversation?> getFirstConversation(String userId) async {
     try {
-      DataSnapshot snapshot = await databaseReference.child("conversations").get();
+      Query query = databaseReference
+          .child("conversations")
+          .orderByChild("userId")
+          .equalTo(userId);
+
+      DataSnapshot snapshot = await query.get();
 
       if (snapshot.exists) {
-        List<Conversation> conversations = (snapshot.value as Map<dynamic, dynamic>).entries.map((entry) {
+        List<Conversation> conversations = (snapshot.value as Map<dynamic, dynamic>)
+            .entries
+            .map((entry) {
           String conversationId = entry.key;
-          return Conversation.fromMap(conversationId, entry.value as Map<dynamic, dynamic>);
+          return Conversation.fromMap(
+              conversationId, entry.value as Map<dynamic, dynamic>);
         }).toList();
-        conversations.sort((a, b) => DateTime.parse(a.endTime).compareTo(DateTime.parse(b.endTime)));
+        conversations.sort((a, b) =>
+            DateTime.parse(b.endTime).compareTo(DateTime.parse(a.endTime))); // Sắp xếp theo thời gian mới nhất
         return conversations.isNotEmpty ? conversations.first : null;
       }
     } catch (e) {
@@ -54,11 +63,19 @@ class ConversationsService {
     return null;
   }
 
-  Future<Conversation?> getConversation(String conversationId) async {
+  Future<Conversation?> getConversation(String conversationId, String userId) async {
     try {
-      DataSnapshot snapshot = await databaseReference.child("conversations").child(conversationId).get();
+      Query query = databaseReference
+          .child("conversations")
+          .child(conversationId)
+          .orderByChild("userId")
+          .equalTo(userId);
+
+      DataSnapshot snapshot = await query.get();
+
       if (snapshot.exists) {
-        return Conversation.fromMap(conversationId, snapshot.value as Map<dynamic, dynamic>);
+        return Conversation.fromMap(
+            conversationId, snapshot.value as Map<dynamic, dynamic>);
       }
     } catch (e) {
       if (kDebugMode) {
@@ -68,15 +85,25 @@ class ConversationsService {
     return null;
   }
 
-  Future<List<Conversation>> getAllConversations() async {
+  Future<List<Conversation>> getAllConversations(String userId) async {
+    print("Get all conversations" + userId);
     List<Conversation> conversations = [];
     try {
-      DataSnapshot snapshot = await databaseReference.child("conversations").get();
+      Query query = databaseReference
+          .child("conversations")
+          .orderByChild("userId")
+          .equalTo(userId);
+
+      DataSnapshot snapshot = await query.get();
+
       if (snapshot.exists) {
         for (var item in (snapshot.value as Map<dynamic, dynamic>).entries) {
           String key = item.key.toString();
-          conversations.add(Conversation.fromMap(key, item.value as Map<dynamic, dynamic>));
+          conversations.add(
+              Conversation.fromMap(key, item.value as Map<dynamic, dynamic>));
         }
+        conversations.sort((a, b) =>
+            DateTime.parse(b.endTime).compareTo(DateTime.parse(a.endTime)));
       }
     } catch (e) {
       if (kDebugMode) {

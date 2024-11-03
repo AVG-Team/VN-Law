@@ -1,57 +1,60 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async' show Future, Timer;
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_sign_in/google_sign_in.dart'; // Add Google Sign-In import
 import 'package:mobile/pages/WelcomePage/reg_screen.dart';
-import '../../services/google_sign_in_service.dart';
+import 'package:provider/provider.dart';
 import '../Home/profile_screen.dart';
+import '../../services/auth_provider.dart';
 import 'login_screen.dart';
 
-class WelcomeScreen extends StatelessWidget {
-  WelcomeScreen({super.key});
-  final GoogleSignInService _googleSignInService = GoogleSignInService(); // Service defined here
-  final user = FirebaseAuth.instance.currentUser;
+class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({super.key});
+
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  late final AuthProviderCustom _authProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _authProvider = Provider.of<AuthProviderCustom>(context, listen: false);
+    checkAuth();
+  }
+
+  Future<void> checkAuth() async {
+    await _authProvider.checkAuthState();
+    if (_authProvider.user != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ProfileScreen(),
+        ),
+      );
+    }
+  }
+
   Future<void> _handleGoogleSignIn(BuildContext context) async {
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignInService.signIn();
-      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken
-      );
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      if (googleUser != null) {
-        // If login is successful, navigate to profile_screen.dart with Google name and email
+      final userCredential = await _authProvider.signInWithGoogle();
+      if (userCredential != null && mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => StreamBuilder<User?>(
-              stream: FirebaseAuth.instance.authStateChanges(),
-              builder: (ctx, userSnapshot) {
-                if (userSnapshot.connectionState == ConnectionState.waiting) {
-                  // Show a loading indicator while waiting for the auth state
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (userSnapshot.hasData) {
-                  final user = userSnapshot.data;
-                  return ProfileScreen(
-                    name: user?.displayName ?? "No name",
-                    email: user?.email ?? "No Email",
-                    uid: user?.uid ?? "No UID",
-                  );
-                }
-                return const Center(child: Text('No user logged in'));
-              },
-            ),
+            builder: (context) => const ProfileScreen(),
           ),
         );
       }
-
     } catch (error) {
-      throw Exception(error);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
     }
   }
 
@@ -158,7 +161,6 @@ class WelcomeScreen extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class TypewriterText extends StatefulWidget {

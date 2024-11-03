@@ -45,7 +45,9 @@ class _ChatScreenState extends State<ChatScreen> {
       if (widget.conversationId != null) {
         // Load existing conversation
         currentConversationId = widget.conversationId!;
-        var conversation = await _conversationService.getConversation(currentConversationId);
+
+        String userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
+        var conversation = await _conversationService.getConversation(currentConversationId, userId);
         if (conversation != null) {
           setState(() {
             messages = conversation.messages;

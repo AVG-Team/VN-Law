@@ -1,8 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/models/conversation.dart';
 
 import 'package:mobile/pages/ChatScreen/widgets/chat_input.dart';
+import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
 import 'package:mobile/services/conversations_service.dart';
+import 'package:provider/provider.dart';
+import '../../services/auth_provider.dart';
 import '../../services/json_processing.dart';
 import 'chat_screen.dart';
 import 'widgets/side_menu.dart';
@@ -20,18 +24,38 @@ class _HomePageChatScreenState extends State<HomePageChatScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Conversation? _conversationFirst;
   List<dynamic> _listConversationPopular = [];
+  late final AuthProviderCustom _authProvider;
 
   @override
   void initState() {
     super.initState();
     loadUtilitiesMenu();
+    String userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
+    print("User Id " + userId);
+    _authProvider = Provider.of<AuthProviderCustom>(context, listen: false);
+    checkAuth();
+  }
+
+  Future<void> checkAuth() async {
+    await _authProvider.checkAuthState();
+    if (_authProvider.user == null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const WelcomeScreen(),
+        ),
+      );
+    }
   }
 
   Future<void> loadUtilitiesMenu() async {
     List<dynamic> features = await loadData('assets/json/menu_chat.json');
     ConversationsService conversationsService = ConversationsService();
-    Conversation? conversationFirst = await conversationsService.getFirstConversation();
-    List<dynamic> listConversationPopular = await loadData('assets/json/chat_conversation_popular.json');
+    String userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
+    Conversation? conversationFirst =
+        await conversationsService.getFirstConversation(userId);
+    List<dynamic> listConversationPopular =
+        await loadData('assets/json/chat_conversation_popular.json');
     setState(() {
       _features = features;
       _conversationFirst = conversationFirst;
@@ -88,44 +112,40 @@ class _HomePageChatScreenState extends State<HomePageChatScreen> {
                 children: [
                   CircleAvatar(
                     backgroundColor: Colors.blue[100],
-                    child: const Icon(Icons.chat_bubble_outline, color: Colors.blue),
+                    child: const Icon(Icons.chat_bubble_outline,
+                        color: Colors.blue),
                   ),
                   const SizedBox(width: 12),
-                    InkWell(
+                  Expanded(
+                    // Wrap với Expanded
+                    child: InkWell(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ChatScreen(conversationId: _conversationFirst?.conversationId),
+                            builder: (context) => ChatScreen(
+                                conversationId:
+                                    _conversationFirst?.conversationId),
                           ),
                         );
                       },
-                      child: Container(
-                        constraints: const BoxConstraints(maxHeight: 55),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Flexible(
-                              fit: FlexFit.loose, // Cho phép co lại
-                              child: Container(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 150,
-                                ),
-                                child: Text(
-                                  _conversationFirst?.messages.isNotEmpty == true
-                                      ? _conversationFirst!.messages[0].content
-                                      : 'Không có nội dung',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
-                              ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _conversationFirst?.messages.isNotEmpty == true
+                                ? _conversationFirst!.messages[0].content
+                                : 'Không có nội dung',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                          if (_conversationFirst!.messages.length > 1)
                             Text(
-                              _conversationFirst!.messages.length > 1 ? _conversationFirst!.messages[1].content : '',
+                              _conversationFirst!.messages[1].content,
                               style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 14,
@@ -133,13 +153,13 @@ class _HomePageChatScreenState extends State<HomePageChatScreen> {
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
-                          ],
-                        ),
+                        ],
                       ),
                     ),
+                  ),
                 ],
               ),
-          ),
+            ),
           // Feature cards
           // SingleChildScrollView(
           //   scrollDirection: Axis.horizontal,
