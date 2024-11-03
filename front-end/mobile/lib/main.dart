@@ -4,15 +4,18 @@ import 'package:flutter/services.dart';
 import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
 import 'firebase_options.dart';
 
-void main() async{
-  // Set status bar color to transparent
+void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+
   runApp(const MyApp());
 }
 

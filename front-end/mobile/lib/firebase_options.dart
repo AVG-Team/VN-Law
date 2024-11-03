@@ -46,7 +46,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '582983299080',
     projectId: 'vnlaw-bf731',
     authDomain: 'vnlaw-bf731.firebaseapp.com',
-    storageBucket: 'vnlaw-bf731.appspot.com',
+    databaseURL: 'https://vnlaw-bf731-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'vnlaw-bf731.firebasestorage.app',
     measurementId: 'G-MHNNH87998',
   );
 
@@ -55,7 +56,8 @@ class DefaultFirebaseOptions {
     appId: '1:582983299080:android:601a8afd93f5fafc2ea1bd',
     messagingSenderId: '582983299080',
     projectId: 'vnlaw-bf731',
-    storageBucket: 'vnlaw-bf731.appspot.com',
+    databaseURL: 'https://vnlaw-bf731-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'vnlaw-bf731.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -63,7 +65,9 @@ class DefaultFirebaseOptions {
     appId: '1:582983299080:ios:4f6b14f72e45d2862ea1bd',
     messagingSenderId: '582983299080',
     projectId: 'vnlaw-bf731',
-    storageBucket: 'vnlaw-bf731.appspot.com',
+    databaseURL: 'https://vnlaw-bf731-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'vnlaw-bf731.firebasestorage.app',
+    androidClientId: '582983299080-h0ql4p1sm05lfeikoc3p7fb5b6fako02.apps.googleusercontent.com',
     iosClientId: '582983299080-ducvvjotac3if6p29vktrlcan7nlu8hc.apps.googleusercontent.com',
     iosBundleId: 'com.example.mobile',
   );
@@ -73,7 +77,9 @@ class DefaultFirebaseOptions {
     appId: '1:582983299080:ios:4f6b14f72e45d2862ea1bd',
     messagingSenderId: '582983299080',
     projectId: 'vnlaw-bf731',
-    storageBucket: 'vnlaw-bf731.appspot.com',
+    databaseURL: 'https://vnlaw-bf731-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'vnlaw-bf731.firebasestorage.app',
+    androidClientId: '582983299080-h0ql4p1sm05lfeikoc3p7fb5b6fako02.apps.googleusercontent.com',
     iosClientId: '582983299080-ducvvjotac3if6p29vktrlcan7nlu8hc.apps.googleusercontent.com',
     iosBundleId: 'com.example.mobile',
   );
@@ -84,7 +90,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '582983299080',
     projectId: 'vnlaw-bf731',
     authDomain: 'vnlaw-bf731.firebaseapp.com',
-    storageBucket: 'vnlaw-bf731.appspot.com',
+    databaseURL: 'https://vnlaw-bf731-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'vnlaw-bf731.firebasestorage.app',
     measurementId: 'G-W9Y3CF1MLR',
   );
+
 }
