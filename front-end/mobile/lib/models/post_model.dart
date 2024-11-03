@@ -8,7 +8,7 @@ class Question {
   int votes;
   int repliesCount;
   int views;
-  String created_at;
+  String createdAt;
   Author author;
   List<Reply> replies;
 
@@ -18,7 +18,7 @@ class Question {
       required this.votes,
       required this.repliesCount,
       required this.views,
-      required this.created_at,
+      required this.createdAt,
       required this.author,
       required this.replies});
 }
@@ -29,7 +29,7 @@ List<Question> questions = [
       question: 'C ## In A Nutshell',
       content:
           "Lorem  i've been using c## for a whole decade now, if you guys know how to break the boring feeling of letting to tell everyne of what happed in the day",
-      created_at: "1h ago",
+      createdAt: "1h ago",
       views: 120,
       votes: 100,
       repliesCount: 80,
@@ -39,7 +39,7 @@ List<Question> questions = [
       question: 'List<Dynamic> is not a subtype of Lits<Container>',
       content:
           "Lorem  i've been using c## for a whole decade now, if you guys know how to break the boring feeling of letting to tell everyne of what happed in the day",
-      created_at: "2h ago",
+      createdAt: "2h ago",
       views: 20,
       votes: 10,
       repliesCount: 10,
@@ -49,7 +49,7 @@ List<Question> questions = [
       question: 'React a basic error 404 is not typed',
       content:
           "Lorem  i've been using c## for a whole decade now, if you guys know how to break the boring feeling of letting to tell everyne of what happed in the day",
-      created_at: "4h ago",
+      createdAt: "4h ago",
       views: 220,
       votes: 107,
       repliesCount: 67,
@@ -59,7 +59,7 @@ List<Question> questions = [
       question: 'Basic understanding of what is not good',
       content:
           "Lorem  i've been using c## for a whole decade now, if you guys know how to break the boring feeling of letting to tell everyne of what happed in the day",
-      created_at: "10h ago",
+      createdAt: "10h ago",
       views: 221,
       votes: 109,
       repliesCount: 67,
@@ -69,7 +69,7 @@ List<Question> questions = [
       question: 'Luther is not author in here',
       content:
           "Lorem  i've been using c## for a whole decade now, if you guys know how to break the boring feeling of letting to tell everyne of what happed in the day",
-      created_at: "24h ago",
+      createdAt: "24h ago",
       views: 325,
       votes: 545,
       repliesCount: 120,

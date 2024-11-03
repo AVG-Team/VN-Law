@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class TopBar extends StatefulWidget {
+  const TopBar({super.key});
+
   @override
-  _TopBarState createState() => _TopBarState();
+  State<TopBar> createState() => _TopBarState();
 }
 
 class _TopBarState extends State<TopBar> {
@@ -13,7 +15,7 @@ class _TopBarState extends State<TopBar> {
   Widget build(BuildContext context) {
     return Container(
       height: 90,
-      padding: EdgeInsets.only(top: 40,bottom: 15),
+      padding: const EdgeInsets.only(top: 40,bottom: 15),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: contents.length,
@@ -25,13 +27,13 @@ class _TopBarState extends State<TopBar> {
               });
             },
             child: Container(  
-              margin: EdgeInsets.only(left: 20.0),
+              margin: const EdgeInsets.only(left: 20.0),
               decoration: BoxDecoration(
                 color: _selectedIndex == index ? Theme.of(context).primaryColor.withOpacity(0.25): Colors.grey.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(10.0)
               ),
               child: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Text(
                   contents[index],
                   style: TextStyle(

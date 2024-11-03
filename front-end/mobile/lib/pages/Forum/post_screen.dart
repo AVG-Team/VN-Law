@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import '../../models/post_model.dart';
 
 class PostScreen extends StatefulWidget {
@@ -19,7 +18,7 @@ class _PostScreenState extends State<PostScreen> {
         child: ListView(
           children: <Widget>[
             Container( 
-              padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+              padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
               child: Row(
                 children: <Widget>[
                   IconButton(   
@@ -30,7 +29,7 @@ class _PostScreenState extends State<PostScreen> {
                       color: Colors.black,
                     )
                   ),
-                  SizedBox(width: 5.0),
+                  const SizedBox(width: 5.0),
                   const Text(
                     "View Post",
                     style: TextStyle(
@@ -42,13 +41,13 @@ class _PostScreenState extends State<PostScreen> {
               ),
             ),
             Container( 
-              margin: EdgeInsets.symmetric(horizontal: 15.0),
+              margin: const EdgeInsets.symmetric(horizontal: 15.0),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10.0),
                 boxShadow: [BoxShadow(
                   color: Colors.black26.withOpacity(0.05),
-                  offset: Offset(0.0,6.0),
+                  offset: const Offset(0.0,6.0),
                   blurRadius: 10.0,
                   spreadRadius: 0.10
                 )]
@@ -86,7 +85,7 @@ class _PostScreenState extends State<PostScreen> {
                                     ), 
                                     const SizedBox(height: 2.0),
                                     Text(
-                                      widget.question.created_at,
+                                      widget.question.createdAt,
                                       style: const TextStyle(
                                         color: Colors.grey
                                       ),
@@ -231,7 +230,7 @@ class _PostScreenState extends State<PostScreen> {
                                         ), 
                                         const SizedBox(height: 2.0),
                                         Text(
-                                          widget.question.created_at,
+                                          widget.question.createdAt,
                                           style: TextStyle(
                                             color: Colors.grey.withOpacity(0.4)
                                           ),

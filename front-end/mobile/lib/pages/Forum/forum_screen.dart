@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile/pages/Forum/widgets/popular_topics.dart';
 import 'package:mobile/pages/Forum/widgets/posts.dart';
 import 'package:mobile/pages/Forum/widgets/top_bar.dart';
-import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 
 class ForumScreen extends StatefulWidget {
   const ForumScreen({super.key});
@@ -26,7 +25,7 @@ class _ForumScreenState extends State<ForumScreen> {
                     color: Theme.of(context).primaryColor
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(12.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +38,7 @@ class _ForumScreenState extends State<ForumScreen> {
                             fontWeight: FontWeight.w600
                         ),
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -69,11 +68,11 @@ class _ForumScreenState extends State<ForumScreen> {
                           topRight: Radius.circular(35.0)
                       )
                   ),
-                  child: Column(
+                  child: const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       TopBar(),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(20.0),
                         child: Text(
                           "Popular Topics",
@@ -85,7 +84,7 @@ class _ForumScreenState extends State<ForumScreen> {
                         ),
                       ),
                       PopularTopics(),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.only(left: 20.0, top: 20.0, bottom: 10.0),
                         child: Text(
                           "Trending Posts",

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile/pages/Forum/forum_screen.dart';
-import 'package:mobile/pages/Welcome%20Page/WelcomeScreen.dart';
 void main() {
   // Set status bar color to transparent
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -20,14 +19,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
       ),
-      home: CourtroomSplashScreen(),
+      home: const CourtroomSplashScreen(),
     );
   }
 }
 
 class CourtroomSplashScreen extends StatefulWidget {
+  const CourtroomSplashScreen({super.key});
+
   @override
-  _CourtroomSplashScreenState createState() => _CourtroomSplashScreenState();
+  State<CourtroomSplashScreen> createState() => _CourtroomSplashScreenState();
 }
 
 class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
