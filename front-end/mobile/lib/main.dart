@@ -1,17 +1,37 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile/pages/ChatScreen/homepage.dart';
+import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
+import 'package:mobile/services/auth_provider.dart';
+import 'package:provider/provider.dart';
+import 'firebase_options.dart';
 import 'package:mobile/pages/DashboardScreen.dart';
 import 'package:mobile/pages/Home/homeScreen.dart';
 import 'package:mobile/pages/LegalDocument/legalDocumentScreen.dart';
 import 'package:mobile/pages/VBPL/vbplScreen.dart';
 import 'package:mobile/pages/Welcome%20Page/WelcomeScreen.dart';
 
-void main() {
-  // Set status bar color to transparent
+void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProviderCustom()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -24,7 +44,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
       ),
-      home: CourtroomSplashScreen(),
+      home: const CourtroomSplashScreen(),
     );
   }
 }
@@ -33,7 +53,7 @@ class CourtroomSplashScreen extends StatefulWidget {
   const CourtroomSplashScreen({super.key});
 
   @override
-  _CourtroomSplashScreenState createState() => _CourtroomSplashScreenState();
+  State<CourtroomSplashScreen> createState() => _CourtroomSplashScreenState();
 }
 
 class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
