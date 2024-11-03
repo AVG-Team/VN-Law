@@ -6,6 +6,11 @@ import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
 import 'package:mobile/services/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'package:mobile/pages/DashboardScreen.dart';
+import 'package:mobile/pages/Home/homeScreen.dart';
+import 'package:mobile/pages/LegalDocument/legalDocumentScreen.dart';
+import 'package:mobile/pages/VBPL/vbplScreen.dart';
+import 'package:mobile/pages/Welcome%20Page/WelcomeScreen.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -79,7 +84,7 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
     // Start animation and navigate to ChatScreen after completion
     _controller.forward().whenComplete(() {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomePageChatScreen()),
+        MaterialPageRoute(builder: (context) => const Dashboardscreen()),
       );
     });
   }

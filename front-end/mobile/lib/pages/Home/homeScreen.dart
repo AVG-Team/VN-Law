@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/pages/Home/profile_screen.dart';
+import 'package:mobile/pages/Home/widgets/_buildNewsCard.dart';
+import 'package:mobile/pages/Home/widgets/_buildNewsTag.dart';
+import 'package:mobile/pages/LegalDocument/legalDocumentScreen.dart';
+import 'package:mobile/pages/VBPL/vbplScreen.dart';
+import 'widgets/_buildServiceCategory.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -6,7 +13,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.lightBlueAccent,
       body: SafeArea(
         child: Column(
           children: [
@@ -24,31 +31,16 @@ class HomeScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.grey[800],
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(50),
                         ),
-                        child: const Icon(Icons.notifications_none, color: Colors.white),
+                        child: const Icon(Icons.notifications_none, color: Colors.blueAccent),
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
 
-                  // Welcome Text in black section
-                  const Text(
-                    'Welcome 👋',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const Text(
-                    'Nếu bạn cần trợ giúp về pháp luật?',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 16,
-                    ),
-                  ),
+
                 ],
               ),
             ),
@@ -77,28 +69,46 @@ class HomeScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const Text(
+                          'Welcome 👋',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
+                        const Text(
+                          'Nếu bạn cần trợ giúp về pháp luật?',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                          ),
+                        ),
                         const SizedBox(height: 16),
                         // Service Categories
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            _buildServiceCategory(
-                              'Tra Cứu\nPháp Luật',
-                              Icons.search_rounded,
-                              Colors.red[50]!,
-                              Colors.red,
+                            ServiceCategory(
+                              title: 'Tra Cứu\nPháp Luật',
+                              icon:  Icons.search_rounded,
+                              bgColor: Colors.red[50]!,
+                              iconColor: Colors.red,
+                              destination: const VbplScreen()
                             ),
-                            _buildServiceCategory(
-                              'Chatbot\nPháp Luật',
-                              Icons.wechat_outlined,
-                              Colors.orange[50]!,
-                              Colors.orange,
+                            ServiceCategory(
+                              title :'Chatbot\nPháp Luật',
+                              icon : Icons.wechat_outlined,
+                              bgColor : Colors.orange[50]!,
+                              iconColor :Colors.orange,
+                              destination: ProfileScreen(name: "admin", email: "admin@admin.com"), // todo chatScreen
                             ),
-                            _buildServiceCategory(
-                              'Văn Bản\nPháp Luật',
-                              Icons.document_scanner_outlined,
-                              Colors.blue[50]!,
-                              Colors.blue,
+                            ServiceCategory(
+                              title: 'Văn Bản\nPháp Luật',
+                              icon: Icons.document_scanner_outlined,
+                              bgColor :Colors.blue[50]!,
+                              iconColor: Colors.blue,
+                              destination: const LegalDocumentScreen(),
                             ),
                           ],
                         ),
@@ -119,33 +129,40 @@ class HomeScreen extends StatelessWidget {
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: [
-                              _buildOfferTag('Mới Nhất', Colors.green, true),
-                              _buildOfferTag('Pháp Luật', Colors.grey[300]!, false),
-                              _buildOfferTag('Đời Sống', Colors.grey[300]!, false),
-                              _buildOfferTag('An Ninh', Colors.grey[300]!, false),
+                              const NewsTag(
+                                  text: 'Mới Nhất',
+                                  color:Colors.lightBlueAccent,
+                                  isSelected: true),
+                              NewsTag(text: 'Pháp Luật',
+                                  color: Colors.grey[300]!,
+                                  isSelected: false),
+                              NewsTag(text: 'Đời sống',
+                                  color: Colors.grey[300]!,
+                                  isSelected: false),
+                              NewsTag(text: 'An Ninh',
+                                  color: Colors.grey[300]!,
+                                  isSelected: false),
                             ],
                           ),
                         ),
                         const SizedBox(height: 16),
 
                         // News Cards
-                        SizedBox(
+                        const SizedBox(
                           height: 120,
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               children: [
-                                _buildOfferCard(
-                                  '40% OFF',
-                                  'On First Cleaning Service',
-                                  Colors.green,
+                                NewsCard(
+                                  discount: '40% OFF',
+                                  description: 'On First Cleaning Service',
+                                  color : Colors.green,
                                 ),
-                                const SizedBox(width: 16),
-                                _buildOfferCard(
-                                  '15% OFF',
-                                  'Moving Service',
-                                  Colors.blue,
-                                ),
+                                SizedBox(width: 16),
+                                NewsCard(discount: "15% OFF",
+                                    description: "Moving Service",
+                                    color: Colors.blueAccent)
                               ],
                             ),
                           ),
@@ -167,9 +184,9 @@ class HomeScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            _buildServiceIcon(Icons.cleaning_services, Colors.green),
-                            _buildServiceIcon(Icons.person_outline, Colors.blue),
-                            _buildServiceIcon(Icons.local_shipping_outlined, Colors.purple),
+                            _buildServiceIcon(Icons.forum_outlined, Colors.green),
+                            _buildServiceIcon(Icons.newspaper_outlined, Colors.blue),
+                            _buildServiceIcon(Icons.info_outline, Colors.purple),
                             _buildServiceIcon(Icons.more_horiz, Colors.grey),
                           ],
                         ),
@@ -186,91 +203,11 @@ class HomeScreen extends StatelessWidget {
   }
 
   // Rest of the widget builder methods remain the same
-  Widget _buildServiceCategory(
-      String title,
-      IconData icon,
-      Color bgColor,
-      Color iconColor,
-      ) {
-    return Container(
-      width: 100,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: iconColor, size: 34),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildOfferTag(String text, Color color, bool isSelected) {
-    return Container(
-      margin: const EdgeInsets.only(right: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? color : Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isSelected ? Colors.transparent : Colors.grey[300]!,
-        ),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: isSelected ? Colors.white : Colors.black,
-          fontSize: 14,
-        ),
-      ),
-    );
-  }
 
-  Widget _buildOfferCard(
-      String discount,
-      String description,
-      Color color,
-      ) {
-    return Container(
-      width: 240,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            discount,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            description,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+
+
+
 
   Widget _buildServiceIcon(IconData icon, Color color) {
     return Container(
