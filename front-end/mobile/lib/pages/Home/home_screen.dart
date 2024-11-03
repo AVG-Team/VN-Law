@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/pages/ChatScreen/homepage.dart';
 import 'package:mobile/pages/Home/profile_screen.dart';
 import 'package:mobile/pages/Home/widgets/_buildNewsCard.dart';
 import 'package:mobile/pages/Home/widgets/_buildNewsTag.dart';
@@ -101,7 +102,7 @@ class HomeScreen extends StatelessWidget {
                               icon : Icons.wechat_outlined,
                               bgColor : Colors.orange[50]!,
                               iconColor :Colors.orange,
-                              destination: ProfileScreen(name: "admin", email: "admin@admin.com"), // todo chatScreen
+                              destination: const HomePageChatScreen(), // todo chatScreen
                             ),
                             ServiceCategory(
                               title: 'Văn Bản\nPháp Luật',
