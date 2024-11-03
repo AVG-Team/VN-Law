@@ -1,16 +1,22 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
+import 'firebase_options.dart';
 import 'package:mobile/pages/ChatScreen/homepage.dart';
 
 void main() async {
-  // Set status bar color to transparent
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));
-  runApp(const MyApp());
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+
   runApp(const MyApp());
 }
 
@@ -64,7 +70,7 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
     // Start animation and navigate to ChatScreen after completion
     _controller.forward().whenComplete(() {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomePageChatScreen()),
+        MaterialPageRoute(builder: (context) => WelcomeScreen()),
       );
     });
   }
@@ -77,7 +83,6 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
