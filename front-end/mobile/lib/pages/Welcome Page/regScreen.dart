@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'typewriter_text.dart'; // Ensure the import path is correct
 
 class RegScreen extends StatefulWidget {
-  const RegScreen({Key? key}) : super(key: key);
+  const RegScreen({super.key});
 
   @override
   _RegScreenState createState() => _RegScreenState();
@@ -13,7 +13,8 @@ class _RegScreenState extends State<RegScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _gmailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
@@ -57,12 +58,15 @@ class _RegScreenState extends State<RegScreen> {
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Color.fromARGB(255, 116, 192, 252), size: 30), // Increased size for visibility
+                  icon: const Icon(Icons.arrow_back,
+                      color: Color.fromARGB(255, 116, 192, 252),
+                      size: 30), // Increased size for visibility
                   onPressed: () {
                     Navigator.pop(context); // Go back to the previous screen
                   },
                 ),
-                const SizedBox(width: 8), // Add some spacing between the icon and text
+                const SizedBox(
+                    width: 8), // Add some spacing between the icon and text
                 const TypewriterText(
                   text: 'Back',
                   duration: Duration(milliseconds: 150),
@@ -79,7 +83,9 @@ class _RegScreenState extends State<RegScreen> {
                   topRight: Radius.circular(40),
                 ),
                 color: Colors.white,
-                border: Border.all(color: const Color.fromARGB(255, 116, 192, 252), width: 0.5), // Add outline
+                border: Border.all(
+                    color: const Color.fromARGB(255, 116, 192, 252),
+                    width: 0.5), // Add outline
               ),
               height: double.infinity,
               width: double.infinity,
@@ -128,7 +134,8 @@ class _RegScreenState extends State<RegScreen> {
                       isVisible: _isConfirmPasswordVisible,
                       toggleVisibility: () {
                         setState(() {
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                          _isConfirmPasswordVisible =
+                              !_isConfirmPasswordVisible;
                         });
                       },
                     ),
@@ -176,7 +183,8 @@ class _RegScreenState extends State<RegScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: const Color.fromARGB(255, 116, 192, 252), width: 2),
+          border: Border.all(
+              color: const Color.fromARGB(255, 116, 192, 252), width: 2),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
@@ -190,10 +198,13 @@ class _RegScreenState extends State<RegScreen> {
           controller: controller,
           keyboardType: keyboardType,
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
             suffixIcon: Icon(
               suffixIcon,
-              color: isValid ? const Color.fromARGB(255, 116, 192, 252) : Colors.grey,
+              color: isValid
+                  ? const Color.fromARGB(255, 116, 192, 252)
+                  : Colors.grey,
             ),
             label: Text(
               label,
@@ -221,7 +232,8 @@ class _RegScreenState extends State<RegScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: const Color.fromARGB(255, 116, 192, 252), width: 2),
+          border: Border.all(
+              color: const Color.fromARGB(255, 116, 192, 252), width: 2),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
@@ -235,11 +247,14 @@ class _RegScreenState extends State<RegScreen> {
           controller: controller,
           obscureText: !isVisible,
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
             suffixIcon: IconButton(
               icon: Icon(
                 isVisible ? Icons.visibility : Icons.visibility_off,
-                color: isVisible ? const Color.fromARGB(255, 116, 192, 252) : Colors.grey,
+                color: isVisible
+                    ? const Color.fromARGB(255, 116, 192, 252)
+                    : Colors.grey,
               ),
               onPressed: toggleVisibility,
             ),

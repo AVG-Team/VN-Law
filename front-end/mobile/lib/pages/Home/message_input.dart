@@ -4,7 +4,8 @@ class MessageInput extends StatelessWidget {
   final TextEditingController controller;
   final Function(String) sendMessage;
 
-  const MessageInput({required this.controller, required this.sendMessage, Key? key}) : super(key: key);
+  const MessageInput(
+      {required this.controller, required this.sendMessage, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,8 @@ class MessageInput extends StatelessWidget {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.add_circle_outline, color: Color(0xFF007AFF)),
+            icon:
+                const Icon(Icons.add_circle_outline, color: Color(0xFF007AFF)),
             onPressed: () {},
           ),
           Expanded(

@@ -9,9 +9,10 @@ import '../Welcome Page/WelcomeScreen.dart';
 class ProfileScreen extends StatefulWidget {
   final String name;
   final String email;
-  final GoogleSignInService _googleSignInService = GoogleSignInService(); // Service defined here
+  final GoogleSignInService _googleSignInService =
+      GoogleSignInService(); // Service defined here
 
-  ProfileScreen({Key? key, required this.name, required this.email}) : super(key: key);
+  ProfileScreen({super.key, required this.name, required this.email});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -41,13 +42,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _logout(BuildContext context) async {
-    await widget._googleSignInService.signOut(); // Access the service through widget
+    await widget._googleSignInService
+        .signOut(); // Access the service through widget
 
     // Navigate to WelcomeScreen and clear navigation stack
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => WelcomeScreen()),
-          (route) => false, // Removes all previous routes
+      (route) => false, // Removes all previous routes
     );
   }
 
@@ -127,7 +129,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           // Button Section: Logout at bottom center, matching TextField width
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
             child: SizedBox(
               width: double.infinity, // Ensures width matches TextField
               child: OutlinedButton(
@@ -135,8 +138,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   await _logout(context); // Call _logout when button is pressed
                 },
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.redAccent, width: 1.5), // Red border
-                  padding: const EdgeInsets.all(16.0), // Same padding as text fields
+                  side: const BorderSide(
+                      color: Colors.redAccent, width: 1.5), // Red border
+                  padding:
+                      const EdgeInsets.all(16.0), // Same padding as text fields
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20), // Rounded corners
                   ),
@@ -158,7 +163,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // Helper method to build a styled text field
-  Widget _buildTextField(TextEditingController? controller, String labelText, IconData icon) {
+  Widget _buildTextField(
+      TextEditingController? controller, String labelText, IconData icon) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
@@ -170,20 +176,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20), // Rounded corners
           borderSide: BorderSide(
-            color: Color.fromARGB(255, 116, 192, 252).withOpacity(0.5), // Soft grey border
+            color: const Color.fromARGB(255, 116, 192, 252)
+                .withOpacity(0.5), // Soft grey border
             width: 1,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide(
-            color: Color.fromARGB(255, 116, 192, 252).withOpacity(0.5), // Soft grey border when enabled
+            color: const Color.fromARGB(255, 116, 192, 252)
+                .withOpacity(0.5), // Soft grey border when enabled
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             color: Colors.blueAccent, // Change to a softer blue when focused
             width: 1.5,
           ),

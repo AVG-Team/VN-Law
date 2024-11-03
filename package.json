@@ -1,1 +1,9 @@
-{}
+{
+  "devDependencies": {
+    "worker-loader": "^3.0.8"
+  },
+  "dependencies": {
+    "@stomp/stompjs": "^7.0.0",
+    "uuid": "^11.0.2"
+  }
+}

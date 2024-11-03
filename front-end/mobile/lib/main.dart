@@ -4,6 +4,7 @@ import 'package:mobile/pages/Home/homeScreen.dart';
 import 'package:mobile/pages/LegalDocument/legalDocumentScreen.dart';
 import 'package:mobile/pages/VBPL/vbplScreen.dart';
 import 'package:mobile/pages/Welcome%20Page/WelcomeScreen.dart';
+
 void main() {
   // Set status bar color to transparent
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -28,6 +29,8 @@ class MyApp extends StatelessWidget {
 }
 
 class CourtroomSplashScreen extends StatefulWidget {
+  const CourtroomSplashScreen({super.key});
+
   @override
   _CourtroomSplashScreenState createState() => _CourtroomSplashScreenState();
 }

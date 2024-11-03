@@ -45,7 +45,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        targetSdkVersion 30 // Make sure this is set to a compatible version
+        targetSdkVersion 34 // Make sure this is set to a compatible version
     }
 
     buildTypes {
