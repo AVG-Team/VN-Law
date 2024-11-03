@@ -1,7 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile/pages/ChatScreen/homepage.dart';
 import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
+import 'package:mobile/services/auth_provider.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -16,7 +19,14 @@ void main() async {
     );
   }
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProviderCustom()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -69,7 +79,7 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
     // Start animation and navigate to ChatScreen after completion
     _controller.forward().whenComplete(() {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => WelcomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomePageChatScreen()),
       );
     });
   }
