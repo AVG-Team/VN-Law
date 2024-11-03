@@ -6,6 +6,7 @@ import 'message_list.dart';
 import 'typewriter_text.dart';
 import '../../services/conversation_controller.dart';
 import '../../services/chatbot_method.dart';
+
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -18,16 +19,16 @@ class ChatScreenState extends State<ChatScreen> {
   List<Message> messages = [];
   final TextEditingController point = TextEditingController();
   List<Conversation> conversations = [];
-  late final ConversationController conversation_controller;
+  late final ConversationController conversationController;
   Future<void> initializeController() async {
-    await conversation_controller.init(conversations);
+    await conversationController.init(conversations);
   }
 
   @override
   void initState() {
     super.initState();
     addBotMessage("Chào mừng bạn đến với Chatbot!");
-    conversation_controller = ConversationController(setState: setState);
+    conversationController = ConversationController(setState: setState);
   }
 
   void addBotMessage(String text) {
@@ -53,7 +54,7 @@ class ChatScreenState extends State<ChatScreen> {
 
     setState(() {
       conversations.last.botMessage = response;
-      conversation_controller.saveConversations(conversations);
+      conversationController.saveConversations(conversations);
     });
   }
 
@@ -191,7 +192,7 @@ class ChatScreenState extends State<ChatScreen> {
                           },
                           onSelected: (String value) {
                             if (value == 'delete') {
-                                conversation_controller.deleteConversation(index,conversations);
+                              conversationController.deleteConversation(index,conversations);
                             } else if (value == 'modify') {
 
                             } else if (value == 'share') {

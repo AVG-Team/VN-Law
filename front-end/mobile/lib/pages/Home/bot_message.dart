@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/Home/typewriter_text.dart';
 
-
-
 class BotMessage extends StatelessWidget {
   final String message;
 

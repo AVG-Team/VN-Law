@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/message.dart';
 import 'bot_message.dart';
 import 'user_message.dart';
+
 class MessageList extends StatelessWidget {
   final List<Message> messages;
 
