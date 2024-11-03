@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:mobile/constants/baseUrl.dart';
 
-class VbqpplApi {
+class VbqplApi {
 
   // Lấy tất cả các vbqppl với phân trang
   Future<dynamic> getAllByPage(Map<String, dynamic> params) async {

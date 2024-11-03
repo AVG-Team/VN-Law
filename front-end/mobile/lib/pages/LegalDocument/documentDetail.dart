@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../../models/legalDocument.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class DocumentDetailScreen extends StatelessWidget {
-  final LegalDocument document;
+  final  document;
 
   const DocumentDetailScreen({
     super.key,
     required this.document,
   });
+
 
   @override
   Widget build(BuildContext context) {
@@ -56,15 +58,15 @@ class DocumentDetailScreen extends StatelessWidget {
               ),
             ),
             const Divider(height: 32),
-            // Html(
-            //   data: document.htmlContent,
-            //   style: {
-            //     "body": Style(
-            //       fontSize: FontSize(16),
-            //       lineHeight: LineHeight(1.5),
-            //     ),
-            //   },
-            // ),
+            Html(
+              data: document.htmlContent,
+              style: {
+                "body": Style(
+                  fontSize: FontSize(16),
+                  lineHeight: LineHeight(1.5),
+                ),
+              },
+            ),
           ],
         ),
       ),

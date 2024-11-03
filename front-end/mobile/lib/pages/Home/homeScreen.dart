@@ -101,7 +101,7 @@ class HomeScreen extends StatelessWidget {
                               icon : Icons.wechat_outlined,
                               bgColor : Colors.orange[50]!,
                               iconColor :Colors.orange,
-                              destination: ProfileScreen(name: "admin", email: "admin@admin.com"), // todo chatScreen
+                              destination: ProfileScreen(), // todo chatScreen
                             ),
                             ServiceCategory(
                               title: 'Văn Bản\nPháp Luật',
