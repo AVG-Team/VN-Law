@@ -1,39 +1,25 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/services.dart';
+import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
-import '../../services/google_sign_in_service.dart';
-import '../Welcome Page/WelcomeScreen.dart';
+import '../../services/auth_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final String name;
-  final String email;
-  final GoogleSignInService _googleSignInService =
-      GoogleSignInService(); // Service defined here
-
-  ProfileScreen({super.key, required this.name, required this.email});
+  const ProfileScreen({super.key});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
   XFile? _profileImage;
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController.text = widget.name; // Set Google name
-    _emailController.text = widget.email; // Set Google email
-  }
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
     if (image != null) {
       setState(() {
         _profileImage = image;
@@ -41,161 +27,124 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> _logout(BuildContext context) async {
-    await widget._googleSignInService
-        .signOut(); // Access the service through widget
-
-    // Navigate to WelcomeScreen and clear navigation stack
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => WelcomeScreen()),
-      (route) => false, // Removes all previous routes
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Thông tin cá nhân'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // Navigate back
-          },
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Profile picture
-                  Center(
-                    child: Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundImage: _profileImage != null
-                              ? FileImage(File(_profileImage!.path))
-                              : null,
-                          child: _profileImage == null
-                              ? const Icon(Icons.person, size: 50)
-                              : null,
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: _pickImage,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.blueAccent,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 2,
-                                ),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(6.0),
-                                child: Icon(
-                                  Icons.camera_alt,
-                                  color: Colors.white,
-                                  size: 18,
-                                ),
-                              ),
+    return Consumer<AuthProviderCustom>(
+      builder: (context, auth, child) {
+        final user = auth.user;
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Thông tin cá nhân'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.logout),
+                onPressed: () async {
+                  await auth.signOut();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const WelcomeScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Center(
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundImage: _profileImage != null
+                            ? FileImage(File(_profileImage!.path))
+                            : (user?.photoURL != null
+                            ? NetworkImage(user!.photoURL!) as ImageProvider
+                            : null),
+                        child: (_profileImage == null && user?.photoURL == null)
+                            ? const Icon(Icons.person, size: 50)
+                            : null,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: _pickImage,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
                             ),
+                            child: const Icon(Icons.camera_alt,
+                                color: Colors.white, size: 20),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-
-                  // Text fields
-                  _buildTextField(_nameController, 'Tên', Icons.person),
-                  const SizedBox(height: 10),
-                  _buildTextField(_emailController, 'Email', Icons.email),
-                  const SizedBox(height: 10),
-                  _buildTextField(null, 'ID người dùng', Icons.account_box),
-                ],
-              ),
+                ),
+                const SizedBox(height: 24),
+                _buildInfoTile('Tên', user?.displayName ?? 'N/A'),
+                _buildInfoTile('Email', user?.email ?? 'N/A'),
+                _buildInfoTile('ID', user?.uid ?? 'N/A'),
+              ],
             ),
           ),
-
-          // Button Section: Logout at bottom center, matching TextField width
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-            child: SizedBox(
-              width: double.infinity, // Ensures width matches TextField
-              child: OutlinedButton(
-                onPressed: () async {
-                  await _logout(context); // Call _logout when button is pressed
-                },
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(
-                      color: Colors.redAccent, width: 1.5), // Red border
-                  padding:
-                      const EdgeInsets.all(16.0), // Same padding as text fields
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), // Rounded corners
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),
-                child: const Text(
-                  'Đăng xuất',
-                  style: TextStyle(
-                    color: Colors.redAccent, // Red text
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-          )
-        ],
-      ),
+        );
+      },
     );
   }
 
-  // Helper method to build a styled text field
-  Widget _buildTextField(
-      TextEditingController? controller, String labelText, IconData icon) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: labelText,
-        prefixIcon: Icon(icon),
-        contentPadding: const EdgeInsets.all(16.0),
-        filled: true,
-        fillColor: Colors.white, // Softer white background
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20), // Rounded corners
-          borderSide: BorderSide(
-            color: const Color.fromARGB(255, 116, 192, 252)
-                .withOpacity(0.5), // Soft grey border
-            width: 1,
+  Widget _buildInfoTile(String label, String value) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade600,
+            ),
           ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(
-            color: const Color.fromARGB(255, 116, 192, 252)
-                .withOpacity(0.5), // Soft grey border when enabled
-            width: 1,
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.copy, size: 20),
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: value));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Đã sao chép')),
+                  );
+                },
+              ),
+            ],
           ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(
-            color: Colors.blueAccent, // Change to a softer blue when focused
-            width: 1.5,
-          ),
-        ),
+        ],
       ),
     );
   }
