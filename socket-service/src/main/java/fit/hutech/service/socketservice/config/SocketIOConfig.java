@@ -8,6 +8,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.config.annotation.*;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
@@ -31,7 +32,7 @@ public class SocketIOConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Bean
-    public ThreadPoolTaskExecutor taskExecutor() {
+    public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setAllowCoreThreadTimeOut(true);
         executor.setCorePoolSize(10); // number of core thread

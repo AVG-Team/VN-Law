@@ -1,6 +1,5 @@
 package fit.hutech.service.socketservice.controllers;
 
-import fit.hutech.service.chatservice.models.AnswerResult;
 import fit.hutech.service.socketservice.dto.request.MessageRequest;
 import fit.hutech.service.socketservice.dto.response.MessageResponse;
 import fit.hutech.service.socketservice.enums.MessageStatus;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import javax.annotation.PostConstruct;
 import java.time.Instant;
@@ -26,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SocketController {
     private final AsyncChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
-    private final ThreadPoolTaskExecutor taskExecutor;
+    private final Executor taskExecutor;
     private final AtomicInteger activeRequests = new AtomicInteger(0);
     private static final int MAX_CONCURRENT_REQUESTS = 100;
     private final Semaphore requestThrottle;
@@ -34,35 +32,11 @@ public class SocketController {
     public SocketController(
             AsyncChatService chatService,
             SimpMessagingTemplate messagingTemplate,
-            @Qualifier("threadPoolTaskExecutor") ThreadPoolTaskExecutor taskExecutor) {
+            @Qualifier("taskExecutor") Executor taskExecutor) {
         this.chatService = chatService;
         this.messagingTemplate = messagingTemplate;
         this.taskExecutor = taskExecutor;
         this.requestThrottle = new Semaphore(MAX_CONCURRENT_REQUESTS);
-    }
-
-    @PostConstruct
-    public void init() {
-        configureThreadPool();
-        logThreadPoolConfiguration();
-    }
-
-    private void configureThreadPool() {
-        // Cấu hình ThreadPoolTaskExecutor
-        taskExecutor.setCorePoolSize(10);  // Số luồng cơ bản
-        taskExecutor.setMaxPoolSize(20);   // Số luồng tối đa
-        taskExecutor.setQueueCapacity(50); // Kích thước hàng đợi
-        taskExecutor.setThreadNamePrefix("ChatThread-");
-        taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        taskExecutor.initialize();
-    }
-
-    private void logThreadPoolConfiguration() {
-        log.info("Thread Pool Configuration:");
-        log.info("Core Pool Size: {}", taskExecutor.getCorePoolSize());
-        log.info("Max Pool Size: {}", taskExecutor.getMaxPoolSize());
-        log.info("Queue Capacity: {}", taskExecutor.getThreadPoolExecutor().getQueue().remainingCapacity());
-        log.info("Active Request Limit: {}", MAX_CONCURRENT_REQUESTS);
     }
 
     @MessageMapping("/sendMessage")
@@ -77,7 +51,7 @@ public class SocketController {
                                     createErrorResponse("Server is busy. Please try again later.")
                             );
                         }
-
+                        log.info("Message request : {}", messageRequest);
                         int currentRequests = activeRequests.incrementAndGet();
                         logRequestReceived(requestId, incomingThreadId, currentRequests, messageRequest);
 
@@ -117,31 +91,31 @@ public class SocketController {
         log.info("Request {} received on thread [{}] - Active requests: {}",
                 requestId, threadId, currentRequests);
         log.debug("Request {} content: {}", requestId, message);
-        logThreadPoolStatus("New request received", currentRequests);
     }
 
     private CompletableFuture<MessageResponse> processMessage(String requestId, MessageRequest message) {
-        return CompletableFuture.supplyAsync(() -> {
-            MDC.put("requestId", requestId);
-            try {
-                log.info("Processing request {} on thread [{}]",
-                        requestId, Thread.currentThread().getName());
+        MDC.put("requestId", requestId);
+        try {
+            log.info("Processing request {} on thread [{}]", requestId, Thread.currentThread().getName());
 
-                return chatService.getAsyncAnswer(message.getContent())
-                        .thenApply(this::enrichResponse)
-                        .exceptionally(e -> handleProcessingError(requestId, e));
-
-            } finally {
-                MDC.remove("requestId");
-            }
-        }, messageProcessingExecutor);
+            // Gọi chatService.getAsyncAnswer và xử lý kết quả
+            return chatService.getAsyncAnswer(message.getContent())
+                    .thenApply(answer -> enrichResponse(answer)) // Chuyển đổi kết quả
+                    .exceptionally(e -> handleProcessingError(requestId, e)); // Xử lý lỗi
+        } finally {
+            MDC.remove("requestId");
+        }
     }
 
-    private MessageResponse enrichResponse(MessageResponse response) {
-        // Add additional information or transform response if needed
-        response.setTimestamp(Instant.now());
-        return response;
+
+    private MessageResponse enrichResponse(String answer) {
+        return MessageResponse.builder()
+                .status(MessageStatus.SUCCESS)
+                .message(answer)
+                .timestamp(Instant.now())
+                .build();
     }
+
 
     private void sendResponse(String requestId, MessageResponse response, String originalThreadId) {
         String currentThreadId = Thread.currentThread().getName();
@@ -149,9 +123,8 @@ public class SocketController {
             log.info("Sending response for request {} on thread [{}]", requestId, currentThreadId);
 
             messagingTemplate.convertAndSendToUser(
-                    response.getUserId(),
                     "/server/sendData",
-                    response,
+                    response.getMessage(),
                     createMessageHeaders(requestId)
             );
 
@@ -179,7 +152,7 @@ public class SocketController {
                 .build();
     }
 
-    private void handleProcessingError(String requestId, Throwable throwable) {
+    private MessageResponse handleProcessingError(String requestId, Throwable throwable) {
         log.error("Error processing request {}: {}", requestId, throwable.getMessage(), throwable);
 
         MessageResponse errorResponse = createErrorResponse(
@@ -187,31 +160,27 @@ public class SocketController {
         );
 
         try {
-            messagingTemplate.convertAndSend("/server/sendData", errorResponse);
+            if (messagingTemplate != null) {
+                messagingTemplate.convertAndSend("/server/sendData", errorResponse);
+            } else {
+                log.warn("Messaging template is null. Cannot send error response for request {}", requestId);
+            }
         } catch (Exception e) {
             log.error("Error sending error response for request {}: {}", requestId, e.getMessage(), e);
         }
+
+        return errorResponse;
     }
+
 
     private void cleanupResources(String requestId) {
         try {
             requestThrottle.release();
             int remainingRequests = activeRequests.decrementAndGet();
-            logThreadPoolStatus("Request completed", remainingRequests);
             log.debug("Resources released for request {}", requestId);
         } catch (Exception e) {
             log.error("Error cleaning up resources for request {}: {}", requestId, e.getMessage(), e);
         }
     }
-
-    private void logThreadPoolStatus(String stage, int currentRequests) {
-        ThreadPoolExecutor executor = taskExecutor.getThreadPoolExecutor();
-        log.info("{} - Status: [Active Requests: {}, Active Threads: {}, Pool Size: {}, Queue Size: {}, Completed Tasks: {}]",
-                stage,
-                currentRequests,
-                executor.getActiveCount(),
-                executor.getPoolSize(),
-                executor.getQueue().size(),
-                executor.getCompletedTaskCount());
-    }
 }
+

@@ -12,6 +12,6 @@ public class MessageResponse {
     private String message;
     private MessageStatus status;
     private Instant timestamp;
-    private String userId;
+
     // Add other fields as needed
 }
