@@ -7,7 +7,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password
     ports:
-      - "3306:3306"
+      - "4000:3306"
     networks:
       - db-network
     volumes:
