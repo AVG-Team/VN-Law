@@ -2,15 +2,14 @@ package fit.hutech.service.chatservice.controllers;
 
 import fit.hutech.service.chatservice.models.*;
 import fit.hutech.service.chatservice.repositories.ArticleRepository;
-import fit.hutech.service.chatservice.repositories.VbqpplRepository;
+import fit.hutech.service.chatservice.services.ArticleService;
 import fit.hutech.service.chatservice.services.ChromaService;
 import fit.hutech.service.chatservice.services.RAGService;
-import fit.hutech.service.chatservice.services.ArticleService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import fit.hutech.service.chatservice.DTO.ArticleDTO;
 import tech.amikos.chromadb.Client;
 import tech.amikos.chromadb.Collection;
 import tech.amikos.chromadb.EmbeddingFunction;
@@ -18,30 +17,20 @@ import tech.amikos.chromadb.OpenAIEmbeddingFunction;
 import tech.amikos.chromadb.handler.ApiClient;
 import tech.amikos.chromadb.handler.ApiException;
 
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static fit.hutech.service.chatservice.models.Chroma.*;
 
 
 @RestController
 @RequestMapping("/chat-service/rag")
+@RequiredArgsConstructor
 public class RAGController {
     private final ArticleService articleService;
     private final RAGService ragService;
     private final ChromaService chromaService;
     private final ArticleRepository articleRepository;
 
-    public RAGController(ArticleService articleService, RAGService ragService, ChromaService chromaService, ArticleRepository articleRepository) {
-        this.articleService = articleService;
-        this.ragService = ragService;
-        this.chromaService = chromaService;
-        this.articleRepository = articleRepository;
-    }
 
     @GetMapping("/get-all-data-chroma")
     public ResponseEntity<?> getTest() throws ApiException {

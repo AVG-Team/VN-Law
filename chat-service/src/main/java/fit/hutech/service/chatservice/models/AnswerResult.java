@@ -34,6 +34,15 @@ public class AnswerResult {
         this.type = resultType;
     }
 
+    public AnswerResult(String errorMessage) {
+        this.answer = errorMessage;
+        this.articles = null;
+        this.vbqppls = null;
+        this.questions = null;
+        this.fullAnswer = errorMessage;
+        this.type = TypeAnswerResult.NOANSWER;
+    }
+
     public String reference()
     {
         StringBuilder reference = new StringBuilder();
