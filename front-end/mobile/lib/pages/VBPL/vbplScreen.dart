@@ -424,7 +424,7 @@ class _VbplScreenState extends State<VbplScreen> {
                         // Open the vbqpplLink if needed
                         launchUrl(Uri.parse(article['vbqpplLink']));
                       },
-                      child: Text(
+                      child: const Text(
                         " Xem thêm ",
                         style: TextStyle(
                           color: Colors.blue,
