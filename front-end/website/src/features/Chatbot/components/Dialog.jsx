@@ -1,7 +1,7 @@
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import TextareaAutosize from "react-textarea-autosize";
-import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
@@ -9,14 +9,16 @@ import {
     PaperAirplaneIcon,
     StopCircleIcon,
 } from "@heroicons/react/24/solid";
-import {TopQuestions} from "./LawQuestions";
+import { v4 as uuidv4 } from "uuid";
+import { TopQuestions } from "./LawQuestions";
 import VersionChatbot from "./VersionChatbot";
 import MenuMobile from "./MenuMobile";
 import TypewriterText from "./TypewriterText";
 import Logo from "~/assets/images/logo/logo-no-bg.png";
 import axiosClient from "../../../api/axiosClient";
+import useWebSocketChat from "../../../hook/useSocketChat";
 
-function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, activeChat, setActiveChat}) {
+function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, activeChat, setActiveChat }) {
     const [isHoveredIconMenu, setIsHoveredIconMenu] = useState(false);
     const [isHiddenRight, setHiddenRight] = useState(true);
     const [showIconSend, setShowIconSend] = useState(false);
@@ -26,112 +28,70 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
     const messagesEndRef = useRef(null);
     const [isWaiting, setIsWaiting] = useState(false);
     const socketRef = useRef();
-    let i = 0;
 
-    const handleResize = () => {
+    const handleResize = useCallback(() => {
         setWindowWidth(window.innerWidth);
-    };
-
+    }, []);
     const baseUrl = axiosClient.defaults.baseURL;
+    const { sendMessage, connectionStatus, pendingMessages } = useWebSocketChat(baseUrl);
     console.log(baseUrl);
 
     useEffect(() => {
-        const connectToSocket = async () => {
-            if (!socketRef.current) {
-                let socket = new SockJS(baseUrl + '/socket-service/ws');
-                Stomp.over(socket).debug = () => {
-                };
-
-                return new Promise((resolve, reject) => {
-                    socketRef.current = Stomp.over(socket);
-                    socketRef.current.debug = () => {
-                    };
-                    socketRef.current.connect({}, () => {
-                        resolve(socketRef.current);
-                    }, error => {
-                        reject(error);
-                    });
-                });
-            }
-            return socketRef.current;
-        }
-
-        const fetchData = async () => {
-            const socket = await connectToSocket();
-            if(socketRef.current.connected) {
-                socket.subscribe('/server/public', response => {
-                    console.log(response.body);
-                });
-
-                socket.subscribe('/server/sendData', response => {
-                    let parsedResponse = JSON.parse(response.body);
-                    let answer = JSON.parse(parsedResponse.body).fullAnswer;
-                    fetchReply(answer);
-                    setTextareaValue("");
-                });
-            }
-            i++
-        };
-        fetchData();
         window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [handleResize]);
 
-        return () => {
-            window.removeEventListener("resize", handleResize);
-            if (socketRef.current && socketRef.current.connected) {
-                socketRef.current.disconnect();
-            }
-        };
+    const handleQuestionChange = useCallback((e) => {
+        const question = e.target.value;
+        setTextareaValue(question);
+        setShowIconSend(question.trim().length > 0);
     }, []);
 
-    const handleQuestionChange = (e) => {
-        const question = e.target.value;
-        setTextareaValue(e.target.value);
-        setShowIconSend(question.trim().length > 0);
-    };
-
-    const handleClick = () => {
+    const handleClick = useCallback(() => {
         if (windowWidth < 1024 && isOpenMenuNavbar) {
             setIsOpenMenuNavbar(false);
         }
-    };
+    }, [windowWidth, isOpenMenuNavbar]);
 
-    const handleKeyDown = (e) => {
-        if (e.key === "Enter") {
+    const handleKeyDown = useCallback((e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             handleSendQuestion();
         }
-    };
+    }, []);
 
-    const handleSendQuestion = () => {
-        if (textareaValue.trim() !== "") {
-            sendQuestion(textareaValue.trim());
-        }
-    };
-    const sendQuestion = (content) => {
-        if (content !== "") {
-            const newMessage = {
-                id: messages.length + 1,
-                content: content,
-                type: "question",
-            };
-            setActiveChat(true);
-            setIsWaiting(true);
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
-            socketRef.current.send('/web/sendMessage', {}, content);
-            setPendingReplyServer(true);
-        }
-    };
+    const handleSendQuestion = useCallback(() => {
+        if (!textareaValue.trim()) return;
 
-    const fetchReply = (message) => {
-        const fakeReply = {
-            id: messages.length + 2,
+        const newMessage = {
+            userId: uuidv4(),
+            content: textareaValue.trim(),
+            type: "question",
+        };
+
+        setActiveChat(true);
+        setIsWaiting(true);
+        setMessages((prev) => [...prev, newMessage]);
+
+        const messageId = sendMessage(newMessage.content);
+        setTextareaValue("");
+
+        // Track message status
+        if (messageId) {
+            console.log(`Message ${messageId} sent, awaiting response...`);
+        }
+    }, [textareaValue, sendMessage]);
+
+    const onMessageReceived = useCallback((message) => {
+        const replyMessage = {
+            id: uuidv4(),
             content: message,
             type: "reply",
         };
 
-        setMessages((prevMessages) => [...prevMessages, fakeReply]);
+        setMessages((prev) => [...prev, replyMessage]);
         setIsWaiting(false);
-    };
+    }, []);
 
     useEffect(() => {
         if (activeChat) {
@@ -141,7 +101,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
 
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({behavior: "smooth"});
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     };
 
@@ -161,7 +121,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                 setIsOpenMenuNavbar={setIsOpenMenuNavbar}
                 clearMessages={clearMessages}
             />
-            <hr/>
+            <hr />
             <div className="hidden lg:block absolute top-[50%]">
                 {isHoveredIconMenu ? (
                     isHiddenRight ? (
@@ -200,7 +160,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                     isOpenMenuNavbar={isOpenMenuNavbar}
                 />
                 <div className="flex flex-col items-center justify-center h-full logo-chat">
-                    <img src={Logo} alt="icon" className="w-20"/>
+                    <img src={Logo} alt="icon" className="w-20" />
                     <p className="mt-3 text-2xl font-bold">Tôi có thể giúp gì cho bạn ?</p>
                 </div>
                 <div className="flex flex-col h-full overflow-scroll lg:py-10">
@@ -217,7 +177,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                                 } p-4`}
                             >
                                 {message.type === "question" ? (
-                                    <p className="text-white text-lg">{message.content}</p>
+                                    <p className="text-lg text-white">{message.content}</p>
                                 ) : (
                                     <TypewriterText
                                         key={message.content}
@@ -230,12 +190,8 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                         </div>
                     ))}
                     {isWaiting && (
-                        <div
-                            className={`message-chat reply w-full flex justify-start px-3 mt-5`}
-                        >
-                            <div
-                                className={`flex rounded-lg bg-gray-100 p-4`}
-                            >
+                        <div className={`message-chat reply w-full flex justify-start px-3 mt-5`}>
+                            <div className={`flex rounded-lg bg-gray-100 p-4`}>
                                 <div className="lds-ellipsis">
                                     <div></div>
                                     <div></div>
@@ -245,11 +201,11 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                             </div>
                         </div>
                     )}
-                    <div ref={messagesEndRef}/>
+                    <div ref={messagesEndRef} />
                 </div>
             </div>
             <div className="w-[100%] text-center mb-2">
-            <TopQuestions sendQuestion={sendQuestion}/>
+                <TopQuestions sendQuestion={handleSendQuestion} />
                 <div className="position">
                     <TextareaAutosize
                         name="question"
@@ -271,8 +227,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                                     onClick={handleSendQuestion}
                                 />
                             ) : (
-                                <StopCircleIcon
-                                    className="w-6 h-6 text-gray-400 absolute right-[9.5%] bottom-12 cursor-progress icon-input-message"/>
+                                <StopCircleIcon className="w-6 h-6 text-gray-400 absolute right-[9.5%] bottom-12 cursor-progress icon-input-message" />
                             )}
                         </>
                     )}

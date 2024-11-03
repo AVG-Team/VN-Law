@@ -4,5 +4,6 @@ import lombok.Data;
 
 @Data
 public class MessageRequest {
-    private String message;
+    private String userId;
+    private String content;
 }

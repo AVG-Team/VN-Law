@@ -24,7 +24,7 @@ public class ResponseHolder {
     }
 
     @Scheduled(fixedRate = 300000) // 5 phút
-    public void cleanup() {
+    public static void cleanup() {
         HOLDERS.entrySet().removeIf(entry ->
                 entry.getValue().isDone() || entry.getValue().isCompletedExceptionally());
     }

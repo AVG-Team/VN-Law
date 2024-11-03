@@ -33,8 +33,9 @@ public class SocketIOConfig implements WebSocketMessageBrokerConfigurer {
     @Bean
     public ThreadPoolTaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(2); // number of core thread
-        executor.setMaxPoolSize(2); // number of max thread
+        executor.setAllowCoreThreadTimeOut(true);
+        executor.setCorePoolSize(10); // number of core thread
+        executor.setMaxPoolSize(10); // number of max thread
         executor.setQueueCapacity(500); // size
         executor.setThreadNamePrefix("socket-serviceThread-");
         executor.initialize();

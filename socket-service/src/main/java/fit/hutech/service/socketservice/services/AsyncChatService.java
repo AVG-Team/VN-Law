@@ -40,7 +40,6 @@ public class AsyncChatService {
 
         try {
             ResponseHolder.put(messageId, future);
-
             ChatMessage chatMessage = new ChatMessage(messageId, question);
             String messageJson = objectMapper.writeValueAsString(chatMessage);
 
@@ -63,13 +62,14 @@ public class AsyncChatService {
         return future;
     }
 
-    @KafkaListener(topics = RESPONSE_TOPIC, groupId = "socket-service-group")
+    @KafkaListener(topics = RESPONSE_TOPIC, groupId = "chat-service-group")
     public void handleResponse(ConsumerRecord<String, String> record) {
         String messageId = record.key();
         String response = record.value();
 
         CompletableFuture<String> future = ResponseHolder.get(messageId);
         if (future != null) {
+            log.info("Completing future for messageId: {}", response);
             future.complete(response);
             ResponseHolder.remove(messageId);
             log.info("Completed future for messageId: {}", messageId);
