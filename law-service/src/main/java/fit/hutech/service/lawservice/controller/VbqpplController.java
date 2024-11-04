@@ -51,7 +51,7 @@ public class VbqpplController {
 
         String decodedType = URLDecoder.decode(type.orElse(""),StandardCharsets.UTF_8);
         return ResponseHandler.responseBuilder("Complete",
-                HttpStatus.OK,this.vbqpplService.getVbqpplByType(Optional.of(decodedType.toUpperCase()),pageNo,pageSize));
+                HttpStatus.OK,this.vbqpplService.getVbqpplByType(decodedType.toUpperCase(),pageNo,pageSize));
     }
 
 
