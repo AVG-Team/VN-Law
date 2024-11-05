@@ -51,6 +51,7 @@ dependencies:
   provider: ^6.0.5
   flutter_html: ^3.0.0-beta
   stomp_dart_client: ^0.4.4
+  carousel_slider: ^4.1.1
 
 dev_dependencies:
   flutter_test:

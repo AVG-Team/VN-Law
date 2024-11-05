@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../../constants/baseUrl.dart';
+import '../../constants/base_url.dart';
 import '../../models/legal_document.dart';
 import 'document_card.dart';
 import 'document_detail.dart';
