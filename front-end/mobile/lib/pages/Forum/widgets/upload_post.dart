@@ -15,7 +15,6 @@ class UploadPostWidget extends StatefulWidget {
 class _UploadPostWidgetState extends State<UploadPostWidget> {
   final TextEditingController _questionController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
-  final DatabaseReference _database = FirebaseDatabase.instance.ref();
   final DatabaseReference _postsRef = FirebaseDatabase.instance.ref('posts');
 
   @override
@@ -158,7 +157,7 @@ class _UploadPostWidgetState extends State<UploadPostWidget> {
   Widget build(BuildContext context) {
     return Consumer<AuthProviderCustom>(
       builder: (context, auth, child) {
-        final user = auth.user;
+        final user = auth.userModel;
 
         return Center(
           child: Card(

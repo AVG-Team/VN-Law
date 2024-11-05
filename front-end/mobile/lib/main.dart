@@ -11,7 +11,6 @@ import 'package:mobile/pages/DashboardScreen.dart';
 import 'package:mobile/pages/Home/homeScreen.dart';
 import 'package:mobile/pages/LegalDocument/legalDocumentScreen.dart';
 import 'package:mobile/pages/VBPL/vbplScreen.dart';
-import 'package:mobile/pages/Welcome%20Page/WelcomeScreen.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(

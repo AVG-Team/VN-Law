@@ -39,7 +39,7 @@ class _PinState extends State<Pin> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProviderCustom>(builder: (context, auth, child) {
-      final user = auth.user;
+      final user = auth.userModel;
       return SizedBox(
         height: 170,
         child: ListView.builder(

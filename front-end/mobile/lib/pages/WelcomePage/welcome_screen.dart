@@ -29,7 +29,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   Future<void> checkAuth() async {
     await _authProvider.checkAuthState();
-    if (_authProvider.user != null) {
+    if (_authProvider.userModel != null) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(

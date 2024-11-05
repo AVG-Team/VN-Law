@@ -23,7 +23,7 @@ class _ForumScreenState extends State<ForumScreen> {
   Widget build(BuildContext context) {
     return Consumer<AuthProviderCustom>(
       builder: (context, auth, child) {
-        final user = auth.user;
+        final user = auth.userModel;
         return Scaffold(
           backgroundColor: const Color.fromARGB(255, 116, 192, 252),
           body: SafeArea(

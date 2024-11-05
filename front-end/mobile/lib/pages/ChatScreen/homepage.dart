@@ -38,13 +38,15 @@ class _HomePageChatScreenState extends State<HomePageChatScreen> {
 
   Future<void> checkAuth() async {
     await _authProvider.checkAuthState();
-    if (_authProvider.user == null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const WelcomeScreen(),
-        ),
-      );
+    if (_authProvider.userModel  == null) {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const WelcomeScreen(),
+          ),
+        );
+      }
     }
   }
 

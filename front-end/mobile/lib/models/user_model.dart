@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
@@ -6,50 +5,38 @@ class UserModel {
   final String? email;
   final String? uid;
   final String? photoURL;
-  final String? role;
+  final int role;
 
   UserModel({
     this.displayName,
     this.email,
     this.uid,
     this.photoURL,
-    this.role,
+    this.role = 0,
   });
 
-  factory UserModel.fromFirebaseUser(User? user) {
+  // Convert to Map for Firestore
+  Map<String, dynamic> toMap() {
+    return {
+      'displayName': displayName,
+      'email': email,
+      'uid': uid,
+      'photoURL': photoURL,
+      'role': role,
+    };
+  }
+
+  factory UserModel.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return UserModel(
-      displayName: user?.displayName,
-      email: user?.email,
-      uid: user?.uid,
-      photoURL: user?.photoURL,
-      role: user?.email == "hung28122003cv@gmail.com" ? "Quản trị viên" : "Thành viên",
+      displayName: data['displayName'],
+      email: data['email'],
+      uid: data['uid'],
+      photoURL: data['photoURL'],
+      role: data['role'] ?? 0,
     );
   }
 
-  static Future<UserModel> fromFirebaseUserWithRole(User? user) async {
-    final DocumentSnapshot doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user?.uid)
-        .get();
-
-    if (!doc.exists) {
-      throw Exception("Document does not exist for user: ${user?.uid}");
-    }
-
-    late String role; // Mặc định là "Thành viên"
-
-    // Kiểm tra xem email có phải là của người dùng đặc biệt hay không
-    if (user?.email == "hung28122003cv@gmail.com") {
-      print(user?.email);
-      role = "Quản trị viên";
-    }
-
-    return UserModel(
-      displayName: user?.displayName,
-      email: user?.email,
-      uid: user?.uid,
-      photoURL: user?.photoURL,
-      role: role,
-    );
-  }
+  String get roleText => role == 1 ? "Admin" : "Member";
+  bool get isAdmin => role == 1;
 }
