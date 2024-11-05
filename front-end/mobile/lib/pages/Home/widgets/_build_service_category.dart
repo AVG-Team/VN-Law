@@ -8,13 +8,13 @@ class ServiceCategory extends StatelessWidget {
   final Widget destination;
 
   const ServiceCategory({
-    Key? key,
+    super.key,
     required this.title,
     required this.icon,
     required this.bgColor,
     required this.iconColor,
     required this.destination
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

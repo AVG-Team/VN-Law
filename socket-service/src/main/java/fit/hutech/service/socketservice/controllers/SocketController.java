@@ -128,6 +128,10 @@ public class SocketController {
                     createMessageHeaders(requestId)
             );
 
+            messagingTemplate.convertAndSend("/server/sendData", response.getMessage(), createMessageHeaders(requestId));
+
+            log.info("Request {} completed.",response.getMessage());
+
             log.info("Request {} completed. Thread flow: Incoming[{}] -> Processing[{}]",
                     requestId, originalThreadId, currentThreadId);
 

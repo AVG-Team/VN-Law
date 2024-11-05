@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../constants/baseUrl.dart';
-import '../../models/legalDocument.dart';
-import 'documentCard.dart';
-import 'documentDetail.dart';
+import '../../models/legal_document.dart';
+import 'document_card.dart';
+import 'document_detail.dart';
 
 class LegalDocumentScreen extends StatefulWidget {
   const LegalDocumentScreen({super.key});

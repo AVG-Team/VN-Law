@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import '../../models/legalDocument.dart';
 import 'package:flutter_html/flutter_html.dart';
+import '../../models/legal_document.dart';
 
 class DocumentDetailScreen extends StatelessWidget {
-  final  document;
+  final LegalDocument document;
 
   const DocumentDetailScreen({
     super.key,
     required this.document,
   });
-
 
   @override
   Widget build(BuildContext context) {

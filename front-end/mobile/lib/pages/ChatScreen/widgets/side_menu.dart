@@ -2,12 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/ChatScreen/homepage.dart';
+import 'package:mobile/pages/Home/home_screen.dart';
 import 'package:mobile/services/json_processing.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../models/conversation.dart';
 import '../../../models/menu_models.dart';
 import '../../../services/conversations_service.dart';
 import '../../../services/icon_service.dart';
+import '../../VBPL/vbpl_screen.dart';
 import '../../WelcomePage/welcome_screen.dart';
 import '../chat_screen.dart';
 
@@ -91,23 +93,17 @@ class _SideMenuState extends State<SideMenu> {
                   title: feature['title'],
                   onTap: () {
                     String screen = feature['screen'];
-                    if (kDebugMode) {
-                      print("screen default");
-                    }
                     Widget screenWidget = const WelcomeScreen();
 
                     switch (screen) {
                       case 'library':
-                        // screenWidget = const LibraryScreen();
+                        screenWidget = const VbplScreen();
                         break;
                       case 'forum':
                         // screenWidget = const ForumScreen();
                         break;
                       case 'chatbot':
                         screenWidget = const HomePageChatScreen();
-                        if (kDebugMode) {
-                          print("chatbot");
-                        }
                         break;
                       default:
                         screenWidget = const WelcomeScreen();
@@ -127,7 +123,10 @@ class _SideMenuState extends State<SideMenu> {
             icon: const Icon(Icons.home),
             title: 'Trang Chủ',
             onTap: () {
-              // todo: Handle Home tap
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+              );
             },
           ),
           MenuItem(

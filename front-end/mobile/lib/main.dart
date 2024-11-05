@@ -6,11 +6,6 @@ import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
 import 'package:mobile/services/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import 'package:mobile/pages/DashboardScreen.dart';
-import 'package:mobile/pages/Home/homeScreen.dart';
-import 'package:mobile/pages/LegalDocument/legalDocumentScreen.dart';
-import 'package:mobile/pages/VBPL/vbplScreen.dart';
-import 'package:mobile/pages/Welcome%20Page/WelcomeScreen.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -44,6 +39,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
       ),
+      debugShowCheckedModeBanner: false,
       home: const CourtroomSplashScreen(),
     );
   }
@@ -71,20 +67,17 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
       vsync: this,
     );
 
-    // Define logo scaling effect
     _logoScaleAnimation = Tween<double>(begin: 0.5, end: 1.2).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
-    // Define fade-in effect
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
 
-    // Start animation and navigate to ChatScreen after completion
     _controller.forward().whenComplete(() {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const Dashboardscreen()),
+        MaterialPageRoute(builder: (context) => const HomePageChatScreen()),
       );
     });
   }

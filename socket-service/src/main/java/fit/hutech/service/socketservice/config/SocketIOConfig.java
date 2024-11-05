@@ -23,6 +23,9 @@ public class SocketIOConfig implements WebSocketMessageBrokerConfigurer {
 //     với các trình duyệt cũ không hỗ trợ đầy đủ websocket
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        System.out.println("Registering Stomp Endpoints");
+        registry.addEndpoint("/ws").setAllowedOrigins("*");
+        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
         registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS(); // Endpoint WebSocket và hỗ trợ SockJS
     }
 
