@@ -14,13 +14,5 @@
     "screen": "forum",
     "color": "#FFF3E0",
     "serialnumber": 2
-  },
-  {
-    "title": "Chatbot Pháp Luật",
-    "content": "Hỏi về pháp luật và nhận câu trả lời từ chatbot.",
-    "icon": "smart_toy_outlined",
-    "screen": "chatbot",
-    "color": "#007AFF",
-    "serialnumber": 3
   }
 ]

@@ -7,7 +7,7 @@ import 'package:uuid/uuid.dart';
 import '../../models/conversation.dart';
 import '../../models/message.dart';
 import '../../services/conversations_service.dart';
-import '../../services/chatbot_service.dart';
+import '../../services/websocket_service.dart';
 import './widgets/message_bubble.dart';
 import 'package:mobile/pages/ChatScreen/widgets/side_menu.dart';
 import 'package:mobile/pages/ChatScreen/widgets/chat_input.dart';
@@ -25,17 +25,55 @@ class _ChatScreenState extends State<ChatScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _messageController = TextEditingController();
   final ConversationsService _conversationService = ConversationsService();
-  final ChatBotService _chatBotService = ChatBotService();
+  final WebSocketChat _webSocketChat = WebSocketChat();
+  bool _isWaitingForResponse = false;
 
   late StreamSubscription<DatabaseEvent> _messagesSubscription;
   late String currentConversationId;
   bool _isLoading = false;
   List<Message> messages = [];
+  String _connectionStatus = 'disconnected';
 
   @override
   void initState() {
     super.initState();
     _setupConversation();
+    _initializeWebSocket();
+  }
+
+  void _initializeWebSocket() {
+    _webSocketChat.initializeWebSocket();
+
+    _webSocketChat.connectionStatus.listen((status) {
+      setState(() {
+        _connectionStatus = status;
+      });
+    });
+
+    _webSocketChat.messages.listen((botResponse) {
+      if (botResponse.isNotEmpty) {
+        _handleBotResponse(botResponse);
+      }
+    });
+  }
+
+  void _handleBotResponse(String botResponse) async {
+    try {
+      final botMessage = Message(
+        id: const Uuid().v4(),
+        senderId: 'bot',
+        content: botResponse,
+        timestamp: DateTime.now().toIso8601String(),
+      );
+
+      await _conversationService.addMessage(currentConversationId, botMessage);
+    } catch (e) {
+      _showError('Error handling bot response: $e');
+    } finally {
+      setState(() {
+        _isWaitingForResponse = false;
+      });
+    }
   }
 
   Future<void> _setupConversation() async {
@@ -107,9 +145,13 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> sendMessage(String content) async {
-    if (content.trim().isEmpty) return;
+    if (content.trim().isEmpty || _isWaitingForResponse) return;
 
     try {
+      setState(() {
+        _isWaitingForResponse = true;
+      });
+
       final message = Message(
         id: const Uuid().v4(),
         senderId: FirebaseAuth.instance.currentUser?.uid ?? 'anonymous',
@@ -119,22 +161,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
       await _conversationService.addMessage(currentConversationId, message);
       _messageController.clear();
-
-      // Get chatbot response
-      final botResponse = await _chatBotService.getBotResponse(content);
-
-      if (botResponse != null) {
-        final botMessage = Message(
-          id: const Uuid().v4(),
-          senderId: 'bot',
-          content: botResponse,
-          timestamp: DateTime.now().toIso8601String(),
-        );
-
-        await _conversationService.addMessage(currentConversationId, botMessage);
-      }
+      _webSocketChat.sendMessage(content);
     } catch (e) {
       _showError('Error sending message: $e');
+      setState(() {
+        _isWaitingForResponse = false;
+      });
     }
   }
 
@@ -148,6 +180,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void dispose() {
     _messagesSubscription.cancel();
     _messageController.dispose();
+    _webSocketChat.dispose();
     super.dispose();
   }
 
@@ -156,13 +189,38 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('Chat Screen'),
+        title: const Text('Chatbot Pháp Luật VNLAW'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back), // Nút quay lại
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Quay lại màn hình trước
+            Navigator.pop(context);
           },
         ),
+        actions: [
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Row(
+                children: [
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _connectionStatus == 'connected'
+                          ? Colors.green
+                          : _connectionStatus == 'error'
+                          ? Colors.red
+                          : Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(_connectionStatus),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
       drawer: const SideMenu(),
       body: _isLoading
@@ -172,7 +230,7 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: _buildMessageList(),
           ),
-          ChatInput(onSendMessage: sendMessage),
+          ChatInput(onSendMessage: sendMessage, isWaitingForResponse: _isWaitingForResponse),
         ],
       ),
     );

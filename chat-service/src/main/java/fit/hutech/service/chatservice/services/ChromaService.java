@@ -135,6 +135,7 @@ public class ChromaService {
     public Set<String> getExistingIds() throws ApiException {
         Client client = new Client(System.getenv("CHROMA_URL"));
         String apiKey = System.getenv("OPENAI_API_KEY");
+        System.out.println("Processing data API KEY " + apiKey);
 
         System.out.println(apiKey + " " + System.getenv("CHROMA_URL"));
         System.out.println(client);

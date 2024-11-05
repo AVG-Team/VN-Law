@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class NewsTag extends StatelessWidget {
@@ -8,11 +7,11 @@ class NewsTag extends StatelessWidget {
   final bool isSelected;
 
   const NewsTag({
-    Key? key,
+    super.key,
     required this.text,
     required this.color,
     required this.isSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

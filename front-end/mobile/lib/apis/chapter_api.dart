@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:mobile/constants/baseUrl.dart';
+import 'package:mobile/constants/base_url.dart';
 
 
 class ChapterApi {

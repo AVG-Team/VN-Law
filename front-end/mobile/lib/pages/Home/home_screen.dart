@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/pages/Home/profile_screen.dart';
-import 'package:mobile/pages/Home/widgets/_buildNewsCard.dart';
-import 'package:mobile/pages/Home/widgets/_buildNewsTag.dart';
-import 'package:mobile/pages/LegalDocument/legalDocumentScreen.dart';
-import 'package:mobile/pages/VBPL/vbplScreen.dart';
-import 'widgets/_buildServiceCategory.dart';
+import 'package:mobile/pages/ChatScreen/homepage.dart';
+import 'package:mobile/pages/Home/widgets/_build_news_card.dart';
+import 'package:mobile/pages/Home/widgets/_build_news_tag.dart';
+import 'package:mobile/pages/LegalDocument/legal_document_screen.dart';
+import 'package:mobile/pages/VBPL/vbpl_screen.dart';
+import 'widgets/_build_service_category.dart';
 
 
 class HomeScreen extends StatelessWidget {
@@ -101,7 +101,7 @@ class HomeScreen extends StatelessWidget {
                               icon : Icons.wechat_outlined,
                               bgColor : Colors.orange[50]!,
                               iconColor :Colors.orange,
-                              destination: ProfileScreen(name: "admin", email: "admin@admin.com"), // todo chatScreen
+                              destination: const HomePageChatScreen(),
                             ),
                             ServiceCategory(
                               title: 'Văn Bản\nPháp Luật',

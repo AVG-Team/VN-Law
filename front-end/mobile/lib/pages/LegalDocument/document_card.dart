@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/legalDocument.dart';
+import '../../models/legal_document.dart';
 
 
 class DocumentCard extends StatelessWidget {
