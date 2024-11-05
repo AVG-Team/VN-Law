@@ -2,7 +2,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:mobile/constants/base_url.dart';
 
-class VbqpplApi {
+class VbqplApi {
+
   Future<dynamic> getAllByPage(Map<String, dynamic> params) async {
     final url = Uri.parse('$baseUrl/law-service/vbqppl').replace(queryParameters: params);
     final response = await http.get(url);

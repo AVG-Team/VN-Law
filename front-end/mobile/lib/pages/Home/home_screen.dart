@@ -1,14 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/pages/ChatScreen/chat_screen.dart';
 import 'package:mobile/pages/ChatScreen/homepage.dart';
+import 'package:mobile/pages/Home/profile_screen.dart';
 import 'package:mobile/pages/Home/widgets/_build_news_card.dart';
 import 'package:mobile/pages/Home/widgets/_build_news_tag.dart';
+import 'package:mobile/pages/Home/widgets/_build_service_Icon.dart';
+import 'package:mobile/pages/Home/widgets/_build_sidebar.dart';
 import 'package:mobile/pages/LegalDocument/legal_document_screen.dart';
+import 'package:mobile/pages/News/news_screen.dart';
 import 'package:mobile/pages/VBPL/vbpl_screen.dart';
+import '../../models/news_article.dart';
+import '../../services/news_service.dart';
+import '../News/widgets/news_detail_widget.dart';
 import 'widgets/_build_service_category.dart';
 
-
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool _isSidebarOpen = false;
+  String selectedNewsTag = 'Mới nhất';
+  Color selectedColor = Colors.lightBlueAccent;
+
+  late Future<List<NewsArticle>> futureArticles;
+
+  @override
+  void initState() {
+    super.initState();
+    futureArticles = NewsService().fetchNewsByCategory(selectedNewsTag);
+  }
+
+  void _handleNewsTagTap(String tag) {
+    setState(() {
+      selectedNewsTag = tag;
+      print(selectedNewsTag);
+      futureArticles = NewsService().fetchNewsByCategory(selectedNewsTag);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +49,6 @@ class HomeScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Top Black Section
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -27,25 +58,23 @@ class HomeScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(Icons.grid_view_rounded, color: Colors.white),
+                      Image.asset('assets/logo.png', width: 120),
                       Container(
-                        padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(50),
                         ),
-                        child: const Icon(Icons.notifications_none, color: Colors.blueAccent),
+                        child: IconButton(
+                          icon: const Icon(Icons.notifications_none, color: Colors.blueAccent),
+                          onPressed: () => setState(() => _isSidebarOpen = !_isSidebarOpen),
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
-
-
                 ],
               ),
             ),
-
-            // White Section with Border
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -85,28 +114,29 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
+
                         // Service Categories
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             ServiceCategory(
                               title: 'Tra Cứu\nPháp Luật',
-                              icon:  Icons.search_rounded,
+                              icon: Icons.search_rounded,
                               bgColor: Colors.red[50]!,
                               iconColor: Colors.red,
-                              destination: const VbplScreen()
+                              destination: const VbplScreen(),
                             ),
                             ServiceCategory(
-                              title :'Chatbot\nPháp Luật',
-                              icon : Icons.wechat_outlined,
-                              bgColor : Colors.orange[50]!,
-                              iconColor :Colors.orange,
+                              title: 'Chatbot\nPháp Luật',
+                              icon: Icons.wechat_outlined,
+                              bgColor: Colors.orange[50]!,
+                              iconColor: Colors.orange,
                               destination: const HomePageChatScreen(),
                             ),
                             ServiceCategory(
                               title: 'Văn Bản\nPháp Luật',
                               icon: Icons.document_scanner_outlined,
-                              bgColor :Colors.blue[50]!,
+                              bgColor: Colors.blue[50]!,
                               iconColor: Colors.blue,
                               destination: const LegalDocumentScreen(),
                             ),
@@ -129,43 +159,74 @@ class HomeScreen extends StatelessWidget {
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: [
-                              const NewsTag(
-                                  text: 'Mới Nhất',
-                                  color:Colors.lightBlueAccent,
-                                  isSelected: true),
-                              NewsTag(text: 'Pháp Luật',
-                                  color: Colors.grey[300]!,
-                                  isSelected: false),
-                              NewsTag(text: 'Đời sống',
-                                  color: Colors.grey[300]!,
-                                  isSelected: false),
-                              NewsTag(text: 'An Ninh',
-                                  color: Colors.grey[300]!,
-                                  isSelected: false),
+                              NewsTag(
+                                text: 'Mới nhất',
+                                color: selectedNewsTag == "Mới nhất" ? Colors.lightBlueAccent : Colors.grey[500]!,
+                                onTap: _handleNewsTagTap,
+                              ),
+                              NewsTag(
+                                text: 'Pháp luật',
+                                color: selectedNewsTag == "Pháp luật" ? Colors.lightBlueAccent : Colors.grey[500]!,
+                                onTap: _handleNewsTagTap,
+                              ),
+                              NewsTag(
+                                text: 'Đời sống',
+                                color: selectedNewsTag == "Đời sống" ? Colors.lightBlueAccent : Colors.grey[500]!,
+                                onTap: _handleNewsTagTap,
+                              ),
+                              NewsTag(
+                                text: 'An Ninh',
+                                color: selectedNewsTag == "An Ninh" ? Colors.lightBlueAccent : Colors.grey[500]!,
+                                onTap: _handleNewsTagTap,
+                              ),
                             ],
                           ),
                         ),
                         const SizedBox(height: 16),
 
-                        // News Cards
-                        const SizedBox(
-                          height: 120,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                NewsCard(
-                                  discount: '40% OFF',
-                                  description: 'On First Cleaning Service',
-                                  color : Colors.green,
+                        FutureBuilder<List<NewsArticle>>(
+                          future: futureArticles,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Center(child: Text('Error: ${snapshot.error}'));
+                            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return Center(child: Text('No news articles available.'));
+                            } else {
+                              return SizedBox(
+                                height: 170,
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: snapshot.data!.map((article) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(right: 16.0),
+                                        child: GestureDetector( // Use GestureDetector to handle taps
+                                          onTap: () {
+                                            // Navigate to NewsDetailPage on tap
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => NewsDetailPage(article: article),
+                                              ),
+                                            );
+                                          },
+                                          child: NewsCard(
+                                            title: article.title ?? 'N/A',
+                                            category: article.category.isNotEmpty ? article.category[0] : 'No description',
+                                            sourceName: article.sourceName,
+                                            urlImage: article.imageUrl,
+                                            color: Colors.green,
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
                                 ),
-                                SizedBox(width: 16),
-                                NewsCard(discount: "15% OFF",
-                                    description: "Moving Service",
-                                    color: Colors.blueAccent)
-                              ],
-                            ),
-                          ),
+                              );
+                            }
+                          },
                         ),
 
                         const SizedBox(height: 24),
@@ -181,14 +242,47 @@ class HomeScreen extends StatelessWidget {
                         const SizedBox(height: 16),
 
                         // Service Icons
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildServiceIcon(Icons.forum_outlined, Colors.green),
-                            _buildServiceIcon(Icons.newspaper_outlined, Colors.blue),
-                            _buildServiceIcon(Icons.info_outline, Colors.purple),
-                            _buildServiceIcon(Icons.more_horiz, Colors.grey),
-                          ],
+                        const SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              ServiceIcon(
+                                icon: Icons.forum_outlined,
+                                color: Colors.green,
+                                destination: VbplScreen(),
+                              ),
+                              SizedBox(width: 24),
+                              ServiceIcon(
+                                icon: Icons.newspaper_outlined,
+                                color: Colors.blue,
+                                destination: NewsFeedPage(),
+                              ),
+                              SizedBox(width: 24),
+                              ServiceIcon(
+                                icon: Icons.info_outline,
+                                color: Colors.purple,
+                                destination: ProfileScreen(),
+                              ),
+                              SizedBox(width: 24),
+                              ServiceIcon(
+                                icon: Icons.search_outlined,
+                                color: Colors.red,
+                                destination: VbplScreen(),
+                              ),
+                              SizedBox(width: 24),
+                              ServiceIcon(
+                                icon: Icons.wechat_outlined,
+                                color: Colors.orange,
+                                destination: ChatScreen(),
+                              ),
+                              SizedBox(width: 24),
+                              ServiceIcon(
+                                icon: Icons.document_scanner_outlined,
+                                color: Colors.pink,
+                                destination: LegalDocumentScreen(),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -198,28 +292,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  // Rest of the widget builder methods remain the same
-
-
-
-
-
-
-  Widget _buildServiceIcon(IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(50),
-      ),
-      child: Icon(
-        icon,
-        color: color,
-        size: 24,
       ),
     );
   }
