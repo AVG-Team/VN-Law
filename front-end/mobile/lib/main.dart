@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile/pages/ChatScreen/homepage.dart';
 import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:mobile/services/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
@@ -51,7 +52,6 @@ class MyApp extends StatelessWidget {
 
 class CourtroomSplashScreen extends StatefulWidget {
   const CourtroomSplashScreen({super.key});
-
   @override
   State<CourtroomSplashScreen> createState() => _CourtroomSplashScreenState();
 }
@@ -84,7 +84,7 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
     // Start animation and navigate to ChatScreen after completion
     _controller.forward().whenComplete(() {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const Dashboardscreen()),
+        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
       );
     });
   }

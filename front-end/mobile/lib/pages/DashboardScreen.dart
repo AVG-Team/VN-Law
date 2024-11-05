@@ -16,9 +16,9 @@ class _DashboardScreenState extends State<Dashboardscreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    HomeScreen(),
-    VbplScreen(),
-    LegalDocumentScreen(),
+    const HomeScreen(),
+    const VbplScreen(),
+    const LegalDocumentScreen(),
   ];
 
   void _onItemTapped(int index) {

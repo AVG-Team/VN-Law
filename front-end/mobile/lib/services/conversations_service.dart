@@ -86,7 +86,7 @@ class ConversationsService {
   }
 
   Future<List<Conversation>> getAllConversations(String userId) async {
-    print("Get all conversations" + userId);
+    print("Get all conversations$userId");
     List<Conversation> conversations = [];
     try {
       Query query = databaseReference

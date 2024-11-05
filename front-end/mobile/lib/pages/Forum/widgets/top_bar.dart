@@ -8,14 +8,20 @@ class TopBar extends StatefulWidget {
 }
 
 class _TopBarState extends State<TopBar> {
-  final List<String> contents = ["Popular","Recommended","New Topic","Latest","Trending"];
+  final List<String> contents = [
+    "Popular",
+    "Recommended",
+    "New Topic",
+    "Latest",
+    "Trending"
+  ];
   int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 90,
-      padding: const EdgeInsets.only(top: 40,bottom: 15),
+      padding: const EdgeInsets.only(top: 40, bottom: 15),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: contents.length,
@@ -26,21 +32,21 @@ class _TopBarState extends State<TopBar> {
                 _selectedIndex = index;
               });
             },
-            child: Container(  
+            child: Container(
               margin: const EdgeInsets.only(left: 20.0),
               decoration: BoxDecoration(
-                color: _selectedIndex == index ? Theme.of(context).primaryColor.withOpacity(0.25): Colors.grey.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(10.0)
-              ),
+                  color: const Color.fromARGB(255, 116, 192, 252),
+                  borderRadius: BorderRadius.circular(10.0)),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   contents[index],
                   style: TextStyle(
-                    fontSize: 16.0, 
-                    color: _selectedIndex == index ? Theme.of(context).primaryColor: Colors.black38,
-                    fontWeight: FontWeight.w600
-                  ),
+                      fontSize: 16.0,
+                      color: _selectedIndex == index
+                          ? Theme.of(context).primaryColor
+                          : Colors.black38,
+                      fontWeight: FontWeight.w600),
                 ),
               ),
             ),

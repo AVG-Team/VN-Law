@@ -1,77 +1,57 @@
 import 'package:mobile/models/replies_model.dart';
 
-import 'author_model.dart';
-
 class Question {
   String question;
   String content;
+  final String idUser;
+  final String nameUser;
+  final String imageURL;
   int votes;
-  int repliesCount;
-  int views;
   String createdAt;
-  Author author;
   List<Reply> replies;
+  String nodeKey;
+  int pin;
 
-  Question(
-      {required this.question,
-      required this.content,
-      required this.votes,
-      required this.repliesCount,
-      required this.views,
-      required this.createdAt,
-      required this.author,
-      required this.replies});
+  Question({
+    required this.question,
+    required this.content,
+    required this.idUser,
+    required this.nameUser,
+    required this.imageURL,
+    required this.votes,
+    required this.createdAt,
+    required this.replies,
+    required this.nodeKey,
+    required this.pin,
+  });
+
+  factory Question.fromJson(Map<String, dynamic> json, String key) {
+    return Question(
+      question: json['question'] as String? ?? '', // Corrected key
+      content: json['content'] as String? ?? '',
+      idUser: json['idUser'] as String? ?? '',
+      nameUser: json['nameUser'] as String? ?? '',
+      imageURL: json['imageURL'] as String? ?? '',
+      votes: json['votes'] as int? ?? 0,
+      createdAt: json['createdAt'] as String? ?? "0",
+      replies: [], // Assuming Reply has a fromJson method
+      nodeKey: key,
+      pin: json['pin'] as int? ?? 0,
+    );
+  }
 }
-
 List<Question> questions = [
   Question(
-      author: mike,
-      question: 'C ## In A Nutshell',
-      content:
-          "Lorem  i've been using c## for a whole decade now, if you guys know how to break the boring feeling of letting to tell everyne of what happed in the day",
-      createdAt: "1h ago",
-      views: 120,
-      votes: 100,
-      repliesCount: 80,
-      replies: replies),
-  Question(
-      author: john,
-      question: 'List<Dynamic> is not a subtype of Lits<Container>',
-      content:
-          "Lorem  i've been using c## for a whole decade now, if you guys know how to break the boring feeling of letting to tell everyne of what happed in the day",
-      createdAt: "2h ago",
-      views: 20,
-      votes: 10,
-      repliesCount: 10,
-      replies: replies),
-  Question(
-      author: sam,
-      question: 'React a basic error 404 is not typed',
-      content:
-          "Lorem  i've been using c## for a whole decade now, if you guys know how to break the boring feeling of letting to tell everyne of what happed in the day",
-      createdAt: "4h ago",
-      views: 220,
-      votes: 107,
-      repliesCount: 67,
-      replies: replies),
-  Question(
-      author: mark,
-      question: 'Basic understanding of what is not good',
-      content:
-          "Lorem  i've been using c## for a whole decade now, if you guys know how to break the boring feeling of letting to tell everyne of what happed in the day",
-      createdAt: "10h ago",
-      views: 221,
-      votes: 109,
-      repliesCount: 67,
-      replies: replies),
-  Question(
-      author: justin,
-      question: 'Luther is not author in here',
-      content:
-          "Lorem  i've been using c## for a whole decade now, if you guys know how to break the boring feeling of letting to tell everyne of what happed in the day",
-      createdAt: "24h ago",
-      views: 325,
-      votes: 545,
-      repliesCount: 120,
-      replies: replies),
+    idUser: "1",
+    nameUser: "Mark",
+    imageURL: "assets/author1.jpg",
+    question: 'C ## In A Nutshell',
+    content: "Lorem  I've been using C# for a whole decade now, if you guys know how to break the boring feeling of letting to tell everyone of what happened in the day",
+    createdAt: "2024-11-05 09:45:16.674839",
+    votes: 100,
+    replies: [], // Sample data; should be populated in a real scenario
+    nodeKey: "", // Thêm nodeKey vào dữ liệu mẫu
+    pin: 0
+  ),
+  // Add other sample questions...
 ];

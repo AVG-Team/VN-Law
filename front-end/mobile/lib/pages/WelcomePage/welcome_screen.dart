@@ -3,6 +3,7 @@
 import 'dart:async' show Future, Timer;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mobile/pages/Forum/forum_screen.dart';
 import 'package:mobile/pages/WelcomePage/reg_screen.dart';
 import 'package:provider/provider.dart';
 import '../Home/profile_screen.dart';
@@ -32,7 +33,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const ProfileScreen(),
+          builder: (context) => const ForumScreen(),
         ),
       );
     }
