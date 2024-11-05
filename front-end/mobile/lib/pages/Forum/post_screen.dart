@@ -1,18 +1,16 @@
-import 'dart:convert';
-
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/pages/Forum/widgets/pin_post.dart';
+import 'package:provider/provider.dart';
 import '../../models/post_model.dart';
 import 'package:http/http.dart' as http;
 
+import '../../services/auth_provider.dart';
+
 class PostScreen extends StatefulWidget {
   final Question question;
-  final String currentUserId;
   const PostScreen({
     super.key,
     required this.question,
-    required this.currentUserId,
   });
 
   @override
@@ -20,15 +18,17 @@ class PostScreen extends StatefulWidget {
 }
 
 class _PostScreenState extends State<PostScreen> {
+  late final AuthProviderCustom _authProvider;
   late DatabaseReference _postsRef;
+
   void initState() {
     super.initState();
     _postsRef = FirebaseDatabase.instance.ref('posts');
+    _authProvider = Provider.of<AuthProviderCustom>(context, listen: false);
     fetchQuestions();
   }
 
-  List<Question> _posts = []; // Assuming PostModel is your model class
-  // Đường dẫn đến dữ liệu của bạn
+  List<Question> _posts = [];
   Future<void> fetchQuestions() async {
     _postsRef.onValue.listen((DatabaseEvent event) {
       final dynamic data = event.snapshot.value;
@@ -36,7 +36,6 @@ class _PostScreenState extends State<PostScreen> {
 
       if (data != null && data is Map) {
         List<Question> loadedQuestions = [];
-        Map<Question, String> loadedNodeKeys = {};
         data.forEach((key, value) {
           if (value is Map<Object?, Object?>) {
             try {
@@ -47,7 +46,6 @@ class _PostScreenState extends State<PostScreen> {
               Question question =
                   Question.fromJson(questionMap, key.toString());
               loadedQuestions.add(question);
-              loadedNodeKeys[question] = key.toString();
             } catch (e) {
               print("Error processing question $key: $e");
             }
@@ -86,21 +84,32 @@ class _PostScreenState extends State<PostScreen> {
       final differenceInSeconds = now.difference(dateTime).inSeconds;
 
       if (differenceInSeconds < 60) {
-        return "Bây giờ"; // Dưới 1 phút
+        return "Bây giờ";
       } else if (differenceInSeconds < 3600) {
-        // Dưới 1 giờ
         final minutes = (differenceInSeconds / 60).floor();
-        return "$minutes phút"; // Ví dụ: "5 phút trước"
+        return "$minutes phút";
       } else if (differenceInSeconds < 86400) {
-        // Dưới 1 ngày
         final hours = (differenceInSeconds / 3600).floor();
-        return "$hours giờ"; // Ví dụ: "2 giờ trước"
+        return "$hours giờ";
       } else {
         final days = (differenceInSeconds / 86400).floor();
-        return "$days ngày"; // Ví dụ: "3 ngày trước"
+        return "$days ngày";
       }
     } catch (e) {
-      return 'Ngày không hợp lệ'; // Nếu có lỗi khi phân tích ngày
+      return 'Ngày không hợp lệ';
+    }
+  }
+
+  Future<void> pinPost(String nodeKey) async {
+    final DatabaseReference ref =
+        FirebaseDatabase.instance.ref("posts/$nodeKey");
+
+    try {
+      await ref.update({"pin": 1});
+      print("Post pinned successfully.");
+    } catch (error) {
+      print("Failed to pin post: $error");
+      throw error;
     }
   }
 
@@ -110,7 +119,6 @@ class _PostScreenState extends State<PostScreen> {
     try {
       await ref.remove();
       print("Xóa thành công mục có ID: $nodeKey");
-      // Cập nhật state local
       setState(() {
         questions.removeWhere((question) => question.nodeKey == nodeKey);
       });
@@ -230,49 +238,61 @@ class _PostScreenState extends State<PostScreen> {
                               )
                             ],
                           ),
-                          PopupMenuButton<String>(
-                            icon: Icon(Icons.more_vert, color: Colors.grey.withOpacity(0.6)),
-                            itemBuilder: (BuildContext context) {
-                              return [
-                                if (widget.currentUserId == widget.question.idUser)
+                          if (_authProvider.userModel?.uid ==
+                                  widget.question.idUser ||
+                              _authProvider.userModel!.isAdmin)
+                            PopupMenuButton<String>(
+                              icon: Icon(Icons.more_vert,
+                                  color: Colors.grey.withOpacity(0.6)),
+                              itemBuilder: (BuildContext context) {
+                                return [
+                                  if (_authProvider.userModel?.uid ==
+                                          widget.question.idUser ||
+                                      _authProvider.userModel!.isAdmin)
                                     const PopupMenuItem<String>(
                                       value: 'delete',
                                       child: Row(
                                         children: [
-                                          Icon(Icons.delete, color: Colors.redAccent),
+                                          Icon(Icons.delete,
+                                              color: Colors.redAccent),
                                           SizedBox(width: 8),
                                           Text(
                                             'Delete',
-                                            style: TextStyle(fontSize: 16, color: Colors.black),
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black),
                                           ),
                                         ],
                                       ),
                                     ),
-                                const PopupMenuItem<String>(
-                                  value: 'pin',
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.push_pin, color: Colors.blueAccent),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        'Pin',
-                                        style: TextStyle(fontSize: 16, color: Colors.black),
+                                  if (_authProvider.userModel!.isAdmin)
+                                    const PopupMenuItem<String>(
+                                      value: 'pin',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.push_pin,
+                                              color: Colors.blueAccent),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            'Pin',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                ),
-                                // Add other menu items if needed
-                              ];
-                            },
-                            onSelected: (String value) {
-                              if (value == 'delete') {
-                                deletePost(widget.question.nodeKey);
-                              } else if (value == 'pin') {
-                                const Pin();
-                              }
-                            },
-                          ),
-
+                                    ),
+                                  // Add other menu items if needed
+                                ];
+                              },
+                              onSelected: (String value) {
+                                if (value == 'delete') {
+                                  deletePost(widget.question.nodeKey);
+                                } else if (value == 'pin') {
+                                  pinPost(widget.question.nodeKey);
+                                }
+                              },
+                            ),
                         ],
                       ),
                     ),

@@ -85,6 +85,21 @@ class AuthProviderCustom with ChangeNotifier {
     }
   }
 
+  Future<UserModel?> getUserFromId(String uid) async {
+    try {
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(uid).get();
+      if (userDoc.exists && userDoc.data() != null) {
+        return UserModel.fromFirestore(userDoc);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error getting user from ID: $e");
+      }
+    }
+    return null;
+  }
+
+
   Future<void> signOut() async {
     try {
       await _googleSignIn.signOut();

@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile/pages/Forum/forum_screen.dart';
 import 'package:mobile/pages/WelcomePage/reg_screen.dart';
 import 'package:provider/provider.dart';
-import '../Home/profile_screen.dart';
 import '../../services/auth_provider.dart';
 import 'login_screen.dart';
 
@@ -46,7 +45,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const ProfileScreen(),
+            builder: (context) => const ForumScreen(),
           ),
         );
       }

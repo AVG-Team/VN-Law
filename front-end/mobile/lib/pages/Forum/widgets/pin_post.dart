@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../models/post_model.dart';
 import '../../../services/auth_provider.dart';
 import '../post_screen.dart'; // Ensure you import the Question model.
+import 'package:firebase_database/firebase_database.dart';
 
 class Pin extends StatefulWidget {
   const Pin({super.key});
@@ -12,21 +13,8 @@ class Pin extends StatefulWidget {
 }
 
 class _PinState extends State<Pin> {
-  List<Question> questions = [
-    Question(
-      question: "What is Flutter?",
-      content: "Flutter is an open-source UI software development toolkit.",
-      votes: 12,
-      imageURL: "assets/author6.jpg", // Replace with your actual image path
-      nameUser: "John Doe",
-      idUser: '0123456789',
-      createdAt: "2024-11-05 09:45:16.674839",
-      replies: [],
-      nodeKey: "", // Thêm nodeKey vào dữ liệu mẫu
-      pin: 1
-    ),
-    // Add more Question instances as needed
-  ];
+  final DatabaseReference postsRef = FirebaseDatabase.instance.ref("posts");
+  List<Question> pinnedQuestions = [];
 
   List<Color> colors = [
     Colors.purple,
@@ -37,23 +25,59 @@ class _PinState extends State<Pin> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _loadPinnedQuestions();
+  }
+
+  Future<void> _loadPinnedQuestions() async {
+    postsRef.onValue.listen((event) {
+      final dataSnapshot = event.snapshot;
+      final List<Question> loadedQuestions = [];
+
+      if (dataSnapshot.value != null) {
+        final postsMap = Map<String, dynamic>.from(dataSnapshot.value as Map);
+        postsMap.forEach((key, value) {
+          final post = Map<String, dynamic>.from(value);
+          if (post['pin'] == 1) {  // Lọc chỉ các bài có `pin = 1`
+            loadedQuestions.add(Question(
+              question: post['question'] ?? 'N/A',
+              content: post['content'] ?? 'N/A',
+              votes: post['votes'] ?? 0,
+              imageURL: post['imageURL'] ?? '',
+              nameUser: post['nameUser'] ?? 'Anonymous',
+              idUser: post['idUser'] ?? '',
+              createdAt: post['createdAt'] ?? '',
+              nodeKey: key,
+              pin: post['pin'] ?? 0,
+              replies: post['replies'] ?? [],
+            ));
+          }
+        });
+      }
+
+      setState(() {
+        pinnedQuestions = loadedQuestions;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<AuthProviderCustom>(builder: (context, auth, child) {
-      final user = auth.userModel;
       return SizedBox(
         height: 170,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: questions.length,
+          itemCount: pinnedQuestions.length,
           itemBuilder: (BuildContext context, int index) {
-            final question = questions[index];
+            final question = pinnedQuestions[index];
             return GestureDetector(
               onTap: () {
-                // Navigate to PostScreen with the selected question
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PostScreen(question: question, currentUserId: user?.uid ?? 'N/A'),
+                    builder: (context) => PostScreen(question: question),
                   ),
                 );
               },
@@ -76,16 +100,20 @@ class _PinState extends State<Pin> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.2),
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.2,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       Text(
                         "${question.votes} likes",
                         style: const TextStyle(
-                            color: Colors.white, fontSize: 18, letterSpacing: .7),
+                          color: Colors.white,
+                          fontSize: 18,
+                          letterSpacing: .7,
+                        ),
                       ),
                     ],
                   ),

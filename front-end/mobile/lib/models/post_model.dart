@@ -1,4 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mobile/models/replies_model.dart';
+import 'package:mobile/models/user_model.dart';
+import 'package:mobile/services/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class Question {
   String question;
@@ -39,6 +44,24 @@ class Question {
       pin: json['pin'] as int? ?? 0,
     );
   }
+
+  Future<UserModel?> getUserModelIdFromUserId() async {
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(idUser)
+          .get();
+
+      if (userDoc.exists && userDoc.data() != null) {
+        return UserModel.fromFirestore(userDoc);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error getting user model from user ID: $e");
+      }
+    }
+    return null;
+  }
 }
 List<Question> questions = [
   Question(
@@ -51,7 +74,7 @@ List<Question> questions = [
     votes: 100,
     replies: [], // Sample data; should be populated in a real scenario
     nodeKey: "", // Thêm nodeKey vào dữ liệu mẫu
-    pin: 0
+    pin: 0,
   ),
   // Add other sample questions...
 ];
