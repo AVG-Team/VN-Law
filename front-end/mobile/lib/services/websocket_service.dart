@@ -1,22 +1,24 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 import 'package:uuid/uuid.dart';
-import 'package:http/http.dart' as http;
 
-import '../constants/baseUrl.dart';
+import '../constants/base_url.dart';
 
 class WebSocketChat {
+  // ignore: constant_identifier_names
   static const int MAX_RECONNECT_ATTEMPTS = 5;
+  // ignore: constant_identifier_names
   static const int RECONNECT_INTERVAL = 3000;
+  // ignore: constant_identifier_names
   static const int MESSAGE_TIMEOUT = 30000;
 
   StompClient? _stompClient;
   final _messageQueue = <Map<String, dynamic>>[];
   Timer? _reconnectTimer;
-  final _subscriptions = <String>[];
   final _pendingMessages = <String>{};
 
   // Stream controller để phát tín hiệu connection status
@@ -34,10 +36,9 @@ class WebSocketChat {
 
   void initializeWebSocket() {
     if (_stompClient?.connected ?? false) return;
-    print("URL : " + websocketUrl);
 
     _stompClient = StompClient(
-      config: StompConfig(
+      config: StompConfig.SockJS(
         url: '$websocketUrl/socket-service/ws',
         onConnect: _onConnect,
         onDisconnect: _onDisconnect,
@@ -53,36 +54,37 @@ class WebSocketChat {
   }
 
   void _onConnect(StompFrame frame) {
-    print('WebSocket Connected');
     _connectionStatusController.add('connected');
     _subscribeToTopics();
     _processMessageQueue();
   }
 
   void _onDisconnect(StompFrame frame) {
-    print('WebSocket Disconnected');
     _connectionStatusController.add('disconnected');
     _handleReconnect();
   }
 
   void _onStompError(StompFrame frame) {
-    print('STOMP error: ${frame.body}');
     _connectionStatusController.add('error');
   }
 
   void _onWebSocketError(dynamic error) {
-    print('WebSocket error: $error');
     _connectionStatusController.add('error');
   }
 
   void _subscribeToTopics() {
-    if (!(_stompClient?.connected ?? false)) return;
+    if (!(_stompClient?.connected ?? false)) {
+      return;
+    }
+
 
     // Subscribe to public channel
     _stompClient?.subscribe(
       destination: '/server/public',
       callback: (frame) {
-        print('Public message received: ${frame.body}');
+        if (kDebugMode) {
+          print('Public message received: ${frame.body}');
+        }
       },
     );
 
@@ -101,7 +103,9 @@ class WebSocketChat {
 
           _messageController.add(answer);
         } catch (e) {
-          print('Error processing message: $e');
+          if (kDebugMode) {
+            print('Error processing message: $e');
+          }
         }
       },
     );
@@ -112,18 +116,16 @@ class WebSocketChat {
 
     void attemptReconnect() {
       if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-        print('Max reconnection attempts reached');
         _connectionStatusController.add('failed');
         return;
       }
 
       reconnectAttempts++;
-      print('Reconnection attempt $reconnectAttempts');
       initializeWebSocket();
     }
 
     _reconnectTimer = Timer(
-      Duration(milliseconds: RECONNECT_INTERVAL),
+      const Duration(milliseconds: RECONNECT_INTERVAL),
       attemptReconnect,
     );
   }
@@ -157,14 +159,12 @@ class WebSocketChat {
       );
 
       // Set timeout for message
-      Timer(Duration(milliseconds: MESSAGE_TIMEOUT), () {
+      Timer(const Duration(milliseconds: MESSAGE_TIMEOUT), () {
         if (_pendingMessages.contains(messageId)) {
           _pendingMessages.remove(messageId);
-          print('Message $messageId timed out');
         }
       });
     } catch (e) {
-      print('Error sending message: $e');
       _messageQueue.add({'content': content, 'messageId': messageId});
     }
   }
@@ -172,7 +172,7 @@ class WebSocketChat {
   String sendMessage(String content) {
     if (content.trim().isEmpty) return '';
 
-    final messageId = Uuid().v4();
+    final messageId = const Uuid().v4();
     _pendingMessages.add(messageId);
 
     _sendMessageToServer(content.trim(), messageId);

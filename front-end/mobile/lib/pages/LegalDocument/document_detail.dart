@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import '../../models/legalDocument.dart';
+import '../../models/legal_document.dart';
 
 class DocumentDetailScreen extends StatelessWidget {
   final LegalDocument document;

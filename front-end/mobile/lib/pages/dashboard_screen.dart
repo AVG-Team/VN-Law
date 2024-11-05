@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/pages/VBPL/vbplScreen.dart';
+import 'package:mobile/pages/VBPL/vbpl_screen.dart';
 
 import 'Home/home_screen.dart';
-import 'LegalDocument/legalDocumentScreen.dart';
+import 'LegalDocument/legal_document_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});

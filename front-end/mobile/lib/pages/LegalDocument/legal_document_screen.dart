@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../models/legalDocument.dart';
-import 'documentCard.dart';
-import 'documentDetail.dart';
+import '../../models/legal_document.dart';
+import 'document_card.dart';
+import 'document_detail.dart';
 
 class LegalDocumentScreen extends StatefulWidget {
   const LegalDocumentScreen({super.key});
@@ -39,15 +39,15 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
     }).toList();
   }
 
-  void _refreshDocuments() {
-    // Implement your logic to refresh the documents here
-    // For example, you can fetch new data from an API
-    setState(() {
-      // If you need to reset or refresh the documents, do it here
-      // _documents.clear(); // Clear existing documents if necessary
-      // Fetch new documents and add them to _documents
-    });
-  }
+  // void _refreshDocuments() {
+  //   // Implement your logic to refresh the documents here
+  //   // For example, you can fetch new data from an API
+  //   setState(() {
+  //     // If you need to reset or refresh the documents, do it here
+  //     // _documents.clear(); // Clear existing documents if necessary
+  //     // Fetch new documents and add them to _documents
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
