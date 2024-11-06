@@ -7,31 +7,31 @@ class NewsArticle {
   final String? imageUrl;
   final String? sourceName;
   final String? link;
-  final String content;
+  final String? content;
 
   NewsArticle({
-    required this.articleId,
-    required this.title,
+    this.articleId,
+    this.title,
     required this.category,
-    required this.description,
-    required this.pubDate,
-    required this.imageUrl,
-    required this.sourceName,
-    required this.link,
-    required this.content
+    this.description,
+    this.pubDate,
+    this.imageUrl,
+    this.sourceName,
+    this.link,
+    this.content,
   });
 
   factory NewsArticle.fromJson(Map<String, dynamic> json) {
     return NewsArticle(
-      articleId: json['article_id'],
-      title: json['title'],
-      category: json['category'],
-      description: json['description'],
-      pubDate: json['pubDate'],
-      imageUrl: json['image_url'],
-      sourceName: json['source_name'],
-      link: json['link'],
-      content: json['content']
+      articleId: json['article_id'] as String?,
+      title: json['title'] as String?,
+      category: json['category'] != null ? List<dynamic>.from(json['category']) : [],
+      description: json['description'] as String?,
+      pubDate: json['pubDate'] as String?,
+      imageUrl: json['image_url'] as String?,
+      sourceName: json['source_name'] as String?,
+      link: json['link'] as String?,
+      content: json['content'] ?? '',
     );
   }
 }

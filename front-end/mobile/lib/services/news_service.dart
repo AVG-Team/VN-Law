@@ -5,9 +5,9 @@ import 'package:mobile/constants/base_url.dart';
 import '../models/news_article.dart';
 
 class NewsService {
-  final String apiKey = 'pub_5837746cab4bf369b544797dc6325342a096c';
+  final String apiKey = 'pub_584070c3e5f448b0411134d92622ae7a100f7';
   final String baseUrl = 'https://newsdata.io/api/1/latest?country=vi';
-  final String urlNotCategory ='https://newsdata.io/api/1/latest?country=vi&apikey=pub_5837746cab4bf369b544797dc6325342a096c';
+  final String urlNotCategory ='https://newsdata.io/api/1/latest?country=vi&apikey=pub_584070c3e5f448b0411134d92622ae7a100f7';
   Future<List<NewsArticle>> fetchNewsArticles() async {
     final response = await http.get(Uri.parse('$baseUrl&apikey=$apiKey'));
 

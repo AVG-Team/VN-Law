@@ -45,7 +45,7 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
         if (_selectedType != 'Tất cả')
           'type': _selectedType == 'CHƯA PHÂN LOẠI' ? '' : _selectedType,
         if (_searchQuery.isNotEmpty) 'q': _searchQuery,
-        'pageSize': '20', // Add the pageSize parameter here (adjust the value as needed)
+        'pageSize': '50', // Add the pageSize parameter here (adjust the value as needed)
       };
 
       final uri = Uri.parse('$baseUrl/law-service/vbqppl').replace(queryParameters: queryParams);
@@ -165,25 +165,25 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
-          decoration: InputDecoration(
-            hintText: 'Tìm kiếm theo từ khóa',
-            prefixIcon: const Icon(Icons.search),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          onChanged: (value) {
-            setState(() {
-              _searchQuery = value;
-            });
-            Future.delayed(const Duration(milliseconds: 500), () {
-              if (_searchQuery == value) {
-                _fetchDocuments();
-              }
-            });
-          },
-        ),
+        // TextField(
+        //   decoration: InputDecoration(
+        //     hintText: 'Tìm kiếm theo từ khóa',
+        //     prefixIcon: const Icon(Icons.search),
+        //     border: OutlineInputBorder(
+        //       borderRadius: BorderRadius.circular(8),
+        //     ),
+        //   ),
+        //   onChanged: (value) {
+        //     setState(() {
+        //       _searchQuery = value;
+        //     });
+        //     Future.delayed(const Duration(milliseconds: 500), () {
+        //       if (_searchQuery == value) {
+        //         _fetchDocuments();
+        //       }
+        //     });
+        //   },
+        // ),
       ],
     );
   }
