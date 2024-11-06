@@ -79,7 +79,7 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
 
     _controller.forward().whenComplete(() {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
       );
     });
   }

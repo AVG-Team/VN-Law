@@ -54,6 +54,7 @@ dependencies:
   carousel_slider: ^4.1.1
   cloud_firestore: ^5.4.4
   firebase_admin_sdk: ^0.0.6
+  awesome_notifications: ^0.10.0
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +82,7 @@ flutter:
   assets:
     - assets/
     - assets/json/
+    - assets/logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

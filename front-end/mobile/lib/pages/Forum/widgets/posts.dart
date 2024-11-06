@@ -18,12 +18,13 @@ import 'package:mobile/models/user_model.dart';
   class _PostsState extends State<Posts> {
     final DatabaseReference _postsRef = FirebaseDatabase.instance.ref('posts');
     List<Question> questions = [];
+    late final AuthProviderCustom _authProvider;
 
     @override
     void initState() {
       super.initState();
+      _authProvider = Provider.of<AuthProviderCustom>(context, listen: false);
       fetchQuestions();
-      print("1245325345543555");
     }
 
     Future<void> fetchQuestions() async {
@@ -226,18 +227,93 @@ import 'package:mobile/models/user_model.dart';
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: <Widget>[
-                                  Icon(
-                                    Icons.thumb_up,
-                                    color: Colors.grey.withOpacity(0.6),
-                                    size: 22,
-                                  ),
-                                  const SizedBox(width: 4.0),
-                                  Text(
-                                    "${question.votes} like",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey.withOpacity(0.6),
-                                      fontWeight: FontWeight.w600,
+                                  GestureDetector(
+                                    onTap: () async {
+                                      final String userId = _authProvider.userModel?.uid ?? 'defaultUid';
+                                      final String nodeKey = question.nodeKey;
+                                      final DatabaseReference ref = FirebaseDatabase.instance.ref("posts/$nodeKey");
+                                      try {
+                                        final snapshot = await ref.get();
+                                        if (!snapshot.exists) {
+                                          throw Exception("Post not found");
+                                        }
+                                        final data = Map<String, dynamic>.from(snapshot.value as Map);
+                                        List<String> votedUserIds = List<String>.from(data['votedUserIds'] ?? []);
+                                        int votes = data['votes'] ?? 0;
+                                        // Kiểm tra xem người dùng đã vote chưa
+                                        bool hasVoted = votedUserIds.contains(userId);
+                                        // Nếu đã vote thì unvote, chưa vote thì vote
+                                        if (hasVoted) {
+                                          // Unvote - chỉ khi người dùng đã vote trước đó
+                                          votedUserIds.remove(userId);
+                                          votes = votes - 1;
+                                        } else {
+                                          // Vote - chỉ khi người dùng chưa vote
+                                          if (!votedUserIds.contains(userId)) {  // Thêm kiểm tra để tránh vote trùng
+                                            votedUserIds.add(userId);
+                                            votes = votes + 1;
+                                          }
+                                        }
+                                        await ref.update({
+                                          'votes': votes,
+                                          'votedUserIds': votedUserIds,
+                                        });
+                                      } catch (error) {
+                                        print("Failed to toggle vote: $error");
+                                      }
+                                    },
+                                    child: StreamBuilder(
+                                      stream: FirebaseDatabase.instance
+                                          .ref("posts/${question.nodeKey}")
+                                          .onValue,
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData && snapshot.data?.snapshot.value != null) {
+                                          final data = Map<String, dynamic>.from(snapshot.data!.snapshot.value as Map);
+                                          final votedUserIds = List<String>.from(data['votedUserIds'] ?? []);
+                                          final userId = _authProvider.userModel?.uid ?? 'defaultUid';
+                                          final isVoted = votedUserIds.contains(userId);
+                                          final votes = data['votes'] ?? 0;
+                                          return Row(
+                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Icon(
+                                                Icons.thumb_up,
+                                                color: isVoted ? Colors.blue : Colors.grey.withOpacity(0.6),
+                                                size: 22,
+                                              ),
+                                              const SizedBox(width: 4.0),
+                                              Text(
+                                                "$votes likes",
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.grey.withOpacity(0.6),
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                        // Khi đang load dữ liệu, hiển thị UI mặc định
+                                        return Row(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Icon(
+                                              Icons.thumb_up,
+                                              color: Colors.grey.withOpacity(0.6),
+                                              size: 22,
+                                            ),
+                                            const SizedBox(width: 4.0),
+                                            Text(
+                                              "0 likes",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey.withOpacity(0.6),
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
                                     ),
                                   ),
                                 ],

@@ -14,6 +14,7 @@ class Question {
   String createdAt;
   String nodeKey;
   int pin;
+  List<String> votedUserIds;
 
   Question({
     required this.question,
@@ -25,6 +26,7 @@ class Question {
     required this.createdAt,
     required this.nodeKey,
     required this.pin,
+    required this.votedUserIds,
   });
 
   factory Question.fromJson(Map<String, dynamic> json, String key) {
@@ -38,6 +40,7 @@ class Question {
       createdAt: json['createdAt'] as String? ?? "0",
       nodeKey: key,
       pin: json['pin'] as int? ?? 0,
+      votedUserIds: ['votedUserIds'],
     );
   }
 

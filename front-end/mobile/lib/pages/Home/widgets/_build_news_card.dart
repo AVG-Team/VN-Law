@@ -33,7 +33,7 @@ class NewsCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         image: DecorationImage(
-          image: NetworkImage(urlImage!), // Use AssetImage if it's a local image
+          image: urlImage != null ? NetworkImage(urlImage) : const AssetImage('assets/logo.png'),
           fit: BoxFit.cover, // Adjust how the image fits the container
         ),
       ),

@@ -6,7 +6,6 @@ import 'package:mobile/pages/ChatScreen/widgets/chat_input.dart';
 import 'package:mobile/pages/Home/profile_screen.dart';
 import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
 import 'package:mobile/services/conversations_service.dart';
-import 'package:mobile/widgets/custom_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_provider.dart';
 import '../../services/json_processing.dart';
@@ -199,7 +198,6 @@ class _HomePageChatScreenState extends State<HomePageChatScreen> {
           // Bottom navigation
         ],
       ),
-      bottomNavigationBar: const CustomBottomNavBar(),
     );
   }
 

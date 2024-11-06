@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/ChatScreen/homepage.dart';
+import 'package:mobile/pages/Forum/forum_screen.dart';
 import 'package:mobile/pages/Home/home_screen.dart';
 import 'package:mobile/services/json_processing.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -100,7 +101,7 @@ class _SideMenuState extends State<SideMenu> {
                         screenWidget = const VbplScreen();
                         break;
                       case 'forum':
-                        // screenWidget = const ForumScreen();
+                        screenWidget = const ForumScreen();
                         break;
                       case 'chatbot':
                         screenWidget = const HomePageChatScreen();

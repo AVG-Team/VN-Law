@@ -57,6 +57,7 @@ class _UploadPostWidgetState extends State<UploadPostWidget> {
           createdAt: DateTime.now().toString(),
           nodeKey: nodeKey,
           pin: 0,
+          votedUserIds: [],
         );
 
         Navigator.pop(context);

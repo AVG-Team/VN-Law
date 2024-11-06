@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/pages/ChatScreen/homepage.dart';
 import 'package:mobile/pages/Home/profile_screen.dart';
-import 'package:mobile/pages/VBPL/vbpl_screen.dart';
 import 'package:mobile/pages/Home/home_screen.dart';
-import 'package:mobile/pages/LegalDocument/legal_document_screen.dart';
-import 'package:mobile/pages/ChatScreen/chat_screen.dart';
+import 'package:mobile/pages/Forum/forum_screen.dart'; // Import your Forum screen
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -20,12 +18,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     GlobalKey<NavigatorState>(),
     GlobalKey<NavigatorState>(),
     GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
   ];
 
   final List<Widget> _pages = [
     const HomeScreen(),
     const HomePageChatScreen(),
-    const ProfileScreen()
+    const ForumScreen(), // Add the Forum screen here
+    const ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -39,13 +39,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
 
     if (index == _selectedIndex) {
-      // Pop to root if on the same tab
       _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
-      // Reload the current page
       setState(() {
-        // Create a new instance of the current page
         _pages[index] = index == 0
             ? const HomeScreen()
+            : index == 2
+            ? const ForumScreen()
             : const ProfileScreen();
       });
     }
@@ -93,6 +92,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.chat),
               label: "Chatbot",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.forum),
+              label: "Forum", // Add the Forum tab here
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),

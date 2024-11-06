@@ -50,6 +50,7 @@ class _PinState extends State<Pin> {
               createdAt: post['createdAt'] ?? '',
               nodeKey: key,
               pin: post['pin'] ?? 0,
+              votedUserIds: ['votedUserIds'],
             ));
           }
         });

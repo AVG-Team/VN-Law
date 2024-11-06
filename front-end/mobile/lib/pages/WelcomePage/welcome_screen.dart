@@ -42,11 +42,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     try {
       final userCredential = await _authProvider.signInWithGoogle();
       if (userCredential != null && mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const DashboardScreen(),
-          ),
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
+              (Route<dynamic> route) => false,
         );
       }
     } catch (error) {

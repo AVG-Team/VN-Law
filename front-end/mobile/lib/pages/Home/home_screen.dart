@@ -5,7 +5,6 @@ import 'package:mobile/pages/Home/profile_screen.dart';
 import 'package:mobile/pages/Home/widgets/_build_news_card.dart';
 import 'package:mobile/pages/Home/widgets/_build_news_tag.dart';
 import 'package:mobile/pages/Home/widgets/_build_service_Icon.dart';
-import 'package:mobile/pages/Home/widgets/_build_sidebar.dart';
 import 'package:mobile/pages/LegalDocument/legal_document_screen.dart';
 import 'package:mobile/pages/News/news_screen.dart';
 import 'package:mobile/pages/VBPL/vbpl_screen.dart';
@@ -37,7 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void _handleNewsTagTap(String tag) {
     setState(() {
       selectedNewsTag = tag;
-      print(selectedNewsTag);
       futureArticles = NewsService().fetchNewsByCategory(selectedNewsTag);
     });
   }
@@ -188,11 +186,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           future: futureArticles,
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
+                              return const Center(child: CircularProgressIndicator());
                             } else if (snapshot.hasError) {
                               return Center(child: Text('Error: ${snapshot.error}'));
                             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                              return Center(child: Text('No news articles available.'));
+                              return const Center(child: Text('No news articles available.'));
                             } else {
                               return SizedBox(
                                 height: 170,
@@ -214,9 +212,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           },
                                           child: NewsCard(
                                             title: article.title ?? 'N/A',
-                                            category: article.category.isNotEmpty ? article.category[0] : 'No description',
-                                            sourceName: article.sourceName,
-                                            urlImage: article.imageUrl!,
+                                            category: (article.category.isNotEmpty) ? article.category[0] : 'No description',
+                                            sourceName: article.sourceName ?? 'Unknown Source',
+                                            urlImage: article.imageUrl,
                                             color: Colors.green,
                                           ),
                                         ),

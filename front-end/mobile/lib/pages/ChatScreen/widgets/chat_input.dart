@@ -20,8 +20,12 @@ class ChatInputState extends State<ChatInput> {
     });
   }
 
-  void _sendMessage() {
+  void _sendMessage() async {
     if (!widget.isWaitingForResponse) {
+      await NotificationService.showNotification(
+        title: "Title of the notification",
+        body: "Body of the notification",
+      );
       String message = _controller.text;
       if (message.isNotEmpty) {
         widget.onSendMessage(message);
