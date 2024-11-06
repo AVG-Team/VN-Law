@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:mobile/models/conversation.dart';
 
 import 'package:mobile/pages/ChatScreen/widgets/chat_input.dart';
+import 'package:mobile/pages/Home/profile_screen.dart';
 import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
 import 'package:mobile/services/conversations_service.dart';
+import 'package:mobile/widgets/custom_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_provider.dart';
 import '../../services/json_processing.dart';
@@ -19,8 +21,6 @@ class HomePageChatScreen extends StatefulWidget {
 }
 
 class _HomePageChatScreenState extends State<HomePageChatScreen> {
-  // Todo: Edit menu features from Firebase
-  List<dynamic> _features = [];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Conversation? _conversationFirst;
   List<dynamic> _listConversationPopular = [];
@@ -30,8 +30,6 @@ class _HomePageChatScreenState extends State<HomePageChatScreen> {
   void initState() {
     super.initState();
     loadUtilitiesMenu();
-    String userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
-    print("User Id " + userId);
     _authProvider = Provider.of<AuthProviderCustom>(context, listen: false);
     checkAuth();
   }
@@ -51,7 +49,6 @@ class _HomePageChatScreenState extends State<HomePageChatScreen> {
   }
 
   Future<void> loadUtilitiesMenu() async {
-    List<dynamic> features = await loadData('assets/json/menu_chat.json');
     ConversationsService conversationsService = ConversationsService();
     String userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
     Conversation? conversationFirst =
@@ -59,7 +56,6 @@ class _HomePageChatScreenState extends State<HomePageChatScreen> {
     List<dynamic> listConversationPopular =
         await loadData('assets/json/chat_conversation_popular.json');
     setState(() {
-      _features = features;
       _conversationFirst = conversationFirst;
       _listConversationPopular = listConversationPopular;
     });
@@ -91,10 +87,21 @@ class _HomePageChatScreenState extends State<HomePageChatScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: CircleAvatar(
-              backgroundColor: Colors.grey[200],
-              child: const Icon(Icons.person, color: Colors.grey),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
+              },
+              child: CircleAvatar(
+                backgroundColor: Colors.grey[200],
+                child: const Icon(Icons.person, color: Colors.grey),
+              ),
             ),
+
           ),
         ],
       ),
@@ -136,7 +143,7 @@ class _HomePageChatScreenState extends State<HomePageChatScreen> {
                         children: [
                           Text(
                             _conversationFirst?.messages.isNotEmpty == true
-                                ? _conversationFirst!.messages[0].content
+                                ? _conversationFirst!.messages[1].content
                                 : 'Không có nội dung',
                             style: const TextStyle(
                               fontSize: 16,
@@ -147,7 +154,7 @@ class _HomePageChatScreenState extends State<HomePageChatScreen> {
                           ),
                           if (_conversationFirst!.messages.length > 1)
                             Text(
-                              _conversationFirst!.messages[1].content,
+                              _conversationFirst!.messages[0].content,
                               style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 14,
@@ -188,66 +195,13 @@ class _HomePageChatScreenState extends State<HomePageChatScreen> {
             ),
           ),
           // Bottom input bar
-          ChatInput(onSendMessage: sendMessage),
+          ChatInput(onSendMessage: sendMessage, isWaitingForResponse: false),
           // Bottom navigation
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(top: BorderSide(color: Colors.grey[300]!)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Icon(Icons.face, color: Colors.grey[800]),
-                Icon(Icons.smart_toy_outlined, color: Colors.grey[800]),
-                Icon(Icons.add_box_outlined, color: Colors.grey[800]),
-                Icon(Icons.refresh, color: Colors.grey[800]),
-                Icon(Icons.bookmark_border, color: Colors.grey[800]),
-              ],
-            ),
-          ),
         ],
       ),
+      bottomNavigationBar: const CustomBottomNavBar(),
     );
   }
-
-  // Widget _buildFeatureCard(String title, String subtitle, Color color) {
-  //   return Container(
-  //     width: 160,
-  //     margin: const EdgeInsets.only(right: 8),
-  //     padding: const EdgeInsets.all(16),
-  //     decoration: BoxDecoration(
-  //       gradient: LinearGradient(
-  //         colors: [color.withOpacity(0.8), color.withOpacity(0.6)],
-  //         begin: Alignment.topLeft,
-  //         end: Alignment.bottomRight,
-  //       ),
-  //       borderRadius: BorderRadius.circular(12),
-  //     ),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Text(
-  //           title,
-  //           style: const TextStyle(
-  //             color: Colors.white,
-  //             fontSize: 16,
-  //             fontWeight: FontWeight.bold,
-  //           ),
-  //         ),
-  //         const SizedBox(height: 4),
-  //         Text(
-  //           subtitle,
-  //           style: TextStyle(
-  //             color: Colors.white.withOpacity(0.9),
-  //             fontSize: 12,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildListItem(String title) {
     return InkWell(

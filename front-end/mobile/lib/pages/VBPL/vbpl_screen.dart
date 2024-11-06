@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:mobile/constants/baseUrl.dart';
+import 'package:mobile/constants/base_url.dart';
 
-import 'launchUrl.dart';
+import 'launch_url.dart';
 
 class TreeNode {
   final String id;
@@ -127,7 +127,6 @@ class _VbplScreenState extends State<VbplScreen> {
           'Accept-Charset': 'UTF-8',
         },
       );
-      print("response $response");
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         await _handleArticleData(data);
@@ -160,9 +159,7 @@ class _VbplScreenState extends State<VbplScreen> {
 
   Future<void> _loadNodeChildren(String nodeId) async {
     final nodeType = nodeId.split('_')[0];
-    print(nodeType);
     final id = nodeId.split('_')[1];
-    print(id);
 
     String endpoint;
     String childType;
@@ -180,8 +177,6 @@ class _VbplScreenState extends State<VbplScreen> {
         return;
     }
 
-    print(endpoint);
-    print(childType);
     try {
       final response = await http.get(Uri.parse(endpoint),headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -340,7 +335,6 @@ class _VbplScreenState extends State<VbplScreen> {
 
   Widget _buildTreeView(List<TreeNode> nodes) {
     return ListView.builder(
-      // Thêm các thuộc tính này để tránh lỗi unbounded height
       shrinkWrap: true,
       physics: const ClampingScrollPhysics(),
       itemCount: nodes.length,
@@ -455,25 +449,20 @@ class _VbplScreenState extends State<VbplScreen> {
 
   Future<void> _fetchChapterArticles(String chapterId) async {
     try {
-      print(chapterId);
       final response = await http.get(
         Uri.parse('$baseUrl/law-service/article/chapter/$chapterId'),
       );
-      print(response.statusCode);
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(utf8.decode(response.bodyBytes));
-        print(jsonResponse);
 
-        // Kiểm tra xem jsonResponse có chứa trường 'data' hay không
         if (jsonResponse.containsKey('data') && jsonResponse['data'] is Map) {
           final data = jsonResponse['data'] as Map<String, dynamic>;
-          print(data);
 
           setState(() {
             selectedChapter = {
               'id': chapterId,
-              'name': data['name'] ?? "unknown chapter", // Kiểm tra null để tránh lỗi
-              'articles': data['content'] ?? [], // Giả sử articles là một danh sách
+              'name': data['name'] ?? "unknown chapter",
+              'articles': data['content'] ?? [],
             };
           });
         } else {

@@ -13,6 +13,8 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 @Component
 public class SocketListener {
+    private static final Logger logger = LoggerFactory.getLogger(SocketController.class);
+
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
 

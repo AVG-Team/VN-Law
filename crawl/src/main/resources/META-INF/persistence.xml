@@ -15,7 +15,7 @@
       <class>models.Vbqppl</class>
       <class>models.Indexvbqppl</class>
       <properties>
-          <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/law_service"/>
+          <property name="hibernate.connection.url" value="jdbc:mysql://localhost:4000/law_service"/>
           <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>
           <property name="hibernate.connection.username" value="root"/>
           <property name="hibernate.connection.password" value="baohuy2501"/>

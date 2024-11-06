@@ -1,10 +1,9 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:mobile/constants/baseUrl.dart';
+import 'package:mobile/constants/base_url.dart';
 
-class VbqpplApi {
+class VbqplApi {
 
-  // Lấy tất cả các vbqppl với phân trang
   Future<dynamic> getAllByPage(Map<String, dynamic> params) async {
     final url = Uri.parse('$baseUrl/law-service/vbqppl').replace(queryParameters: params);
     final response = await http.get(url);
@@ -16,7 +15,6 @@ class VbqpplApi {
     }
   }
 
-  // Lấy vbqppl theo ID
   Future<dynamic> getById(String vbqpplId) async {
     final url = Uri.parse('$baseUrl/law-service/vbqppl/$vbqpplId');
     final response = await http.get(url);
@@ -40,7 +38,6 @@ class VbqpplApi {
     }
   }
 
-  // Lọc các vbqppl
   Future<dynamic> filter(Map<String, dynamic> params) async {
     final url = Uri.parse('$baseUrl/law-service/vbqppl/filter').replace(queryParameters: params);
     final response = await http.get(url);

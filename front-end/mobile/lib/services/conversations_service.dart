@@ -52,7 +52,7 @@ class ConversationsService {
               conversationId, entry.value as Map<dynamic, dynamic>);
         }).toList();
         conversations.sort((a, b) =>
-            DateTime.parse(b.endTime).compareTo(DateTime.parse(a.endTime))); // Sắp xếp theo thời gian mới nhất
+            DateTime.parse(b.endTime).compareTo(DateTime.parse(a.endTime)));
         return conversations.isNotEmpty ? conversations.first : null;
       }
     } catch (e) {
@@ -86,7 +86,6 @@ class ConversationsService {
   }
 
   Future<List<Conversation>> getAllConversations(String userId) async {
-    print("Get all conversations$userId");
     List<Conversation> conversations = [];
     try {
       Query query = databaseReference

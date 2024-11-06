@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class ChatInput extends StatefulWidget {
   final Function(String) onSendMessage;
+  final bool isWaitingForResponse;
 
-  const ChatInput({super.key, required this.onSendMessage});
+  const ChatInput({super.key, required this.onSendMessage, required this.isWaitingForResponse});
 
   @override
   ChatInputState createState() => ChatInputState();
@@ -20,11 +21,13 @@ class ChatInputState extends State<ChatInput> {
   }
 
   void _sendMessage() {
-    String message = _controller.text;
-    if (message.isNotEmpty) {
-      widget.onSendMessage(message);
-      _controller.clear();
-      _onTextChanged('');
+    if (!widget.isWaitingForResponse) {
+      String message = _controller.text;
+      if (message.isNotEmpty) {
+        widget.onSendMessage(message);
+        _controller.clear();
+        _onTextChanged('');
+      }
     }
   }
 
@@ -54,10 +57,13 @@ class ChatInputState extends State<ChatInput> {
           Expanded(
             child: TextField(
               controller: _controller,
+              enabled: !widget.isWaitingForResponse,
               onChanged: _onTextChanged,
               onSubmitted: (_) => _sendMessage(),
               decoration: InputDecoration(
-                hintText: 'Tin nhắn',
+                hintText: widget.isWaitingForResponse
+                    ? 'Waiting for response...'
+                    : 'Tin nhắn',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                   borderSide: BorderSide.none,
@@ -73,11 +79,20 @@ class ChatInputState extends State<ChatInput> {
           ),
           if (_isTyping)
             IconButton(
-              icon: const Icon(Icons.send, color: Color(0xFF007AFF)),
-              onPressed: _sendMessage,
+              icon: Icon(
+                Icons.send,
+                color: widget.isWaitingForResponse ? Colors.grey : const Color(0xFF007AFF),
+              ),
+              onPressed: widget.isWaitingForResponse ? null : _sendMessage,
             ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

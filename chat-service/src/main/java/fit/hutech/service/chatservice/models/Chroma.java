@@ -31,6 +31,7 @@ public class Chroma {
     public static TextSegment processData(String id, String name, String subjectName,
                                           String chapterName, String topicName, String content,
                                           String index, String vbqppl, String vbqpplLink, Integer order) {
+        System.out.println("Processing data API KEY " + apiKey);
 
         Metadata metadata = new Metadata();
 

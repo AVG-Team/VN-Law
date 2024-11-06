@@ -40,12 +40,12 @@ public class VbqpplServiceImpl implements VbqpplService {
     }
 
     @Override
-    public Page<VbqpplDTO> getVbqpplByType(Optional<String> type, Optional<Integer> pageNo, Optional<Integer> pageSize) {
+    public Page<VbqpplDTO> getVbqpplByType(String type, Optional<Integer> pageNo, Optional<Integer> pageSize) {
         Pageable pageable = PageRequest.of(pageNo.orElse(0), pageSize.orElse(9));
-        if(type.isPresent()){
-            return vbqpplRepository.findAllByType(Optional.of(type.get()),pageable);
+        if(type != null && !type.isEmpty()){
+            return vbqpplRepository.findAllByType(type,pageable);
         }else {
-            return vbqpplRepository.findAllByType(Optional.of(""),pageable);
+            return vbqpplRepository.findAllVB(pageable);
         }
 
     }
