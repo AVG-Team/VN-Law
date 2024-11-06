@@ -1,13 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile/pages/ChatScreen/homepage.dart';
-import 'package:mobile/pages/Home/home_screen.dart';
 import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:mobile/pages/dashboard_screen.dart';
 import 'package:mobile/services/auth_provider.dart';
-import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
