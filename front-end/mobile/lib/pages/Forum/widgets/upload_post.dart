@@ -55,14 +55,10 @@ class _UploadPostWidgetState extends State<UploadPostWidget> {
           imageURL: "assets/author1.jpg",
           votes: 0,
           createdAt: DateTime.now().toString(),
-          replies: [],
           nodeKey: nodeKey,
           pin: 0,
         );
 
-        setState(() {
-          questions.add(newQuestion);
-        });
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -111,9 +107,9 @@ class _UploadPostWidgetState extends State<UploadPostWidget> {
               ],
             ),
             backgroundColor: Colors.black87,
-            behavior: SnackBarBehavior.floating, // Kiểu `SnackBar` nổi
+            behavior: SnackBarBehavior.floating,
             margin: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 12), // Cách lề đẹp hơn
+                horizontal: 16, vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -141,12 +137,12 @@ class _UploadPostWidgetState extends State<UploadPostWidget> {
             ],
           ),
           backgroundColor: Colors.black87,
-          behavior: SnackBarBehavior.floating, // Kiểu `SnackBar` nổi
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), // Cách lề đẹp hơn
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          duration: const Duration(seconds: 3), // Thời gian hiển thị ngắn gọn
+          duration: const Duration(seconds: 3),
         ),
       );
 
@@ -186,7 +182,7 @@ class _UploadPostWidgetState extends State<UploadPostWidget> {
                       IconButton(
                         icon: const Icon(Icons.close, color: Colors.red),
                         onPressed: () {
-                          Navigator.pop(context); // Đóng UploadPostWidget
+                          Navigator.pop(context);
                         },
                       ),
                     ],

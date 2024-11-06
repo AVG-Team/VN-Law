@@ -23,6 +23,7 @@ import 'package:mobile/models/user_model.dart';
     void initState() {
       super.initState();
       fetchQuestions();
+      print("1245325345543555");
     }
 
     Future<void> fetchQuestions() async {
@@ -40,6 +41,8 @@ import 'package:mobile/models/user_model.dart';
 
                 Question question =
                     Question.fromJson(questionMap, key.toString());
+
+                print(question);
                 loadedQuestions.add(question);
                 loadedNodeKeys[question] = key.toString();
               } catch (e) {

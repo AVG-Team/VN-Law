@@ -65,7 +65,7 @@ class _ForumScreenState extends State<ForumScreen> {
                                   context: context,
                                   builder: (BuildContext context) {
                                     return Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 40), // Giảm khoảng cách trên và dưới
+                                      padding: const EdgeInsets.symmetric(vertical: 40),
                                       child: Dialog(
                                         backgroundColor: Colors.transparent,
                                         shape: RoundedRectangleBorder(
