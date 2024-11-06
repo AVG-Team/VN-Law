@@ -11,8 +11,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-// Default icon color
-  var _obscureText = true; // Toggle for password visibility
+  var _obscureText = true;
 
   @override
   void initState() {
@@ -34,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, // Prevent automatic resizing when keyboard appears
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           Container(

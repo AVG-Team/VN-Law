@@ -52,6 +52,8 @@ dependencies:
   flutter_html: ^3.0.0-beta
   stomp_dart_client: ^0.4.4
   carousel_slider: ^4.1.1
+  cloud_firestore: ^5.4.4
+  firebase_admin_sdk: ^0.0.6
 
 dev_dependencies:
   flutter_test:

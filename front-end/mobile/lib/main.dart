@@ -4,10 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:mobile/pages/ChatScreen/homepage.dart';
 import 'package:mobile/pages/Home/home_screen.dart';
 import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:mobile/pages/dashboard_screen.dart';
 import 'package:mobile/services/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'package:mobile/pages/DashboardScreen.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -49,7 +51,6 @@ class MyApp extends StatelessWidget {
 
 class CourtroomSplashScreen extends StatefulWidget {
   const CourtroomSplashScreen({super.key});
-
   @override
   State<CourtroomSplashScreen> createState() => _CourtroomSplashScreenState();
 }
@@ -79,7 +80,7 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
 
     _controller.forward().whenComplete(() {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
       );
     });
   }

@@ -1,74 +1,117 @@
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/user_model.dart';
 
 class AuthProviderCustom with ChangeNotifier {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  User? _user;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  UserModel? _userModel;
 
-  User? get user => _user;
+  UserModel? get userModel => _userModel;
 
-  // Kiểm tra trạng thái đăng nhập khi khởi động app
   Future<void> checkAuthState() async {
-    _user = _auth.currentUser;
-    final prefs = await SharedPreferences.getInstance();
-    if (_user != null) {
-      // Lưu thông tin user vào SharedPreferences
-      await prefs.setString('user_name', _user?.displayName ?? '');
-      await prefs.setString('user_email', _user?.email ?? '');
-      await prefs.setString('user_id', _user?.uid ?? '');
-      await prefs.setString('user_photo', _user?.photoURL ?? '');
+    final User? firebaseUser = _auth.currentUser;
+    if (firebaseUser != null) {
+      await _loadUserData(firebaseUser);
     }
     notifyListeners();
   }
 
-  // Đăng nhập với Google
+  Future<void> _loadUserData(User firebaseUser) async {
+    try {
+      DocumentSnapshot userDoc = await _firestore
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .get();
+
+      if (userDoc.exists) {
+        _userModel = UserModel.fromFirestore(userDoc);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error loading user data: $e");
+      }
+    }
+  }
+
   Future<UserCredential?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return null;
 
-      final GoogleSignInAuthentication googleAuth =
-      await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential =
-      await _auth.signInWithCredential(credential);
-      _user = userCredential.user;
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final User? user = userCredential.user;
 
-      // Lưu thông tin user vào SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user_name', _user?.displayName ?? '');
-      await prefs.setString('user_email', _user?.email ?? '');
-      await prefs.setString('user_id', _user?.uid ?? '');
-      await prefs.setString('user_photo', _user?.photoURL ?? '');
+      if (user != null) {
+        // Kiểm tra xem user đã tồn tại trong Firestore chưa
+        final userDoc = await _firestore.collection('users').doc(user.uid).get();
 
-      notifyListeners();
+        if (!userDoc.exists) {
+          // Tạo new user trong Firestore
+          final newUser = UserModel(
+            displayName: user.displayName,
+            email: user.email,
+            uid: user.uid,
+            photoURL: user.photoURL,
+            role: 0, // Default role
+          );
+
+          await _firestore
+              .collection('users')
+              .doc(user.uid)
+              .set(newUser.toMap());
+
+          _userModel = newUser;
+        } else {
+          _userModel = UserModel.fromFirestore(userDoc);
+        }
+
+        notifyListeners();
+      }
+
       return userCredential;
     } catch (error) {
       throw Exception(error);
     }
   }
 
-  // Đăng xuất
+  Future<UserModel?> getUserFromId(String uid) async {
+    try {
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(uid).get();
+      if (userDoc.exists && userDoc.data() != null) {
+        return UserModel.fromFirestore(userDoc);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error getting user from ID: $e");
+      }
+    }
+    return null;
+  }
+
+
   Future<void> signOut() async {
     try {
       await _googleSignIn.signOut();
       await _auth.signOut();
-      _user = null;
-
-      // Xóa thông tin user từ SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
-
+      _userModel = null;
       notifyListeners();
     } catch (error) {
       throw Exception(error);
     }
+  }
+
+  bool isAdmin() {
+    return _userModel?.isAdmin ?? false;
   }
 }
