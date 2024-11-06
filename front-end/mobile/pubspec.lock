@@ -448,14 +448,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.12.4+2"
-  html:
-    dependency: transitive
-    description:
-      name: html
-      sha256: "3a7812d5bcd2894edf53dfaf8cd640876cf6cef50a8f238745c8b8120ea74d3a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.15.4"
   googleapis:
     dependency: transitive
     description:
@@ -472,6 +464,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.3"
+  html:
+    dependency: transitive
+    description:
+      name: html
+      sha256: "3a7812d5bcd2894edf53dfaf8cd640876cf6cef50a8f238745c8b8120ea74d3a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.15.4"
   http:
     dependency: "direct main"
     description:
@@ -1061,30 +1061,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
-  web_socket:
-    dependency: transitive
-    description:
-      name: web_socket
-      sha256: "3c12d96c0c9a4eec095246debcea7b86c0324f22df69893d538fcc6f1b8cce83"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.6"
-  web_socket_channel:
-    dependency: transitive
-    description:
-      name: web_socket_channel
-      sha256: "9f187088ed104edd8662ca07af4b124465893caf063ba29758f97af57e61da8f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.1"
-  x509:
-    dependency: transitive
-    description:
-      name: x509
-      sha256: cbd1a63846884afd273cda247b0365284c8d85a365ca98e110413f93d105b935
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.4+3"
   web_socket_channel:
     dependency: transitive
     description:
@@ -1093,6 +1069,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.0"
+  x509:
+    dependency: transitive
+    description:
+      name: x509
+      sha256: cbd1a63846884afd273cda247b0365284c8d85a365ca98e110413f93d105b935
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.4+3"
   xdg_directories:
     dependency: transitive
     description:
