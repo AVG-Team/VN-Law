@@ -38,7 +38,7 @@ class NewsDetailPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16.0),
-              Text(article.content),
+              Text(article.content!),
             ],
           ),
         ),

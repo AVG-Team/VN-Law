@@ -216,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             title: article.title ?? 'N/A',
                                             category: article.category.isNotEmpty ? article.category[0] : 'No description',
                                             sourceName: article.sourceName,
-                                            urlImage: article.imageUrl,
+                                            urlImage: article.imageUrl!,
                                             color: Colors.green,
                                           ),
                                         ),
@@ -273,7 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ServiceIcon(
                                 icon: Icons.wechat_outlined,
                                 color: Colors.orange,
-                                destination: ChatScreen(),
+                                destination: HomePageChatScreen(),
                               ),
                               SizedBox(width: 24),
                               ServiceIcon(
