@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile/pages/ChatScreen/homepage.dart';
+import 'package:mobile/pages/Forum/forum_screen.dart';
 import 'package:mobile/pages/Home/home_screen.dart';
 import 'package:mobile/pages/WelcomePage/welcome_screen.dart';
 import 'package:provider/provider.dart';
@@ -80,7 +81,7 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
 
     _controller.forward().whenComplete(() {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+        MaterialPageRoute(builder: (context) => const ForumScreen()),
       );
     });
   }
