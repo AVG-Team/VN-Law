@@ -4,7 +4,7 @@ import 'package:mobile/pages/Home/profile_screen.dart';
 import 'package:mobile/pages/VBPL/vbpl_screen.dart';
 import 'package:mobile/pages/Home/home_screen.dart';
 import 'package:mobile/pages/LegalDocument/legal_document_screen.dart';
-import 'package:mobile/pages/ChatScreen/chat_screen.dart'; // Import your ChatScreen page
+import 'package:mobile/pages/ChatScreen/chat_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -16,6 +16,11 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
   final PageController _pageController = PageController();
+  final List<GlobalKey<NavigatorState>> _navigatorKeys = [
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+  ];
 
   final List<Widget> _pages = [
     const HomeScreen(),
@@ -24,6 +29,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
   ];
 
   void _onItemTapped(int index) {
+    if (index == 1) { // Chatbot screen index
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const HomePageChatScreen(),
+        ),
+      );
+      return;
+    }
+
+    if (index == _selectedIndex) {
+      // Pop to root if on the same tab
+      _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
+      // Reload the current page
+      setState(() {
+        // Create a new instance of the current page
+        _pages[index] = index == 0
+            ? const HomeScreen()
+            : const ProfileScreen();
+      });
+    }
     setState(() {
       _selectedIndex = index;
       _pageController.jumpToPage(index);
@@ -35,15 +60,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       body: PageView(
         controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(), // Disable swipe to change pages
-        children: _pages.map((page) {
-          // Wrap each main page in a Navigator for independent inner navigation
+        physics: const NeverScrollableScrollPhysics(),
+        children: List.generate(_pages.length, (index) {
           return Navigator(
+            key: _navigatorKeys[index],
             onGenerateRoute: (settings) => MaterialPageRoute(
-              builder: (context) => page,
+              builder: (context) => _pages[index],
             ),
           );
-        }).toList(),
+        }),
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(10),
@@ -65,12 +90,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               icon: Icon(Icons.home),
               label: 'Trang chủ',
             ),
-
             BottomNavigationBarItem(
               icon: Icon(Icons.chat),
-              label: "Chatbot", // Label for ChatScreen
+              label: "Chatbot",
             ),
-
             BottomNavigationBarItem(
               icon: Icon(Icons.person),
               label: "Profile",
@@ -83,15 +106,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           unselectedFontSize: 12,
           backgroundColor: Colors.transparent,
           type: BottomNavigationBarType.fixed,
-          onTap: (index) {
-            if (index == 1) { // Chatbot screen index
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const HomePageChatScreen()),
-              );
-            } else {
-              _onItemTapped(index); // Navigate to other main pages
-            }
-          },
+          onTap: _onItemTapped,
           elevation: 0,
         ),
       ),

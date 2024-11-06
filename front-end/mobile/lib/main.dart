@@ -9,7 +9,6 @@ import 'package:mobile/pages/dashboard_screen.dart';
 import 'package:mobile/services/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import 'package:mobile/pages/DashboardScreen.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -80,7 +79,7 @@ class _CourtroomSplashScreenState extends State<CourtroomSplashScreen>
 
     _controller.forward().whenComplete(() {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
       );
     });
   }

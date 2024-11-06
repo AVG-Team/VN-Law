@@ -44,7 +44,6 @@ class NewsService {
           .toList();
 
       // Sort articles by publication date in descending order
-      articles.sort((a, b) => b.pubDate!.compareTo(a.pubDate!));
 
       // Return only the first 6 articles
       return articles.take(6).toList();
