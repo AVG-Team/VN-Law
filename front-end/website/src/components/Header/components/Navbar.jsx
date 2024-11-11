@@ -20,7 +20,7 @@ import {
     faUser,
     faUserAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
     const [accountMenuOpen, setAccountMenuOpen] = useState(false);
@@ -29,9 +29,11 @@ export default function Navbar() {
     const [productMobileMegaMenu, setProductMobileMegaMenu] = useState(false);
     const [megaMenuSubItem, setMegaMenuSubItem] = useState("");
 
+    const navigate = useNavigate();
+
     return (
         <nav className="relative flex items-center justify-between w-full px-20 ">
-            <img src={Logo} alt="logo" className="w-[150px] " />
+            <img src={Logo} alt="logo" className="w-[150px] " onClick={() => navigate("/")} />
             <ul className="items-center gap-[20px] text-[1rem] text-[#424242] lg:flex hidden">
                 <li
                     className={`${
@@ -39,6 +41,7 @@ export default function Navbar() {
                     } flex items-center gap-[5px] cursor-pointer`}
                     onMouseEnter={() => setIsProductHover(true)}
                     onMouseLeave={() => setIsProductHover(false)}
+                    onClick={() => navigate("/phap-dien")}
                 >
                     <FontAwesomeIcon icon={faMagnifyingGlass} className="text-[1.1rem]" />
                     Tra Cứu
@@ -206,12 +209,15 @@ export default function Navbar() {
                         </div>
                     </div> */}
                 </li>
-
-                <li className="flex items-center gap-[5px] cursor-pointer">
+                <li
+                    onClick={() => navigate("/van-ban-quy-pham-phap-luat")}
+                    className="flex items-center gap-[5px] cursor-pointer"
+                >
                     <FontAwesomeIcon icon={faBook} className="text-[1.1rem] text-gray-600" />
                     Văn Bản
                 </li>
-                <li className="flex items-center gap-[5px] cursor-pointer">
+
+                <li className="flex items-center gap-[5px] cursor-pointer" onClick={() => navigate("/chatbot")}>
                     <FontAwesomeIcon icon={faComments} className="text-[1.1rem] text-gray-600" />
                     Chatbot
                 </li>
