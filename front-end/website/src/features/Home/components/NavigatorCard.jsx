@@ -22,7 +22,7 @@ export default function NavigatorCard({ item }) {
             </CardContent>
             <CardActions className="flex justify-center ">
                 <div className="flex justify-center">
-                    <Button className="!bg-indigo-600 !text-white hover:!bg-indigo-500" type="primary" href={item.link}>
+                    <Button className="!bg-[#41C9E2] !text-white hover:!bg-indigo-500" type="primary" href={item.link}>
                         Truy Cập
                     </Button>
                 </div>

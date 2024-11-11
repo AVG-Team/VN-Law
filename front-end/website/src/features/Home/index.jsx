@@ -7,6 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import NavigatorCard from "./components/NavigatorCard.jsx";
 import { NavigatorCardData } from "../../mock/Home.data.js";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import NewsletterForm from "./components/NewsletterForm.jsx";
 
 const Input = () => {
     return (
@@ -25,9 +26,22 @@ const Input = () => {
 };
 export default function Home() {
     return (
-        <main>
-            <Container className="mt-4">
-                <div className="flex justify-center grid-cols-1 gap-4 md:grid-cols-3">
+        <main className="px-20">
+            <div className="flex items-center justify-center">
+                <div className="text-center">
+                    <h1 className="mb-4 text-2xl font-extrabold tracking-normal text-blue-gray-900">
+                        Tìm văn bản pháp luật
+                    </h1>
+                    <div className="grid grid-cols-1 gap-4 mb-20 md:grid-cols-4">
+                        {NavigatorCardData.map((item) => (
+                            <NavigatorCard key={item.index} item={item} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <NewsletterForm />
+            {/* <div className="flex justify-center grid-cols-1 gap-4 md:grid-cols-3">
                     <div className="text-center md:col-span-2">
                         <h1 className="mb-3 text-2xl font-extrabold tracking-normal text-blue-gray-900">
                             Tìm văn bản pháp luật
@@ -37,13 +51,7 @@ export default function Home() {
                         </div>
                         <h1 className="mb-2 text-2xl font-extrabold tracking-normal text-blue-gray-900">Chức Năng</h1>
                     </div>
-                </div>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-                    {NavigatorCardData.map((item) => (
-                        <NavigatorCard key={item.index} item={item} />
-                    ))}
-                </div>
-            </Container>
+                </div> */}
         </main>
     );
 }

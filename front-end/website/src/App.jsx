@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import loadable from "@loadable/component";
-import AuthLayout from "~/layouts/AuthLayout";
-import BasicLayout from "~/layouts/BasicLayout";
+import AuthLayout from "~/shared/layouts/AuthLayout";
+import BasicLayout from "~/shared/layouts/BasicLayout";
 import { CircularProgress } from "@mui/material";
-import ContentLayout from "~/layouts/ContentLayout";
+import ContentLayout from "~/shared/layouts/ContentLayout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const Home = loadable(() => import("~/features/Home"));
@@ -145,7 +145,6 @@ function App() {
                             </Suspense>
                         }
                     />
-
                 </Route>
             </Routes>
         </BrowserRouter>

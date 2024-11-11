@@ -1,275 +1,375 @@
-import Cookies from "js-cookie";
-import { Fragment, useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import React, { useState } from "react";
 import Logo from "../../../assets/images/logo/logo2.png";
-import { StorageKeys } from "../../../common/constants/keys";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { menus, pages, toggleButton } from "../../../mock/header.data";
-import { Bars3Icon, BellIcon, XMarkIcon, UserCircleIcon } from "@heroicons/react/24/outline";
-import { getUserInfo } from "../../../mock/auth";
+import { FaFontAwesome, FaGlassMartini, FaSearch, FaTasks, FaUser } from "react-icons/fa";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { TbLogout2, TbUsersGroup } from "react-icons/tb";
+import { CiMenuFries } from "react-icons/ci";
+import { MdLaptopMac, MdOutlineArrowRightAlt, MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { BsBuildings, BsCalendar2Date } from "react-icons/bs";
+import { AiOutlineFire } from "react-icons/ai";
+import { BiSupport } from "react-icons/bi";
+import { FiUser } from "react-icons/fi";
+import { IoSettingsOutline } from "react-icons/io5";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faBars,
+    faBook,
+    faComment,
+    faComments,
+    faMagnifyingGlass,
+    faUser,
+    faUserAlt,
+} from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
+export default function Navbar() {
+    const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+    const [isProductHover, setIsProductHover] = useState(false);
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+    const [productMobileMegaMenu, setProductMobileMegaMenu] = useState(false);
+    const [megaMenuSubItem, setMegaMenuSubItem] = useState("");
 
-export function Navbar() {
-    const location = useLocation();
-    const isAuthenticated = !!Cookies.get(StorageKeys.ACCESS_TOKEN);
+    const navigate = useNavigate();
 
-    const [isSticky, setIsSticky] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollPosition = document.body.scrollTop;
-            if (scrollPosition > 0) {
-                setIsSticky(true);
-            } else {
-                setIsSticky(false);
-            }
-        };
-
-        document.body.addEventListener('scroll', handleScroll);
-
-        return () => {
-            document.body.removeEventListener('scroll', handleScroll);
-        };
-    }, []);
     return (
-        <Disclosure as="nav" className={`z-99 bg-white top-0 left-0 w-full transition-all duration-300 ease-in-out ${isSticky ? 'bg-gray-800 shadow-lg fixed' : 'bg-transparent relative'}`}>
-            {({ open }) => (
-                <>
-                    <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-                        <div className="flex justify-between h-16">
-                            <div className="flex">
-                                <div className="flex items-center mr-2 -ml-2 md:hidden">
-                                    {/* Mobile menu button */}
-                                    <Disclosure.Button
-                                        className="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm">
-                                        {/*<span className="absolute -inset-0.5" />*/}
-                                        {/*<span className="sr-only">Mở Menu</span>*/}
-                                        {/*{open ? (*/}
-                                        {/*    <XMarkIcon className="block w-6 h-6" aria-hidden="true" />*/}
-                                        {/*) : (*/}
-                                        {/*    <Bars3Icon className="block w-6 h-6" aria-hidden="true" />*/}
-                                        {/*)}*/}
-                                        <span className="relative block h-6 w-6 cursor-pointer">
-                                          <span className="du-block absolute right-0 h-full w-full">
-                                            <span
-                                                className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out ${
-                                                    !open && "!w-full delay-300"
-                                                }`}
-                                            ></span>
-                                            <span
-                                                className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-150 duration-200 ease-in-out ${
-                                                    !open && "delay-400 !w-full"
-                                                }`}
-                                            ></span>
-                                            <span
-                                                className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-200 duration-200 ease-in-out ${
-                                                    !open && "!w-full delay-500"
-                                                }`}
-                                            ></span>
-                                          </span>
-                                          <span className="absolute right-0 h-full w-full rotate-45">
-                                            <span
-                                                className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out ${
-                                                    !open && "!h-0 !delay-[0]"
-                                                }`}
-                                            ></span>
-                                            <span
-                                                className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out ${
-                                                    !open && "!h-0 !delay-200"
-                                                }`}
-                                            ></span>
-                                          </span>
-                                        </span>
-                                    </Disclosure.Button>
-                                </div>
-                                <NavLink to={"/"} className="flex items-center flex-shrink-0">
-                                    <img className="w-40" src={Logo} alt="Logo" />
-                                </NavLink>
-                                <div className="hidden md:ml-6 md:flex md:space-x-8">
-                                    {pages.map((page) =>
-                                        page.href === location.pathname ? (
-                                            <a
-                                                key={page.key}
-                                                href={page.href}
-                                                className="inline-flex items-center px-1 pt-1 text-sm font-semibold text-gray-900 border-b-2 border-indigo-500"
-                                            >
-                                                {page.name}
-                                            </a>
-                                        ) : (
-                                            <a
-                                                key={page.key}
-                                                href={page.href}
-                                                className="inline-flex items-center px-1 pt-1 text-sm font-semibold text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
-                                            >
-                                                {page.name}
-                                            </a>
-                                        ),
-                                    )}
-                                </div>
-                            </div>
-                            <div className="flex items-center">
-                                <div className="flex-shrink-0 hidden md:flex">
-                                    {!isAuthenticated ? (
-                                        toggleButton.map((button) => (
-                                            <NavLink
-                                                key={button.id}
-                                                type="button"
-                                                className="relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 mr-1 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                to={button.link}
-                                            >
-                                                {button.name}
-                                            </NavLink>
-                                        ))
-                                    ) : null}
-                                </div>
-                                <div className="hidden md:ml-4 md:flex md:flex-shrink-0 md:items-center">
-                                    {isAuthenticated ? (
-                                        <button
-                                            type="button"
-                                            className="relative p-1 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                        >
-                                            <span className="absolute -inset-1.5" />
-                                            <span className="sr-only">View notifications</span>
-                                            <BellIcon className="w-6 h-6" aria-hidden="true" />
-                                        </button>
-                                    ) : null}
-
-                                    {/* Profile dropdown */}
-                                    {isAuthenticated ? (
-                                        <Menu as="div" className="relative ml-3">
-                                            <div>
-                                                <Menu.Button className="relative flex text-sm bg-white rounded-full"
-                                                             onDoubleClick={(event) => event.stopPropagation()}>
-                                                    <span className="absolute -inset-1.5" />
-                                                    <span className="sr-only">Mở Menu Cá Nhân</span>
-                                                    <UserCircleIcon
-                                                        className="w-7 h-7 opacity-40 hover:opacity-70 transition-opacity"
-                                                        aria-hidden={true} />
-                                                </Menu.Button>
-                                            </div>
-                                            <Transition
-                                                as={Fragment}
-                                                enter="transition ease-out duration-200"
-                                                enterFrom="transform opacity-0 scale-95"
-                                                enterTo="transform opacity-100 scale-100"
-                                                leave="transition ease-in duration-75"
-                                                leaveFrom="transform opacity-100 scale-100"
-                                                leaveTo="transform opacity-0 scale-95"
-                                            >
-                                                <Menu.Items
-                                                    className="absolute right-0 z-10 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                    {menus.map((menu) => (
-                                                        <Menu.Item key={menu.name}>
-                                                            {({ active }) => (
-                                                                <a
-                                                                    href={menu.href}
-                                                                    className={classNames(
-                                                                        active ? "bg-gray-100" : "",
-                                                                        "block px-4 py-2 text-sm text-gray-700",
-                                                                    )}
-                                                                >
-                                                                    {menu.name}
-                                                                </a>
-                                                            )}
-                                                        </Menu.Item>
-                                                    ))}
-                                                </Menu.Items>
-                                            </Transition>
-                                        </Menu>
-                                    ) : null}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <Transition
-                        show={open}
-                        enter="transition duration-100 ease-out"
-                        enterFrom="transform scale-95 opacity-0"
-                        enterTo="transform scale-100 opacity-100"
-                        leave="transition duration-75 ease-out"
-                        leaveFrom="transform scale-100 opacity-100"
-                        leaveTo="transform scale-95 opacity-0"
+        <nav className="relative flex items-center justify-between w-full px-20 ">
+            <img src={Logo} alt="logo" className="w-[150px] " onClick={() => navigate("/")} />
+            <ul className="items-center gap-[20px] text-[1rem] text-[#424242] lg:flex hidden">
+                <li
+                    className={`${
+                        isProductHover ? "text-[#3B9DF8]" : "text-gray-600"
+                    } flex items-center gap-[5px] cursor-pointer`}
+                    onMouseEnter={() => setIsProductHover(true)}
+                    onMouseLeave={() => setIsProductHover(false)}
+                    onClick={() => navigate("/phap-dien")}
+                >
+                    <FontAwesomeIcon icon={faMagnifyingGlass} className="text-[1.1rem]" />
+                    Tra Cứu
+                    {/* <IoIosArrowUp
+                        className={`${isProductHover ? "rotate-0" : "rotate-[-180deg]"} transition-all duration-300`}
+                    /> */}
+                    {/* mega menu */}
+                    {/* <div
+                        className={`${
+                            isProductHover ? "translate-y-0 opacity-100 z-30" : "translate-y-[20px] opacity-0 z-[-1]"
+                        } bg-white rounded-md w-full absolute top-[40px] left-0 p-[30px] transition-all duration-300 boxShadow flex flex-wrap gap-[30px]`}
                     >
-                    <Disclosure.Panel static className="md:hidden">
-                        <div className="pt-2 pb-3 space-y-1">
-                            {pages.map((page) =>
-                                page.href === location.pathname ? (
-                                    <Disclosure.Button
-                                        as="a"
-                                        href={page.href}
-                                        key={page.key}
-                                        className="block py-2 pl-3 pr-4 text-base font-semibold text-indigo-700 border-l-4 border-indigo-500 bg-indigo-50 sm:pl-5 sm:pr-6"
-                                    >
-                                        {page.name}
-                                    </Disclosure.Button>
-                                ) : (
-                                    <Disclosure.Button
-                                        as="a"
-                                        href={page.href}
-                                        key={page.key}
-                                        className="block py-2 pl-3 pr-4 text-base font-semibold text-gray-500 border-l-4 border-transparent hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6"
-                                    >
-                                        {page.name}
-                                    </Disclosure.Button>
-                                ),
-                            )}
+                        <div className="grid grid-cols-2 gap-[30px]">
+                            <div className="flex flex-col gap-[20px]">
+                                <h3 className="text-[1.2rem] text-gray-500 font-[500]">More Products</h3>
+
+                                <div className="flex float-start gap-[10px] group">
+                                    <img
+                                        src="https://i.ibb.co/LQBDJGD/icon-logo-container.png"
+                                        alt="image"
+                                        className="w-[30px] h-[30px]"
+                                    />
+
+                                    <div>
+                                        <h1 className="text-[1rem] text-gray-600 font-[500]">Demo App</h1>
+                                        <p className="text-[0.9rem] text-gray-400 font-[300]">
+                                            Lorem ipsum dolor sit amet, consect adipiscing elit
+                                        </p>
+
+                                        <button className="text-[#FF5E5E] mt-2 flex items-center gap-[4px] text-[0.9rem]">
+                                            Call to action
+                                            <MdOutlineArrowRightAlt className="text-[1.4rem] group-hover:ml-[5px] transition-all duration-300" />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="flex float-start gap-[10px] group">
+                                    <img
+                                        src="https://i.ibb.co/Y8cRWRj/icon-logo-container-1.png"
+                                        alt="image"
+                                        className="w-[30px] h-[30px]"
+                                    />
+
+                                    <div>
+                                        <h1 className="text-[1rem] text-gray-600 font-[500]">CRM</h1>
+                                        <p className="text-[0.9rem] text-gray-400 font-[300]">
+                                            Lorem ipsum dolor sit amet, consect adipiscing elit
+                                        </p>
+
+                                        <button className="text-[#FE9239] mt-2 flex items-center gap-[4px] text-[0.9rem]">
+                                            Call to action
+                                            <MdOutlineArrowRightAlt className="text-[1.4rem] group-hover:ml-[5px] transition-all duration-300" />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="flex float-start gap-[10px] group">
+                                    <img
+                                        src="https://i.ibb.co/6bGWgp6/icon-logo-container-2.png"
+                                        alt="image"
+                                        className="w-[30px] h-[30px]"
+                                    />
+
+                                    <div>
+                                        <h1 className="text-[1rem] text-gray-600 font-[500]">CMS</h1>
+                                        <p className="text-[0.9rem] text-gray-400 font-[300]">
+                                            Lorem ipsum dolor sit amet, consect adipiscing elit
+                                        </p>
+
+                                        <button className="text-[#8B5CF6] mt-2 flex items-center gap-[4px] text-[0.9rem]">
+                                            Call to action
+                                            <MdOutlineArrowRightAlt className="text-[1.4rem] group-hover:ml-[5px] transition-all duration-300" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-[20px]">
+                                <h3 className="text-[1.2rem] text-gray-500 font-[500]">Ecosystem</h3>
+
+                                <div className="flex float-start gap-[10px]">
+                                    <BsBuildings className="text-[1.4rem] text-gray-600" />
+
+                                    <div>
+                                        <h1 className="text-[1rem] text-gray-600 font-[500]">Directory</h1>
+                                        <p className="text-[0.9rem] text-gray-400 font-[300]">
+                                            Lorem ipsum dolor sit amet, consect adipiscing elit
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex float-start gap-[10px]">
+                                    <BsCalendar2Date className="text-[1.4rem] text-gray-600" />
+
+                                    <div>
+                                        <h1 className="text-[1rem] text-gray-600 font-[500] ">Bookings</h1>
+                                        <p className="text-[0.9rem] text-gray-400 font-[300]">
+                                            Lorem ipsum dolor sit amet, consect adipiscing elit
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex float-start gap-[10px]">
+                                    <TbUsersGroup className="text-[1.4rem] text-gray-600" />
+
+                                    <div>
+                                        <h1 className="text-[1rem] text-gray-600 font-[500]">User feedback</h1>
+                                        <p className="text-[0.9rem] text-gray-400 font-[300]">
+                                            Lorem ipsum dolor sit amet, consect adipiscing elit
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex float-start gap-[10px]">
+                                    <FaTasks className="text-[1.4rem] text-gray-600" />
+
+                                    <div>
+                                        <h1 className="text-[1rem] text-gray-600 font-[500]">Task Manager</h1>
+                                        <p className="text-[0.9rem] text-gray-400 font-[300]">
+                                            Lorem ipsum dolor sit amet, consect adipiscing elit
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        {isAuthenticated ? (
-                            <div className="pt-4 pb-3 border-t border-gray-200">
-                                <div className="flex items-center px-4 sm:px-6">
-                                    <div className="flex-shrink-0">
-                                        <UserCircleIcon className="w-10 h-10 text-gray-400" aria-hidden="true" />
+
+                        <div className="flex flex-col gap-[20px] bg-gray-50 rounded-md p-[20px] w-full">
+                            <div className="flex float-start gap-[10px] group">
+                                <img
+                                    src="https://i.ibb.co/VTqw5rY/img-container.png"
+                                    alt="image"
+                                    className="w-[100px]"
+                                />
+
+                                <div>
+                                    <div className="mb-2 flex items-center gap-[5px]">
+                                        <h1 className="text-[1rem] text-gray-600 font-[500]">Check the new app</h1>
+                                        <p className="py-[3px] px-[8px] text-[0.6rem] text-gray-500 border border-gray-300 rounded-full text-center">
+                                            Featured
+                                        </p>
                                     </div>
-                                    <div className="ml-3">
-                                        <div
-                                            className="text-base font-semibold text-gray-800">{getUserInfo().name}</div>
-                                        <div className="text-sm font-semibold text-gray-500">{getUserInfo().role}</div>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        className="relative flex-shrink-0 p-1 ml-auto text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    >
-                                        <span className="absolute -inset-1.5" />
-                                        <span className="sr-only">View notifications</span>
-                                        <BellIcon className="w-6 h-6" aria-hidden="true" />
+                                    <p className="text-[0.9rem] text-gray-400 font-[300]">
+                                        Lorem ipsum dolor sit amet, consect adipiscing elit
+                                    </p>
+
+                                    <button className="text-[#FF5E5E] mt-2 flex items-center gap-[4px] text-[0.9rem]">
+                                        Call to action
+                                        <MdOutlineArrowRightAlt className="text-[1.4rem] group-hover:ml-[5px] transition-all duration-300" />
                                     </button>
                                 </div>
-                                <div className="mt-3 space-y-1">
-                                    {menus.map((item) => (
-                                        <Disclosure.Button
-                                            as="a"
-                                            href={item.href}
-                                            key={item.key}
-                                            className="block px-4 py-2 text-base font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-800 sm:px-6"
-                                        >
-                                            {item.name}
-                                        </Disclosure.Button>
-                                    ))}
+                            </div>
+                            <div className="flex float-start gap-[10px] group">
+                                <img
+                                    src="https://i.ibb.co/V2b5xnK/img-container-1.png"
+                                    alt="image"
+                                    className="w-[100px]"
+                                />
+
+                                <div>
+                                    <h1 className="text-[1rem] text-gray-600 font-[500]">Check our newsletter</h1>
+                                    <p className="text-[0.9rem] text-gray-400 font-[300]">
+                                        Lorem ipsum dolor sit amet, consect adipiscing elit
+                                    </p>
+
+                                    <button className="text-[#FF5E5E] mt-2 flex items-center gap-[4px] text-[0.9rem]">
+                                        Call to action
+                                        <MdOutlineArrowRightAlt className="text-[1.4rem] group-hover:ml-[5px] transition-all duration-300" />
+                                    </button>
                                 </div>
                             </div>
-                        ) : (
-                            <div className="pb-3 border-t border-gray-200">
-                                <div className="mt-3 space-y-1">
-                                    {toggleButton.map((button) => (
-                                        <Disclosure.Button
-                                            as={NavLink}
-                                            to={button.link}
-                                            key={button.id}
-                                            className="block px-4 py-2 text-base font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-800 sm:px-6"
-                                        >
-                                            {button.name}
-                                        </Disclosure.Button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </Disclosure.Panel>
-                    </Transition>
-                </>
-            )}
-        </Disclosure>
+                        </div>
+                    </div> */}
+                </li>
+                <li
+                    onClick={() => navigate("/van-ban-quy-pham-phap-luat")}
+                    className="flex items-center gap-[5px] cursor-pointer"
+                >
+                    <FontAwesomeIcon icon={faBook} className="text-[1.1rem] text-gray-600" />
+                    Văn Bản
+                </li>
+
+                <li className="flex items-center gap-[5px] cursor-pointer" onClick={() => navigate("/chatbot")}>
+                    <FontAwesomeIcon icon={faComments} className="text-[1.1rem] text-gray-600" />
+                    Chatbot
+                </li>
+                <li className="flex items-center gap-[5px] cursor-pointer">
+                    <FontAwesomeIcon icon={faBars} className="text-[1.1rem] text-gray-600" />
+                    Khác
+                </li>
+            </ul>
+
+            <div className="flex items-center gap-[15px]">
+                <div
+                    className="flex items-center gap-[10px] cursor-pointer relative"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                            setAccountMenuOpen(!accountMenuOpen);
+                        }
+                    }}
+                >
+                    <div className="relative">
+                        <FontAwesomeIcon
+                            icon={faUser}
+                            className="w-[20px] h-[20px] rounded-full object-cover"
+                        ></FontAwesomeIcon>
+                        <div className="w-[10px] h-[10px] rounded-full bg-green-500 absolute bottom-[0px] right-0 border-2 border-white"></div>
+                    </div>
+
+                    <h1 className="text-[1rem] font-[400] text-gray-600 sm:block hidden">Anonymus</h1>
+
+                    <div
+                        className={`${
+                            accountMenuOpen ? "translate-y-0 opacity-100 z-[1]" : "translate-y-[10px] opacity-0 z-[-1]"
+                        } bg-white w-max rounded-md boxShadow absolute top-[45px] right-0 p-[10px] flex flex-col transition-all duration-300 gap-[5px]`}
+                    >
+                        <p className="flex items-center gap-[5px] rounded-md p-[8px] pr-[45px] py-[3px] text-[1rem] text-gray-600 hover:bg-gray-50">
+                            <FiUser />
+                            View Profile
+                        </p>
+                        <p className="flex items-center gap-[5px] rounded-md p-[8px] pr-[45px] py-[3px] text-[1rem] text-gray-600 hover:bg-gray-50">
+                            <IoSettingsOutline />
+                            Settings
+                        </p>
+                        <p className="flex items-center gap-[5px] rounded-md p-[8px] pr-[45px] py-[3px] text-[1rem] text-gray-600 hover:bg-gray-50">
+                            <FiUser />
+                            View Profile
+                        </p>
+
+                        <div className="mt-3 border-t border-gray-200 pt-[5px]">
+                            <p className="flex items-center gap-[5px] rounded-md p-[8px] pr-[45px] py-[3px] text-[1rem] text-red-500 hover:bg-red-50">
+                                <TbLogout2 />
+                                Logout
+                            </p>
+                        </div>
+                    </div>
+
+                    <IoIosArrowUp
+                        className={`${
+                            accountMenuOpen ? "rotate-0" : "rotate-[180deg]"
+                        } transition-all duration-300 text-gray-600 sm:block hidden`}
+                    />
+                </div>
+
+                <CiMenuFries
+                    onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+                    className="text-[1.8rem] text-[#424242]c cursor-pointer lg:hidden flex"
+                />
+            </div>
+
+            <aside
+                className={` ${
+                    mobileSidebarOpen ? "translate-x-0 opacity-100 z-20" : "translate-x-[200px] opacity-0 z-[-1]"
+                } lg:hidden bg-white boxShadow p-4 text-center absolute top-[55px] right-0 sm:w-[300px] w-full rounded-md transition-all duration-300`}
+            >
+                <ul className="items-start gap-[20px] text-[1rem] text-gray-600 flex flex-col">
+                    <li
+                        onClick={() => setProductMobileMegaMenu(!productMobileMegaMenu)}
+                        className="hover:text-[#3B9DF8] group transition-all duration-500 cursor-pointer capitalize flex items-center gap-[10px]"
+                    >
+                        Products
+                        <IoIosArrowDown
+                            className={`${
+                                productMobileMegaMenu ? "rotate-0" : "rotate-[180deg]"
+                            } text-gray-600 group-hover:text-[#3B9DF8] transition-all duration-300`}
+                        />
+                    </li>
+
+                    {/* product mega menu */}
+                    <div
+                        onClick={() => setMegaMenuSubItem("more_product")}
+                        className={`${productMobileMegaMenu ? "hidden" : "block"} group font-[500] ml-6`}
+                    >
+                        <h4 className="text-left flex items-center gap-[5px]">
+                            More Products
+                            <MdOutlineKeyboardArrowRight className="text-[1.2rem]" />
+                        </h4>
+
+                        <ul
+                            className={`${
+                                megaMenuSubItem === "more_product" ? "flex" : "hidden"
+                            } pl-6 mt-3 font-[400] items-start flex-col gap-[10px] text-gray-600`}
+                        >
+                            <li className="hover:text-[#3B9DF8] transition-all duration-500 cursor-poin ter capitalize">
+                                Demo App
+                            </li>
+                            <li className="hover:text-[#3B9DF8] transition-all duration-500 cursor-poin ter capitalize">
+                                CRM
+                            </li>
+                            <li className="hover:text-[#3B9DF8] transition-all duration-500 cursor-poin ter capitalize">
+                                CMS
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div
+                        onClick={() => setMegaMenuSubItem("ecosystem")}
+                        className={`${productMobileMegaMenu ? "hidden" : "block"} font-[500] ml-6`}
+                    >
+                        <h4 className="text-left flex items-center gap-[5px]">
+                            Ecosystem
+                            <MdOutlineKeyboardArrowRight className="text-[1.2rem]" />
+                        </h4>
+
+                        <ul
+                            className={`${
+                                megaMenuSubItem === "ecosystem" ? "flex" : "hidden"
+                            } pl-6 mt-3 font-[400] items-start flex-col gap-[10px] text-gray-600`}
+                        >
+                            <li className="hover:text-[#3B9DF8] transition-all duration-500 cursor-poin ter capitalize">
+                                Directory
+                            </li>
+                            <li className="hover:text-[#3B9DF8] transition-all duration-500 cursor-poin ter capitalize">
+                                Bookings
+                            </li>
+                            <li className="hover:text-[#3B9DF8] transition-all duration-500 cursor-poin ter capitalize">
+                                User feedback
+                            </li>
+                            <li className="hover:text-[#3B9DF8] transition-all duration-500 cursor-poin ter capitalize">
+                                Task Manager
+                            </li>
+                        </ul>
+                    </div>
+
+                    <li className="hover:text-[#3B9DF8] transition-all duration-500 cursor-poin ter capitalize">
+                        Features
+                    </li>
+                    <li className="hover:text-[#3B9DF8] transition-all duration-500 cursor-pointer capitalize">
+                        Support
+                    </li>
+                </ul>
+            </aside>
+        </nav>
     );
 }
