@@ -1,4 +1,4 @@
-package vnlaw.service.customerservice.config;//package avg.web.backend.config;
+package vnlaw.service.customerservice.config.cache;//package avg.web.backend.config;
 //
 //import org.redisson.Redisson;
 ////import org.redisson.api.RedissonClient;
