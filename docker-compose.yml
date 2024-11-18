@@ -34,7 +34,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password
     ports:
-      - "3306:3306"
+      - "4000:3306"
     networks:
       - db-network
     volumes:
@@ -48,7 +48,7 @@ services:
     networks:
       - db-network
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/law_service
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:4000/law_service
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: password
     ports:

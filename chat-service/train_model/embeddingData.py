@@ -1,9 +1,8 @@
-# generate_embeddings.py
-
 import pandas as pd
 from transformers import AutoTokenizer, AutoModel
 import torch
 import argparse
+from tqdm import tqdm  # Import tqdm for progress tracking
 
 # Define function to load data from CSV or JSON
 def load_data(file_path, file_type):
@@ -48,9 +47,14 @@ def main(input_file, input_type, output_file, output_type, text_column):
     if text_column not in data.columns:
         raise ValueError(f"Text column '{text_column}' not found in the data.")
 
-    # Generate embeddings for each text entry
+    # Generate embeddings for each text entry with progress tracking
     print("Generating embeddings...")
-    data['embedding'] = data[text_column].apply(lambda x: generate_embedding(x, tokenizer, model))
+    embeddings = []
+    for text in tqdm(data[text_column], desc="Embedding texts", unit="text"):
+        embeddings.append(generate_embedding(text, tokenizer, model))
+    
+    # Add the embeddings to the DataFrame
+    data['embedding'] = embeddings
     
     # Save the data with embeddings
     print(f"Saving data with embeddings to {output_file}...")

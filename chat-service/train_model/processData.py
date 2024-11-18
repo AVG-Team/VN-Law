@@ -11,17 +11,38 @@ CONFIG_DATABASE = {
 }
 
 # Connect to the database
+from sqlalchemy import create_engine
+
 def connect_db(config_database):
     try:
         engine = create_engine(f'mysql+mysqlconnector://{config_database["DB_USER"]}:{config_database["DB_PASSWORD"]}@{config_database["DB_HOST"]}:{config_database["DB_PORT"]}/{config_database["DB_NAME"]}')
         print("✅ Connected to the database")
-        return engine
+        print("-----------------------")
+        print("Database Information")
+        
+        connection = engine.connect()
+        print("Connection successful.")
+
+        result = connection.execute("SELECT * FROM pdtopic").fetchall()
+        
+        if not result:
+            print("No data found in pdtopic table.")
+        else:
+            print(f"Query executed, {len(result)} rows returned.")
+            # for row in result:
+            #     print(row)
+        
     except Exception as e:
-        print(f"Error connecting to the database: {e}")
-        return None
+        print(f"Error connecting to the database or executing query: {e}")
+    finally:
+        connection.close()
+        print("Connection closed.")
+
+    return engine
 
 # Load the data from the database
 def load_data(engine):
+    print(engine)
     query = """
     SELECT 
         pdtopic.id AS topic_id,
