@@ -1,4 +1,4 @@
-package vnlaw.service.customerservice.config;
+package vnlaw.service.customerservice.config.cache;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
