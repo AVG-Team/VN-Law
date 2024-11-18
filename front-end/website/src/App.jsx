@@ -1,10 +1,12 @@
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import loadable from "@loadable/component";
 import AuthLayout from "~/shared/layouts/AuthLayout";
 import BasicLayout from "~/shared/layouts/BasicLayout";
 import { CircularProgress } from "@mui/material";
 import ContentLayout from "~/shared/layouts/ContentLayout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const Home = loadable(() => import("~/features/Home"));
 const About = loadable(() => import("~/features/About"));
@@ -23,6 +25,10 @@ const Notify = loadable(() => import("~/features/Notify"));
 const Confirm = loadable(() => import("~/features/Confirm"));
 
 function App() {
+    useEffect(() => {
+        AOS.init();
+        AOS.refresh();
+    }, []);
     return (
         <BrowserRouter>
             <Routes>

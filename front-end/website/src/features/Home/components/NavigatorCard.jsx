@@ -11,18 +11,22 @@ export default function NavigatorCard({ item }) {
         }).isRequired,
     };
     return (
-        <Card className="m-3 shadow-md">
+        <Card className="m-3 p-8 border-none shadow-md !rounded-xl">
             <CardHeader
                 title={item.title}
-                titleTypographyProps={{ fontSize: "1.15rem", fontWeight: "semibold" }}
-                className="text-lg text-center border-b-2 border-gray-200 text-blue-950"
+                titleTypographyProps={{ fontSize: "1.2rem", fontWeight: "semibold" }}
+                className="text-lg text-center border-b-2 border-gray-200 text-blue-950 whitespace-nowrap"
             />
-            <CardContent className="p-5">
+            <CardContent className="flex items-center justify-center p-5">
                 <Lottie style={{ width: 200, height: 150, margin: "auto" }} animationData={item.animationData} />
             </CardContent>
             <CardActions className="flex justify-center ">
                 <div className="flex justify-center">
-                    <Button className="!bg-[#41C9E2] !text-white hover:!bg-indigo-500" type="primary" href={item.link}>
+                    <Button
+                        className="!bg-[#41C9E2] !text-white hover:!bg-indigo-500 !px-5 !py-2 !text-base !rounded-xl"
+                        type="primary"
+                        href={item.link}
+                    >
                         Truy Cập
                     </Button>
                 </div>
