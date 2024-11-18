@@ -1,0 +1,44 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# C extensions
+*.so
+
+# Virtual environment
+env/
+venv/
+.venv/
+
+# Environment variables
+.env
+.chroma_env
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Pytest cache
+.pytest_cache/
+
+# VS Code settings
+.vscode/
+
+# MacOS files
+.DS_Store
+
+# Data files
+data/
+*.csv
+*.json
+
+# Log files
+*.log
+
+# MySQL backups
+*.sql
+
+# Ignore any output files
+*.out
+*.bak
+*.tmp

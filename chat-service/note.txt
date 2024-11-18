@@ -1,0 +1,14 @@
+# Create a virtual environment 
+python -m venv myenv
+
+# Activate the virtual environment
+
+# Windows
+env\Scripts\activate
+
+pip freeze > requirements.txt
+
+run 
+python train_model\processData.py
+
+python train_model/embeddingData.py --input_file data/combined_data.csv --input_type csv --output_file data/data_with_embeddings.csv --output_type csv --text_column combined_text
