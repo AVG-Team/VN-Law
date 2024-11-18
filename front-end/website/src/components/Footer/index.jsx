@@ -1,7 +1,7 @@
 import Logo from "../../assets/images/logo/logo2.png";
 export default function Footer() {
     return (
-        <footer className="w-full p-6 px-4 mx-auto mt-10 bg-white max-w-container sm:px-6 lg:px-8">
+        <footer className="w-full p-6 px-4 mt-auto bg-white">
             <div className="py-10 border-t border-slate-900/5">
                 <img src={Logo} alt="logo-ct" className="mx-auto w-52 text-slate-900" />
                 <p className="mt-5 text-sm leading-6 text-center text-slate-500">

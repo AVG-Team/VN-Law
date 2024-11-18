@@ -1,8 +1,10 @@
 import Cookies from "js-cookie";
 import { StorageKeys } from "~/common/constants/keys.js";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import {ToastContainer } from 'react-toastify';
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 
 export default function ContentLayout() {
     const location = useLocation();
@@ -13,7 +15,9 @@ export default function ContentLayout() {
     ) : (
         <div className="flex flex-col min-h-screen">
             <ToastContainer />
+            <Navbar />
             <Outlet />
+            <Footer />
         </div>
     );
 }

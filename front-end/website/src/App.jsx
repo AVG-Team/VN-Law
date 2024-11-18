@@ -23,6 +23,8 @@ const ForgotPassword = loadable(() => import("~/features/ForgotPassword"));
 const Form = loadable(() => import("~/features/Form"));
 const Notify = loadable(() => import("~/features/Notify"));
 const Confirm = loadable(() => import("~/features/Confirm"));
+const Profile = loadable(() => import("~/features/Profile"));
+const News = loadable(() => import("~/features/News"));
 
 function App() {
     useEffect(() => {
@@ -53,6 +55,16 @@ function App() {
                             </Suspense>
                         }
                     />
+                </Route>
+                <Route element={<ContentLayout />}>
+                    <Route
+                        path="/tin-tuc"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <News title="Tin Tức" />
+                            </Suspense>
+                        }
+                    />
                     <Route
                         path="/gioi-thieu"
                         element={
@@ -70,18 +82,18 @@ function App() {
                         }
                     />
                     <Route
-                        path="/van-ban-quy-pham-phap-luat"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <VBQPPL title="Văn Bản Quy Phạm Pháp Luật" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
                         path="/bang-bieu"
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <Form title="Bảng Biểu" />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/van-ban-quy-pham-phap-luat"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <VBQPPL title="Văn Bản Quy Phạm Pháp Luật" />
                             </Suspense>
                         }
                     />
@@ -93,8 +105,14 @@ function App() {
                             </Suspense>
                         }
                     />
-                </Route>
-                <Route element={<ContentLayout />}>
+                    <Route
+                        path="/thong-tin-ca-nhan"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <Profile />
+                            </Suspense>
+                        }
+                    />
                     <Route
                         path="/dang-nhap"
                         element={
