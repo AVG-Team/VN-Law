@@ -6,8 +6,8 @@ export default defineConfig({
     plugins: [react()],
     resolve: {
         alias: {
-            '~': '/src',
+            "~": "/src",
         },
     },
-    envPrefix: 'VITE_',
+    envPrefix: "VITE_",
 });
