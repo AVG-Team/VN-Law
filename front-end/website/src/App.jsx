@@ -25,6 +25,7 @@ const Notify = loadable(() => import("~/features/Notify"));
 const Confirm = loadable(() => import("~/features/Confirm"));
 const Profile = loadable(() => import("~/features/Profile"));
 const News = loadable(() => import("~/features/News"));
+const Forum = loadable(() => import("~/features/Forum"));
 
 function App() {
     useEffect(() => {
@@ -57,6 +58,14 @@ function App() {
                     />
                 </Route>
                 <Route element={<ContentLayout />}>
+                    <Route
+                        path="/dien-dan"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <Forum title="Diễn đàn" />
+                            </Suspense>
+                        }
+                    />
                     <Route
                         path="/tin-tuc"
                         element={

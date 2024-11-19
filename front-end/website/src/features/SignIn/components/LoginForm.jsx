@@ -1,17 +1,16 @@
 import { toast } from "react-toastify";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "~/assets/images/logo/logo2.png";
 import { authenticate } from "~/api/auth-service/authClient";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import ActivateAccountButton from "./ActivateAccountButton";
 import Oauth2 from "../Oauth2";
 import { GoogleReCaptchaProvider, GoogleReCaptcha } from "react-google-recaptcha-v3";
 import Login from "../../../assets/images/lottie/login.json";
 import Lottie from "lottie-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFacebook, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { Divider } from "antd";
+import { faArrowAltCircleLeft } from "@fortawesome/free-regular-svg-icons";
 
 export default function LoginForm() {
     const navigate = useNavigate();
@@ -21,6 +20,18 @@ export default function LoginForm() {
     const [recaptchaToken, setRecaptchaToken] = useState(null);
     const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
     const [loading, setLoading] = useState(false);
+    const [showResent, setShowResent] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(60);
+
+    useEffect(() => {
+        if (timeLeft <= 0) return;
+
+        const timer = setInterval(() => {
+            setTimeLeft((prev) => prev - 1);
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [timeLeft]);
 
     const [formData, setFormData] = useState({
         email: "",
@@ -31,51 +42,51 @@ export default function LoginForm() {
         setRecaptchaToken(token);
     };
 
-    async function handleSubmit(e) {
-        e.preventDefault();
+    // async function handleSubmit(e) {
+    //     e.preventDefault();
 
-        const { email, password } = formData;
+    //     const { email, password } = formData;
 
-        // validate
-        const validationErrors = {};
+    //     // validate
+    //     const validationErrors = {};
 
-        if (!email.trim()) {
-            validationErrors.email = "Email là bắt buộc";
-        } else if (!/\S+@\S+\.\S+/.test(email)) {
-            validationErrors.email = "Email không hợp lệ";
-        }
+    //     if (!email.trim()) {
+    //         validationErrors.email = "Email là bắt buộc";
+    //     } else if (!/\S+@\S+\.\S+/.test(email)) {
+    //         validationErrors.email = "Email không hợp lệ";
+    //     }
 
-        if (!password.trim()) {
-            validationErrors.password = "Mật khẩu là bắt buộc";
-        } else if (password.length < 8) {
-            validationErrors.password = "Mật khẩu phải có ít nhất 8 kí tự";
-        }
+    //     if (!password.trim()) {
+    //         validationErrors.password = "Mật khẩu là bắt buộc";
+    //     } else if (password.length < 8) {
+    //         validationErrors.password = "Mật khẩu phải có ít nhất 8 kí tự";
+    //     }
 
-        setErrors(validationErrors);
+    //     setErrors(validationErrors);
 
-        //fetch api
-        if (Object.keys(validationErrors).length === 0) {
-            try {
-                setLoading(true);
-                const response = await authenticate({
-                    email: formData.email,
-                    password: formData.password,
-                    recaptchaToken: recaptchaToken,
-                });
-                toast.success(response.message, {
-                    onClose: () => navigate("/"),
-                    autoClose: 1000,
-                });
-            } catch (err) {
-                toast.error(err.message, {
-                    autoClose: 1000,
-                });
-                console.error(err.message);
-            } finally {
-                setLoading(false);
-            }
-        }
-    }
+    //     //fetch api
+    //     if (Object.keys(validationErrors).length === 0) {
+    //         try {
+    //             setLoading(true);
+    //             const response = await authenticate({
+    //                 email: formData.email,
+    //                 password: formData.password,
+    //                 recaptchaToken: recaptchaToken,
+    //             });
+    //             toast.success(response.message, {
+    //                 onClose: () => navigate("/"),
+    //                 autoClose: 1000,
+    //             });
+    //         } catch (err) {
+    //             toast.error(err.message, {
+    //                 autoClose: 1000,
+    //             });
+    //             console.error(err.message);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     }
+    // }
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -89,6 +100,13 @@ export default function LoginForm() {
     function togglePassword() {
         setShowPassword(!showPassword);
     }
+
+    const handleSubmit = () => {
+        setShowResent(true);
+    };
+    const handleBack = () => {
+        setShowResent(false);
+    };
 
     return (
         // <Box className="px-5 mx-auto rounded shadow-2xl py-7 sm:w-6/12 lg:w-4/12">
@@ -184,7 +202,11 @@ export default function LoginForm() {
                     <span className="mt-2 text-sm text-center text-blue-gray-800">
                         Đăng nhập để sử dụng hệ thống hỗ trợ pháp lý
                     </span>
-                    <div className="flex flex-col items-center justify-center w-[90%] max-w-md p-5 mt-6 bg-white border rounded-xl gap-4 shadow-md">
+                    <div
+                        className={`flex-col items-center justify-center w-[90%] max-w-md p-5 mt-6 bg-white border rounded-xl gap-4 shadow-md ${
+                            showResent ? "hidden" : "flex"
+                        }`}
+                    >
                         <button className="flex items-center justify-center w-full h-12 px-4 text-black bg-slate-200 rounded-xl hover:bg-slate-300">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -228,9 +250,37 @@ export default function LoginForm() {
                             className="w-full h-12 px-4 text-gray-700 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-400"
                             placeholder="Nhập email của bạn"
                         />
-                        <button className="flex items-center justify-center w-full h-12 px-4 mt-3 text-white bg-blue-600 rounded-xl hover:bg-blue-700">
+                        <button
+                            className="flex items-center justify-center w-full h-12 px-4 mt-3 text-white bg-blue-600 rounded-xl hover:bg-blue-700"
+                            onClick={handleSubmit}
+                        >
                             Đăng nhập / Đăng ký
                         </button>
+                    </div>
+                    <div
+                        className={` flex-col items-center justify-center w-[90%] max-w-md p-5 mt-6 bg-white border rounded-xl gap-4 shadow-md  ${
+                            showResent ? "flex" : "hidden"
+                        }`}
+                    >
+                        <span className="text-lg font-bold text-center">Kiểm tra mail của bạn</span>
+                        <span className="mt-6 text-lg text-center">
+                            Vui lòng truy cập vào mail nguyenmaibaohuy@gmail.com để xác thực
+                        </span>
+                        <div className="flex flex-row gap-2">
+                            <button
+                                className="flex items-center justify-center h-12 px-4 text-black bg-slate-200 rounded-xl hover:bg-slate-300"
+                                onClick={handleBack}
+                            >
+                                <FontAwesomeIcon icon={faArrowAltCircleLeft} className="text-lg text-gray-400" />
+                            </button>
+                            <div className="flex items-center justify-center px-8 bg-slate-200 rounded-xl">
+                                {timeLeft > 0 ? (
+                                    <span className="font-bold text-gray-400">Gửi lại mail trong ( {timeLeft}s ) </span>
+                                ) : (
+                                    <span className="font-bold text-blue-500">Gửi lại mail</span>
+                                )}
+                            </div>
+                        </div>
                     </div>
                     <span className="mt-4 text-sm text-center text-gray-400">
                         Bằng việc đăng ký, bạn đồng ý với Chính sách và <br /> Điều khoản của AI Tra cứu Luật
