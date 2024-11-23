@@ -67,6 +67,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/auth_service
     ports:
       - "9001:9001"
+    volumes:
+      - ./auth-service/src:/app/src  # Mount thư mục src vào container
+      - ./auth-service/src/main/resources/.env:/app/.env  # Mount file .env vào container
 
   react-frontend:
     build:

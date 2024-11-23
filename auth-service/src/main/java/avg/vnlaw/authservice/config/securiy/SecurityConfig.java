@@ -10,10 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,13 +29,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
     @Autowired
+    private Environment env;
+
+    @Value("${api.key.name:X-API-KEY}")
+    private String apiKeyHeaderName;
+
+    private String getApiKeyHeaderValue() {
+        return env.getProperty("API_KEY_VALUE");
+    }
+
+    @Autowired
     UserService userService;
 
     private static final String[] WHITE_LIST_URL = {
-            "/api/auth/**",
             "/test",
-            "api/oauth2/**",
-            "oauth2/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -66,33 +76,25 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChains(HttpSecurity http) throws Exception {
+        ApiKeyAuthFilter apiKeyAuthFilter = new ApiKeyAuthFilter(apiKeyHeaderName);
+        apiKeyAuthFilter.setAuthenticationManager(authentication -> {
+            String receivedKey = (String) authentication.getPrincipal();
+            if (!getApiKeyHeaderValue().equals(receivedKey)) {
+                throw new ApiKeyAuthenticationException("Invalid API Key");
+            }
+            authentication.setAuthenticated(true);
+            return authentication;
+        });
+
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
-                                .requestMatchers("/api/**").permitAll()
-                                .anyRequest().permitAll()
+                                .requestMatchers("/api/**").authenticated()
+                                .anyRequest().authenticated()
                 )
-
-                .oauth2Login(oauth2Login ->
-                        oauth2Login
-                                .authorizationEndpoint(authEndpoint ->
-                                        authEndpoint
-                                                .baseUri("/oauth2/authorize")
-                                                .authorizationRequestRepository(cookieAuthorizationRequestRepository())
-                                )
-                                .redirectionEndpoint(redirectEndpoint ->
-                                        redirectEndpoint
-                                                .baseUri("/oauth2/callback/*")
-                                )
-                                .userInfoEndpoint(userInfoEndpoint ->
-                                        userInfoEndpoint
-                                                .userService(oAuth2Service)
-                                )
-                                .successHandler(oAuth2AuthenticationSuccessHandler)
-                                .failureHandler(oAuth2AuthenticationFailureHandler)
-                )
+                .addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -100,8 +102,32 @@ public class SecurityConfig {
                         logout.logoutUrl("/api/auth/logout")
                                 .addLogoutHandler(logoutHandler)
                                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
+                );
+
+        return http.build();
+    }
+
+    @Bean
+    public SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/api/oauth2/**") // Chỉ áp dụng cho các endpoint OAuth2
+                .authorizeHttpRequests(req -> req
+                        .anyRequest().authenticated()
                 )
-        ;
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .authorizationEndpoint(authEndpoint -> authEndpoint
+                                .baseUri("/oauth2/authorize")
+                                .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+                        )
+                        .redirectionEndpoint(redirectEndpoint -> redirectEndpoint
+                                .baseUri("/oauth2/callback/*")
+                        )
+                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
+                                .userService(oAuth2Service)
+                        )
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
+                );
 
         return http.build();
     }

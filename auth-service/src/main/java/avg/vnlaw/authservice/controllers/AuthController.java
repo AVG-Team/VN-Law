@@ -25,10 +25,10 @@ public class AuthController {
     public ResponseEntity<?> register(
             @RequestBody RegisterRequest request
     ) {
-        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
-        if (!reCaptchaResponse.isSuccess()) {
-            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
-        }
+//        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+//        if (!reCaptchaResponse.isSuccess()) {
+//            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
+//        }
         String message;
         AuthenticationResponse authResponse = authService.register(request);
         if (authResponse.getType() == AuthenticationResponseEnum.EMAIL_ALREADY_REGISTERED) {
@@ -37,17 +37,16 @@ public class AuthController {
         }
         message = "Account registered successfully";
         return ResponseHandler.responseOk(message, authResponse);
-
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(
             @RequestBody AuthenticationRequest request
     ) {
-        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
-        if (!reCaptchaResponse.isSuccess()) {
-            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
-        }
+//        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+//        if (!reCaptchaResponse.isSuccess()) {
+//            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
+//        }
         String message;
         AuthenticationResponse authResponse = authService.authenticate(request);
         try {
