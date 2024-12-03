@@ -1,6 +1,6 @@
 import axiosClient from "../axiosClient";
 
-const urlLaw = "law/api/v1/chapter";
+const urlLaw = "law/chapter";
 const chapterApi = {
     getAll() {
         return axiosClient.get(urlLaw);

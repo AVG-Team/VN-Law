@@ -1,6 +1,6 @@
 import axiosClient from "../axiosClient";
 
-const urlLaw = "law/api/v1/topic";
+const urlLaw = "law/topic";
 const topicApi = {
     getAll() {
         return axiosClient.get(urlLaw);

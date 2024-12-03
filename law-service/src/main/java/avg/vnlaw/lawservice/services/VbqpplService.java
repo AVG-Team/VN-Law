@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class VbqpplService implements BaseService<VbqpplResponse, Integer> {
+public class VbqpplService {
 
 
     private final VbqpplRepository vbqpplRepository;
@@ -43,26 +43,6 @@ public class VbqpplService implements BaseService<VbqpplResponse, Integer> {
         }else {
             return vbqpplRepository.findAllByType(Optional.of(""),pageable);
         }
-
-    }
-
-    @Override
-    public Optional<VbqpplResponse> findById(Integer id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public VbqpplResponse create(VbqpplResponse entity) {
-        return null;
-    }
-
-    @Override
-    public VbqpplResponse update(Integer id, VbqpplResponse entity) {
-        return null;
-    }
-
-    @Override
-    public void delete(Integer id) {
 
     }
 }

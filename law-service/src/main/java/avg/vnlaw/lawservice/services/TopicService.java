@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class TopicService implements BaseService<TopicRequest,String> {
+public class TopicService {
 
     final TopicRepository topicRepository;
 
@@ -36,25 +36,5 @@ public class TopicService implements BaseService<TopicRequest,String> {
         return topics.stream()
                 .sorted(Comparator.comparingInt(TopicResponse::getOrder))
                 .toList();
-    }
-
-    @Override
-    public Optional<TopicRequest> findById(String id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public TopicRequest create(TopicRequest entity) {
-        return null;
-    }
-
-    @Override
-    public TopicRequest update(String id, TopicRequest entity) {
-        return null;
-    }
-
-    @Override
-    public void delete(String id) {
-
     }
 }

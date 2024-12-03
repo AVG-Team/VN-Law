@@ -12,9 +12,9 @@ import java.util.List;
 @Repository
 public interface TopicRepository extends JpaRepository<Topic, String> {
 
-    @Query("select new avg.vnlaw.lawservice.responses.ResponseTopic(t.id,t.name,t.order) from Topic t where t.id = ?1")
+    @Query("select new avg.vnlaw.lawservice.dto.response.TopicResponse(t.id,t.name,t.order) from Topic t where t.id = ?1")
     public TopicResponse findTopicById(String id);
 
-    @Query("select new avg.vnlaw.lawservice.responses.ResponseTopic(t.id,t.name,t.order) from Topic t")
+    @Query("select new avg.vnlaw.lawservice.dto.response.TopicResponse(t.id,t.name,t.order) from Topic t")
     public List<TopicResponse> findAllTopics();
 }

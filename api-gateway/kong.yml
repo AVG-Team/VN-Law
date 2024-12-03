@@ -9,7 +9,7 @@ services:
         paths:
           - /auth
   - name: law-service
-    url: http://law-service:9002
+    url: http://172.30.208.1:9002
     routes:
       - name: law-route
         paths:

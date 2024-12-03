@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class IndexVbqpplService implements BaseService <IndexVbqpplRequest,Integer> {
+public class IndexVbqpplService  {
 
     private final IndexVbqpplRepository indexVbqpplRepository;
 
@@ -34,25 +34,5 @@ public class IndexVbqpplService implements BaseService <IndexVbqpplRequest,Integ
     public Page<IndexVbqpplResponse> getAllIndexVbqppl(Optional<Integer> pageNo, Optional<Integer> pageSize) {
         Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(10));
         return this.indexVbqpplRepository.findAllIndex(pageable);
-    }
-
-    @Override
-    public Optional<IndexVbqpplRequest> findById(Integer id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public IndexVbqpplRequest create(IndexVbqpplRequest entity) {
-        return null;
-    }
-
-    @Override
-    public IndexVbqpplRequest update(Integer id, IndexVbqpplRequest entity) {
-        return null;
-    }
-
-    @Override
-    public void delete(Integer id) {
-
     }
 }
