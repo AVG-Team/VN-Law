@@ -122,6 +122,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .refreshToken(refreshToken)
                 .name(user.getName())
                 .role(user.getRole().getName())
+                .email(user.getEmail())
+                .id(user.getId())
                 .type(AuthenticationResponseEnum.OK)
                 .build();
     }
@@ -181,6 +183,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return GetCurrentUserByAccessTokenResponse.builder()
                 .name(user.getName())
                 .role(user.getRole().getName())
+                .email(user.getEmail())
+                .id(user.getId())
+                .type(AuthenticationResponseEnum.OK)
                 .build();
     }
 

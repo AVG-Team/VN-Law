@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +20,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -75,12 +77,25 @@ public class SecurityConfig {
     private HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
     @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return (request, response, authException) -> {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            String message = "Invalid API Key Entry Point";
+            if (authException instanceof ApiKeyAuthenticationException) {
+                message = authException.getMessage();
+            }
+            response.getWriter().write(message);
+        };
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChains(HttpSecurity http) throws Exception {
         ApiKeyAuthFilter apiKeyAuthFilter = new ApiKeyAuthFilter(apiKeyHeaderName);
         apiKeyAuthFilter.setAuthenticationManager(authentication -> {
             String receivedKey = (String) authentication.getPrincipal();
             if (!getApiKeyHeaderValue().equals(receivedKey)) {
-                throw new ApiKeyAuthenticationException("Invalid API Key");
+                throw new ApiKeyAuthenticationException("Invalid API Key Exception");
             }
             authentication.setAuthenticated(true);
             return authentication;
@@ -137,3 +152,4 @@ public class SecurityConfig {
         return new HttpCookieOAuth2AuthorizationRequestRepository();
     }
 }
+

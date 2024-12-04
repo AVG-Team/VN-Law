@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:mobile/data/models/user_model.dart';
 // import 'package:mobile/models/user_model.dart';
 // import 'package:mobile/services/auth_provider.dart';
-import 'package:provider/provider.dart';
 
 class Question {
   String question;

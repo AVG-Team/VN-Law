@@ -6,6 +6,7 @@ import avg.vnlaw.authservice.responses.*;
 import avg.vnlaw.authservice.services.AuthenticationService;
 import avg.vnlaw.authservice.services.ReCaptchaService;
 import avg.vnlaw.authservice.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -96,9 +97,17 @@ public class AuthController {
         return ResponseHandler.responseBuilder(authResponse.getMessage(), authResponse.getType());
     }
 
-    @PostMapping("/get-current-user")
-    public ResponseEntity<?> getCurrentUser(@RequestBody AccessTokenRequest request) {
-        GetCurrentUserByAccessTokenResponse response = authService.getCurrentUserByAccessToken(request.getToken());
-        return ResponseHandler.responseOk("Profile retrieved successfully", response);
+    @GetMapping("/get-current-user")
+    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7); // Lấy token sau "Bearer "
+
+            GetCurrentUserByAccessTokenResponse response = authService.getCurrentUserByAccessToken(token);
+            return ResponseHandler.responseOk("Profile retrieved successfully", response);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authorization header is missing or invalid");
+        }
     }
 }

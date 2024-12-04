@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
-import './user_model.dart';
 import './reply_model.dart';
+import 'auth_response/response_login.dart';
 
 class Comment {
   String id;
