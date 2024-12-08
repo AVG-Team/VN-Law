@@ -1,0 +1,49 @@
+version: '3.9'
+networks:
+  net:
+
+services:
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    depends_on: [otel-collector]
+    networks:
+      - net
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.111.0
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ${PWD}/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"  # OTLP
+      - "4318:4318"
+      - "55681:55681" # Legacy
+    networks:
+      - net
+  server:
+    image: ghcr.io/chroma-core/chroma:0.5.13
+    volumes:
+      - index_data:/index_data
+    ports:
+      - "8000:8000"
+    networks:
+      - net
+    environment:
+      - CHROMA_SERVER_AUTHN_PROVIDER=${CHROMA_SERVER_AUTHN_PROVIDER}
+      - CHROMA_SERVER_AUTHN_CREDENTIALS_FILE=${CHROMA_SERVER_AUTHN_CREDENTIALS_FILE}
+      - CHROMA_SERVER_AUTHN_CREDENTIALS=${CHROMA_SERVER_AUTHN_CREDENTIALS}
+      - CHROMA_OTEL_COLLECTION_ENDPOINT=http://otel-collector:4317/
+      - CHROMA_OTEL_EXPORTER_HEADERS=${CHROMA_OTEL_EXPORTER_HEADERS:-{}}
+      - CHROMA_OTEL_SERVICE_NAME=${CHROMA_OTEL_SERVICE_NAME:-chroma}
+      - CHROMA_OTEL_GRANULARITY=${CHROMA_OTEL_GRANULARITY:-all}
+    depends_on:
+      - otel-collector
+      - zipkin
+
+
+volumes:
+  index_data:
+    driver: local
+  backups:
+    driver: local
