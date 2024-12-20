@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'typewriter_text.dart'; // Ensure the import path is correct
+
+import '../../custom_widgets/animation/type_writer/typewriter_text.dart';
 
 class RegScreen extends StatefulWidget {
   const RegScreen({super.key});
@@ -65,7 +66,6 @@ class _RegScreenState extends State<RegScreen> {
                 const SizedBox(width: 8),
                 const TypewriterText(
                   text: 'Back',
-                  duration: Duration(milliseconds: 150),
                 ),
               ],
             ),

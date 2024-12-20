@@ -21,6 +21,8 @@ class WebSocketChat {
   Timer? _reconnectTimer;
   final _pendingMessages = <String>{};
 
+  bool _isDisposed = false;
+
   // Stream controller để phát tín hiệu connection status
   final _connectionStatusController = StreamController<String>.broadcast();
   Stream<String> get connectionStatus => _connectionStatusController.stream;
@@ -60,20 +62,26 @@ class WebSocketChat {
   }
 
   void _onDisconnect(StompFrame frame) {
-    _connectionStatusController.add('disconnected');
-    _handleReconnect();
+    if (!_isDisposed) {
+      _connectionStatusController.add('disconnected');
+      _handleReconnect();
+    }
   }
 
   void _onStompError(StompFrame frame) {
-    _connectionStatusController.add('error');
+    if (!_isDisposed) {
+      _connectionStatusController.add('error');
+    }
   }
 
   void _onWebSocketError(dynamic error) {
-    _connectionStatusController.add('error');
+    if (!_isDisposed) {
+      _connectionStatusController.add('error');
+    }
   }
 
   void _subscribeToTopics() {
-    if (!(_stompClient?.connected ?? false)) {
+    if (_isDisposed || !(_stompClient?.connected ?? false)) {
       return;
     }
 
@@ -112,11 +120,14 @@ class WebSocketChat {
   }
 
   void _handleReconnect() {
+    if (_isDisposed) return;
     int reconnectAttempts = 0;
 
     void attemptReconnect() {
-      if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-        _connectionStatusController.add('failed');
+      if (_isDisposed || reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+        if (!_isDisposed) {
+          _connectionStatusController.add('failed');
+        }
         return;
       }
 
@@ -170,7 +181,7 @@ class WebSocketChat {
   }
 
   String sendMessage(String content) {
-    if (content.trim().isEmpty) return '';
+    if (_isDisposed || content.trim().isEmpty) return '';
 
     final messageId = const Uuid().v4();
     _pendingMessages.add(messageId);
@@ -181,9 +192,21 @@ class WebSocketChat {
   }
 
   void dispose() {
+    _isDisposed = true;
     _reconnectTimer?.cancel();
-    _stompClient?.deactivate();
-    _connectionStatusController.close();
-    _messageController.close();
+
+    if (_stompClient != null) {
+      _stompClient?.deactivate();
+      _stompClient = null;
+    }
+
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!_connectionStatusController.isClosed) {
+        _connectionStatusController.close();
+      }
+      if (!_messageController.isClosed) {
+        _messageController.close();
+      }
+    });
   }
 }

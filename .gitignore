@@ -39,3 +39,8 @@ build/
 front-end/website/src/mock/test.js
 /crawl/src/main/java/law_direction/
 node_modules
+law-service/.env
+/screen
+front-end/mobile/.env.dev
+front-end/mobile/.env.prod
+law-service/.env

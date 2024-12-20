@@ -12,12 +12,17 @@ class AuthProviderCustom with ChangeNotifier {
   UserModel? _userModel;
 
   UserModel? get userModel => _userModel;
+  bool _initialized = false;
+  bool get initialized => _initialized;
 
   Future<void> checkAuthState() async {
+    if (_initialized) return;
+
     final User? firebaseUser = _auth.currentUser;
     if (firebaseUser != null) {
       await _loadUserData(firebaseUser);
     }
+    _initialized = true;
     notifyListeners();
   }
 
