@@ -44,3 +44,4 @@ law-service/.env
 front-end/mobile/.env.dev
 front-end/mobile/.env.prod
 law-service/.env
+law-service/.env
