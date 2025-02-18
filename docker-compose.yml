@@ -40,6 +40,16 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
+  chroma-training-chat:
+    image: ghcr.io/chroma-core/chroma:latest
+    restart: always
+    ports:
+      - "3308:8000"  # ChromaDB Port
+    networks:
+      - db-network
+    volumes:
+      - chroma_data_history:/chroma/chroma
+
   law-service:
     build: ./law-service
     restart: always
@@ -89,6 +99,7 @@ services:
 
 volumes:
   mysql_data:
+  chroma_data_history:
 
 networks:
   db-network:
