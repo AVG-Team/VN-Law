@@ -20,48 +20,25 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/table")
 @RequiredArgsConstructor
-public class TableController extends BaseController<Table, TableRequest,Integer> {
+public class TableController {
 
-    private TableService tableService;
+    private final TableService tableService;
 
     @GetMapping("")
     public ResponseEntity<Object> getAllTables(
             @RequestParam(name = "pageNo", value = "pageNo") Optional<Integer> pageNo,
-            @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize){
+            @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize) {
         return HandlerResponse.responseBuilder("Complete",
-                HttpStatus.OK,tableService.getAllTable(pageNo,pageSize));
+                HttpStatus.OK, tableService.getAllTable(pageNo, pageSize));
     }
+
     @GetMapping("/filter")
     public ResponseEntity<Object> getAllTableByFilter(
             @RequestParam(name = "content", value = "content") Optional<String> content,
             @RequestParam(name = "pageNo", value = "pageNo") Optional<Integer> pageNo,
-            @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize){
+            @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize) {
         return HandlerResponse.responseBuilder("Complete",
-                HttpStatus.OK,tableService.getAllTableByFilter(content,pageNo,pageSize));
+                HttpStatus.OK, tableService.getAllTableByFilter(content, pageNo, pageSize));
     }
 
-    @Override
-    public ResponseEntity<Table> create(TableRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Table> update(Integer id, TableRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Table> delete(TableRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Table> get(TableRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<List<Table>> getAll() {
-        return null;
-    }
 }

@@ -19,9 +19,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/vbqppl")
 @RequiredArgsConstructor
-public class VbqpplController extends BaseController<Vbqppl, VbqpplRequest,Integer> {
+public class VbqpplController  {
 
-    private VbqpplService vbqpplService;
+    private final VbqpplService vbqpplService;
 
     @GetMapping("")
     public ResponseEntity<Object> getAllVbqppl(
@@ -50,29 +50,4 @@ public class VbqpplController extends BaseController<Vbqppl, VbqpplRequest,Integ
                 HttpStatus.OK,this.vbqpplService.getVbqpplByType(Optional.of(decodedType.toUpperCase()),pageNo,pageSize));
     }
 
-
-    @Override
-    public ResponseEntity<Vbqppl> create(VbqpplRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Vbqppl> update(Integer id, VbqpplRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Vbqppl> delete(VbqpplRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Vbqppl> get(VbqpplRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<List<Vbqppl>> getAll() {
-        return null;
-    }
 }

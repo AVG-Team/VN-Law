@@ -16,12 +16,12 @@ public interface TableRepository extends JpaRepository<Tables,String> {
 
     public List<TableResponse> findAllByArticle_IdOrderByArticle(String articleId);
 
-    @Query(" select new avg.vnlaw.lawservice.responses.ResponseTable(t.id,t.html)" +
+    @Query(" select new avg.vnlaw.lawservice.dto.response.TableResponse(t.id,t.html)" +
             " from Tables t " +
             " where ?1 = '' OR t.html like %?1%")
     public Page<TableResponse> findAllByFilter(String content, Pageable pageable);
 
-    @Query(" select new avg.vnlaw.lawservice.responses.ResponseTable(t.id,t.html)" +
+    @Query(" select new avg.vnlaw.lawservice.dto.response.TableResponse(t.id,t.html)" +
             " from Tables t ")
     public Page<TableResponse> findAllTable(Pageable pageable);
 }

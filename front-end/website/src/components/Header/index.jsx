@@ -1,5 +1,5 @@
+import Navbar from "../Navbar";
 import Banner from "./components/Banner";
-import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
 export default function Header() {
     return (

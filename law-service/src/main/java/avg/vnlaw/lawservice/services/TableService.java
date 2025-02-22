@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class TableService implements BaseService<TableRequest,Integer> {
+public class TableService {
 
     public final TableRepository tableRepository;
 
@@ -30,23 +30,5 @@ public class TableService implements BaseService<TableRequest,Integer> {
         return tableRepository.findAllByFilter(content.orElse(""),pageable);
     }
 
-    @Override
-    public Optional<TableRequest> findById(Integer id) {
-        return Optional.empty();
-    }
 
-    @Override
-    public TableRequest create(TableRequest entity) {
-        return null;
-    }
-
-    @Override
-    public TableRequest update(Integer id, TableRequest entity) {
-        return null;
-    }
-
-    @Override
-    public void delete(Integer id) {
-
-    }
 }

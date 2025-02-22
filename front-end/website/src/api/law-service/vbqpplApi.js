@@ -1,6 +1,6 @@
 import axiosClient from "../axiosClient";
 
-const urlLaw = "law/api/v1/vbqppl";
+const urlLaw = "law/vbqppl";
 const VbqpplApi = {
     getAllByPage(params) {
         return axiosClient.get(urlLaw, { params });

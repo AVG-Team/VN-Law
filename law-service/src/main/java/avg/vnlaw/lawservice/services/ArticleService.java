@@ -25,7 +25,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ArticleService implements BaseService<ArticleRequest, String> {
+public class ArticleService {
 
     private final ArticleRepository articleRepository ;
     private final FileRepository fileRepository;
@@ -131,23 +131,4 @@ public class ArticleService implements BaseService<ArticleRequest, String> {
                 .build();
     }
 
-    @Override
-    public Optional<ArticleRequest> findById(String id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public ArticleRequest create(ArticleRequest entity) {
-        return null;
-    }
-
-    @Override
-    public ArticleRequest update(String id, ArticleRequest entity) {
-        return null;
-    }
-
-    @Override
-    public void delete(String id) {
-
-    }
 }

@@ -1,10 +1,11 @@
 import React from "react";
-
+import lawHero from "../../../assets/images/lottie/lawHero.json";
+import Lottie from "lottie-react";
 const HeroSection = () => {
     return (
-        <div className="w-full bg-[#fff] rounded-md relative px-10">
+        <div className="w-full bg-[#fff] rounded-md relative px-10 py-12">
             {/* header */}
-            <header className="flex flex-col items-center justify-between gap-12 px-8 mt-5 lg:flex-row lg:gap-0">
+            <header className="flex flex-col items-center justify-between gap-12 px-8 lg:flex-row lg:gap-0">
                 <div className="w-[100px] h-[100px] bg-[#008DDA] blur-[90px] absolute bottom-[80px] right-[80px]"></div>
                 <div className="w-full lg:w-[45%]">
                     <p>Chào mọi người!</p>
@@ -15,11 +16,12 @@ const HeroSection = () => {
                 </div>
 
                 <div className="w-full lg:w-[55%]">
-                    <img src="https://i.ibb.co/syHFhNy/image.png" alt="image" className="" />
+                    <Lottie style={{ width: 900, height: 300, margin: "auto" }} animationData={lawHero} />
+                    {/* <img src="https://i.ibb.co/syHFhNy/image.png" alt="image" className="" /> */}
                 </div>
             </header>
 
-            {/* <section className="px-8 pb-[30px]">
+            <section className="px-8 pb-[30px]">
                 <h1 className="text-[1.3rem] font-semibold">Chức năng của chúng tôi</h1>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[20px] mt-10 w-[70%]">
@@ -45,7 +47,7 @@ const HeroSection = () => {
                         </p>
                     </div>
                 </div>
-            </section> */}
+            </section>
 
             {/* right blur shadow */}
         </div>

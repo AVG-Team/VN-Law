@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ChapterService implements BaseService<ChapterResponse, String> {
+public class ChapterService  {
 
 
     final ChapterRepository chapterRepository;
@@ -54,23 +54,4 @@ public class ChapterService implements BaseService<ChapterResponse, String> {
         return chapterRepository.findAll(name.orElse(""), pageable);
     }
 
-    @Override
-    public Optional<ChapterResponse> findById(String id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public ChapterResponse create(ChapterResponse entity) {
-        return null;
-    }
-
-    @Override
-    public ChapterResponse update(String id, ChapterResponse entity) {
-        return null;
-    }
-
-    @Override
-    public void delete(String id) {
-
-    }
 }

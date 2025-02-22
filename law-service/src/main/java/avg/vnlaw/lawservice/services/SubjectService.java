@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class SubjectService implements BaseService<SubjectResponse, String> {
+public class SubjectService  {
 
     final SubjectRepository subjectRepository;
 
@@ -38,23 +38,4 @@ public class SubjectService implements BaseService<SubjectResponse, String> {
         return subjectRepository.findAllSubjects(name.orElse(""), pageable);
     }
 
-    @Override
-    public Optional<SubjectResponse> findById(String id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public SubjectResponse create(SubjectResponse entity) {
-        return null;
-    }
-
-    @Override
-    public SubjectResponse update(String id, SubjectResponse entity) {
-        return null;
-    }
-
-    @Override
-    public void delete(String id) {
-
-    }
 }

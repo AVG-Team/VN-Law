@@ -1,6 +1,6 @@
 import axiosClient from "../axiosClient";
 
-const urlLaw = "law/api/v1/subject";
+const urlLaw = "law/subject";
 
 const subjectApi = {
     getAllByPage(params) {
@@ -17,7 +17,7 @@ const subjectApi = {
     },
 
     getByTopic(idTopic) {
-        const url = urlLaw + `/${idTopic}`;
+        const url = urlLaw + `/topic/${idTopic}`;
         return axiosClient.get(url, { idTopic });
     },
 };

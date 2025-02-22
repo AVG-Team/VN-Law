@@ -1,10 +1,12 @@
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import loadable from "@loadable/component";
 import AuthLayout from "~/shared/layouts/AuthLayout";
 import BasicLayout from "~/shared/layouts/BasicLayout";
 import { CircularProgress } from "@mui/material";
 import ContentLayout from "~/shared/layouts/ContentLayout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const Home = loadable(() => import("~/features/Home"));
 const About = loadable(() => import("~/features/About"));
@@ -21,8 +23,15 @@ const ForgotPassword = loadable(() => import("~/features/ForgotPassword"));
 const Form = loadable(() => import("~/features/Form"));
 const Notify = loadable(() => import("~/features/Notify"));
 const Confirm = loadable(() => import("~/features/Confirm"));
+const Profile = loadable(() => import("~/features/Profile"));
+const News = loadable(() => import("~/features/News"));
+const Forum = loadable(() => import("~/features/Forum"));
 
 function App() {
+    useEffect(() => {
+        AOS.init();
+        AOS.refresh();
+    }, []);
     return (
         <BrowserRouter>
             <Routes>
@@ -47,6 +56,24 @@ function App() {
                             </Suspense>
                         }
                     />
+                </Route>
+                <Route element={<ContentLayout />}>
+                    <Route
+                        path="/dien-dan"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <Forum title="Diễn đàn" />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/tin-tuc"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <News title="Tin Tức" />
+                            </Suspense>
+                        }
+                    />
                     <Route
                         path="/gioi-thieu"
                         element={
@@ -64,18 +91,18 @@ function App() {
                         }
                     />
                     <Route
-                        path="/van-ban-quy-pham-phap-luat"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <VBQPPL title="Văn Bản Quy Phạm Pháp Luật" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
                         path="/bang-bieu"
                         element={
                             <Suspense fallback={<CircularProgress />}>
                                 <Form title="Bảng Biểu" />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/van-ban-quy-pham-phap-luat"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <VBQPPL title="Văn Bản Quy Phạm Pháp Luật" />
                             </Suspense>
                         }
                     />
@@ -87,8 +114,14 @@ function App() {
                             </Suspense>
                         }
                     />
-                </Route>
-                <Route element={<ContentLayout />}>
+                    <Route
+                        path="/thong-tin-ca-nhan"
+                        element={
+                            <Suspense fallback={<CircularProgress />}>
+                                <Profile />
+                            </Suspense>
+                        }
+                    />
                     <Route
                         path="/dang-nhap"
                         element={

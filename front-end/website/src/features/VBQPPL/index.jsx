@@ -2,6 +2,8 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { Col, Pagination, Row, Card, Tag } from "antd";
 import VbqpplApi from "~/api/law-service/vbqpplApi";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileLines } from "@fortawesome/free-solid-svg-icons";
 
 const categories = [
     { id: "1", name: "Luật" },
@@ -57,36 +59,45 @@ const VBQPPL = (props) => {
 
     return (
         <div className="px-10 py-8 lg:px-20">
-            <div>
-                <p className="text-2xl font-bold">Xem danh sách các văn bản quy phạm pháp luật</p>
-                <p className="text-sm italic">
-                    *Nhiều văn bản pháp luật hiện nay vẫn chưa được pháp điển hoá cụ thể. Dưới đây là chỉ sự sắp xếp
-                    nhưng văn bản đó do hệ thống tự tính toán, không phải chính thức từ chính chủ*
-                </p>
+            <div className="p-6 bg-white border border-gray-300 rounded-lg shadow-lg">
+                <div className="text-center">
+                    <p className="mb-2 text-2xl font-bold">
+                        <FontAwesomeIcon icon={faFileLines} className="mr-2" />
+                        Xem danh sách các văn bản quy phạm pháp luật
+                    </p>
+                    <p className="text-sm italic">
+                        *Nhiều văn bản pháp luật hiện nay vẫn chưa được pháp điển hoá cụ thể. Dưới đây là chỉ sự sắp xếp
+                        nhưng văn bản đó do hệ thống tự tính toán, không phải chính thức từ chính chủ*
+                    </p>
+                </div>
+                <div className="grid grid-cols-2 gap-2 mt-3 lg:grid-cols-3 lg:gap-4">
+                    <select
+                        name="category"
+                        id="search_category"
+                        value={type}
+                        className="rounded-md border-0 p-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        onChange={(e) => handleCategoryChange(e.target.value)}
+                    >
+                        <option value="">Tìm kiếm theo thể loại...</option>
+                        {categories.map((item) => (
+                            <option key={item.id} value={item.name}>
+                                {item.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
-            <div className="grid grid-cols-2 gap-2 mt-3 lg:grid-cols-3 lg:gap-4">
-                <select
-                    name="category"
-                    id="search_category"
-                    value={type}
-                    className="rounded-md border-0 p-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    onChange={(e) => handleCategoryChange(e.target.value)}
-                >
-                    <option value="">Tìm kiếm theo thể loại...</option>
-                    {categories.map((item) => (
-                        <option key={item.id} value={item.name}>
-                            {item.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <Row gutter={[16, 16]} className="mt-5">
+
+            <Row
+                gutter={[16, 16]}
+                className=" !ml-0 !mr-0 p-6 mt-5 bg-white border border-gray-300 rounded-lg shadow-lg"
+            >
                 {content.map((item) => (
                     <Col key={item.id} className="max-h-[300px]" span={6} sm={12} xs={24} md={12} lg={8}>
                         <Card
                             hoverable
                             onClick={() => window.open(`/vbqppl/${item.id}`, "_self")}
-                            className="h-full overflow-hidden"
+                            className="h-full overflow-hidden shadow-lg "
                             title={
                                 <div style={{ display: "flex", flexDirection: "column" }}>
                                     <div className="flex justify-end">

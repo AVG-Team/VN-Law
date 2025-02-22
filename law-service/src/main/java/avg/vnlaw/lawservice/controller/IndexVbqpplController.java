@@ -17,9 +17,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/index-vbqppl")
 @RequiredArgsConstructor
-public class IndexVbqpplController extends BaseController<IndexVbqppl, IndexVbqpplRequest,Integer> {
+public class IndexVbqpplController {
 
-    private IndexVbqpplService indexVbqpplService;
+    private final IndexVbqpplService indexVbqpplService;
 
     @GetMapping("/{indexId}")
     public ResponseEntity<Object> getIndexVbqppl(@PathVariable Integer indexId) throws AppException {
@@ -34,30 +34,5 @@ public class IndexVbqpplController extends BaseController<IndexVbqppl, IndexVbqp
     ){
         return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,this.indexVbqpplService.getAllIndexVbqppl(pageNo,pageSize));
-    }
-
-    @Override
-    public ResponseEntity<IndexVbqppl> create(IndexVbqpplRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<IndexVbqppl> update(Integer id, IndexVbqpplRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<IndexVbqppl> delete(IndexVbqpplRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<IndexVbqppl> get(IndexVbqpplRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<List<IndexVbqppl>> getAll() {
-        return null;
     }
 }
