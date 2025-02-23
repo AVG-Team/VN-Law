@@ -1,155 +1,109 @@
 package avg.vnlaw.authservice.config.securiy;
 
-import avg.vnlaw.authservice.o2auth.HttpCookieOAuth2AuthorizationRequestRepository;
-import avg.vnlaw.authservice.o2auth.handler.OAuth2AuthenticationFailureHandler;
-import avg.vnlaw.authservice.o2auth.handler.OAuth2AuthenticationSuccessHandler;
+import avg.vnlaw.authservice.config.securiy.JwtAuthenticationFilter;
+import avg.vnlaw.authservice.o2auth.services.CustomOAuth2User;
 import avg.vnlaw.authservice.o2auth.services.OAuth2Service;
+import avg.vnlaw.authservice.services.JwtService;
 import avg.vnlaw.authservice.services.LogoutService;
-import avg.vnlaw.authservice.services.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableMethodSecurity
 public class SecurityConfig {
-    @Autowired
-    private Environment env;
 
-    @Value("${api.key.name:X-API-KEY}")
-    private String apiKeyHeaderName;
-
-    private String getApiKeyHeaderValue() {
-        return env.getProperty("API_KEY_VALUE");
-    }
-
-    @Autowired
-    UserService userService;
-
-    private static final String[] WHITE_LIST_URL = {
-            "/test",
-            "/v2/api-docs",
-            "/v3/api-docs",
-            "/v3/api-docs/**",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/swagger-ui/**",
-            "/swagger/**",
-            "/api-docs",
-            "/swagger",
-            "/webjars/**",
-            "/swagger-ui.html"
-    };
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
-    private final LogoutService logoutHandler;
+    private final LogoutService logoutService;
+    private final OAuth2Service oAuth2Service;
+    private final JwtService jwtService;
 
-    @Autowired
-    private OAuth2Service oAuth2Service;
-
-    @Autowired
-    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
-
-    @Autowired
-    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
-
-    @Autowired
-    private HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
-
-    @Bean
-    public AuthenticationEntryPoint authenticationEntryPoint() {
-        return (request, response, authException) -> {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType("application/json");
-            String message = "Invalid API Key Entry Point";
-            if (authException instanceof ApiKeyAuthenticationException) {
-                message = authException.getMessage();
-            }
-            response.getWriter().write(message);
-        };
-    }
+    private static final String[] WHITE_LIST_URL = {
+            "/api/auth/register",
+            "/api/auth/login",
+            "/api/auth/verify-email",
+            "/oauth2/**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
+    };
 
     @Bean
-    public SecurityFilterChain securityFilterChains(HttpSecurity http) throws Exception {
-        ApiKeyAuthFilter apiKeyAuthFilter = new ApiKeyAuthFilter(apiKeyHeaderName);
-        apiKeyAuthFilter.setAuthenticationManager(authentication -> {
-            String receivedKey = (String) authentication.getPrincipal();
-            if (!getApiKeyHeaderValue().equals(receivedKey)) {
-                throw new ApiKeyAuthenticationException("Invalid API Key Exception");
-            }
-            authentication.setAuthenticated(true);
-            return authentication;
-        });
-
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(req ->
-                        req.requestMatchers(WHITE_LIST_URL)
-                                .permitAll()
-                                .requestMatchers("/api/**").authenticated()
-                                .anyRequest().authenticated()
-                )
-                .addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .logout(logout ->
-                        logout.logoutUrl("/api/auth/logout")
-                                .addLogoutHandler(logoutHandler)
-                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-                );
-
-        return http.build();
-    }
-
-    @Bean
-    public SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/api/oauth2/**") // Chỉ áp dụng cho các endpoint OAuth2
-                .authorizeHttpRequests(req -> req
+                .cors(cors -> cors.configurationSource(request -> new org.springframework.web.cors.CorsConfiguration().applyPermitDefaultValues()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(WHITE_LIST_URL).permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/superuser/**").hasRole("SUPER_USER")
                         .anyRequest().authenticated()
                 )
-                .oauth2Login(oauth2Login -> oauth2Login
-                        .authorizationEndpoint(authEndpoint -> authEndpoint
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout
+                        .logoutUrl("/api/auth/logout")
+                        .addLogoutHandler(logoutService)
+                        .logoutSuccessHandler((req, res, auth) -> res.setStatus(200))
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(auth -> auth
+                                .authorizationRequestRepository(new HttpSessionOAuth2AuthorizationRequestRepository())
                                 .baseUri("/oauth2/authorize")
-                                .authorizationRequestRepository(cookieAuthorizationRequestRepository())
                         )
-                        .redirectionEndpoint(redirectEndpoint -> redirectEndpoint
+                        .redirectionEndpoint(redir -> redir
                                 .baseUri("/oauth2/callback/*")
                         )
-                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
-                                .userService(oAuth2Service)
-                        )
-                        .successHandler(oAuth2AuthenticationSuccessHandler)
-                        .failureHandler(oAuth2AuthenticationFailureHandler)
+                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2Service))
+                        .successHandler((req, res, auth) -> {
+                            logger.info("OAuth2 login successful, processing user: {}", auth.getPrincipal());
+                            CustomOAuth2User oAuth2User = (CustomOAuth2User) auth.getPrincipal();
+                            String email = oAuth2User.getName();
+                            String role = oAuth2User.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
+                            String token = jwtService.generateToken(email, role);
+
+                            // Kiểm tra loại client từ query parameter hoặc header
+                            String clientType = req.getParameter("client_type"); // Ví dụ: ?client_type=web hoặc ?client_type=mobile
+                            if (clientType == null) {
+                                clientType = req.getHeader("X-Client-Type"); // Hoặc dùng header
+                            }
+
+                            if ("mobile".equals(clientType)) {
+                                // Trả về JSON cho Flutter (mobile)
+                                res.setContentType("application/json");
+                                res.getWriter().write("{\"token\": \"" + token + "\"}");
+                                res.setStatus(200);
+                            } else {
+                                // Redirect cho ReactJS (web), mặc định nếu không có client_type
+                                String redirectUrl = "http://localhost:5173/oauth2/callback?token=" + token;
+                                logger.info("Redirecting to: {}", redirectUrl);
+                                res.sendRedirect(redirectUrl);
+                            }
+                        })
+                        .failureHandler((req, res, exception) -> {
+                            logger.error("OAuth2 login failed: {}", exception.getMessage());
+                            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "OAuth2 Authentication Failed");
+                        })
                 );
 
         return http.build();
     }
-
-    @Bean
-    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
-        return new HttpCookieOAuth2AuthorizationRequestRepository();
-    }
 }
-

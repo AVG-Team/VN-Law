@@ -108,6 +108,10 @@ export default function LoginForm() {
         setShowResent(false);
     };
 
+    function handleGoogleLogin() {
+        window.location.href = 'http://localhost:9001/oauth2/authorize/google?client_type=web';
+    }
+
     return (
         // <Box className="px-5 mx-auto rounded shadow-2xl py-7 sm:w-6/12 lg:w-4/12">
         //     <div className="mb-2 text-center">
@@ -207,7 +211,9 @@ export default function LoginForm() {
                             showResent ? "hidden" : "flex"
                         }`}
                     >
-                        <button className="flex items-center justify-center w-full h-12 px-4 text-black bg-slate-200 rounded-xl hover:bg-slate-300">
+                        <button className="flex items-center justify-center w-full h-12 px-4 text-black bg-slate-200 rounded-xl hover:bg-slate-300"
+                        onClick={handleGoogleLogin}
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="w-5 h-5 me-2"

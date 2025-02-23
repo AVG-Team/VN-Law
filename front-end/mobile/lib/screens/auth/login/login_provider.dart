@@ -3,17 +3,7 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-// import 'package:vmoffice/api_service/api_body.dart';
-// import 'package:vmoffice/data/model/auth_response/response_login.dart';
-// import 'package:vmoffice/data/server/respository/auth_repository/auth_repository.dart';
-// import 'package:vmoffice/data/server/respository/repository.dart';
-// import 'package:vmoffice/permission/app_permission_page.dart';
-// import 'package:vmoffice/screens/appFlow/menu/chat_screen/firebase_service.dart';
-// import 'package:vmoffice/utils/nav_utail.dart';
-// import 'package:vmoffice/utils/shared_preferences.dart';
-// import 'package:location/location.dart' as loc;
 import '../../../api_service/api_body.dart';
-// import '../../../data/models/response/response_login.dart';
 import '../../../data/models/auth_response/response_login.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../data/repositories/repository.dart';
@@ -25,7 +15,6 @@ import '../../dashboard_screen.dart';
 class LoginProvider extends ChangeNotifier {
   var emailTextController = TextEditingController();
   var passwordTextController = TextEditingController();
-  String? appThemeId;
   String? email;
   String? password;
   String? error;
@@ -206,4 +195,6 @@ class LoginProvider extends ChangeNotifier {
   locationPermission(context) async {
     Navigator.pop(context);
   }
+
+
 }

@@ -13,6 +13,7 @@ const About = loadable(() => import("~/features/About"));
 const SignUp = loadable(() => import("~/features/SignUp"));
 const VBQPPL = loadable(() => import("~/features/VBQPPL"));
 const SignIn = loadable(() => import("~/features/SignIn"));
+const Callback = loadable(() => import("~/features/SignIn/Oauth2Callback"));
 const TreeLaw = loadable(() => import("~/features/TreeLaw"));
 const SignOut = loadable(() => import("~/features/SignOut"));
 const Contact = loadable(() => import("~/features/Contact"));
@@ -152,6 +153,12 @@ function App() {
                             <Suspense fallback={<CircularProgress />}>
                                 <Confirm title="Đang Xác Minh..." />
                             </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/oauth2/callback"
+                        element={
+                            <Callback />
                         }
                     />
                     <Route

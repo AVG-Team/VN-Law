@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
@@ -18,6 +20,8 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
     private final String url = dotenv.get("FRONTEND_URL");
+
+    private final java.util.Map<String, String> verificationCodes = new java.util.HashMap<>();
 
     @Override
     public void sendEmailRegister(String email, String name, String token) throws MessagingException {
@@ -97,5 +101,40 @@ public class EmailServiceImpl implements EmailService {
         mimeMessageHelper.setText(htmlBody, true);
 
         mailSender.send(mimeMessage);
+    }
+
+    public String sendVerificationEmail(String email) {
+        String code = UUID.randomUUID().toString().substring(0, 6);
+        verificationCodes.put(email, code);
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(email);
+            helper.setSubject("Email Verification");
+            helper.setText("Your verification code is: " + code);
+            mailSender.send(message);
+            return code;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send email: " + e.getMessage());
+        }
+    }
+
+    public boolean verifyEmail(String email, String code) {
+        String storedCode = verificationCodes.get(email);
+        return storedCode != null && storedCode.equals(code);
+    }
+
+    public void sendPasswordEmail(String email, String subject, String content) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(email);
+            helper.setSubject(subject);
+            helper.setText(content);
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send email: " + e.getMessage());
+        }
     }
 }

@@ -33,43 +33,38 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: auth_service  # Tạo sẵn database auth_service
+      MYSQL_USER: auth_user         # Tạo user cho auth-service
+      MYSQL_PASSWORD: auth_password # Mật khẩu cho user
     ports:
-      - "4000:3306"
+      - "3306:3306"
     networks:
       - db-network
     volumes:
       - mysql_data:/var/lib/mysql
-
-  law-service:
-    build: ./law-service
-    restart: always
-    depends_on:
-      - mysql-db
-    networks:
-      - db-network
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:4000/law_service
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: password
-    ports:
-      - "9002:9002"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   auth-service:
     build: ./auth-service
     restart: always
     depends_on:
-      - mysql-db
+      mysql-db:
+        condition: service_healthy  # Chờ MySQL sẵn sàng
     networks:
       - db-network
-    env_file:
-      - ./auth-service/src/main/resources/.env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/auth_service
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/auth_service?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update  # Tự động tạo bảng nếu cần
     ports:
       - "9001:9001"
     volumes:
-      - ./auth-service/src:/app/src  # Mount thư mục src vào container
-      - ./auth-service/src/main/resources/.env:/app/.env  # Mount file .env vào container
+      - ./auth-service/src:/app/src
 
   react-frontend:
     build:
@@ -83,7 +78,6 @@ services:
       - kong
     expose:
       - "5173"
-      - "3000"
     volumes:
       - ./front-end/website:/app
       - /app/node_modules

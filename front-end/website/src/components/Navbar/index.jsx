@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import Logo from "../../assets/images/logo/logo2.png";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { TbLogout2 } from "react-icons/tb";
@@ -18,6 +18,14 @@ export default function Navbar() {
     const [megaMenuSubItem, setMegaMenuSubItem] = useState("");
 
     const navigate = useNavigate();
+
+    const [userInfo, setUserInfo] = useState(null);
+    useEffect(() => {
+        const storedUserInfo = localStorage.getItem('userInfo');
+        if (storedUserInfo) {
+            setUserInfo(JSON.parse(storedUserInfo));
+        }
+    }, []);
 
     return (
         <nav className="relative flex items-center justify-between w-full px-20 py-4 bg-white ">
@@ -77,7 +85,7 @@ export default function Navbar() {
                         <div className="w-[10px] h-[10px] rounded-full bg-green-500 absolute bottom-[0px] right-0 border-2 border-white"></div>
                     </div>
 
-                    <h1 className="text-[1rem] font-[400] text-gray-600 sm:block hidden">Anonymus</h1>
+                    <h1 className="text-[1rem] font-[400] text-gray-600 sm:block hidden">{userInfo?.name || 'Anonymous'}</h1>
 
                     <div
                         className={`${

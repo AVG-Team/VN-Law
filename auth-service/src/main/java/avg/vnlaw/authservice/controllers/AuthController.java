@@ -1,113 +1,52 @@
 package avg.vnlaw.authservice.controllers;
 
-import avg.vnlaw.authservice.enums.AuthenticationResponseEnum;
-import avg.vnlaw.authservice.requests.*;
-import avg.vnlaw.authservice.responses.*;
-import avg.vnlaw.authservice.services.AuthenticationService;
-import avg.vnlaw.authservice.services.ReCaptchaService;
+import avg.vnlaw.authservice.entities.User;
+import avg.vnlaw.authservice.requests.LoginRequest;
+import avg.vnlaw.authservice.requests.RegisterRequest;
+import avg.vnlaw.authservice.responses.AuthResponse;
+import avg.vnlaw.authservice.services.EmailService;
+import avg.vnlaw.authservice.services.JwtService;
 import avg.vnlaw.authservice.services.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@ResponseBody
 public class AuthController {
-    private final AuthenticationService authService;
+
     private final UserService userService;
-    private final ReCaptchaService reCaptchaService;
+    private final JwtService jwtService;
+    private final EmailService emailService;
+    private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(
-            @RequestBody RegisterRequest request
-    ) {
-//        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
-//        if (!reCaptchaResponse.isSuccess()) {
-//            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
-//        }
-        String message;
-        AuthenticationResponse authResponse = authService.register(request);
-        if (authResponse.getType() == AuthenticationResponseEnum.EMAIL_ALREADY_REGISTERED) {
-            message = "Account is already registered";
-            return ResponseHandler.responseBuilder(message, HttpStatus.UNAUTHORIZED);
-        }
-        message = "Account registered successfully";
-        return ResponseHandler.responseOk(message, authResponse);
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        User user = userService.registerUser(request.getEmail(), request.getPassword(), "USER");
+        emailService.sendVerificationEmail(user.getEmail());
+        return ResponseEntity.ok("Verification code sent to " + user.getEmail());
     }
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<?> authenticate(
-            @RequestBody AuthenticationRequest request
-    ) {
-//        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
-//        if (!reCaptchaResponse.isSuccess()) {
-//            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
-//        }
-        String message;
-        AuthenticationResponse authResponse = authService.authenticate(request);
-        try {
-            if (authResponse.getType() == AuthenticationResponseEnum.ACCOUNT_NOT_ACTIVATED) {
-                message = "Account is not activated";
-                return ResponseHandler.responseBadRequest(message);
-            }
-
-            message = "Account authenticated successfully";
-            return ResponseHandler.responseOk(message, authResponse);
-        } catch (Exception e) {
-            message = "Account or password is incorrect";
-            return ResponseHandler.responseBuilder(message, HttpStatus.UNAUTHORIZED);
-        }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+        User user = userService.findByEmail(request.getEmail());
+        String token = jwtService.generateToken(user.getEmail(), user.getRole().getName().name());
+        return ResponseEntity.ok(new AuthResponse(token));
     }
 
-    @PostMapping("/confirm-email")
-    public ResponseEntity<?> confirm(
-            @RequestBody ConfirmEmailRequest request
-    ) {
-        MessageResponse authResponse = authService.confirm(request.getToken());
-        return ResponseHandler.responseBuilder(authResponse.getMessage(), authResponse.getType());
-    }
-
-    @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(
-            @RequestBody PasswordResetTokenRequest request
-    ) {
-        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
-        if (!reCaptchaResponse.isSuccess()) {
-            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
+    @GetMapping("/verify-email")
+    public ResponseEntity<?> verifyEmail(@RequestParam String email, @RequestParam String code) {
+        boolean verified = emailService.verifyEmail(email, code);
+        if (verified) {
+            userService.verifyUserEmail(email);
+            return ResponseEntity.ok("Email verified successfully");
         }
-
-        MessageResponse authResponse = authService.forgotPassword(request.getEmail());
-        return ResponseHandler.responseBuilder(authResponse.getMessage(), authResponse.getType());
-    }
-
-    @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(
-            @RequestBody ChangePasswordRequest request
-    ) {
-        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
-        if (!reCaptchaResponse.isSuccess()) {
-            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
-        }
-        MessageResponse authResponse = authService.changePassword(request.getToken(), request.getPassword());
-        return ResponseHandler.responseBuilder(authResponse.getMessage(), authResponse.getType());
-    }
-
-    @GetMapping("/get-current-user")
-    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7); // Lấy token sau "Bearer "
-
-            GetCurrentUserByAccessTokenResponse response = authService.getCurrentUserByAccessToken(token);
-            return ResponseHandler.responseOk("Profile retrieved successfully", response);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authorization header is missing or invalid");
-        }
+        return ResponseEntity.badRequest().body("Invalid verification code");
     }
 }
