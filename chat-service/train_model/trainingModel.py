@@ -12,7 +12,7 @@ model = AutoModelForCausalLM.from_pretrained("vinai/phobert-base-v2")
 
 # 3. Tiền xử lý dữ liệu (Tokenize)
 def tokenize_function(examples):
-    # Tokenize văn bản và chuyển sang định dạng tensor cho PyTorch
+    # Tokenize văn bản và chuyển sang địncleh dạng tensor cho PyTorch
     tokenized = tokenizer(examples["text"], padding="max_length", truncation=True, max_length=512, return_tensors='pt')
     tokenized["labels"] = tokenized["input_ids"]  # Cung cấp labels cho Causal LM
     return {key: value.squeeze(0) for key, value in tokenized.items()}  # Squeeze extra dimensions

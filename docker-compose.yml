@@ -57,7 +57,7 @@ services:
       - mysql-db
     networks:
       - db-network
-    environment:
+    environment :
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:4000/law_service
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: password
