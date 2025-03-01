@@ -1,4 +1,4 @@
-package avg.vnlaw.authservice.config.securiy;
+package avg.vnlaw.authservice.config.security;
 
 import avg.vnlaw.authservice.o2auth.HttpCookieOAuth2AuthorizationRequestRepository;
 import avg.vnlaw.authservice.o2auth.handler.OAuth2AuthenticationFailureHandler;

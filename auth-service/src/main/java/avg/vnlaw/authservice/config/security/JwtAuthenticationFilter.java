@@ -1,4 +1,4 @@
-package avg.vnlaw.authservice.config.securiy;
+package avg.vnlaw.authservice.config.security;
 
 import avg.vnlaw.authservice.repositories.TokenRepository;
 import avg.vnlaw.authservice.services.JwtService;
