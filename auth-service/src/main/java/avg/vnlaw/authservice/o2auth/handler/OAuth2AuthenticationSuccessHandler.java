@@ -5,7 +5,6 @@ import avg.vnlaw.authservice.entities.User;
 import avg.vnlaw.authservice.o2auth.HttpCookieOAuth2AuthorizationRequestRepository;
 import avg.vnlaw.authservice.o2auth.utils.CookieUtils;
 import avg.vnlaw.authservice.services.JwtService;
-import avg.vnlaw.authservice.services.TokenService;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

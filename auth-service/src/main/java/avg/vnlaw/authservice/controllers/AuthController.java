@@ -3,13 +3,9 @@ package avg.vnlaw.authservice.controllers;
 import avg.vnlaw.authservice.enums.AuthenticationResponseEnum;
 import avg.vnlaw.authservice.requests.*;
 import avg.vnlaw.authservice.responses.*;
-import avg.vnlaw.authservice.services.AuthenticationService;
-import avg.vnlaw.authservice.services.ReCaptchaService;
-import avg.vnlaw.authservice.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

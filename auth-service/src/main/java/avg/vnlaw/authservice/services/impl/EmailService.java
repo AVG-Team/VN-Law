@@ -1,6 +1,5 @@
 package avg.vnlaw.authservice.services.impl;
 
-import avg.vnlaw.authservice.services.EmailService;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -13,13 +12,13 @@ import org.thymeleaf.context.Context;
 
 @Service
 @RequiredArgsConstructor
-public class EmailServiceImpl implements EmailService {
+public class EmailService {
     private final Dotenv dotenv = Dotenv.load();
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
     private final String url = dotenv.get("FRONTEND_URL");
 
-    @Override
+    
     public void sendEmailRegister(String email, String name, String token) throws MessagingException {
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -46,7 +45,7 @@ public class EmailServiceImpl implements EmailService {
         mailSender.send(mimeMessage);
     }
 
-    @Override
+    
     public void sendEmailRegisterWithPassword(String email, String name, String password) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
@@ -72,7 +71,7 @@ public class EmailServiceImpl implements EmailService {
         mailSender.send(mimeMessage);
     }
 
-    @Override
+    
     public void sendEmailForgotPassword(String email, String name, String token) throws MessagingException {
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();

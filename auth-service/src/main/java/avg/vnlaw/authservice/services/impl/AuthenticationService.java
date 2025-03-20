@@ -14,10 +14,7 @@ import avg.vnlaw.authservice.requests.RegisterRequest;
 import avg.vnlaw.authservice.responses.AuthenticationResponse;
 import avg.vnlaw.authservice.responses.GetCurrentUserByAccessTokenResponse;
 import avg.vnlaw.authservice.responses.MessageResponse;
-import avg.vnlaw.authservice.services.AuthenticationService;
-import avg.vnlaw.authservice.services.EmailService;
 import avg.vnlaw.authservice.services.JwtService;
-import avg.vnlaw.authservice.services.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,7 +34,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationServiceImpl implements AuthenticationService {
+public class AuthenticationService {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -59,7 +56,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         passwordResetTokenRepository.save(passwordResetToken);
     }
 
-    @Override
+    
     public AuthenticationResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             return AuthenticationResponse.builder()
@@ -95,7 +92,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return response;
     }
 
-    @Override
+    
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -126,7 +123,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    @Override
+    
     public void refreshToken(
             HttpServletRequest request,
             HttpServletResponse response
@@ -155,7 +152,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    @Override
+    
     public MessageResponse confirm(String token) {
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token).orElseThrow();
         if (passwordResetToken.getExpiryDate().before(new Date())) {
@@ -175,7 +172,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    @Override
+    
     public GetCurrentUserByAccessTokenResponse getCurrentUserByAccessToken(String token) {
         User user = tokenService.getUserByToken(token);
         return GetCurrentUserByAccessTokenResponse.builder()
@@ -184,7 +181,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    @Override
+    
     public MessageResponse forgotPassword(String email) {
         if (email == null || email.isEmpty()) {
             return MessageResponse.builder()
@@ -235,7 +232,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    @Override
+    
     public MessageResponse changePassword(String token, String password) {
         if (token == null || token.isEmpty() || password == null || password.isEmpty()) {
             return MessageResponse.builder()
