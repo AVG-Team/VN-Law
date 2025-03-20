@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,7 +32,9 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
+import java.util.logging.Logger;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -44,9 +47,10 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
     private final TokenService tokenService;
+    private final Logger logger = Logger.getLogger(AuthenticationService.class.getName());
 
     private void setPasswordResetToken(User user, TokenTypeForgotPasswordEnum tokenType, String token) {
-        long expiration = 24 * 60 * 60 * 1000;
+        long expiration = 24L * 60 * 60 * 1000L;
         PasswordResetToken passwordResetToken = new PasswordResetToken();
         passwordResetToken.setToken(token);
         Timestamp expiryDate = new Timestamp(new Date().getTime() + expiration);
@@ -81,7 +85,7 @@ public class AuthenticationService {
         try {
             emailService.sendEmailRegister(user.getEmail(), user.getName(), token);
         } catch (Exception e) {
-            System.out.println("error Send Mail : " + e.getMessage());
+            logger.warning("error Send Mail : " + e.getMessage());
         }
 
         AuthenticationResponse response = new AuthenticationResponse();
@@ -219,7 +223,8 @@ public class AuthenticationService {
         try {
             emailService.sendEmailForgotPassword(user.getEmail(), user.getName(), token);
         } catch (Exception e) {
-            System.out.println("error Send Mail : " + e.getMessage());
+            logger.warning("error Send Mail : " + e.getMessage());
+            logger.warning("error Send Mail : " + e.getMessage());
             return MessageResponse.builder()
                     .type(HttpStatus.BAD_REQUEST)
                     .message("Error Send Mail")

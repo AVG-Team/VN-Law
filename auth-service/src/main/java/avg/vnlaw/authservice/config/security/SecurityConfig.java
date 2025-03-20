@@ -5,6 +5,7 @@ import avg.vnlaw.authservice.o2auth.handler.OAuth2AuthenticationFailureHandler;
 import avg.vnlaw.authservice.o2auth.handler.OAuth2AuthenticationSuccessHandler;
 import avg.vnlaw.authservice.o2auth.services.OAuth2Service;
 import avg.vnlaw.authservice.services.LogoutService;
+import avg.vnlaw.authservice.services.impl.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -115,7 +116,6 @@ public class SecurityConfig {
     }
 
     private JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtAuthenticationConverter convert = new JwtAuthenticationConverter();
-        return convert;
+        return new JwtAuthenticationConverter();
     }
 }

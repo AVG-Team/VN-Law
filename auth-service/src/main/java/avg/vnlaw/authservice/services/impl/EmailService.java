@@ -19,7 +19,7 @@ public class EmailService {
     private final SpringTemplateEngine templateEngine;
     private final String url = dotenv.get("FRONTEND_URL");
 
-    private void themeSendEmail(String email, ContentEmailEnum emailEnum, String url, Object... args) throws MessagingException {
+    private void themeSendEmail(String email, ContentEmailEnum emailEnum, String name, String url, Object... args) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
@@ -29,6 +29,7 @@ public class EmailService {
         Context thymeleafContext = new Context();
         thymeleafContext.setVariable("title", emailEnum.getTitle());
         thymeleafContext.setVariable("message", emailEnum.getMessage(args));
+        thymeleafContext.setVariable("name", name);
         thymeleafContext.setVariable("url", url);
 
         String htmlBody = templateEngine.process("mail-template", thymeleafContext);
@@ -39,16 +40,16 @@ public class EmailService {
 
     public void sendEmailRegister(String email, String name, String token) throws MessagingException {
         String verifyUrl = this.url + "/thong-bao?token=" + token + "&type=verifyEmailSuccess";
-        themeSendEmail(email, ContentEmailEnum.REGISTRATION, verifyUrl);
+        themeSendEmail(email, ContentEmailEnum.REGISTRATION, name, verifyUrl);
     }
 
     public void sendEmailRegisterWithPassword(String email, String name, String password) throws MessagingException {
         String loginUrl = this.url + "/login";
-        themeSendEmail(email, ContentEmailEnum.REGISTER_WITH_PASSWORD, loginUrl, password);
+        themeSendEmail(email, ContentEmailEnum.REGISTER_WITH_PASSWORD, name, loginUrl, password);
     }
 
     public void sendEmailForgotPassword(String email, String name, String token) throws MessagingException {
         String resetUrl = this.url + "/quen-mat-khau?token=" + token + "&type=doi-mat-khau";
-        themeSendEmail(email, ContentEmailEnum.FORGOT_PASSWORD, resetUrl);
+        themeSendEmail(email, ContentEmailEnum.FORGOT_PASSWORD, name, resetUrl);
     }
 }
