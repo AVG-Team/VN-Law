@@ -1,4 +1,4 @@
-package avg.vnlaw.authservice.services.impl;
+package avg.vnlaw.authservice.services;
 
 import avg.vnlaw.authservice.enums.ContentEmailEnum;
 import io.github.cdimascio.dotenv.Dotenv;

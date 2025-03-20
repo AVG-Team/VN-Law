@@ -1,4 +1,4 @@
-package avg.vnlaw.authservice.services.impl;
+package avg.vnlaw.authservice.services;
 
 import avg.vnlaw.authservice.entities.CustomUserDetail;
 import avg.vnlaw.authservice.entities.User;
@@ -22,18 +22,13 @@ public class UserService {
     
     public User getCurrentUserByEmail(String email) {
         User user = findByEmail(email);
-        if (user == null) {
-            return null;
-        }
-
+        if (user == null) return null;
         return getUserCurrentService();
     }
 
     private User getUserCurrentService() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return null;
-        }
+        if (authentication == null || !authentication.isAuthenticated())  return null;
         CustomUserDetail customUserDetail = (CustomUserDetail) authentication.getPrincipal();
         return customUserDetail.getUser();
     }

@@ -1,4 +1,4 @@
-package avg.vnlaw.authservice.services.impl;
+package avg.vnlaw.authservice.services;
 
 import avg.vnlaw.authservice.entities.CustomUserDetail;
 import avg.vnlaw.authservice.entities.PasswordResetToken;
@@ -14,7 +14,6 @@ import avg.vnlaw.authservice.requests.RegisterRequest;
 import avg.vnlaw.authservice.responses.AuthenticationResponse;
 import avg.vnlaw.authservice.responses.GetCurrentUserByAccessTokenResponse;
 import avg.vnlaw.authservice.responses.MessageResponse;
-import avg.vnlaw.authservice.services.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
