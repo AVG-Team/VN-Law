@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Paper from "@mui/material/Paper";
-import { Container } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import InputBase from "@mui/material/InputBase";
 import IconButton from "@mui/material/IconButton";
@@ -29,10 +28,13 @@ export default function Home() {
     return (
         <main className="px-20">
             <div className="flex items-center justify-center mt-10">
-                <div className="text-center">
-                    <h1 className="mb-4 text-2xl font-extrabold tracking-normal text-blue-gray-900">
-                        Tìm văn bản pháp luật
+                <div className="text-left">
+                    <h1 className="mb-4 text-4xl font-extrabold tracking-normal text-blue-gray-900">
+                        Chức năng nổi bật của hệ thống
                     </h1>
+                    <p className="mb-4 text-xl font-bold text-blue-gray-300">
+                        Tìm kiếm văn bản pháp luật, dịch vụ pháp lý, luật pháp các bang
+                    </p>
                     <div className="grid grid-cols-1 gap-4 mb-20 md:grid-cols-5">
                         {NavigatorCardData.map((item) => (
                             <NavigatorCard key={item.index} item={item} />
