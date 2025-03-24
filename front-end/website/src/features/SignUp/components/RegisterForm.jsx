@@ -8,10 +8,10 @@ import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Logo from "~/assets/images/logo/logo2.png";
 import Typography from "@mui/material/Typography";
-import { register } from "~/api/auth-service/authClient";
+import { register } from "~/services/authClient";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Oauth2 from "../../SignIn/Oauth2";
-import { GoogleReCaptchaProvider, GoogleReCaptcha } from 'react-google-recaptcha-v3';
+import { GoogleReCaptchaProvider, GoogleReCaptcha } from "react-google-recaptcha-v3";
 
 export function RegisterForm() {
     const navigate = useNavigate();
@@ -84,7 +84,7 @@ export function RegisterForm() {
             } catch (err) {
                 toast.error(err.message);
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
         }
     }
@@ -119,101 +119,125 @@ export function RegisterForm() {
                 </Typography>
             </div>
             <GoogleReCaptchaProvider reCaptchaKey={siteKey} language="vi">
-            <Box component="form" validate="true" onSubmit={handleSubmit} className="flex flex-col mt-1 text-center">
-                <GoogleReCaptcha onVerify={handleVerify} />
-                <TextField
-                    margin="normal"
-                    id="name"
-                    type="name"
-                    label="Tên người dùng"
-                    name="name"
-                    autoComplete="name"
-                    onChange={handleChange}
-                    value={formData.name}
-                    autoFocus
-                />
-                {errors.name && <Box className="text-sm text-left text-red-500">{errors.name}</Box>}
-                <TextField
-                    margin="normal"
-                    id="email"
-                    type="email"
-                    label="Email"
-                    name="email"
-                    autoComplete="email"
-                    onChange={handleChange}
-                    value={formData.email}
-                    autoFocus
-                />
-                {errors.email && <Box className="text-sm text-left text-red-500">{errors.email}</Box>}
-                <TextField
-                    margin="normal"
-                    name="password"
-                    label="Mật khẩu"
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    onChange={handleChange}
-                    value={formData.password}
-                    autoComplete="current-password"
-                    InputProps={{
-                        endAdornment: hasValuePassword && (
-                            <Button className="eye-button" onClick={togglePassword}>
-                                {showPassword ? (
-                                    <EyeSlashIcon className="block w-5 h-5 text-black" aria-hidden="true" />
-                                ) : (
-                                    <EyeIcon className="block w-5 h-5 text-black" aria-hidden="true" />
-                                )}
-                            </Button>
-                        ),
-                    }}
-                />
-                {errors.password && <Box className="text-sm text-left text-red-500">{errors.password}</Box>}
-                <TextField
-                    margin="normal"
-                    name="confirmPassword"
-                    label="Nhập lại mật khẩu"
-                    type={showConfirmPassword ? "text" : "password"}
-                    id="confirmPassword"
-                    onChange={handleChange}
-                    value={formData.confirmPassword}
-                    autoComplete="current-password"
-                    InputProps={{
-                        endAdornment: hasValueConfirmPassword && (
-                            <Button className="eye-button" onClick={toggleConfirmPassword}>
-                                {showConfirmPassword ? (
-                                    <EyeSlashIcon className="block w-5 h-5 text-black" aria-hidden="true" />
-                                ) : (
-                                    <EyeIcon className="block w-5 h-5 text-black" aria-hidden="true" />
-                                )}
-                            </Button>
-                        ),
-                    }}
-                />
-                {errors.confirmPassword && (
-                    <Box className="text-sm text-left text-red-500">{errors.confirmPassword}</Box>
-                )}
-                <Button type="submit" variant="contained" className={`!mx-auto !my-8 transition duration-300 ease-in-out ${loading ? "!bg-gray-300" : "!bg-indigo-500 hover:!bg-indigo-700"}`}>
-                    {loading && (
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
-                             fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor"
-                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+                <Box
+                    component="form"
+                    validate="true"
+                    onSubmit={handleSubmit}
+                    className="flex flex-col mt-1 text-center"
+                >
+                    <GoogleReCaptcha onVerify={handleVerify} />
+                    <TextField
+                        margin="normal"
+                        id="name"
+                        type="name"
+                        label="Tên người dùng"
+                        name="name"
+                        autoComplete="name"
+                        onChange={handleChange}
+                        value={formData.name}
+                        autoFocus
+                    />
+                    {errors.name && <Box className="text-sm text-left text-red-500">{errors.name}</Box>}
+                    <TextField
+                        margin="normal"
+                        id="email"
+                        type="email"
+                        label="Email"
+                        name="email"
+                        autoComplete="email"
+                        onChange={handleChange}
+                        value={formData.email}
+                        autoFocus
+                    />
+                    {errors.email && <Box className="text-sm text-left text-red-500">{errors.email}</Box>}
+                    <TextField
+                        margin="normal"
+                        name="password"
+                        label="Mật khẩu"
+                        type={showPassword ? "text" : "password"}
+                        id="password"
+                        onChange={handleChange}
+                        value={formData.password}
+                        autoComplete="current-password"
+                        InputProps={{
+                            endAdornment: hasValuePassword && (
+                                <Button className="eye-button" onClick={togglePassword}>
+                                    {showPassword ? (
+                                        <EyeSlashIcon className="block w-5 h-5 text-black" aria-hidden="true" />
+                                    ) : (
+                                        <EyeIcon className="block w-5 h-5 text-black" aria-hidden="true" />
+                                    )}
+                                </Button>
+                            ),
+                        }}
+                    />
+                    {errors.password && <Box className="text-sm text-left text-red-500">{errors.password}</Box>}
+                    <TextField
+                        margin="normal"
+                        name="confirmPassword"
+                        label="Nhập lại mật khẩu"
+                        type={showConfirmPassword ? "text" : "password"}
+                        id="confirmPassword"
+                        onChange={handleChange}
+                        value={formData.confirmPassword}
+                        autoComplete="current-password"
+                        InputProps={{
+                            endAdornment: hasValueConfirmPassword && (
+                                <Button className="eye-button" onClick={toggleConfirmPassword}>
+                                    {showConfirmPassword ? (
+                                        <EyeSlashIcon className="block w-5 h-5 text-black" aria-hidden="true" />
+                                    ) : (
+                                        <EyeIcon className="block w-5 h-5 text-black" aria-hidden="true" />
+                                    )}
+                                </Button>
+                            ),
+                        }}
+                    />
+                    {errors.confirmPassword && (
+                        <Box className="text-sm text-left text-red-500">{errors.confirmPassword}</Box>
                     )}
-                    Đăng ký
-                </Button>
-                <Grid container className="justify-center mt-5">
-                    <Grid item className="flex flex-row">
-                        <Typography className="mr-0.5 px-1" variant="body2">
-                            Bạn đã có tài khoản?
-                        </Typography>
-                        <Link underline="none" href="/dang-nhap" variant="body2">
-                            Đăng nhập
-                        </Link>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        className={`!mx-auto !my-8 transition duration-300 ease-in-out ${
+                            loading ? "!bg-gray-300" : "!bg-indigo-500 hover:!bg-indigo-700"
+                        }`}
+                    >
+                        {loading && (
+                            <svg
+                                className="w-5 h-5 mr-3 -ml-1 text-white animate-spin"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                ></circle>
+                                <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                            </svg>
+                        )}
+                        Đăng ký
+                    </Button>
+                    <Grid container className="justify-center mt-5">
+                        <Grid item className="flex flex-row">
+                            <Typography className="mr-0.5 px-1" variant="body2">
+                                Bạn đã có tài khoản?
+                            </Typography>
+                            <Link underline="none" href="/dang-nhap" variant="body2">
+                                Đăng nhập
+                            </Link>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </Box>
+                </Box>
             </GoogleReCaptchaProvider>
             <Oauth2 />
         </Box>

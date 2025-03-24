@@ -2,11 +2,11 @@ import { Tree } from "antd";
 import PropTypes from "prop-types";
 import { Card } from "@mui/material";
 import { useParams } from "react-router-dom";
-import topicApi from "~/api/law-service/topicApi";
+import topicApi from "~/services/topicApi";
 import React, { useEffect, useState } from "react";
-import subjectApi from "~/api/law-service/subjectApi";
-import chapterApi from "~/api/law-service/chapterApi";
-import articleApi from "~/api/law-service/articleApi";
+import subjectApi from "~/services/subjectApi";
+import chapterApi from "~/services/chapterApi";
+import articleApi from "~/services/articleApi";
 
 const updateTreeData = (list, key, children) =>
     list.map((node) => {

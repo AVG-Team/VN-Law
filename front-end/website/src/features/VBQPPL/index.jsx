@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { Col, Pagination, Row, Card, Tag } from "antd";
-import VbqpplApi from "~/api/law-service/vbqpplApi";
+import VbqpplApi from "~/services/vbqpplApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileLines } from "@fortawesome/free-solid-svg-icons";
 

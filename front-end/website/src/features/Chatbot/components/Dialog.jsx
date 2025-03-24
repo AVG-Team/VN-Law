@@ -1,7 +1,7 @@
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
-import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
@@ -9,14 +9,14 @@ import {
     PaperAirplaneIcon,
     StopCircleIcon,
 } from "@heroicons/react/24/solid";
-import {TopQuestions} from "./LawQuestions";
+import { TopQuestions } from "./LawQuestions";
 import VersionChatbot from "./VersionChatbot";
 import MenuMobile from "./MenuMobile";
 import TypewriterText from "./TypewriterText";
 import Logo from "~/assets/images/logo/logo-no-bg.png";
-import axiosClient from "../../../api/axiosClient";
+import axios from "~/config/axios";
 
-function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, activeChat, setActiveChat}) {
+function Dialog({ isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, activeChat, setActiveChat }) {
     const [isHoveredIconMenu, setIsHoveredIconMenu] = useState(false);
     const [isHiddenRight, setHiddenRight] = useState(true);
     const [showIconSend, setShowIconSend] = useState(false);
@@ -32,44 +32,46 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
         setWindowWidth(window.innerWidth);
     };
 
-    const baseUrl = axiosClient.defaults.baseURL;
+    const baseUrl = axios.defaults.baseURL;
 
     useEffect(() => {
         const connectToSocket = async () => {
             if (!socketRef.current) {
-                let socket = new SockJS(baseUrl + '/socket-service/ws');
-                Stomp.over(socket).debug = () => {
-                };
+                let socket = new SockJS(baseUrl + "/socket-service/ws");
+                Stomp.over(socket).debug = () => {};
 
                 return new Promise((resolve, reject) => {
                     socketRef.current = Stomp.over(socket);
-                    socketRef.current.debug = () => {
-                    };
-                    socketRef.current.connect({}, () => {
-                        resolve(socketRef.current);
-                    }, error => {
-                        reject(error);
-                    });
+                    socketRef.current.debug = () => {};
+                    socketRef.current.connect(
+                        {},
+                        () => {
+                            resolve(socketRef.current);
+                        },
+                        (error) => {
+                            reject(error);
+                        },
+                    );
                 });
             }
             return socketRef.current;
-        }
+        };
 
         const fetchData = async () => {
             const socket = await connectToSocket();
-            if(socketRef.current.connected) {
-                socket.subscribe('/server/public', response => {
+            if (socketRef.current.connected) {
+                socket.subscribe("/server/public", (response) => {
                     console.log(response.body);
                 });
 
-                socket.subscribe('/server/sendData', response => {
+                socket.subscribe("/server/sendData", (response) => {
                     let parsedResponse = JSON.parse(response.body);
                     let answer = JSON.parse(parsedResponse.body).fullAnswer;
                     fetchReply(answer);
                     setTextareaValue("");
                 });
             }
-            i++
+            i++;
         };
         fetchData();
         window.addEventListener("resize", handleResize);
@@ -116,7 +118,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
             setActiveChat(true);
             setIsWaiting(true);
             setMessages((prevMessages) => [...prevMessages, newMessage]);
-            socketRef.current.send('/web/sendMessage', {}, content);
+            socketRef.current.send("/web/sendMessage", {}, content);
             setPendingReplyServer(true);
         }
     };
@@ -140,7 +142,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
 
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({behavior: "smooth"});
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     };
 
@@ -160,7 +162,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                 setIsOpenMenuNavbar={setIsOpenMenuNavbar}
                 clearMessages={clearMessages}
             />
-            <hr/>
+            <hr />
             <div className="hidden lg:block absolute top-[50%]">
                 {isHoveredIconMenu ? (
                     isHiddenRight ? (
@@ -199,7 +201,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                     isOpenMenuNavbar={isOpenMenuNavbar}
                 />
                 <div className="flex flex-col items-center justify-center h-full logo-chat">
-                    <img src={Logo} alt="icon" className="w-20"/>
+                    <img src={Logo} alt="icon" className="w-20" />
                     <p className="mt-3 text-2xl font-bold">Tôi có thể giúp gì cho bạn ?</p>
                 </div>
                 <div className="flex flex-col h-full overflow-scroll lg:py-10">
@@ -216,7 +218,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                                 } p-4`}
                             >
                                 {message.type === "question" ? (
-                                    <p className="text-white text-lg">{message.content}</p>
+                                    <p className="text-lg text-white">{message.content}</p>
                                 ) : (
                                     <TypewriterText
                                         key={message.content}
@@ -229,12 +231,8 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                         </div>
                     ))}
                     {isWaiting && (
-                        <div
-                            className={`message-chat reply w-full flex justify-start px-3 mt-5`}
-                        >
-                            <div
-                                className={`flex rounded-lg bg-gray-100 p-4`}
-                            >
+                        <div className={`message-chat reply w-full flex justify-start px-3 mt-5`}>
+                            <div className={`flex rounded-lg bg-gray-100 p-4`}>
                                 <div className="lds-ellipsis">
                                     <div></div>
                                     <div></div>
@@ -244,11 +242,11 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                             </div>
                         </div>
                     )}
-                    <div ref={messagesEndRef}/>
+                    <div ref={messagesEndRef} />
                 </div>
             </div>
             <div className="w-[100%] text-center mb-2">
-            <TopQuestions sendQuestion={sendQuestion}/>
+                <TopQuestions sendQuestion={sendQuestion} />
                 <div className="position">
                     <TextareaAutosize
                         name="question"
@@ -270,8 +268,7 @@ function Dialog({isOpenMenuNavbar, setIsOpenMenuNavbar, messages, setMessages, a
                                     onClick={handleSendQuestion}
                                 />
                             ) : (
-                                <StopCircleIcon
-                                    className="w-6 h-6 text-gray-400 absolute right-[9.5%] bottom-12 cursor-progress icon-input-message"/>
+                                <StopCircleIcon className="w-6 h-6 text-gray-400 absolute right-[9.5%] bottom-12 cursor-progress icon-input-message" />
                             )}
                         </>
                     )}

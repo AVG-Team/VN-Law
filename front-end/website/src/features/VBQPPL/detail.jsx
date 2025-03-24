@@ -2,7 +2,7 @@ import "./components/style.css";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Worker } from "@react-pdf-viewer/core";
-import VbqpplApi from "~/api/law-service/vbqpplApi";
+import VbqpplApi from "~/services/vbqpplApi";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { DocumentIcon, ArrowDownTrayIcon, EyeIcon } from "@heroicons/react/24/solid";

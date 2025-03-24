@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import MarkdownIt from "markdown-it";
 import { Card, Spin, Input } from "antd";
 import { useEffect, useState } from "react";
-import articleApi from "~/api/law-service/articleApi";
+import articleApi from "~/services/articleApi";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 const { Search } = Input;
