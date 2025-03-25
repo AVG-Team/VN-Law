@@ -13,7 +13,7 @@ const Preloader = () => {
             setIsLoading(false);
             // Restore body scroll after loading
             document.body.style.overflow = "auto";
-        }, 2000);
+        }, 5000);
 
         return () => {
             clearTimeout(timer);

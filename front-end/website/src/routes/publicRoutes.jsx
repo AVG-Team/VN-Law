@@ -5,16 +5,13 @@ import SignUp from "~/features/SignUp";
 import VBQPPL from "~/features/VBQPPL";
 import SignIn from "~/features/SignIn";
 import TreeLaw from "~/features/TreeLaw";
-import SignOut from "~/features/SignOut";
 import Contact from "~/features/Contact";
-import Chatbot from "~/features/Chatbot";
 import VerifyEmail from "~/features/VerifyEmail";
 import VBBQPPLDetail from "~/features/VBQPPL/detail";
 import ForgotPassword from "~/features/ForgotPassword";
 import Form from "~/features/Form";
 import Notify from "~/features/Notify";
 import Confirm from "~/features/Confirm";
-import Profile from "~/features/Profile";
 import News from "~/features/News";
 import Forum from "~/features/Forum";
 
@@ -24,90 +21,98 @@ const publicRoutes = [
         path: "",
         element: <Home />,
         name: "Home",
+        title: "Trang chủ",
     },
     {
         id: 2,
         path: "/about",
         element: <About />,
         name: "About",
+        title: "Giới thiệu",
     },
     {
         id: 3,
         path: "/sign-up",
         element: <SignUp />,
         name: "Sign Up",
+        title: "Đăng ký",
     },
     {
         id: 4,
         path: "/vbqppl",
         element: <VBQPPL />,
         name: "VBQPPL",
+        title: "Văn bản quy phạm pháp luật",
     },
     {
         id: 5,
         path: "/sign-in",
         element: <SignIn />,
         name: "Sign In",
+        title: "Đăng nhập",
     },
     {
         id: 6,
         path: "/tree-law",
         element: <TreeLaw />,
         name: "Tree Law",
+        title: "Tra cứu pháp điển",
     },
     {
         id: 7,
         path: "/contact",
         element: <Contact />,
         name: "Contact",
+        title: "Liên hệ",
     },
     {
         id: 8,
-        path: "/verify-email",
-        element: <VerifyEmail />,
-        name: "Verify Email",
-    },
-    {
-        id: 9,
         path: "/vbqppl/:id",
         element: <VBBQPPLDetail />,
         name: "VBQPPL Detail",
+        title: "Chi tiết văn bản quy phạm pháp luật",
     },
     {
-        id: 10,
+        id: 9,
         path: "/forgot-password",
         element: <ForgotPassword />,
         name: "Forgot Password",
+        title: "Quên mật khẩu",
     },
     {
-        id: 11,
+        id: 10,
         path: "/form",
         element: <Form />,
         name: "Form",
+        title: "Form",
     },
     {
-        id: 12,
+        id: 11,
         path: "/notify",
         element: <Notify />,
         name: "Notify",
+        title: "Notify",
     },
     {
-        id: 13,
+        id: 12,
         path: "/confirm",
         element: <Confirm />,
         name: "Confirm",
+        title: "Confirm",
+    },
+    {
+        id: 13,
+        path: "/tin-tuc",
+        element: <News />,
+        name: "News",
+        title: "Tin tức",
     },
     {
         id: 14,
-        path: "/news",
-        element: <News />,
-        name: "News",
-    },
-    {
-        id: 15,
-        path: "/forum",
+        path: "/dien-dan",
         element: <Forum />,
         name: "Forum",
+        title: "Diễn đàn",
     },
 ];
 
