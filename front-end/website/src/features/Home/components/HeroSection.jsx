@@ -34,7 +34,7 @@ const HeroSection = memo(
                             whileInView={{ y: 0, opacity: 1 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: 0.1 }}
-                            className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-gray-900"
+                            className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl lg:text-6xl whitespace-nowrap"
                         >
                             {title}
                         </motion.h1>
@@ -44,7 +44,7 @@ const HeroSection = memo(
                             whileInView={{ y: 0, opacity: 1 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: 0.2 }}
-                            className="text-lg md:text-xl mb-8 text-gray-600"
+                            className="mb-8 text-lg text-gray-600 md:text-xl"
                         >
                             {description}
                         </motion.p>

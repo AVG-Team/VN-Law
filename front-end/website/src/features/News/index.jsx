@@ -1,7 +1,15 @@
-import { Card, Row, Col, Typography, Tag, Space, Button, Input, Select, Carousel, Divider } from "antd";
-import { SearchOutlined, CalendarOutlined, UserOutlined, EyeOutlined, FireOutlined } from "@ant-design/icons";
+import { Card, Row, Col, Typography, Tag, Space, Button, Input, Select, Carousel, Divider, Breadcrumb } from "antd";
+import {
+    SearchOutlined,
+    CalendarOutlined,
+    UserOutlined,
+    EyeOutlined,
+    FireOutlined,
+    HomeOutlined,
+} from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -300,6 +308,33 @@ const News = () => {
             transition={{ duration: 0.5 }}
             className="container mx-auto px-4 py-8"
         >
+            {/* Breadcrumb */}
+            <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="mb-6"
+            >
+                <Breadcrumb
+                    items={[
+                        {
+                            title: (
+                                <Link to="/" className="flex items-center">
+                                    <HomeOutlined className="mr-1" />
+                                    Trang chủ
+                                </Link>
+                            ),
+                            key: "home",
+                        },
+                        {
+                            title: "Tin tức pháp luật",
+                            key: "news",
+                        },
+                    ]}
+                    className="text-sm"
+                />
+            </motion.div>
+
             {/* Header Section */}
             <motion.div
                 initial={{ opacity: 0, y: -20 }}

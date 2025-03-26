@@ -14,105 +14,108 @@ import Notify from "~/features/Notify";
 import Confirm from "~/features/Confirm";
 import News from "~/features/News";
 import Forum from "~/features/Forum";
+import Login from "~/features/Login";
+import BasicLayout from "~/components/layout/BasicLayout";
+import ContentLayout from "~/components/layout/ContentLayout";
 
 const publicRoutes = [
     {
         id: 1,
         path: "",
         element: <Home />,
-        name: "Home",
         title: "Trang chủ",
+        layout: BasicLayout,
     },
     {
         id: 2,
         path: "/about",
         element: <About />,
-        name: "About",
         title: "Giới thiệu",
+        layout: ContentLayout,
     },
     {
         id: 3,
         path: "/sign-up",
         element: <SignUp />,
-        name: "Sign Up",
         title: "Đăng ký",
+        layout: ContentLayout,
     },
     {
         id: 4,
         path: "/vbqppl",
         element: <VBQPPL />,
-        name: "VBQPPL",
         title: "Văn bản quy phạm pháp luật",
+        layout: ContentLayout,
     },
     {
         id: 5,
         path: "/sign-in",
-        element: <SignIn />,
-        name: "Sign In",
+        element: <Login />,
         title: "Đăng nhập",
+        layout: ContentLayout,
     },
     {
         id: 6,
         path: "/tree-law",
         element: <TreeLaw />,
-        name: "Tree Law",
         title: "Tra cứu pháp điển",
+        layout: ContentLayout,
     },
     {
         id: 7,
         path: "/contact",
         element: <Contact />,
-        name: "Contact",
         title: "Liên hệ",
+        layout: ContentLayout,
     },
     {
         id: 8,
         path: "/vbqppl/:id",
         element: <VBBQPPLDetail />,
-        name: "VBQPPL Detail",
         title: "Chi tiết văn bản quy phạm pháp luật",
+        layout: ContentLayout,
     },
     {
         id: 9,
         path: "/forgot-password",
         element: <ForgotPassword />,
-        name: "Forgot Password",
         title: "Quên mật khẩu",
+        layout: ContentLayout,
     },
     {
         id: 10,
         path: "/form",
         element: <Form />,
-        name: "Form",
         title: "Form",
+        layout: ContentLayout,
     },
     {
         id: 11,
         path: "/notify",
         element: <Notify />,
-        name: "Notify",
         title: "Notify",
+        layout: ContentLayout,
     },
     {
         id: 12,
         path: "/confirm",
         element: <Confirm />,
-        name: "Confirm",
         title: "Confirm",
+        layout: ContentLayout,
     },
     {
         id: 13,
         path: "/tin-tuc",
         element: <News />,
-        name: "News",
         title: "Tin tức",
+        layout: ContentLayout,
     },
     {
         id: 14,
         path: "/dien-dan",
         element: <Forum />,
-        name: "Forum",
         title: "Diễn đàn",
+        layout: ContentLayout,
     },
 ];
 
