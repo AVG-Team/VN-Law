@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import TableApi from "~/api/law-service/tableApi";
+import TableApi from "~/services/tableApi";
 import { Col, Pagination, Row, Card, Tag } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTableList } from "@fortawesome/free-solid-svg-icons";
