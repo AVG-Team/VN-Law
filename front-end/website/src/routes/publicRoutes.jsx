@@ -35,7 +35,7 @@ const publicRoutes = [
     },
     {
         id: 3,
-        path: "/sign-up",
+        path: "/register",
         element: <SignUp />,
         title: "Đăng ký",
         layout: ContentLayout,
@@ -49,7 +49,7 @@ const publicRoutes = [
     },
     {
         id: 5,
-        path: "/sign-in",
+        path: "/login",
         element: <Login />,
         title: "Đăng nhập",
         layout: ContentLayout,
