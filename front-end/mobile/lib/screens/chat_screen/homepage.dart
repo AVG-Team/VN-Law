@@ -1,6 +1,8 @@
+import 'package:VNLAW/screens/chat_screen/widgets/chat_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../data/models/conversation.dart';
 import 'chat_screen.dart';
 import 'widgets/side_menu.dart';
 

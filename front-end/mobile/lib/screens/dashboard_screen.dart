@@ -1,10 +1,10 @@
+import 'package:VNLAW/screens/screen_tmp.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/screens/home/profile_screen.dart';
 // import 'package:mobile/screens/news/news_screen.dart';
-import 'package:mobile/screens/screen_tmp.dart';
 
 import 'app_flow/navigation_bar/custom_bottom_navbar.dart';
 import 'home/home_screen.dart';
+import 'home/profile_screen.dart';
 // import 'package:mobile/pages/ChatScreen/homepage.dart';
 // import 'package:mobile/pages/Home/profile_screen.dart';
 // import 'package:mobile/pages/Home/home_screen.dart';

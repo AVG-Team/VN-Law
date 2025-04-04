@@ -9,6 +9,7 @@ import '../../../data/repositories/auth_repository.dart';
 import '../../../data/repositories/repository.dart';
 import '../../../permisson/app_permisson_page.dart';
 import '../../../utils/nav_utail.dart';
+import '../../../utils/routes.dart';
 import '../../../utils/shared_preferences.dart';
 import '../../dashboard_screen.dart';
 
@@ -54,9 +55,8 @@ class LoginProvider extends ChangeNotifier {
     var apiResponse = await Repository.baseSettingApi();
     if (apiResponse.result == true) {
       // appThemeId = apiResponse.data?.data?.appTheme;
-      NavUtil.replaceScreen(
-          context,
-          const DashboardScreen()
+      Navigator.of(context).pushReplacementNamed(
+        AppRoutes.dashboard,
       );
           // const AppPermissionPage(
           //   // appThemeId: appThemeId,

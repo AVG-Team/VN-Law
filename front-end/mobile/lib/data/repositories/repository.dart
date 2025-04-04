@@ -1,10 +1,9 @@
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:mobile/api_service/api_response.dart';
 
 import '../../api_service/api_body.dart';
+import '../../api_service/api_response.dart';
 import '../../api_service/api_service.dart';
 import '../models/response/response_attendance_status.dart';
 import '../models/response/response_base_settings.dart';
@@ -812,9 +811,8 @@ class Repository {
   /// Attendance base-settings API -----------------
   static Future<ApiResponse<ResponseBaseSetting>> baseSettingApi() async {
     try {
-      // EasyLoading.show(status: 'loading...');
-      var response = await ApiService.getDio()!.get("/api/auth/get-current-user");
-      // EasyLoading.dismiss();
+      var response = await ApiService.getDio()!.get("/api/user/get-current-user");
+      
       if (response.statusCode == 200) {
         if (kDebugMode) {
           print(response.data);
@@ -825,31 +823,34 @@ class Repository {
             message: obj.message,
             result: true,
             data: obj);
-      } else {
-        var obj = ResponseBaseSetting.fromJson(response.data);
-        return ApiResponse(
-            httpCode: response.statusCode,
-            message: obj.message,
-            result: true,
-            data: obj
-        );
       }
+      
+      // Handle non-200 status codes
+      var obj = ResponseBaseSetting.fromJson(response.data);
+      return ApiResponse(
+          httpCode: response.statusCode,
+          message: obj.message,
+          result: false,
+          data: obj
+      );
+      
     } on DioException catch (e) {
       if (e.type == DioExceptionType.badResponse) {
-        // EasyLoading.dismiss();
         return ApiResponse(
             httpCode: e.response?.statusCode,
             message: e.response?.data["message"],
             result: false,
             error: e.response?.data["error"]);
-      } else {
-        EasyLoading.dismiss();
-        if (kDebugMode) {
-          print(e.message);
-        }
-        return ApiResponse(
-            httpCode: -1,result: false, message: "Connection error ${e.message}");
       }
+      
+      if (kDebugMode) {
+        print(e.message);
+      }
+      return ApiResponse(
+          httpCode: -1,
+          result: false, 
+          message: "Connection error ${e.message}"
+      );
     }
   }
 
@@ -2595,7 +2596,6 @@ class Repository {
   //     }
   //   }
   // }
-  //
   //
   //
   // ///task deashboard

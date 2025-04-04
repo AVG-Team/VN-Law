@@ -1,14 +1,14 @@
+import 'package:VNLAW/screens/home/widgets/_build_news_card.dart';
+import 'package:VNLAW/screens/home/widgets/_build_news_tag.dart';
+import 'package:VNLAW/screens/home/widgets/_build_service_Icon.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/screens/home/home_provider.dart';
-import 'package:mobile/screens/home/widgets/_build_news_card.dart';
-import 'package:mobile/screens/home/widgets/_build_news_tag.dart';
-import 'package:mobile/screens/home/widgets/_build_service_Icon.dart';
-import 'package:mobile/screens/screen_tmp.dart';
 import 'package:provider/provider.dart';
 import '../../api_service/connectivity/no_internet_screen.dart';
 import '../../data/models/news_response/response_news.dart';
 import '../news/news_detail_widget.dart';
 import '../news/news_provider.dart';
+import '../screen_tmp.dart';
+import 'home_provider.dart';
 import 'widgets/_build_service_category.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -43,57 +43,67 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return NoInternetScreen(
       child: Scaffold(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: Colors.blue[600],
         key: context.watch<HomeProvider>().scaffoldKey,
         body: SafeArea(
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Top Bar
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Image.asset('assets/logo.png', width: 120),
+                        Hero(
+                          tag: 'logo',
+                          child: Image.asset('assets/logo.png', width: 120),
+                        ),
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(50),
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
                           child: IconButton(
-                            icon: const Icon(Icons.notifications_none, color: Colors.blueAccent),
+                            icon: const Icon(Icons.notifications_none, color: Colors.blue),
                             onPressed: () => setState(() => _isSidebarOpen = !_isSidebarOpen),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
                   ],
                 ),
               ),
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 10,
-                        offset: Offset(0, -5),
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 20,
+                        offset: const Offset(0, -5),
                       ),
                     ],
                   ),
                   child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -103,6 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
                               color: Colors.green,
+                              letterSpacing: -0.5,
                             ),
                           ),
                           const Text(
@@ -110,75 +121,95 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: TextStyle(
                               color: Colors.grey,
                               fontSize: 16,
+                              height: 1.5,
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 24),
 
-                          // Service Categories
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              ServiceCategory(
-                                title: 'Tra Cứu\nPháp Luật',
-                                icon: Icons.search_rounded,
-                                bgColor: Colors.red[50]!,
-                                iconColor: Colors.red,
-                                // destination: const VbplScreen(),
-                                destination: const MyHomePage(title: "Tra cứu pháp luật"),
-                              ),
-                              ServiceCategory(
-                                title: 'Chatbot\nPháp Luật',
-                                icon: Icons.wechat_outlined,
-                                bgColor: Colors.orange[50]!,
-                                iconColor: Colors.orange,
-                                // destination: const HomePageChatScreen(),
-                                destination: const MyHomePage(title: "Chatbot pháp luật"),
-                              ),
-                              ServiceCategory(
-                                title: 'Văn Bản\nPháp Luật',
-                                icon: Icons.document_scanner_outlined,
-                                bgColor: Colors.blue[50]!,
-                                iconColor: Colors.blue,
-                                // destination: const LegalDocumentScreen(),
-                                destination: const MyHomePage(title: "Văn bản pháp luật"),
-                              ),
-                            ],
+                          // Service Categories with animation
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                ServiceCategory(
+                                  title: 'Tra Cứu\nPháp Luật',
+                                  icon: Icons.search_rounded,
+                                  bgColor: Colors.red[50]!,
+                                  iconColor: Colors.red,
+                                  destination: const MyHomePage(title: "Tra cứu pháp luật"),
+                                ),
+                                ServiceCategory(
+                                  title: 'Chatbot\nPháp Luật',
+                                  icon: Icons.wechat_outlined,
+                                  bgColor: Colors.orange[50]!,
+                                  iconColor: Colors.orange,
+                                  destination: const MyHomePage(title: "Chatbot pháp luật"),
+                                ),
+                                ServiceCategory(
+                                  title: 'Văn Bản\nPháp Luật',
+                                  icon: Icons.document_scanner_outlined,
+                                  bgColor: Colors.blue[50]!,
+                                  iconColor: Colors.blue,
+                                  destination: const MyHomePage(title: "Văn bản pháp luật"),
+                                ),
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 32),
 
-                          // News Section
-                          const Text(
-                            'Tin tức hằng ngày',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          // News Section with enhanced styling
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Tin tức hằng ngày',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  // Add view all news action
+                                },
+                                child: Text(
+                                  'Xem tất cả',
+                                  style: TextStyle(
+                                    color: Colors.blue[600],
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 16),
 
-                          // News Tags
+                          // News Tags with enhanced animation
                           SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               children: [
                                 NewsTag(
                                   text: 'Mới nhất',
-                                  color: selectedNewsTag == "Mới nhất" ? Colors.lightBlueAccent : Colors.grey[500]!,
+                                  color: selectedNewsTag == "Mới nhất" ? Colors.blue[600]! : Colors.grey[400]!,
                                   onTap: _handleNewsTagTap,
                                 ),
                                 NewsTag(
                                   text: 'Pháp luật',
-                                  color: selectedNewsTag == "Pháp luật" ? Colors.lightBlueAccent : Colors.grey[500]!,
+                                  color: selectedNewsTag == "Pháp luật" ? Colors.blue[600]! : Colors.grey[400]!,
                                   onTap: _handleNewsTagTap,
                                 ),
                                 NewsTag(
                                   text: 'Đời sống',
-                                  color: selectedNewsTag == "Đời sống" ? Colors.lightBlueAccent : Colors.grey[500]!,
+                                  color: selectedNewsTag == "Đời sống" ? Colors.blue[600]! : Colors.grey[400]!,
                                   onTap: _handleNewsTagTap,
                                 ),
                                 NewsTag(
                                   text: 'An Ninh',
-                                  color: selectedNewsTag == "An Ninh" ? Colors.lightBlueAccent : Colors.grey[500]!,
+                                  color: selectedNewsTag == "An Ninh" ? Colors.blue[600]! : Colors.grey[400]!,
                                   onTap: _handleNewsTagTap,
                                 ),
                               ],
@@ -231,67 +262,81 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
 
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 32),
 
-                          // Other Services
-                          const Text(
-                            'Các Dịch Vụ Khác',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          // Other Services with enhanced styling
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Các Dịch Vụ Khác',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  // Add view all services action
+                                },
+                                child: Text(
+                                  'Xem tất cả',
+                                  style: TextStyle(
+                                    color: Colors.blue[600],
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 16),
 
-                          // Service Icons
-                          const SingleChildScrollView(
+                          // Service Icons with enhanced animation
+                          SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               children: [
-                                ServiceIcon(
-                                  icon: Icons.forum_outlined,
-                                  color: Colors.green,
-                                  // destination: VbplScreen(),
-                                  destination: MyHomePage(title: "VBQL Screen"),
+                                _buildAnimatedServiceIcon(
+                                  Icons.forum_rounded,
+                                  Colors.green,
+                                  const MyHomePage(title: "VBQL Screen"),
                                 ),
-                                SizedBox(width: 24),
-                                ServiceIcon(
-                                  icon: Icons.newspaper_outlined,
-                                  color: Colors.blue,
-                                  // destination: NewsFeedPage(),
-                                  destination: MyHomePage(title: "Tin tức"),
+                                const SizedBox(width: 24),
+                                _buildAnimatedServiceIcon(
+                                  Icons.newspaper_rounded,
+                                  Colors.blue,
+                                  const MyHomePage(title: "Tin tức"),
                                 ),
-                                SizedBox(width: 24),
-                                ServiceIcon(
-                                  icon: Icons.info_outline,
-                                  color: Colors.purple,
-                                  // destination: ProfileScreen(),
-                                  destination: MyHomePage(title: "Thông tin"),
+                                const SizedBox(width: 24),
+                                _buildAnimatedServiceIcon(
+                                  Icons.info_rounded,
+                                  Colors.purple,
+                                  const MyHomePage(title: "Thông tin"),
                                 ),
-                                SizedBox(width: 24),
-                                ServiceIcon(
-                                  icon: Icons.search_outlined,
-                                  color: Colors.red,
-                                  // destination: VbplScreen(),
-                                  destination: MyHomePage(title: "Tra cứu"),
+                                const SizedBox(width: 24),
+                                _buildAnimatedServiceIcon(
+                                  Icons.search_rounded,
+                                  Colors.red,
+                                  const MyHomePage(title: "Tra cứu"),
                                 ),
-                                SizedBox(width: 24),
-                                ServiceIcon(
-                                  icon: Icons.wechat_outlined,
-                                  color: Colors.orange,
-                                  // destination: HomePageChatScreen(),
-                                  destination: MyHomePage(title: "Chatbot"),
+                                const SizedBox(width: 24),
+                                _buildAnimatedServiceIcon(
+                                  Icons.wechat_rounded,
+                                  Colors.orange,
+                                  const MyHomePage(title: "Chatbot"),
                                 ),
-                                SizedBox(width: 24),
-                                ServiceIcon(
-                                  icon: Icons.document_scanner_outlined,
-                                  color: Colors.pink,
-                                  // destination: LegalDocumentScreen(),
-                                  destination: MyHomePage(title: "Văn bản"),
+                                const SizedBox(width: 24),
+                                _buildAnimatedServiceIcon(
+                                  Icons.document_scanner_rounded,
+                                  Colors.pink,
+                                  const MyHomePage(title: "Văn bản"),
                                 ),
                               ],
                             ),
                           ),
+                          const SizedBox(height: 20),
                         ],
                       ),
                     ),
@@ -302,6 +347,23 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAnimatedServiceIcon(IconData icon, Color color, Widget destination) {
+    return TweenAnimationBuilder(
+      duration: const Duration(milliseconds: 200),
+      tween: Tween<double>(begin: 1, end: 1),
+      builder: (context, double value, child) {
+        return Transform.scale(
+          scale: value,
+          child: ServiceIcon(
+            icon: icon,
+            color: color,
+            destination: destination,
+          ),
+        );
+      },
     );
   }
 }

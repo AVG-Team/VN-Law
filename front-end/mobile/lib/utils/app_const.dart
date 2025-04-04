@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/core/config/environment.dart';
+
+import '../core/config/environment.dart';
 
 class AppConst {
   /// This is Live URL

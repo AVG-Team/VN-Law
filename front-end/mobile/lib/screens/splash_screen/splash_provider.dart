@@ -1,45 +1,80 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mobile/screens/auth/login/login_screen.dart';
-import 'package:mobile/screens/dashboard_screen.dart';
 import '../../data/repositories/repository.dart';
-import '../../utils/nav_utail.dart';
+import '../../utils/routes.dart';
 import '../../utils/shared_preferences.dart';
 
 class SplashProvider extends ChangeNotifier {
   String? themeId;
+  bool isLoading = false;
+  bool _isDisposed = false;
 
   SplashProvider(context) {
     initFunction(context);
   }
 
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
+
   getThemeID(context) async {
-    var apiResponse = await Repository.baseSettingApi();
-    if (apiResponse.result == true) {
-      NavUtil.replaceScreen(
-          context,
-          const DashboardScreen()
-      );
-      notifyListeners();
+    try {
+      isLoading = true;
+      if (!_isDisposed) notifyListeners();
+      
+      var apiResponse = await Repository.baseSettingApi();
+      if (kDebugMode) {
+        print("apiResponse: $apiResponse");
+      }
+      
+      if (apiResponse.result == true && apiResponse.data != null) {
+        // Process the data if needed
+        // themeId = apiResponse.data.themeId; // Uncomment if needed
+        // Navigate using named route with arguments
+        if (!_isDisposed) {
+          Navigator.of(context).pushReplacementNamed(
+            AppRoutes.dashboard,
+          );
+        }
+      } else {
+        // Handle API failure
+        await SPUtill.deleteKey(SPUtill.keyAuthToken);
+        if (!_isDisposed) {
+          Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error in getThemeID: $e");
+      }
+      // Handle any errors
+      await SPUtill.deleteKey(SPUtill.keyAuthToken);
+      if (!_isDisposed) {
+        Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+      }
+    } finally {
+      isLoading = false;
+      if (!_isDisposed) notifyListeners();
     }
   }
 
   initFunction(context) {
     Future.delayed(const Duration(seconds: 2), () async {
       var token = await SPUtill.getValue(SPUtill.keyAuthToken);
-      var userId = await SPUtill.getIntValue(SPUtill.keyUserId);
       if (kDebugMode) {
         /// development purpose only
         print("Bearer token: $token");
-        print("User Id: $userId");
       }
       if (token != null) {
         getThemeID(context);
       } else {
-        NavUtil.replaceScreen(
-            context,
-            const LoginScreen());
+        if(!_isDisposed) {
+          Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+        }
       }
-      notifyListeners();
+      if (!_isDisposed) notifyListeners();
     });
   }
 

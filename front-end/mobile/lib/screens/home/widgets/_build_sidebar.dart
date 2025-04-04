@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/screens/screen_tmp.dart';
+
+import '../../screen_tmp.dart';
 // import 'package:mobile/pages/ChatScreen/chat_screen.dart';
 // import 'package:mobile/pages/Home/profile_screen.dart';
 // import 'package:mobile/pages/LegalDocument/legal_document_screen.dart';

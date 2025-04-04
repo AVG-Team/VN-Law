@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile/api_service/api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
+import '../../api_service/api_service.dart';
 import '../../utils/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -13,12 +13,33 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
   XFile? _profileImage;
   String? userName;
   String? userEmail;
   String? profileImage = "assets/user_avatar.png";
   String? role;
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1, end: 0.95).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -30,7 +51,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  ImageProvider _getImageProvider(String imagePath) {
+  ImageProvider _getImageProvider(String? imagePath) {
+    if (imagePath == null) {
+      return const AssetImage("assets/user_avatar.png");
+    }
     if (imagePath.startsWith('http') || imagePath.startsWith('https')) {
       return NetworkImage(imagePath);
     } else if (imagePath.startsWith('assets/')) {
@@ -41,116 +65,189 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void getUserData() async {
-    print("Getting user data");
-
-    // Thực hiện các tác vụ bất đồng bộ trước
     String? name = await SPUtill.getValue(SPUtill.keyName);
     String? email = await SPUtill.getValue(SPUtill.keyEmail);
     String? image = await SPUtill.getValue(SPUtill.keyProfileImage);
-    bool isAdmin = await SPUtill.getBoolValue(SPUtill.keyIsAdmin) ?? false;
+    bool? isAdmin = await SPUtill.getBoolValue(SPUtill.keyIsAdmin) ?? false;
 
-    // Sau đó mới gọi setState để cập nhật UI
     setState(() {
       userName = name;
       userEmail = email;
-      profileImage = image;
+      profileImage = image ?? "assets/user_avatar.png";
       role = isAdmin ? "Admin" : "User";
     });
   }
 
   @override
-  void initState() {
-    super.initState();
-    print("1234");
-    getUserData();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Thông tin cá nhân'),
+        elevation: 0,
+        backgroundColor: Colors.white,
+        title: const Text(
+          'Thông tin cá nhân',
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.red),
             onPressed: () async {
               await ApiService.logOutFunctionality(context);
             },
           ),
         ],
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 8,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Center(
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: _getImageProvider(profileImage!),
-                    child: (profileImage == null)
-                        ? const Icon(Icons.person, size: 50)
-                        : null,
+              child: Hero(
+                tag: 'profile-user-image',
+                child: GestureDetector(
+                  onTap: _pickImage,
+                  child: TweenAnimationBuilder<double>(
+                    duration: const Duration(milliseconds: 500),
+                    tween: Tween<double>(begin: 0, end: 1),
+                    builder: (context, value, child) {
+                      return Transform.scale(
+                        scale: value,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                spreadRadius: 2,
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Colors.white,
+                            backgroundImage: _profileImage != null
+                                ? FileImage(File(_profileImage!.path))
+                                : _getImageProvider(profileImage),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ],
+                ),
               ),
             ),
             const SizedBox(height: 24),
-            _buildInfoTile('Tên', userName ?? 'N/A'),
-            _buildInfoTile('Email', userEmail ?? 'N/A'),
-            _buildInfoTile('Role', role ?? 'N/A'),
+            _buildInfoTile('Tên', userName ?? 'N/A', Icons.person),
+            _buildInfoTile('Email', userEmail ?? 'N/A', Icons.email),
+            _buildInfoTile('Role', role ?? 'N/A', Icons.badge),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoTile(String label, String value) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+  Widget _buildInfoTile(String label, String valueData, IconData icon) {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 500),
+      tween: Tween<double>(begin: 0, end: 1),
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 50 * (1 - value)),
+          child: Opacity(
+            opacity: value,
+            child: GestureDetector(
+              onTapDown: (_) => _controller.forward(),
+              onTapUp: (_) => _controller.reverse(),
+              onTapCancel: () => _controller.reverse(),
+              child: ScaleTransition(
+                scale: _scaleAnimation,
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        offset: const Offset(0, 4),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(icon, size: 20, color: Colors.blue),
+                          const SizedBox(width: 8),
+                          Text(
+                            label,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              valueData,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          Material(
+                            color: Colors.transparent,
+                            child: IconButton(
+                              icon: const Icon(Icons.copy, size: 20),
+                              onPressed: () {
+                                Clipboard.setData(ClipboardData(text: valueData));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text('Đã sao chép'),
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.copy, size: 20),
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: value));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Đã sao chép')),
-                  );
-                },
-              ),
-            ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

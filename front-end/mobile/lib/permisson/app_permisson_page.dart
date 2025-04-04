@@ -1,10 +1,7 @@
-// import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/screens/dashboard_screen.dart';
 
-import '../../../utils/nav_utail.dart';
-import '../screens/app_flow/navigation_bar/custom_bottom_navBar.dart';
 import '../utils/app_color.dart';
+import '../utils/routes.dart';
 
 class AppPermissionPage extends StatelessWidget {
   final String? appThemeId;
@@ -107,7 +104,9 @@ class AppPermissionPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                NavUtil.replaceScreen(context,  const DashboardScreen());
+                Navigator.of(context).pushReplacementNamed(
+                  AppRoutes.dashboard,
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,

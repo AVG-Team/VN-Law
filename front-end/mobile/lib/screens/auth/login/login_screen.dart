@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-// import 'package:vmoffice/api_service/connectivity/no_internet_screen.dart';
-// import 'package:vmoffice/screens/auth/forget_password/forget_password.dart';
-// import 'package:vmoffice/screens/auth/login/login_provider.dart';
-// import 'package:vmoffice/utils/nav_utail.dart';
-// import 'package:vmoffice/utils/res.dart';
 import 'package:provider/provider.dart';
 
 import '../../../api_service/connectivity/no_internet_screen.dart';
 import '../../../custom_widgets/custom_button.dart';
+import '../../../utils/navigation_utils.dart';
+import 'google_provider.dart';
 import 'login_provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -19,6 +16,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   var _obscureText = true;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -29,205 +27,235 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return NoInternetScreen(
       child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          backgroundColor: Colors.white,
-          key: context.watch<LoginProvider>().scaffoldKey,
-          body: Center(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Colors.white,
+        key: context.watch<LoginProvider>().scaffoldKey,
+        body: SafeArea(
+          child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView(
-                children: [
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  Center(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 40),
+                    Center(
                       child: Image.asset(
                         "assets/logo.png",
-                        width: 250,
-                      )
-                  ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  _buildTextField(
-                    controller: context.watch<LoginProvider>().emailTextController,
-                    label: 'Email',
-                    suffixIcon: Icons.check,
-                    isValid: context.watch<LoginProvider>().email != null,
-                  ),
-                  const SizedBox(
-                    height: 3,
-                  ),
-                  Visibility(
-                      visible: context.watch<LoginProvider>().email != null,
-                      child: Text(
-                        context.watch<LoginProvider>().email ?? "",
-                        style: const TextStyle(color: Colors.red),
-                      )),
-                  Visibility(
-                      visible: context.watch<LoginProvider>().error != null &&
-                          context.watch<LoginProvider>().email == null &&
-                          context.watch<LoginProvider>().password == null,
-                      child: Text(
-                        context.watch<LoginProvider>().error ?? "",
-                        style: const TextStyle(color: Colors.red),
-                      )),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  _buildPasswordField(
-                    controller: context.watch<LoginProvider>().passwordTextController,
-                    label: 'Password',
-                    isVisible: _obscureText,
-                    toggleVisibility: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
-                  ),
-                  const SizedBox(
-                    height: 3,
-                  ),
-                  Visibility(
-                      visible: context.watch<LoginProvider>().password != null,
-                      child: Text(
-                        context.watch<LoginProvider>().password ?? "",
-                        style: const TextStyle(color: Colors.red),
-                      )),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end, // Đặt văn bản ở cuối dòng
-                    children: [
-                      Opacity(
-                          opacity: 0.3,
-                          child: InkWell(
-                            onTap: () {
-                              context.read<LoginProvider>().resetTextField();
-                              // NavUtil.navigateScreen(context, const ForgetPassword());
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                "Forgot Password?",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          )
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  CustomButton(
-                    title: "Login",
-                    clickButton: () {
-                      bool isValidate = context.read<LoginProvider>().isValidate();
-
-                      if (isValidate) {
-                        context.read<LoginProvider>().getUserInfo(context);
-                      }
-                    },
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Container(
-                    height: 1,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.grey.withOpacity(0),
-                          Colors.grey.withOpacity(0.5),
-                          Colors.grey.withOpacity(0),
-                        ],
+                        width: 200,
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      // Xử lý sự kiện khi nhấn
-                      print("Google icon clicked");
-                      // Thêm logic xử lý của bạn ở đây
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(8), // Khoảng cách giữa icon và viền
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle, // Bo tròn hoàn toàn
-                        color: Colors.white, // Màu nền
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: 1,
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
+                    const SizedBox(height: 48),
+                    Text(
+                      "Chào Mừng Bạn Trở Lại!",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.cyanAccent[400],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Vui Lòng Đăng Nhập Để Tiếp Tục",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    _buildTextField(
+                      controller: context.watch<LoginProvider>().emailTextController,
+                      label: 'Email',
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Vui lòng nhập email của bạn!';
+                        }
+                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                          return 'Email không hợp lệ!';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _buildPasswordField(
+                      controller: context.watch<LoginProvider>().passwordTextController,
+                      label: 'Mật Khẩu',
+                      isVisible: _obscureText,
+                      toggleVisibility: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Vui lòng nhập mật khẩu của bạn!';
+                        }
+                        if (value.length < 3) {
+                          return 'Mật khẩu phải hơn 3 kí tự!';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          context.read<LoginProvider>().resetTextField();
+                          // NavUtil.navigateScreen(context, const ForgetPassword());
+                        },
+                        child: Text(
+                          "Quên Mật Khẩu?",
+                          style: TextStyle(
+                            color: Colors.cyanAccent[400],
+                            fontSize: 14,
                           ),
-                        ],
-                      ),
-                      child: Image.asset(
-                        "assets/google_icon.png",
-                        width: 24,
-                        height: 24,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          context.read<LoginProvider>().getUserInfo(context);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.cyanAccent[400],
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        "Đăng Nhập",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(child: Divider(color: Colors.grey[300])),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            "Hoặc tiếp tục với",
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                        ),
+                        Expanded(child: Divider(color: Colors.grey[300])),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Center(
+                      child: InkWell(
+                        onTap: () async {
+                          try {
+                            print('On click');
+                            final GoogleSignInService googleSignInService = GoogleSignInService();
+                            final String? token = await googleSignInService.signInWithGoogle();
+                            if (token != null) {
+                              // Điều hướng đến Dashboard với dữ liệu người dùng
+                              NavigationUtils.navigateToDashboardWithData(
+                                context,
+                                data: {
+                                  'token': token,
+                                  'loginType': 'google',
+                                },
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Đăng nhập Google thất bại. Vui lòng thử lại!'),
+                                  backgroundColor: Colors.red,
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Có lỗi xảy ra: ${e.toString()}'),
+                                backgroundColor: Colors.red,
+                                duration: const Duration(seconds: 3),
+                              ),
+                            );
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 1,
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Image.asset(
+                            "assets/google_icon.png",
+                            width: 24,
+                            height: 24,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
-    required IconData suffixIcon,
-    required bool isValid,
-    TextInputType? keyboardType,
+    required TextInputType keyboardType,
+    required String? Function(String?)? validator,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: const Color.fromARGB(255, 116, 192, 252), width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 7,
-              offset: const Offset(0, 3),
-            ),
-          ],
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.cyanAccent[400]),
+        filled: true,
+        fillColor: Colors.grey[50],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.cyanAccent[400]!),
         ),
-        child: TextField(
-          controller: controller,
-          keyboardType: keyboardType,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-            suffixIcon: Icon(
-              suffixIcon,
-              color: isValid ? const Color.fromARGB(255, 116, 192, 252) : Colors.grey,
-            ),
-            label: Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 116, 192, 252),
-              ),
-            ),
-            border: InputBorder.none,
-          ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.cyanAccent[400]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.cyanAccent[400]!, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
         ),
       ),
     );
@@ -238,44 +266,43 @@ class _LoginScreenState extends State<LoginScreen> {
     required String label,
     required bool isVisible,
     required VoidCallback toggleVisibility,
+    required String? Function(String?)? validator,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: const Color.fromARGB(255, 116, 192, 252), width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 7,
-              offset: const Offset(0, 3),
-            ),
-          ],
+    return TextFormField(
+      controller: controller,
+      obscureText: isVisible,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.cyanAccent[400]),
+        filled: true,
+        fillColor: Colors.grey[50],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.cyanAccent[400]!),
         ),
-        child: TextField(
-          controller: controller,
-          obscureText: isVisible,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-            suffixIcon: IconButton(
-              icon: Icon(
-                isVisible ? Icons.visibility_off : Icons.visibility,
-                color: isVisible ? Colors.grey : const Color.fromARGB(255, 116, 192, 252),
-              ),
-              onPressed: toggleVisibility,
-            ),
-            label: Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 116, 192, 252),
-              ),
-            ),
-            border: InputBorder.none,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.cyanAccent[400]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.cyanAccent[400]!, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(
+            isVisible ? Icons.visibility_off : Icons.visibility,
+            color: Colors.cyanAccent[400],
           ),
+          onPressed: toggleVisibility,
         ),
       ),
     );

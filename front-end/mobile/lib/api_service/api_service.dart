@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/screens/home/home_screen.dart';
 import '../screens/auth/login/login_screen.dart';
 import '../screens/splash_screen/splash_screen.dart';
 import '../utils/app_const.dart';

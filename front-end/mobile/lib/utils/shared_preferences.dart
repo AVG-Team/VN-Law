@@ -6,11 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SPUtill {
   static String keyAuthToken = "key_auth_token";
   static String keyIsAdmin = "key_is_admin";
-  static String keyIsUser = "key_is_hr";
+  static String keyIsUser = "key_is_user";
   static String keyUserId = "user_id";
   static String keyProfileImage = "user_profile_image";
   static String keyName = "user_name";
   static String keyEmail = "user_email";
+  static String keyRole = "user_role";
   static String keyCheckInID = "check_in_id";
   static String keyAndroidDeviceToken = "android_device_token";
   static String keyIosDeviceToken = "ios_device_token";

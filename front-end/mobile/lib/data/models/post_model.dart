@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mobile/data/models/user_model.dart';
+
+import 'auth_response/response_login.dart';
 // import 'package:mobile/models/user_model.dart';
 // import 'package:mobile/services/auth_provider.dart';
 

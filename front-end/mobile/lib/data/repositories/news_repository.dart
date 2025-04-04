@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:mobile/data/models/news_response/response_news.dart';
 
 import '../../../api_service/api_response.dart';
 import '../../utils/app_const.dart';
+import '../models/news_response/response_news.dart';
 
 class NewsRepository {
   static String convertCategory(String category) {
@@ -24,7 +24,10 @@ class NewsRepository {
   // Sửa lại phương thức getNewsArticles
   static Future<ApiResponse<ResponseNews>> getNewsArticles({String? category}) async {
     try {
-      EasyLoading.show(status: 'loading...');
+      EasyLoading.show(
+        status: 'Đang tải dữ liệu...',
+        maskType: EasyLoadingMaskType.custom
+      );
       String url = category != null
           ? "${AppConst.baseUrlNews}&category=${convertCategory(category)}"
           : AppConst.baseUrlNews;

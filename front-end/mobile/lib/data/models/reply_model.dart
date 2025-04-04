@@ -1,6 +1,7 @@
 // models/reply_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
-import './user_model.dart';
+
+import 'auth_response/response_login.dart';
 
 class Reply {
   String id;

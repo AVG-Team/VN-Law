@@ -3,14 +3,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
-
-import '../../models/conversation.dart';
-import '../../models/message.dart';
-import '../../services/conversations_service.dart';
-import '../../services/websocket_service.dart';
+import '../../data/models/message.dart';
 import './widgets/message_bubble.dart';
-import 'package:mobile/pages/ChatScreen/widgets/side_menu.dart';
-import 'package:mobile/pages/ChatScreen/widgets/chat_input.dart';
 
 class ChatScreen extends StatefulWidget {
   final String? conversationId;

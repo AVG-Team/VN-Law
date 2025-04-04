@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../../models/message.dart';
+import 'package:VNLAW/data/models/message.dart';
 
 class MessageBubble extends StatelessWidget {
   final Message message;

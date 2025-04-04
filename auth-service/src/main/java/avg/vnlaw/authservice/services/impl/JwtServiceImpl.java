@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.security.SecureRandom;
 import java.util.Date;
 
 @Service
@@ -56,6 +57,17 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateRandomPassword() {
-        return "";
+        // Tạo một mật khẩu ngẫu nhiên
+        SecureRandom random = new SecureRandom();
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+        int length = 12; // Độ dài mật khẩu
+        StringBuilder password = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            password.append(characters.charAt(index));
+        }
+
+        return password.toString();
     }
 }
