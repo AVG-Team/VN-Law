@@ -33,7 +33,7 @@ def extract_json_from_js(js_content):
                 parsed_json = json.loads(json_str)
 
             # Tạo tên file
-            filename = f'./{var_name}.json'
+            filename = f'./data/phap-dien/{var_name}.json'
 
             # Ghi file JSON
             with open(filename, 'w', encoding='utf-8') as f:

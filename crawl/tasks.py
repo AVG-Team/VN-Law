@@ -12,26 +12,22 @@ def crawl_data():
     try:
         # Step 1: Download và giải nén file zip
         extract_path = './phap-dien'
-        download_and_extract_zip()
+        # download_and_extract_zip()
 
         # Step 2: Xử lý dữ liệu từ file giải nén
         process_json_data()
 
         # Step 3: Kiểm tra và import dữ liệu
-        if session.query(Pdtopic).count() == 0:
-            insert_topics()
-        if session.query(Pdsubject).count() == 0:
-            insert_subjects()
+        insert_topics()
+        subjects = insert_subjects()
 
-        tree_nodes()
+        tree_nodes(subjects)
 
         # Step 4: Crawl vbqppl
-        if session.query(Vbqppl).count() == 0:
-            crawl_vbqppl()
+        crawl_vbqppl()
 
         # Step 5: Split documents
-        if session.query(Indexvbqppl).count() == 0:
-            split_documents()
+        split_documents()
 
         session.commit()
     except Exception as e:
