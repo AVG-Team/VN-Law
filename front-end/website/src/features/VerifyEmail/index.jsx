@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { verifyEmail } from "../../api/auth-service/authClient";
+import { verifyEmail } from "~/services/authClient";
 
 export default function VerifyEmail() {
     const [searchParams] = useSearchParams();
