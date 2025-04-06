@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'app_flow/navigation_bar/custom_bottom_navbar.dart';
 import 'home/home_screen.dart';
 import 'home/profile_screen.dart';
+import 'chat/chatbot_screen.dart';
 // import 'package:mobile/pages/ChatScreen/homepage.dart';
 // import 'package:mobile/pages/Home/profile_screen.dart';
 // import 'package:mobile/pages/Home/home_screen.dart';
@@ -22,7 +23,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const MyHomePage(title: "Chatbot"),
+    const ChatbotScreen(),
     const MyHomePage(title: "Forum"),
     const ProfileScreen(),
   ];
