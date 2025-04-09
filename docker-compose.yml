@@ -99,6 +99,32 @@ services:
       - /app/node_modules
     env_file:
       - ./front-end/website/.env
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://keycloak-db:5432/keycloak
+      - KC_DB_USERNAME=keycloak
+      - KC_DB_PASSWORD=keycloak
+      - KC_HOSTNAME=localhost
+    ports:
+      - "9090:8080"
+    depends_on:
+      - keycloak-db
+    command: start-dev
+
+  keycloak-db:
+      image: postgres:14
+      container_name: keycloak-db
+      environment:
+        - POSTGRES_DB=keycloak
+        - POSTGRES_USER=keycloak
+        - POSTGRES_PASSWORD=keycloak
+      volumes:
+        - keycloak-db-data:/var/lib/postgresql/data
 
   crawl:
     build:
@@ -159,6 +185,7 @@ services:
 
 volumes:
   mysql_data:
+  keycloak-db-data:
 
 networks:
   db-network:
