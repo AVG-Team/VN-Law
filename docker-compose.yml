@@ -64,7 +64,7 @@ services:
       MYSQL_USER: auth_user         # Tạo user cho auth-service
       MYSQL_PASSWORD: auth_password # Mật khẩu cho user
       MYSQL_ROOT_HOST: '%'          # Cho phép truy cập từ bất kỳ host nào
-    command: --init-file /docker-entrypoint-initdb.d/init.sql  # Thêm file init SQL
+    command: --max_allowed_packet=128M --wait_timeout=28800 --interactive_timeout=28800 # Thêm file init SQL
     ports:
       - "3306:3306"
     networks:
@@ -186,6 +186,7 @@ services:
 
 volumes:
   mysql_data:
+  kafka_data:
 
 networks:
   db-network:
