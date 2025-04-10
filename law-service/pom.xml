@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>avg.vnlaw</groupId>
-	<artifactId>law-service-auth</artifactId>
+	<artifactId>law-service</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
 	<name>law-service-auth</name>
 	<description>law-service-auth</description>
