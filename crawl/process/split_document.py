@@ -24,25 +24,22 @@ def save_data(index_list):
     if not index_list:
         print("No data to save")
         return
-    session = get_session()
-    try:
-        for item in index_list:
-            existing = session.query(Indexvbqppl).filter_by(id=item.id).first()
-            if not existing:
-                session.add(item)
-                print(f"Saving id={item.id}, vbqppl_id={item.vbqppl_id}")
-        session.commit()
-        print(f"Saved {len(index_list)} records")
-    except Exception as e:
-        session.rollback()
-        print(f"Error saving data: {e}")
-    finally:
-        session.close()
+    with get_session() as session:
+        try:
+            for item in index_list:
+                existing = session.query(Indexvbqppl).filter_by(id=item.id).first()
+                if not existing:
+                    session.add(item)
+                    print(f"Saving id={item.id}, vbqppl_id={item.vbqppl_id}")
+            session.commit()
+            print(f"Saved {len(index_list)} records")
+        except Exception as e:
+            session.rollback()
+            print(f"Error saving data: {e}")
 
 def process_split_document():
-    session = get_session()
-    vbqppl_list = session.query(Vbqppl.vbqppl_id, Vbqppl.html).filter(Vbqppl.html.isnot(None)).all()
-    session.close()
+    with get_session() as session:
+        vbqppl_list = session.query(Vbqppl.vbqppl_id, Vbqppl.html).filter(Vbqppl.html.isnot(None)).all()
 
     index = []
     id_counter = 3012  # Khởi tạo id giống Java và Project 1

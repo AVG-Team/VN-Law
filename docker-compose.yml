@@ -28,6 +28,33 @@ services:
     volumes:
       - ./api-gateway/kong.yml:/usr/local/kong/declarative/kong.yml
 
+  kafka:
+    image: apache/kafka:latest
+    restart: always
+    networks:
+      - db-network
+    ports:
+      - "9092:9092"
+      - "9093:9093"  # Thêm port cho controller
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER  # Thêm biến này để chỉ định rõ listener cho controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_LOG_RETENTION_BYTES: -1
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
   mysql-db:
     image: mysql:8.4.0
     restart: always
@@ -37,7 +64,7 @@ services:
       MYSQL_USER: auth_user         # Tạo user cho auth-service
       MYSQL_PASSWORD: auth_password # Mật khẩu cho user
       MYSQL_ROOT_HOST: '%'          # Cho phép truy cập từ bất kỳ host nào
-    command: --init-file /docker-entrypoint-initdb.d/init.sql  # Thêm file init SQL
+    command: --max_allowed_packet=128M --wait_timeout=28800 --interactive_timeout=28800 # Thêm file init SQL
     ports:
       - "3306:3306"
     networks:
@@ -126,16 +153,15 @@ services:
       volumes:
         - keycloak-db-data:/var/lib/postgresql/data
 
-  crawl:
+  crawl-api:
     build:
       context: ./crawl
       dockerfile: Dockerfile
+    command: uvicorn api:app --host 0.0.0.0 --port 5000 --reload
     restart: always
     depends_on:
-      mysql-db:
-        condition: service_healthy
-      redis:
-        condition: service_started
+      - mysql-db
+      - redis
     networks:
       - db-network
     environment:
@@ -145,7 +171,7 @@ services:
     volumes:
       - ./crawl:/app
 
-  celery:
+  celery-worker:
     build:
       context: ./crawl
       dockerfile: Dockerfile
@@ -159,7 +185,7 @@ services:
     environment:
       DATABASE_URL: mysql+mysqlconnector://root:password@mysql-db:3306/law_service
     volumes:
-      - ./law-crawler-api:/app
+      - ./crawl:/app
 
   celery-beat:
     build:
@@ -170,6 +196,7 @@ services:
     depends_on:
       - redis
       - mysql-db
+      - celery-worker
     networks:
       - db-network
     environment:
@@ -186,6 +213,7 @@ services:
 volumes:
   mysql_data:
   keycloak-db-data:
+  kafka_data:
 
 networks:
   db-network:
