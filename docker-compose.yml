@@ -127,16 +127,15 @@ services:
     env_file:
       - ./front-end/website/.env
 
-  crawl:
+  crawl-api:
     build:
       context: ./crawl
       dockerfile: Dockerfile
+    command: uvicorn api:app --host 0.0.0.0 --port 5000 --reload
     restart: always
     depends_on:
-      mysql-db:
-        condition: service_healthy
-      redis:
-        condition: service_started
+      - mysql-db
+      - redis
     networks:
       - db-network
     environment:
@@ -146,7 +145,7 @@ services:
     volumes:
       - ./crawl:/app
 
-  celery:
+  celery-worker:
     build:
       context: ./crawl
       dockerfile: Dockerfile
@@ -160,7 +159,7 @@ services:
     environment:
       DATABASE_URL: mysql+mysqlconnector://root:password@mysql-db:3306/law_service
     volumes:
-      - ./law-crawler-api:/app
+      - ./crawl:/app
 
   celery-beat:
     build:
@@ -171,6 +170,7 @@ services:
     depends_on:
       - redis
       - mysql-db
+      - celery-worker
     networks:
       - db-network
     environment:

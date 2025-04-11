@@ -4,6 +4,6 @@ from process.split_file_js import extract_json_from_js
 from tasks import *
 
 try :
-    crawl_vbqppl()
+    insert_topics()
 except Exception as e:
     print(f"Error: {e}")

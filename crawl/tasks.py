@@ -1,18 +1,21 @@
-from celery_app import celery
 from process.download import download_and_extract_zip
 from models.db import get_session
 from models.models import *
 from process.process_dictionary import process_json_data, insert_topics, insert_subjects, tree_nodes
 from process.process_vbqppl import process_vbqppl
 from process.split_document import process_split_document
+from celery_app import celery_app
 
+@celery_app.task(name='tasks.test_crawl_dat_tasks')
+def test_crawl_dat_tasks():
+    print("Test crawl data tasks")
+
+@celery_app.task(name='tasks.crawl_data')
 def crawl_data():
     print("Crawling started")
-    session = get_session()
     try:
         # Step 1: Download và giải nén file zip
-        extract_path = './phap-dien'
-        # download_and_extract_zip()
+        download_and_extract_zip()
 
         # Step 2: Xử lý dữ liệu từ file giải nén
         process_json_data()
@@ -29,12 +32,8 @@ def crawl_data():
         # Step 5: Split documents
         split_documents()
 
-        session.commit()
     except Exception as e:
-        session.rollback()
         print(f"Error: {e}")
-    finally:
-        session.close()
 
 def crawl_vbqppl():
     # Logic từ document-crawler/main.py
