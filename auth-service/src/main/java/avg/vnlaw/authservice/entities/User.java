@@ -30,6 +30,8 @@ public class User {
     @NotBlank(message = "Mật khẩu là bắt buộc")
     private String password;
 
+    private String googleId;
+
     @Column(name = "name", length = 80, nullable = true)
     private String name;
 
@@ -38,8 +40,8 @@ public class User {
     @JsonBackReference
     private Role role;
 
-    @Column(name = "is_active", nullable = false)
-    private boolean isActive = false;
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = false;
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

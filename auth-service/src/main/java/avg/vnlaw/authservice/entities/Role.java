@@ -15,7 +15,13 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String name;
+
+    public enum RoleType {
+        ADMIN, USER, SUPER_USER
+    }
+
+    @Enumerated(EnumType.STRING)
+    private RoleType name;
 
     @OneToMany(mappedBy = "role")
     private List<User> users;
