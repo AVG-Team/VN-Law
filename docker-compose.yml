@@ -126,7 +126,7 @@ services:
       - /app/node_modules
     env_file:
       - ./front-end/website/.env
-
+      
   crawl-api:
     build:
       context: ./crawl
@@ -183,10 +183,27 @@ services:
     restart: always
     networks:
       - db-network
+      
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana    
 
 volumes:
   mysql_data:
   kafka_data:
+  grafana-storage:
 
 networks:
   db-network:
