@@ -16,37 +16,34 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
     @Column(name = "`index`", nullable = false)
     private String index;
 
-    @Column(nullable = false)
+    @Column(nullable = false,columnDefinition = "TEXT")
     private String vbqppl;
-
-    @Column(nullable = false)
-    private String vbqpplLink;
 
     @Column(name = "`order`", nullable = false)
     private Integer order;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_topic", nullable = false)
+    @JoinColumn(name = "topic_id", nullable = false)
     private Topic topic;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_subject",nullable = false)
+    @JoinColumn(name = "subject_id",nullable = false)
     private Subject subject;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "id_chapter",nullable = false)
+    @JoinColumn(name = "chapter_id",nullable = false)
     private Chapter chapter;
 
 }

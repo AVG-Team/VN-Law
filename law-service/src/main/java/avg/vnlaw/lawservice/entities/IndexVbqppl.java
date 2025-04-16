@@ -25,11 +25,11 @@ public class IndexVbqppl {
     private String name;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "index_parent")
+    @JoinColumn(name = "parent_index")
     private IndexVbqppl indexVbqppl;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_vbqppl")
+    @JoinColumn(name = "vbqppl_id")
     private Vbqppl vbqppl;
 
 }
