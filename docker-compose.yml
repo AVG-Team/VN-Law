@@ -28,17 +28,55 @@ services:
     volumes:
       - ./api-gateway/kong.yml:/usr/local/kong/declarative/kong.yml
 
+  kafka:
+    image: apache/kafka:latest
+    restart: always
+    networks:
+      - db-network
+    ports:
+      - "9092:9092"
+      - "9093:9093"  # Thêm port cho controller
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER  # Thêm biến này để chỉ định rõ listener cho controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_LOG_RETENTION_BYTES: -1
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
   mysql-db:
     image: mysql:8.4.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: auth_service  # Tạo sẵn database auth_service
+      MYSQL_USER: auth_user         # Tạo user cho auth-service
+      MYSQL_PASSWORD: auth_password # Mật khẩu cho user
+      MYSQL_ROOT_HOST: '%'          # Cho phép truy cập từ bất kỳ host nào
+    command: --max_allowed_packet=128M --wait_timeout=28800 --interactive_timeout=28800 # Thêm file init SQL
     ports:
-      - "4000:3306"
+      - "3306:3306"
     networks:
       - db-network
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # File init để tạo law_service
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   law-service:
     build: ./law-service
@@ -54,11 +92,25 @@ services:
     ports:
       - "9002:9002"
 
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8082:80
+    depends_on:
+      - mysql-db
+    networks:
+      - db-network
+    environment:
+      PMA_HOST: mysql-db
+      UPLOAD_LIMIT: 300M
+
   auth-service:
     build: ./auth-service
     restart: always
     depends_on:
-      - mysql-db
+      mysql-db:
+        condition: service_healthy  # Chờ MySQL sẵn sàng
     networks:
       - db-network
     env_file:
@@ -86,6 +138,64 @@ services:
       - /app/node_modules
     env_file:
       - ./front-end/website/.env
+
+  crawl-api:
+    build:
+      context: ./crawl
+      dockerfile: Dockerfile
+    command: uvicorn api:app --host 0.0.0.0 --port 5000 --reload
+    restart: always
+    depends_on:
+      - mysql-db
+      - redis
+    networks:
+      - db-network
+    environment:
+      DATABASE_URL: mysql+mysqlconnector://root:password@mysql-db:3306/law_service
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./crawl:/app
+
+  celery-worker:
+    build:
+      context: ./crawl
+      dockerfile: Dockerfile
+    command: celery -A celery_app worker --loglevel=info
+    restart: always
+    depends_on:
+      - redis
+      - mysql-db
+    networks:
+      - db-network
+    environment:
+      DATABASE_URL: mysql+mysqlconnector://root:password@mysql-db:3306/law_service
+    volumes:
+      - ./crawl:/app
+
+  celery-beat:
+    build:
+      context: ./crawl
+      dockerfile: Dockerfile
+    command: celery -A celery_app beat --loglevel=info
+    restart: always
+    depends_on:
+      - redis
+      - mysql-db
+      - celery-worker
+    networks:
+      - db-network
+    environment:
+      DATABASE_URL: mysql+mysqlconnector://root:password@mysql-db:3306/law_service
+    volumes:
+      - ./crawl:/app
+
+  redis:
+    image: redis:alpine
+    restart: always
+    networks:
+      - db-network
+
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
@@ -104,18 +214,19 @@ services:
     command: start-dev
 
   keycloak-db:
-      image: postgres:14
-      container_name: keycloak-db
-      environment:
-        - POSTGRES_DB=keycloak
-        - POSTGRES_USER=keycloak
-        - POSTGRES_PASSWORD=keycloak
-      volumes:
-        - keycloak-db-data:/var/lib/postgresql/data
+    image: postgres:14
+    container_name: keycloak-db
+    environment:
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=keycloak
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
 
 volumes:
   mysql_data:
   keycloak-db-data:
+  kafka_data:
 
 networks:
   db-network:
