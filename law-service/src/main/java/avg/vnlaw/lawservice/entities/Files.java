@@ -10,7 +10,7 @@ import lombok.*;
 @Setter
 @Getter
 @Builder
-public class Files {
+public class Files extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

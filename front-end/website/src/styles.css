@@ -41,4 +41,35 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    background-color: rgb(228, 239, 255);
+}
+/* Áp dụng cho toàn bộ trang */
+html {
+    scroll-behavior: smooth; /* Cuộn mượt */
+}
+
+/* Tùy chỉnh thanh cuộn cho mọi phần tử */
+::-webkit-scrollbar {
+    width: 8px; /* Độ rộng của thanh cuộn */
+    height: 8px; /* Độ cao thanh cuộn ngang (nếu có) */
+}
+
+::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Màu nền của thanh cuộn */
+    border-radius: 10px; /* Bo góc cho thanh cuộn */
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #41c9e2, #2a82ba); /* Màu thanh cuộn */
+    border-radius: 10px; /* Bo góc thanh cuộn */
+    border: 2px solid #f0f0f0; /* Tạo viền xung quanh */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(90deg, #2a82ba, #41c9e2); /* Màu khi hover */
+}
+
+/* Thanh cuộn ngang (nếu cần) */
+::-webkit-scrollbar-corner {
+    background: transparent; /* Nền góc vuông giữa hai thanh cuộn */
 }

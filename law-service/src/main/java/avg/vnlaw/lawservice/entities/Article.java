@@ -11,7 +11,7 @@ import lombok.*;
 @Setter
 @Getter
 @Builder
-public class Article {
+public class Article extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
