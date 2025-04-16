@@ -21,6 +21,10 @@ public class AuthenticationResponse {
     private AuthenticationResponseEnum type;
     @JsonProperty("name")
     private String name;
+    @JsonProperty("email")
+    private String email;
+    @JsonProperty("id")
+    private String id;
     @JsonProperty("role")
     private String role;
 }

@@ -1,0 +1,1 @@
+import{a as e}from"./axiosClient-f7rFmG3x.js";const r="law/api/v1/vbqppl",g={getAllByPage(t){return e.get(r,{params:t})},getById(t){const l=r+`/${t}`;return e.get(l,{vbqpplId:t})},getAll(){return e.get(r+"/all")},filter(t){return e.get(r+"/filter",{params:t})}};export{g as V};
