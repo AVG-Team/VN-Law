@@ -18,10 +18,10 @@ public class RoleFaker implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if(roleRepository.findAll().isEmpty()){
-            RoleEnum[] roleEnums = RoleEnum.values();
-            for(RoleEnum roleEnum : roleEnums){
+            Role.RoleType[] roleEnums = Role.RoleType.values();
+            for(Role.RoleType roleEnum : roleEnums){
                 Role role = new Role();
-                role.setName(roleEnum.name());
+                role.setName(Role.RoleType.valueOf(roleEnum.name()));
                 roleRepository.save(role);
             }
         }

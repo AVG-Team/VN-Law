@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = java.lang.Exception.class)
     ResponseEntity<ApiResponse<java.lang.Exception>> handlingException(java.lang.Exception exception) {
-        ApiResponse<Exception> apiResponse = new ApiResponse<>();
+        ApiResponse<java.lang.Exception> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
         apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());

@@ -28,7 +28,7 @@ public class CustomUserDetail implements OAuth2User ,UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return user.isActive();
+        return user.isEmailVerified();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class CustomUserDetail implements OAuth2User ,UserDetails {
 
     @Override
     public String getName() {
-        return user.getId();
+        return user.getName();
     }
 
     public CustomUserDetail(User user, Map<String, Object> attributes) {

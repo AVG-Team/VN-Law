@@ -3,21 +3,14 @@ package avg.vnlaw.authservice.o2auth.services;
 import avg.vnlaw.authservice.entities.CustomUserDetail;
 import avg.vnlaw.authservice.entities.Role;
 import avg.vnlaw.authservice.entities.User;
-import avg.vnlaw.authservice.o2auth.entities.OAuth2UserInfo;
-import avg.vnlaw.authservice.o2auth.entities.OAuth2UserInfoFactory;
-import avg.vnlaw.authservice.o2auth.exceptions.OAuth2AuthenticationProcessingException;
+import avg.vnlaw.authservice.o2auth.services.CustomOAuth2User;
 import avg.vnlaw.authservice.repositories.RoleRepository;
 import avg.vnlaw.authservice.repositories.UserRepository;
 import avg.vnlaw.authservice.services.EmailService;
 import avg.vnlaw.authservice.services.JwtService;
-import avg.vnlaw.authservice.services.TokenService;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -25,78 +18,83 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.Random;
+import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class OAuth2Service extends DefaultOAuth2UserService {
-    private static final Logger log = LoggerFactory.getLogger(OAuth2Service.class);
-    @Value("${CLIENT_GOOGLE_ID}")
-    private String CLIENT_GOOGLE_ID;
 
+    private static final Logger logger = LoggerFactory.getLogger(OAuth2Service.class);
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
+    private final RoleRepository roleRepository; // Thêm RoleRepository
     private final JwtService jwtService;
-    private final TokenService tokenService;
-
-    @PostConstruct
-    private void init() {
-        if (CLIENT_GOOGLE_ID == null) {
-            throw new IllegalArgumentException("CLIENT_GOOGLE_ID environment variable is not set");
-        }
-    }
+    private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
-        OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
-
-        try {
-            return processOAuth2User(oAuth2UserRequest, oAuth2User);
-        } catch (Exception ex) {
-            // Throwing an instance of AuthenticationException will trigger the OAuth2AuthenticationFailureHandler
-            throw new InternalAuthenticationServiceException(ex.getMessage(), ex.getCause());
-        }
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        logger.info("Loading OAuth2 user from request: {}", userRequest.getClientRegistration().getRegistrationId());
+        OAuth2User oAuth2User = super.loadUser(userRequest);
+        logger.info("OAuth2 user loaded: {}", oAuth2User.getAttributes());
+        return processOAuth2User(oAuth2User);
     }
 
-    private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
-        OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
-        if(StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {
-            throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 provider");
-        }
+    private OAuth2User processOAuth2User(OAuth2User oAuth2User) {
+        Map<String, Object> attributes = oAuth2User.getAttributes();
+        String googleId = attributes.get("sub").toString();
+        String email = attributes.get("email").toString();
+        String name = attributes.get("name").toString();
 
-        Optional<User> userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());
-        User user;
-        user = userOptional.orElseGet(() -> registerNewUser(oAuth2UserInfo));
+        logger.info("Processing OAuth2 user with googleId: {} and email: {} and name: {}", googleId, email,name);
 
-        return new CustomUserDetail(user, oAuth2User.getAttributes());
+        User user = userRepository.findByGoogleId(googleId)
+                .orElseGet(() -> {
+                    logger.info("Registering new user with email: {}", email);
+                    return registerNewUser(email, googleId, name);
+                });
+
+        return new CustomUserDetail(user);
     }
 
-    private User registerNewUser(OAuth2UserInfo oAuth2UserInfo) {
-        String email = oAuth2UserInfo.getEmail();
-        String fullName = oAuth2UserInfo.getName();
-        String avatar = oAuth2UserInfo.getImageUrl();
+    private User registerNewUser(String email, String googleId, String name) {
+        User user = new User();
+        user.setEmail(email);
+        user.setName(name);
+        user.setGoogleId(googleId);
+        user.setEmailVerified(true);
+        String randomPassword = generateRandomPassword(12); // 12 ký tự
+        user.setPassword(passwordEncoder.encode(randomPassword));
 
-        Role role = roleRepository.findById(1)
-                .orElse(roleRepository.findFirstByOrderByIdAsc());
+        // Lấy Role từ database thay vì tạo mới
+        Role role = roleRepository.findByName(Role.RoleType.USER)
+                .orElseGet(() -> {
+                    Role newRole = new Role();
+                    newRole.setName(Role.RoleType.USER);
+                    return roleRepository.save(newRole); // Lưu Role nếu chưa tồn tại
+                });
+        user.setRole(role);
 
-        String password = "AVG_" + new Random().nextInt(1000) + "_VNLAW";
+        return userRepository.save(user);
+    }
 
-        String passwordEnc = passwordEncoder.encode(password);
-        User userRegister = new User();
-        userRegister.setActive(true);
-        userRegister.setEmail(email);
-        userRegister.setPassword(passwordEnc);
-        userRegister.setRole(role);
-        userRepository.save(userRegister);
+    private String generateRandomPassword(int length) {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[length];
+        random.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes).substring(0, length);
+    }
 
+    private void sendPasswordEmail(String email, String password) {
         try {
-            emailService.sendEmailRegisterWithPassword(email, fullName, password);
+            emailService.sendPasswordEmail(email, "Your Login Password",
+                    "Welcome! You can now log in with your email and this password:\n\n" +
+                            "Password: " + password + "\n\n" +
+                            "For security, please change your password after logging in.");
+            logger.info("Password email sent to: {}", email);
         } catch (Exception e) {
-            System.out.println("error send mail: " + e.getMessage());
+            logger.error("Failed to send password email to {}: {}", email, e.getMessage());
         }
-        return userRepository.save(userRegister);
     }
 }
