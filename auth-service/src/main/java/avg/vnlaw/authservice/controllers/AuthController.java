@@ -1,11 +1,16 @@
 package avg.vnlaw.authservice.controllers;
 
+import avg.vnlaw.authservice.dto.ApiResponse;
+import avg.vnlaw.authservice.dto.requests.*;
+import avg.vnlaw.authservice.dto.responses.*;
 import avg.vnlaw.authservice.enums.AuthenticationResponseEnum;
-import avg.vnlaw.authservice.requests.*;
-import avg.vnlaw.authservice.responses.*;
+import avg.vnlaw.authservice.exception.AppException;
+import avg.vnlaw.authservice.exception.ErrorCode;
+import avg.vnlaw.authservice.services.AuthenticationService;
+import avg.vnlaw.authservice.services.ReCaptchaService;
+import avg.vnlaw.authservice.services.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,86 +21,109 @@ public class AuthController {
     private final AuthenticationService authService;
     private final UserService userService;
     private final ReCaptchaService reCaptchaService;
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
+
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(
+    public ApiResponse<?> register(
             @RequestBody RegisterRequest request
     ) {
-        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
-        if (!reCaptchaResponse.isSuccess()) {
-            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
+        if (!"dev".equalsIgnoreCase(activeProfile)) {
+            ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+            if (!reCaptchaResponse.isSuccess()) {
+                throw new AppException(ErrorCode.RECAPCHA_INVALID);
+            }
         }
         String message;
         AuthenticationResponse authResponse = authService.register(request);
         if (authResponse.getType() == AuthenticationResponseEnum.EMAIL_ALREADY_REGISTERED) {
             message = "Account is already registered";
-            return ResponseHandler.responseBuilder(message, HttpStatus.UNAUTHORIZED);
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
         message = "Account registered successfully";
-        return ResponseHandler.responseOk(message, authResponse);
+        return ApiResponse.builder()
+                .message(message)
+                .data(authResponse)
+                .build();
 
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<?> authenticate(
+    public ApiResponse<?> authenticate(
             @RequestBody AuthenticationRequest request
     ) {
-        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
-        if (!reCaptchaResponse.isSuccess()) {
-            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
+        if(!("dev".equalsIgnoreCase(activeProfile))) {
+            ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+            if (!reCaptchaResponse.isSuccess()) {
+                throw new AppException(ErrorCode.RECAPCHA_INVALID);
+            }
         }
+
         String message;
         AuthenticationResponse authResponse = authService.authenticate(request);
         try {
-            if (authResponse.getType() == AuthenticationResponseEnum.ACCOUNT_NOT_ACTIVATED) {
-                message = "Account is not activated";
-                return ResponseHandler.responseBadRequest(message);
-            }
+            if (authResponse.getType() == AuthenticationResponseEnum.ACCOUNT_NOT_ACTIVATED)
+                throw new AppException(ErrorCode.ACCOUNT_NOT_ACTIVATED);
 
             message = "Account authenticated successfully";
-            return ResponseHandler.responseOk(message, authResponse);
+            return ApiResponse.builder()
+                    .message(message)
+                    .data(authResponse)
+                    .build();
         } catch (Exception e) {
-            message = "Account or password is incorrect";
-            return ResponseHandler.responseBuilder(message, HttpStatus.UNAUTHORIZED);
+            throw new AppException(ErrorCode.PASSWORD_INCORRECT);
         }
     }
 
     @PostMapping("/confirm-email")
-    public ResponseEntity<?> confirm(
+    public ApiResponse<?> confirm(
             @RequestBody ConfirmEmailRequest request
     ) {
         MessageResponse authResponse = authService.confirm(request.getToken());
-        return ResponseHandler.responseBuilder(authResponse.getMessage(), authResponse.getType());
+        return ApiResponse.builder()
+                .message(authResponse.getMessage())
+                .data(authResponse.getType())
+                .build();
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(
+    public ApiResponse<?> forgotPassword(
             @RequestBody PasswordResetTokenRequest request
     ) {
         ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
         if (!reCaptchaResponse.isSuccess()) {
-            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
+            throw new AppException(ErrorCode.RECAPCHA_INVALID);
         }
 
         MessageResponse authResponse = authService.forgotPassword(request.getEmail());
-        return ResponseHandler.responseBuilder(authResponse.getMessage(), authResponse.getType());
+        return ApiResponse.builder()
+                .message(authResponse.getMessage())
+                .data(authResponse.getType())
+                .build();
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(
+    public ApiResponse<?> changePassword(
             @RequestBody ChangePasswordRequest request
     ) {
         ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
         if (!reCaptchaResponse.isSuccess()) {
-            return ResponseHandler.responseBadRequest("Captcha verification failed, Please try again.");
+            throw new AppException(ErrorCode.RECAPCHA_INVALID);
         }
         MessageResponse authResponse = authService.changePassword(request.getToken(), request.getPassword());
-        return ResponseHandler.responseBuilder(authResponse.getMessage(), authResponse.getType());
+        return ApiResponse.builder()
+                .message(authResponse.getMessage())
+                .data(authResponse.getType())
+                .build();
     }
 
     @PostMapping("/get-current-user")
-    public ResponseEntity<?> getCurrentUser(@RequestBody AccessTokenRequest request) {
+    public ApiResponse<?> getCurrentUser(@RequestBody AccessTokenRequest request) {
         GetCurrentUserByAccessTokenResponse response = authService.getCurrentUserByAccessToken(request.getToken());
-        return ResponseHandler.responseOk("Profile retrieved successfully", response);
+        return ApiResponse.builder()
+                .message("Profile retrieved successfully")
+                .data(response)
+                .build();
     }
 }

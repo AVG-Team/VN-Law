@@ -1,4 +1,4 @@
-package avg.vnlaw.authservice.responses;
+package avg.vnlaw.authservice.dto.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetCurrentUserByAccessTokenResponse {
-    private String name;
-    private String role;
+public class AccessTokenRequest {
+    private String token;
 }

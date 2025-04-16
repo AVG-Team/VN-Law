@@ -1,4 +1,4 @@
-package avg.vnlaw.authservice.responses;
+package avg.vnlaw.authservice.dto.responses;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

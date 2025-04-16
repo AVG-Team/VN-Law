@@ -1,26 +1,34 @@
 package avg.vnlaw.authservice.services;
 
+import avg.vnlaw.authservice.dto.identity.Credential;
+import avg.vnlaw.authservice.dto.identity.TokenExchangeParam;
+import avg.vnlaw.authservice.dto.identity.UserCreationParam;
 import avg.vnlaw.authservice.entities.CustomUserDetail;
 import avg.vnlaw.authservice.entities.PasswordResetToken;
 import avg.vnlaw.authservice.entities.Role;
 import avg.vnlaw.authservice.entities.User;
 import avg.vnlaw.authservice.enums.AuthenticationResponseEnum;
 import avg.vnlaw.authservice.enums.TokenTypeForgotPasswordEnum;
+import avg.vnlaw.authservice.mapper.UserMapper;
+import avg.vnlaw.authservice.repositories.IdentityClient;
 import avg.vnlaw.authservice.repositories.PasswordResetTokenRepository;
 import avg.vnlaw.authservice.repositories.RoleRepository;
 import avg.vnlaw.authservice.repositories.UserRepository;
-import avg.vnlaw.authservice.requests.AuthenticationRequest;
-import avg.vnlaw.authservice.requests.RegisterRequest;
-import avg.vnlaw.authservice.responses.AuthenticationResponse;
-import avg.vnlaw.authservice.responses.GetCurrentUserByAccessTokenResponse;
-import avg.vnlaw.authservice.responses.MessageResponse;
+import avg.vnlaw.authservice.dto.requests.AuthenticationRequest;
+import avg.vnlaw.authservice.dto.requests.RegisterRequest;
+import avg.vnlaw.authservice.dto.responses.AuthenticationResponse;
+import avg.vnlaw.authservice.dto.responses.GetCurrentUserByAccessTokenResponse;
+import avg.vnlaw.authservice.dto.responses.MessageResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +38,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -47,6 +56,16 @@ public class AuthenticationService {
     private final EmailService emailService;
     private final TokenService tokenService;
     private final Logger logger = Logger.getLogger(AuthenticationService.class.getName());
+    private final IdentityClient identityClient;
+    private final UserMapper userMapper;
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
+    @Value("${idp.client_id}")
+    @NonFinal
+    private String idpClientId;
+    @Value("${idp.client_secret}")
+    @NonFinal
+    private String idpClientSecret;
 
     private void setPasswordResetToken(User user, TokenTypeForgotPasswordEnum tokenType, String token) {
         long expiration = 24L * 60 * 60 * 1000L;
@@ -59,7 +78,13 @@ public class AuthenticationService {
         passwordResetTokenRepository.save(passwordResetToken);
     }
 
-    
+    private String extractUserId(ResponseEntity<?> response) {
+        String location = response.getHeaders().get("Location").getFirst();
+        String[] splitedPart = location.split("/");
+        return splitedPart[splitedPart.length - 1];
+    }
+
+
     public AuthenticationResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             return AuthenticationResponse.builder()
@@ -69,27 +94,62 @@ public class AuthenticationService {
 
         Role role = roleRepository.findById(request.getRole())
                 .orElse(roleRepository.findFirstByOrderByIdAsc());
+        // create account in keycloak
+        // exchange client token
+        var tokenKeyCloak =  identityClient.exchangeToken(TokenExchangeParam.builder()
+                    .grant_type("client_credentials")
+                    .client_id(idpClientId)
+                    .client_secret(idpClientSecret)
+                    .scope("openid")
+                .build());
+
+        log.info("Client token: {}",tokenKeyCloak.getAccessToken());
+        // create user with client token and given info
+        var creationResponse = identityClient.createUser(
+                "Bearer " + tokenKeyCloak.getAccessToken(),
+                UserCreationParam.builder()
+                        .username(request.getUsername())
+                        .email(request.getEmail())
+                        .firstName(request.getFirstName())
+                        .lastName(request.getLastName())
+                        .enabled(true)
+                        .emailVerified(false)
+                        .credentials(List.of(Credential.builder()
+                                        .type("password")
+                                        .temporary(false)
+                                        .value(request.getPassword())
+                                .build()))
+                        .build()
+        );
+        // get userid from keyCloak
+        String userId = extractUserId(creationResponse);
 
         User user = new User();
+        log.info("user: {}",user.toString());
+        log.info("request: {}",request.toString());
+        user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-        user.setName(request.getName());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(role);
-        user.setActive(false);
+        user.setUserId(userId);
+        user.setActive("prod".equalsIgnoreCase(activeProfile));
+
         userRepository.save(user);
 
         String token = "AVG_" + UUID.randomUUID() + System.currentTimeMillis() + "_VNLAW";
         setPasswordResetToken(user, TokenTypeForgotPasswordEnum.EMAIL_VERIFICATION, token);
 
         try {
-            emailService.sendEmailRegister(user.getEmail(), user.getName(), token);
+            emailService.sendEmailRegister(user.getEmail(), user.getUsername(), token);
         } catch (Exception e) {
             logger.warning("error Send Mail : " + e.getMessage());
         }
 
         AuthenticationResponse response = new AuthenticationResponse();
-        response.setRefreshToken(null);
-        response.setAccessToken(null);
+        response.setRefreshToken(tokenKeyCloak.getRefreshToken());
+        response.setAccessToken(tokenKeyCloak.getAccessToken());
         response.setType(AuthenticationResponseEnum.OK);
 
         return response;
@@ -120,7 +180,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .name(user.getName())
+                .name(user.getUsername())
                 .role(user.getRole().getName())
                 .type(AuthenticationResponseEnum.OK)
                 .build();
@@ -179,7 +239,7 @@ public class AuthenticationService {
     public GetCurrentUserByAccessTokenResponse getCurrentUserByAccessToken(String token) {
         User user = tokenService.getUserByToken(token);
         return GetCurrentUserByAccessTokenResponse.builder()
-                .name(user.getName())
+                .name(user.getUsername())
                 .role(user.getRole().getName())
                 .build();
     }
@@ -220,7 +280,7 @@ public class AuthenticationService {
         setPasswordResetToken(user, TokenTypeForgotPasswordEnum.PASSWORD_RESET, token);
 
         try {
-            emailService.sendEmailForgotPassword(user.getEmail(), user.getName(), token);
+            emailService.sendEmailForgotPassword(user.getEmail(), user.getUsername(), token);
         } catch (Exception e) {
             logger.warning("error Send Mail : " + e.getMessage());
             logger.warning("error Send Mail : " + e.getMessage());

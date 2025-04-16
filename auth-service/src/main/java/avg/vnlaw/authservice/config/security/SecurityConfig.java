@@ -29,9 +29,8 @@ public class SecurityConfig {
     @Autowired
     UserService userService;
 
-    private static final String[] WHITE_LIST_URL = {
+    private static final String[] PUBLIC_ENDPOINT = {
             "/api/auth/**",
-            "/test",
             "api/oauth2/**",
             "oauth2/**",
             "/v2/api-docs",
@@ -70,7 +69,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers(WHITE_LIST_URL)
+                        req.requestMatchers(PUBLIC_ENDPOINT)
                                 .permitAll()
                                 .requestMatchers("/api/**").permitAll()
                                 .anyRequest().authenticated()
@@ -95,7 +94,7 @@ public class SecurityConfig {
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(new JwtAuthenticationConverter())
-                        )
+                        ).authenticationEntryPoint(new JwtAuthenticationEntryPoint())
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

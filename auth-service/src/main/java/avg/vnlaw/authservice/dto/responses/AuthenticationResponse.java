@@ -1,4 +1,4 @@
-package avg.vnlaw.authservice.responses;
+package avg.vnlaw.authservice.dto.responses;
 
 import avg.vnlaw.authservice.enums.AuthenticationResponseEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;

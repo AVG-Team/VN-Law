@@ -1,4 +1,4 @@
-package avg.vnlaw.authservice.requests;
+package avg.vnlaw.authservice.dto.requests;
 
 import lombok.Builder;
 import lombok.Getter;

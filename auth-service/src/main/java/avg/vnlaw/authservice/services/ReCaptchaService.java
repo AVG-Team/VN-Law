@@ -1,6 +1,6 @@
 package avg.vnlaw.authservice.services;
 
-import avg.vnlaw.authservice.responses.ReCaptchaResponse;
+import avg.vnlaw.authservice.dto.responses.ReCaptchaResponse;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
