@@ -1,0 +1,33 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'auth-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'law-service:9001' ]
+
+  - job_name: 'law-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['law-service:9002']
+
+  - job_name: 'chat-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['law-service:9003']
+
+  - job_name: 'react-frontend'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'react-frontend:5173' ]
+
+  - job_name: 'mysql'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'mysql-db:4000' ]
+
+  - job_name: 'kong'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'kong:4000' ]

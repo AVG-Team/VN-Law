@@ -87,8 +87,25 @@ services:
     env_file:
       - ./front-end/website/.env
 
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
 volumes:
   mysql_data:
+  grafana-storage:
 
 networks:
   db-network:
