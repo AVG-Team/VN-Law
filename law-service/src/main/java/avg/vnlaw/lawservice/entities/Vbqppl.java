@@ -27,6 +27,6 @@ public class Vbqppl extends BaseEntity {
     @Column(nullable = false)
     private String number;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String html;
 }
