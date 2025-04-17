@@ -17,9 +17,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/article")
 @RequiredArgsConstructor
-public class ArticleController extends BaseController<Article, ArticleRequest, String> {
+public class ArticleController {
 
-    private ArticleService articleService;
+    private final ArticleService articleService;
 
 
     @GetMapping("/{chapterId}")
@@ -45,31 +45,5 @@ public class ArticleController extends BaseController<Article, ArticleRequest, S
     ){
         return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,articleService.getArticleByFilter(subjectId,name,pageNo,pageSize));
-    }
-
-
-    @Override
-    public ResponseEntity<Article> create(ArticleRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Article> update(String id, ArticleRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Article> delete(ArticleRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Article> get(ArticleRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<List<Article>> getAll() {
-        return null;
     }
 }

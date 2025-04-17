@@ -13,7 +13,6 @@ import lombok.experimental.FieldDefaults;
 public class IndexVbqpplRequest {
     Integer id;
     String content;
-    String type;
     String name;
     Integer idParent;
     Integer idVbqppl;

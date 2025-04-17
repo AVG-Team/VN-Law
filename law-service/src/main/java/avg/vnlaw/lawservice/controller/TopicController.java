@@ -19,49 +19,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/topic")
 @RequiredArgsConstructor
-public class TopicController extends BaseController<Topic, TopicRequest,String> {
+public class TopicController  {
 
+    private final TopicService topicService;
 
-    private TopicService topicService;
-
-    public TopicController(TopicService topicService){
-        this.topicService = topicService;
-    }
 
     @GetMapping("{topicId}")
     public ResponseEntity<Object> getTopicDetails(@PathVariable("topicId") String topicId){
         return HandlerResponse.responseBuilder("Complete",
-                HttpStatus.OK,this.topicService.getTopic(topicId));
+                HttpStatus.OK,topicService.getTopic(topicId));
     }
 
     @GetMapping("")
     public ResponseEntity<Object> getAllTopicDetails(){
         return HandlerResponse.responseBuilder("Complete",
-                HttpStatus.OK,this.topicService.getAllTopic());
-    }
-
-    @Override
-    public ResponseEntity<Topic> create(TopicRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Topic> update(String id, TopicRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Topic> delete(TopicRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Topic> get(TopicRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<List<Topic>> getAll() {
-        return null;
+                HttpStatus.OK,topicService.getAllTopic());
     }
 }

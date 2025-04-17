@@ -17,24 +17,21 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/subject")
 @RequiredArgsConstructor
-public class SubjectController extends BaseController<Subject, SubjectRequest,String> {
+public class SubjectController {
 
-    private SubjectService subjectService;
+    private final SubjectService subjectService;
 
-    public SubjectController(SubjectService subjectService){
-        this.subjectService = subjectService;
-    }
 
     @GetMapping("/{topicId}")
     public ResponseEntity<Object> getSubjectByTopic(@PathVariable("topicId") String topicId){
         return HandlerResponse.responseBuilder("Complete Get Subject By Topic ",
-                HttpStatus.OK,this.subjectService.getSubjectByTopic(topicId));
+                HttpStatus.OK,subjectService.getSubjectByTopic(topicId));
     }
 
     @GetMapping("{subjectId}")
     public ResponseEntity<Object> getSubjectDetail(@PathVariable("subjectId") String subjectId){
         return HandlerResponse.responseBuilder("Complete",
-                HttpStatus.OK,this.subjectService.getSubject(subjectId));
+                HttpStatus.OK,subjectService.getSubject(subjectId));
     }
 
     @GetMapping("")
@@ -44,31 +41,6 @@ public class SubjectController extends BaseController<Subject, SubjectRequest,St
             @RequestParam(name = "name", value = "name", defaultValue = "") Optional<String> name
     ){
         return HandlerResponse.responseBuilder("Complete",
-                HttpStatus.OK,this.subjectService.getAllSubjects(name,pageNo,pageSize));
-    }
-
-    @Override
-    public ResponseEntity<Subject> create(SubjectRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Subject> update(String id, SubjectRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Subject> delete(SubjectRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Subject> get(SubjectRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<List<Subject>> getAll() {
-        return null;
+                HttpStatus.OK,subjectService.getAllSubjects(name,pageNo,pageSize));
     }
 }

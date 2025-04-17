@@ -30,7 +30,7 @@ public class Article extends BaseEntity {
     @Column(nullable = false,columnDefinition = "TEXT")
     private String vbqppl;
 
-    @Column(name= "`vbqppl_link`",nullable = false,columnDefinition = "TEXT")
+    @Column(name= "`vbqppl_link`",nullable = true,columnDefinition = "TEXT")
     private String vbqpplLink;
 
     @Column(name = "`order`", nullable = false)

@@ -19,7 +19,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/vbqppl")
 @RequiredArgsConstructor
-public class VbqpplController extends BaseController<Vbqppl, VbqpplRequest,Integer> {
+public class VbqpplController  {
 
     private VbqpplService vbqpplService;
 
@@ -29,13 +29,13 @@ public class VbqpplController extends BaseController<Vbqppl, VbqpplRequest,Integ
             @RequestParam(name = "pageSize",value = "pageSize") Optional<Integer> pageSize
     ){
         return HandlerResponse.responseBuilder("Complete",
-                HttpStatus.OK,this.vbqpplService.getAllVbqppl(pageNo,pageSize));
+                HttpStatus.OK,vbqpplService.getAllVbqppl(pageNo,pageSize));
     }
 
     @GetMapping("/{vbqpplId}")
     public ResponseEntity<Object> getVbqpplById(@PathVariable Integer vbqpplId) throws AppException {
         return HandlerResponse.responseBuilder("Complete",
-                HttpStatus.OK,this.vbqpplService.getVbqpplById(vbqpplId));
+                HttpStatus.OK,vbqpplService.getVbqpplById(vbqpplId));
     }
 
     @GetMapping("/filter")
@@ -47,32 +47,7 @@ public class VbqpplController extends BaseController<Vbqppl, VbqpplRequest,Integ
 
         String decodedType = URLDecoder.decode(type.orElse(""), StandardCharsets.UTF_8);
         return HandlerResponse.responseBuilder("Complete",
-                HttpStatus.OK,this.vbqpplService.getVbqpplByType(Optional.of(decodedType.toUpperCase()),pageNo,pageSize));
+                HttpStatus.OK,vbqpplService.getVbqpplByType(Optional.of(decodedType.toUpperCase()),pageNo,pageSize));
     }
 
-
-    @Override
-    public ResponseEntity<Vbqppl> create(VbqpplRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Vbqppl> update(Integer id, VbqpplRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Vbqppl> delete(VbqpplRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Vbqppl> get(VbqpplRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<List<Vbqppl>> getAll() {
-        return null;
-    }
 }

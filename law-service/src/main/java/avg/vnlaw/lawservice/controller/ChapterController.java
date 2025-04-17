@@ -17,7 +17,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/chapter")
 @RequiredArgsConstructor
-public class ChapterController extends BaseController <Chapter, ChapterRequest,String>{
+public class ChapterController{
 
     private ChapterService chapterService;
 
@@ -25,7 +25,7 @@ public class ChapterController extends BaseController <Chapter, ChapterRequest,S
         this.chapterService = chapterService;
     }
 
-    @GetMapping("{chapterId}")
+    @GetMapping("/{chapterId}")
     public ResponseEntity<Object> getChapterById(@PathVariable(name = "chapterId") String chapterId) throws AppException {
         return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,this.chapterService.getChapter(chapterId));
@@ -51,30 +51,5 @@ public class ChapterController extends BaseController <Chapter, ChapterRequest,S
     ){
        return HandlerResponse.responseBuilder("Complete",
                HttpStatus.OK,this.chapterService.getAllChapters(name,pageNo,pageSize));
-    }
-
-    @Override
-    public ResponseEntity<Chapter> create(ChapterRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Chapter> update(String id, ChapterRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Chapter> delete(ChapterRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Chapter> get(ChapterRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<List<Chapter>> getAll() {
-        return null;
     }
 }
