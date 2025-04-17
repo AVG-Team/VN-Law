@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TableRepository extends JpaRepository<Tables,String> {
+public interface TableRepository extends JpaRepository<Tables,Integer> {
 
     public List<TableResponse> findAllByArticle_IdOrderByArticle(String articleId);
 

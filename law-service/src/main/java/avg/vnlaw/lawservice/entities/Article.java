@@ -28,6 +28,9 @@ public class Article extends BaseEntity {
     @Column(nullable = false,columnDefinition = "TEXT")
     private String vbqppl;
 
+    @Column(name= "`vbqppl_link`",nullable = false,columnDefinition = "TEXT")
+    private String vbqpplLink;
+
     @Column(name = "`order`", nullable = false)
     private Integer order;
 

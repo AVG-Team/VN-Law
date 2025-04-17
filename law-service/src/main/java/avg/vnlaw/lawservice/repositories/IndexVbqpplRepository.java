@@ -12,12 +12,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface IndexVbqpplRepository extends JpaRepository<IndexVbqppl,Integer> {
 
-    @Query("select new avg.vnlaw.lawservice.responses.ResponseIndexVbqppl(i.id,i.content,i.type,i.name,i.indexVbqppl.id,i.vbqppl.id) " +
+    @Query("select i.id,i.content,i.type,i.name,i.indexVbqppl.id,i.vbqppl.Vbqppl_id " +
             "from IndexVbqppl i " +
             "where i.id = ?1")
     public IndexVbqpplResponse findIndexById(Integer id);
 
-    @Query("select new avg.vnlaw.lawservice.responses.ResponseIndexVbqppl(i.id,i.content,i.type,i.name,i.indexVbqppl.id,i.vbqppl.id)" +
+    @Query("select i.id,i.content,i.type,i.name,i.indexVbqppl.id,i.vbqppl.Vbqppl_id " +
             "from IndexVbqppl i ")
     public Page<IndexVbqpplResponse> findAllIndex(Pageable pageable);
 }
