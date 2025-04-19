@@ -25,7 +25,6 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.function.Function;
@@ -44,7 +43,7 @@ public class SyncService {
     private final ChapterRepository chapterRepository;
     private final ArticleRepository articleRepository;
     private final Logger logger = LoggerFactory.getLogger(SyncService.class);
-    private static final int pageSize = 1000;
+    private static final int PAGESIZES = 1000;
 
     @Async
     public void syncAllDocumentsToElasticSearch() {
@@ -79,7 +78,7 @@ public class SyncService {
             int page = 0;
             Page<E> entities;
             do {
-                entities = jpaRepository.findAll(PageRequest.of(page, pageSize));
+                entities = jpaRepository.findAll(PageRequest.of(page, PAGESIZES));
                 List<D> documents = entities.stream()
                         .map(mapper).collect(Collectors.toList());
                 esRepository.saveAll(documents);
@@ -89,21 +88,6 @@ public class SyncService {
         }catch (Exception e) {
             logger.error("Failed to sync {} to ElasticSearch: {}", entityName, e.getMessage(), e);
         }
-    }
-
-    private void example() {
-        logger.info("Starting sync topic to ElasticSearch");
-        int page = 0;
-        Page<Topic> topics;
-        do{
-            topics = topicRepository.findAll(PageRequest.of(page, pageSize));
-            List<TopicDocument> esDocument = topics.stream()
-                    .map(this::topicToElasticSearchDoc)
-                    .collect(Collectors.toList());
-
-            topicDocumentRepository.saveAll(esDocument);
-        }while (!topics.isLast());
-        logger.info("✔ Synced {} topics to Elasticsearch", topics.getSize());
     }
 
     // Map entity from JPS To document ElasticSearch
