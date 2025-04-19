@@ -8,9 +8,11 @@ import java.util.Base64;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-@AllArgsConstructor
-@NoArgsConstructor
 public class GzipUtil {
+
+    private GzipUtil() {
+        throw new UnsupportedOperationException("Utility class should not be instantiated");
+    }
 
     // Nén chuỗi thành Base64 (GZIP + Base64)
     public static String compressToBase64(String data) throws IOException {

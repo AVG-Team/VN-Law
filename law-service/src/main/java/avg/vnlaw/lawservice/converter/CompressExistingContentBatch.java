@@ -54,10 +54,10 @@ public class CompressExistingContentBatch {
         List<Article> articles = repository.findAll();
         for (Article article : articles) {
             String content = article.getContent(); // auto decompress ở đây
-            // Không cần xử lý gì thêm
+            logger.info("Content: {}", content);
         }
 
         long end = System.currentTimeMillis();
-        System.out.println("⏱ Time taken to read 1000 records: " + (end - start) + " ms");
+        logger.info("⏱ Time taken to read 1000 records: {} ms", end - start);
     }
 }
