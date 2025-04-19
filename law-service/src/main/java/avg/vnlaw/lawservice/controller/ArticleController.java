@@ -26,13 +26,13 @@ public class ArticleController {
     public ResponseEntity<Object> getArticleByChapter(@PathVariable String chapterId,
                                                       @RequestParam(name = "pageNo", value="pageNo") Optional<Integer> pageNo,
                                                       @RequestParam(name = "pageSize", value="pageSize") Optional<Integer> pageSize){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get article by chapter successfully",
                 HttpStatus.OK,articleService.getArticleByChapter(chapterId,pageNo,pageSize));
     }
 
     @GetMapping("/tree/{articleId}")
     public ResponseEntity<Object> getArticleTreeViewById(@PathVariable String articleId) throws AppException {
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get article tree by article Id successfully ",
                 HttpStatus.OK,articleService.getTreeViewByArticleId(articleId));
     }
 
@@ -43,13 +43,13 @@ public class ArticleController {
             @RequestParam(name = "pageNo", value="pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value="pageSize") Optional<Integer> pageSize
     ){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get article by filter successfully",
                 HttpStatus.OK,articleService.getArticleByFilter(subjectId,name,pageNo,pageSize));
     }
 
     @GetMapping("/search")
     public ResponseEntity<Object> getArticleBySearch(@RequestParam(name = "keywords", value= "keywords") String keywords){
-        return HandlerResponse.responseBuilder("complete",
+        return HandlerResponse.responseBuilder("Get article by search successfully",
                 HttpStatus.OK,articleDocumentService.search(keywords));
     }
 

@@ -25,19 +25,19 @@ public class TopicController  {
 
     @GetMapping("{topicId}")
     public ResponseEntity<Object> getTopicDetails(@PathVariable("topicId") String topicId){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get topic details successfully",
                 HttpStatus.OK,topicService.getTopic(topicId));
     }
 
     @GetMapping("")
     public ResponseEntity<Object> getAllTopicDetails(){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get all details successfully",
                 HttpStatus.OK,topicService.getAllTopic());
     }
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchTopic(@RequestParam(name="keyword",value="keyword") String keyword){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Search topics successfully",
                 HttpStatus.OK,topicDocumentService.search(keyword));
     }
 }

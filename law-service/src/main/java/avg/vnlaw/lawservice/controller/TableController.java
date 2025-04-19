@@ -28,7 +28,7 @@ public class TableController {
     public ResponseEntity<Object> getAllTables(
             @RequestParam(name = "pageNo", value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get all tables successfully",
                 HttpStatus.OK,tableService.getAllTable(pageNo,pageSize));
     }
     @GetMapping("/filter")
@@ -36,7 +36,7 @@ public class TableController {
             @RequestParam(name = "content", value = "content") Optional<String> content,
             @RequestParam(name = "pageNo", value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get all tables by filter successfully",
                 HttpStatus.OK,tableService.getAllTableByFilter(content,pageNo,pageSize));
     }
 

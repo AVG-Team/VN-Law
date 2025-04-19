@@ -49,6 +49,7 @@ public enum ErrorCode {
     TABLE_NOT_FOUND(144,"Table is not found",HttpStatus.NOT_FOUND ),
     TABLE_EXISTED(145,"Table is existed",HttpStatus.BAD_REQUEST),
     TABLE_IS_NOT_EXISTED(146,"Table is not existed",HttpStatus.NOT_FOUND),
+    COMPRESS_FAILD(147,"Compress faild",HttpStatus.INTERNAL_SERVER_ERROR),
     ;
 
     int code ;

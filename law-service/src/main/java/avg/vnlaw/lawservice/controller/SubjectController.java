@@ -33,7 +33,7 @@ public class SubjectController {
 
     @GetMapping("{subjectId}")
     public ResponseEntity<Object> getSubjectDetail(@PathVariable("subjectId") String subjectId){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get subject Detail successfully",
                 HttpStatus.OK,subjectService.getSubject(subjectId));
     }
 
@@ -43,13 +43,13 @@ public class SubjectController {
             @RequestParam(name = "pageSize", value = "pageSize", defaultValue = "") Optional<Integer> pageSize,
             @RequestParam(name = "name", value = "name", defaultValue = "") Optional<String> name
     ){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get all Subjects successfully",
                 HttpStatus.OK,subjectService.getAllSubjects(name,pageNo,pageSize));
     }
 
     @GetMapping("/search")
     public ResponseEntity<Object> elasticSearch(@RequestParam(name="keyword",value="keyword") String keyword){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Search successfully",
                 HttpStatus.OK,subjectDocumentService.search(keyword));
     }
 }

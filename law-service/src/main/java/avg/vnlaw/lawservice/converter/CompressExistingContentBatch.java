@@ -4,7 +4,8 @@ import avg.vnlaw.lawservice.entities.Article;
 import avg.vnlaw.lawservice.repositories.ArticleRepository;
 import avg.vnlaw.lawservice.utils.GzipUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
@@ -16,8 +17,9 @@ import java.util.List;
 public class CompressExistingContentBatch {
 
     private final ArticleRepository repository;
+    private final Logger logger = LoggerFactory.getLogger(CompressExistingContentBatch.class);
 
-    @PostConstruct
+//    @PostConstruct
     public void compressAllExistingArticles() {
         List<Article> articles = repository.findAll();
 
@@ -30,9 +32,9 @@ public class CompressExistingContentBatch {
                 String compressed = GzipUtil.compressToBase64(originalContent);
                 article.setContent(compressed);
                 repository.save(article);
-                System.out.println("✔ Compressed article ID: " + article.getId());
+                logger.info("✔ Compressed article ID: {}", article.getId());
             } catch (IOException e) {
-                System.err.println("⚠ Error compressing article ID: " + article.getId() + " - " + e.getMessage());
+                logger.error("⚠ Error compressing article ID: {} - {}", article.getId(), e.getMessage());
             }
         }
     }
@@ -46,17 +48,16 @@ public class CompressExistingContentBatch {
         }
     }
 
-//    @PostConstruct
-//    public void benchmarkRead() {
-//        long start = System.currentTimeMillis();
-//
-//        List<Article> articles = repository.findTop1000ByOrderByIdAsc();
-//        for (Article article : articles) {
-//            String content = article.getContent(); // auto decompress ở đây
-//            // Không cần xử lý gì thêm
-//        }
-//
-//        long end = System.currentTimeMillis();
-//        System.out.println("⏱ Time taken to read 1000 records: " + (end - start) + " ms");
-//    }
+    public void benchmarkRead() {
+        long start = System.currentTimeMillis();
+
+        List<Article> articles = repository.findAll();
+        for (Article article : articles) {
+            String content = article.getContent(); // auto decompress ở đây
+            // Không cần xử lý gì thêm
+        }
+
+        long end = System.currentTimeMillis();
+        System.out.println("⏱ Time taken to read 1000 records: " + (end - start) + " ms");
+    }
 }

@@ -1,5 +1,7 @@
 package avg.vnlaw.lawservice.converter;
 
+import avg.vnlaw.lawservice.enums.ErrorCode;
+import avg.vnlaw.lawservice.exception.AppException;
 import avg.vnlaw.lawservice.utils.GzipUtil;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
@@ -14,7 +16,7 @@ public class GzipBase64Converter implements AttributeConverter<String, String> {
         try {
             return GzipUtil.compressToBase64(plainText);
         } catch (IOException e) {
-            throw new RuntimeException("GZIP compression failed", e);
+            throw new AppException(ErrorCode.COMPRESS_FAILD);
         }
     }
 
@@ -23,7 +25,7 @@ public class GzipBase64Converter implements AttributeConverter<String, String> {
         try {
             return GzipUtil.decompressFromBase64(base64Content);
         } catch (IOException e) {
-            throw new RuntimeException("GZIP decompression failed", e);
+            throw new AppException(ErrorCode.COMPRESS_FAILD);
         }
     }
 }

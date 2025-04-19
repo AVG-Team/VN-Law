@@ -146,7 +146,7 @@ public class ArticleService implements BaseService<ArticleRequest, String, Artic
         Article articleFromDB = articleRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ARTICLE_EMPTY));
 
-        return Optional.of((ArticleResponse) articleMapper.toResponse(articleFromDB));
+        return Optional.of(articleMapper.toResponse(articleFromDB));
     }
 
 

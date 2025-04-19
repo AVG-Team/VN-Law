@@ -43,7 +43,6 @@ public class SyncService {
     private final SubjectRepository subjectRepository;
     private final ChapterRepository chapterRepository;
     private final ArticleRepository articleRepository;
-    private final Integer PAGE_SIZE = 1000;
     private final Logger logger = LoggerFactory.getLogger(SyncService.class);
 
     @Async
@@ -79,7 +78,8 @@ public class SyncService {
             int page = 0;
             Page<E> entities;
             do {
-                entities = jpaRepository.findAll(PageRequest.of(page, PAGE_SIZE));
+                int PAGESIZE = 1000;
+                entities = jpaRepository.findAll(PageRequest.of(page, PAGESIZE));
                 List<D> documents = entities.stream()
                         .map(mapper).collect(Collectors.toList());
                 esRepository.saveAll(documents);
@@ -96,7 +96,8 @@ public class SyncService {
         int page = 0;
         Page<Topic> topics;
         do{
-            topics = topicRepository.findAll(PageRequest.of(page, PAGE_SIZE));
+            int PAGESIZE = 1000;
+            topics = topicRepository.findAll(PageRequest.of(page, PAGESIZE));
             List<TopicDocument> esDocument = topics.stream()
                     .map(this::topicToElasticSearchDoc)
                     .collect(Collectors.toList());

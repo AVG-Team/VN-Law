@@ -24,7 +24,7 @@ public class TableService implements BaseService<TableRequest,Integer,TableRespo
 
     public final TableRepository tableRepository;
     public final Logger log = LoggerFactory.getLogger(TableService.class);
-    public TableMapper tableMapper;
+    public final TableMapper tableMapper;
 
     public Page<TableResponse> getAllTable(Optional<Integer> pageNo, Optional<Integer> pageSize) {
         log.info("Get all tables in database");

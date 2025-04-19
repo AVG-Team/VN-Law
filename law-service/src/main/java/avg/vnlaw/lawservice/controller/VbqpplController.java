@@ -30,13 +30,13 @@ public class VbqpplController  {
             @RequestParam(name = "pageNo",value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize",value = "pageSize") Optional<Integer> pageSize
     ){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get all Vbqppl successfully",
                 HttpStatus.OK,vbqpplService.getAllVbqppl(pageNo,pageSize));
     }
 
     @GetMapping("/{vbqpplId}")
     public ResponseEntity<Object> getVbqpplById(@PathVariable Integer vbqpplId) throws AppException {
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get Vbqppl successfully",
                 HttpStatus.OK,vbqpplService.getVbqpplById(vbqpplId));
     }
 
@@ -48,13 +48,13 @@ public class VbqpplController  {
     ){
 
         String decodedType = URLDecoder.decode(type.orElse(""), StandardCharsets.UTF_8);
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get all by type successfully",
                 HttpStatus.OK,vbqpplService.getVbqpplByType(Optional.of(decodedType.toUpperCase()),pageNo,pageSize));
     }
 
     @GetMapping("/search")
     public ResponseEntity<Object> elasticSearch(@RequestParam(name="keyword",value="keyword") String keyword){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Search successfully",
                 HttpStatus.OK, vbqpplDocumentService.search(keyword));
     }
 

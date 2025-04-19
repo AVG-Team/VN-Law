@@ -23,7 +23,7 @@ public class IndexVbqpplController {
 
     @GetMapping("/{indexId}")
     public ResponseEntity<Object> getIndexVbqppl(@PathVariable Integer indexId) throws AppException {
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get Index Vbqppl successfully",
                 HttpStatus.OK,this.indexVbqpplService.getIndexVbqpplbyId(indexId));
     }
 
@@ -32,7 +32,7 @@ public class IndexVbqpplController {
             @RequestParam(name = "pageNo",value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize",value = "pageSize") Optional<Integer> pageSize
     ){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get all Index Vbqppl successfully",
                 HttpStatus.OK,this.indexVbqpplService.getAllIndexVbqppl(pageNo,pageSize));
     }
 

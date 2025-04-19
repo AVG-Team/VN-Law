@@ -1,10 +1,15 @@
 package avg.vnlaw.lawservice.utils;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import java.io.*;
 import java.util.Base64;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+@AllArgsConstructor
+@NoArgsConstructor
 public class GzipUtil {
 
     // Nén chuỗi thành Base64 (GZIP + Base64)

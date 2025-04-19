@@ -30,19 +30,19 @@ public class ChapterController{
 
     @GetMapping("/{chapterId}")
     public ResponseEntity<Object> getChapterById(@PathVariable(name = "chapterId") String chapterId) throws AppException {
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get chapter by id successfully",
                 HttpStatus.OK,this.chapterService.getChapter(chapterId));
     }
 
     @GetMapping("/{subjectId}")
     public ResponseEntity<Object> getChapterBySubject(@PathVariable(name = "subjectId") String subjectId) throws AppException{
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get chapter by subjectId successfully",
                 HttpStatus.OK,this.chapterService.getChaptersBySubject(subjectId));
     }
 
     @GetMapping("")
     public ResponseEntity<Object> getAllChapters() throws AppException {
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get all chapters successfully",
                 HttpStatus.OK,this.chapterService.getAllChapters());
     }
 
@@ -52,13 +52,13 @@ public class ChapterController{
             @RequestParam(name = "pageNo", value ="pageNo", defaultValue = "" ) Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value= "pageSize", defaultValue = "") Optional<Integer> pageSize
     ){
-       return HandlerResponse.responseBuilder("Complete",
+       return HandlerResponse.responseBuilder("Filter chapters successfully",
                HttpStatus.OK,this.chapterService.getAllChapters(name,pageNo,pageSize));
     }
 
     @GetMapping("/search")
     public ResponseEntity<Object> elasticSearch(@RequestParam(name="keyword", value="keyword")String keyword) throws AppException {
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Search successfully",
                 HttpStatus.OK,chapterDocumentService.search(keyword));
     }
 }
