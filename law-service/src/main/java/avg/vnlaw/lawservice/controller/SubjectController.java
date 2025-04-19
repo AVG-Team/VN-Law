@@ -3,6 +3,7 @@ package avg.vnlaw.lawservice.controller;
 
 import avg.vnlaw.lawservice.dto.request.SubjectRequest;
 import avg.vnlaw.lawservice.dto.response.HandlerResponse;
+import avg.vnlaw.lawservice.elastic.services.SubjectDocumentService;
 import avg.vnlaw.lawservice.entities.Subject;
 import avg.vnlaw.lawservice.services.SubjectService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Handler;
 
 @RestController
 @RequestMapping("/subject")
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class SubjectController {
 
     private final SubjectService subjectService;
+    private final SubjectDocumentService subjectDocumentService;
 
 
     @GetMapping("/{topicId}")
@@ -42,5 +45,11 @@ public class SubjectController {
     ){
         return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,subjectService.getAllSubjects(name,pageNo,pageSize));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Object> elasticSearch(@RequestParam(name="keyword",value="keyword") String keyword){
+        return HandlerResponse.responseBuilder("Complete",
+                HttpStatus.OK,subjectDocumentService.search(keyword));
     }
 }

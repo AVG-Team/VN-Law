@@ -17,9 +17,18 @@ import avg.vnlaw.lawservice.repositories.ChapterRepository;
 import avg.vnlaw.lawservice.repositories.SubjectRepository;
 import avg.vnlaw.lawservice.repositories.TopicRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -34,50 +43,68 @@ public class SyncService {
     private final SubjectRepository subjectRepository;
     private final ChapterRepository chapterRepository;
     private final ArticleRepository articleRepository;
+    private final Integer PAGE_SIZE = 1000;
+    private final Logger logger = LoggerFactory.getLogger(SyncService.class);
 
+    @Async
     public void syncAllDocumentsToElasticSearch() {
-        syncArticleToElasticSearch();
-        syncTopicToElasticSearch();
-        syncSubjectToElasticSearch();
-        syncChapterToElasticSearch();
-        syncArticleToElasticSearch();
+        logger.info("Starting sync all document to ElasticSearch");
+        syncEntityToElasticSearch(
+                topicRepository, topicDocumentRepository, this::topicToElasticSearchDoc, "Topic"
+        );
+
+        syncEntityToElasticSearch(
+                subjectRepository, subjectDocumentRepository, this::subjectToElasticSearchDoc, "Subject"
+        );
+
+        syncEntityToElasticSearch(
+                chapterRepository, chapterDocumentRepository, this::chapterToElasticSearchDoc, "Chapter"
+        );
+
+        syncEntityToElasticSearch(
+                articleRepository, articleDocumentRepository, this::articleToElasticSearchDoc, "Article"
+        );
+        logger.info("Finished sync all document to ElasticSearch");
     }
 
     // Sync document to elastic search
-    private void syncTopicToElasticSearch() {
-        List<Topic> topics = topicRepository.findAll();
-        List<TopicDocument> esDocument = topics.stream()
-                .map(this::topicToElasticSearchDoc)
-                .collect(Collectors.toList());
-
-        topicDocumentRepository.saveAll(esDocument);
+    protected <E, D> void syncEntityToElasticSearch(
+            JpaRepository<E, String> jpaRepository,
+            ElasticsearchRepository<D, String> esRepository,
+            Function<E, D> mapper,
+            String entityName
+    ) {
+        try {
+            logger.info("Starting sync {} to ElasticSearch", entityName);
+            int page = 0;
+            Page<E> entities;
+            do {
+                entities = jpaRepository.findAll(PageRequest.of(page, PAGE_SIZE));
+                List<D> documents = entities.stream()
+                        .map(mapper).collect(Collectors.toList());
+                esRepository.saveAll(documents);
+                page++;
+            } while (!entities.isLast());
+            logger.info("✔ Synced {} {}s to Elasticsearch", entities.getTotalElements(), entityName);
+        }catch (Exception e) {
+            logger.error("Failed to sync {} to ElasticSearch: {}", entityName, e.getMessage(), e);
+        }
     }
 
-    private void syncSubjectToElasticSearch() {
-        List<Subject> subjects = subjectRepository.findAll();
-        List<SubjectDocument> esDocument = subjects.stream()
-                .map(this::subjectToElasticSearchDoc)
-                .collect(Collectors.toList());
-        subjectDocumentRepository.saveAll(esDocument);
+    private void example() {
+        logger.info("Starting sync topic to ElasticSearch");
+        int page = 0;
+        Page<Topic> topics;
+        do{
+            topics = topicRepository.findAll(PageRequest.of(page, PAGE_SIZE));
+            List<TopicDocument> esDocument = topics.stream()
+                    .map(this::topicToElasticSearchDoc)
+                    .collect(Collectors.toList());
+
+            topicDocumentRepository.saveAll(esDocument);
+        }while (!topics.isLast());
+        logger.info("✔ Synced {} topics to Elasticsearch", topics.getSize());
     }
-
-    private void syncChapterToElasticSearch() {
-        List<Chapter> chapters = chapterRepository.findAll();
-        List<ChapterDocument> esDocument = chapters.stream()
-                .map(this::chapterToElasticSearchDoc)
-                .collect(Collectors.toList());
-        chapterDocumentRepository.saveAll(esDocument);
-    }
-
-    private void syncArticleToElasticSearch() {
-        List<Article> articles = articleRepository.findAll();
-        List<ArticleDocument> esDocument = articles.stream()
-                .map(this::articleToElasticSearchDoc)
-                .collect(Collectors.toList());
-        articleDocumentRepository.saveAll(esDocument);
-    }
-
-
 
     // Map entity from JPS To document ElasticSearch
     private TopicDocument topicToElasticSearchDoc(Topic topic) {
@@ -121,4 +148,5 @@ public class SyncService {
                 .topicId(article.getTopic().getId())
                 .build();
     }
+
 }

@@ -2,6 +2,7 @@ package avg.vnlaw.lawservice.controller;
 
 
 import avg.vnlaw.lawservice.dto.request.VbqpplRequest;
+import avg.vnlaw.lawservice.elastic.services.VbqpplDocumentService;
 import avg.vnlaw.lawservice.entities.Vbqppl;
 import avg.vnlaw.lawservice.dto.response.HandlerResponse;
 import avg.vnlaw.lawservice.exception.AppException;
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class VbqpplController  {
 
     private VbqpplService vbqpplService;
+    private VbqpplDocumentService vbqpplDocumentService;
 
     @GetMapping("")
     public ResponseEntity<Object> getAllVbqppl(
@@ -48,6 +50,12 @@ public class VbqpplController  {
         String decodedType = URLDecoder.decode(type.orElse(""), StandardCharsets.UTF_8);
         return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,vbqpplService.getVbqpplByType(Optional.of(decodedType.toUpperCase()),pageNo,pageSize));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Object> elasticSearch(@RequestParam(name="keyword",value="keyword") String keyword){
+        return HandlerResponse.responseBuilder("Complete",
+                HttpStatus.OK, vbqpplDocumentService.search(keyword));
     }
 
 }

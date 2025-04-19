@@ -1,8 +1,7 @@
 package avg.vnlaw.lawservice.controller;
 
 
-import avg.vnlaw.lawservice.dto.request.ArticleRequest;
-import avg.vnlaw.lawservice.entities.Article;
+import avg.vnlaw.lawservice.elastic.services.ArticleDocumentService;
 import avg.vnlaw.lawservice.dto.response.HandlerResponse;
 import avg.vnlaw.lawservice.exception.AppException;
 import avg.vnlaw.lawservice.services.ArticleService;
@@ -15,11 +14,12 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/article")
+@RequestMapping("/api/article")
 @RequiredArgsConstructor
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final ArticleDocumentService articleDocumentService;
 
 
     @GetMapping("/{chapterId}")
@@ -46,4 +46,11 @@ public class ArticleController {
         return HandlerResponse.responseBuilder("Complete",
                 HttpStatus.OK,articleService.getArticleByFilter(subjectId,name,pageNo,pageSize));
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<Object> getArticleBySearch(@RequestParam(name = "keywords", value= "keywords") String keywords){
+        return HandlerResponse.responseBuilder("complete",
+                HttpStatus.OK,articleDocumentService.search(keywords));
+    }
+
 }

@@ -2,6 +2,8 @@ package avg.vnlaw.lawservice.controller;
 
 
 import avg.vnlaw.lawservice.dto.request.ChapterRequest;
+import avg.vnlaw.lawservice.elastic.documents.ChapterDocument;
+import avg.vnlaw.lawservice.elastic.services.ChapterDocumentService;
 import avg.vnlaw.lawservice.entities.Chapter;
 import avg.vnlaw.lawservice.dto.response.HandlerResponse;
 import avg.vnlaw.lawservice.exception.AppException;
@@ -15,11 +17,12 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/chapter")
+@RequestMapping("/api/chapter")
 @RequiredArgsConstructor
 public class ChapterController{
 
     private ChapterService chapterService;
+    private ChapterDocumentService chapterDocumentService;
 
     public ChapterController(ChapterService chapterService){
         this.chapterService = chapterService;
@@ -51,5 +54,11 @@ public class ChapterController{
     ){
        return HandlerResponse.responseBuilder("Complete",
                HttpStatus.OK,this.chapterService.getAllChapters(name,pageNo,pageSize));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Object> elasticSearch(@RequestParam(name="keyword", value="keyword")String keyword) throws AppException {
+        return HandlerResponse.responseBuilder("Complete",
+                HttpStatus.OK,chapterDocumentService.search(keyword));
     }
 }
