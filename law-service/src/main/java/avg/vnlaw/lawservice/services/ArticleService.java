@@ -16,6 +16,7 @@ import avg.vnlaw.lawservice.repositories.TopicRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +38,7 @@ public class ArticleService implements BaseService<ArticleRequest, String, Artic
     private ArticleMapper articleMapper;
     private final Logger log = LoggerFactory.getLogger(ArticleService.class);
 
+    @Cacheable(value = "article", key = "T(java.util.Objects).hash(#chapterId, #pageNo.orElse(0), #pageSize.orElse(10))")
     public Page<ArticleResponse> getArticleByChapter(String chapterId,
                                                      Optional<Integer> pageNo,
                                                      Optional<Integer> pageSize) {
@@ -64,20 +66,22 @@ public class ArticleService implements BaseService<ArticleRequest, String, Artic
         return new PageImpl<>(contents,list.getPageable(),list.getTotalElements());
     }
 
-
+    @Cacheable(value = "article", key = "T(java.util.Objects).hash(#subjectId.orElse(''), #name.orElse(''), #pageNo.orElse(0), #pageSize.orElse(10))")
     public Page<ArticleResponse> getArticleByFilter(Optional<String> subjectId,
                                                     Optional<String> name,
                                                     Optional<Integer> pageNo,
                                                     Optional<Integer> pageSize) {
         log.info("Get article by subject id and name {} - {} ", subjectId, name);
-        Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(10));
+        Pageable pageable = PageRequest.of(pageNo.orElse(0), pageSize.orElse(10));
+
         if(subjectId.isPresent()){
-            return articleRepository.findAllFilterWithSubject(subjectId.get(),name.orElse(""),pageable);
+            return articleRepository.findAllFilterWithSubject(subjectId.get(), name.orElse(""), pageable);
         }
-        return articleRepository.findAllFilter(name.orElse(""),pageable);
+        return articleRepository.findAllFilter(name.orElse(""), pageable);
     }
 
 
+    @Cacheable(value = "article", key = "#articleId")
     public ListTreeResponse getTreeViewByArticleId(String articleId) {
         log.info("Get tree view by article id {}", articleId);
         Article article = articleRepository.findById(articleId).orElseThrow(

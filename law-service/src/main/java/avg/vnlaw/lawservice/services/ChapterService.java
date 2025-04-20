@@ -9,8 +9,10 @@ import avg.vnlaw.lawservice.exception.AppException;
 import avg.vnlaw.lawservice.mapper.ChapterMapper;
 import avg.vnlaw.lawservice.repositories.ChapterRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +31,7 @@ public class ChapterService implements BaseService<ChapterRequest, String, Chapt
     private ChapterMapper chapterMapper;
     private final Logger log = LoggerFactory.getLogger(ChapterService.class);
 
+    @Cacheable(value ="chapter",key = "#chapterId")
     public ChapterResponse getChapter(String chapterId) {
         log.info("ChapterService getChapter chapterId: {}", chapterId);
         chapterRepository.findById(chapterId).orElseThrow(
@@ -38,15 +41,18 @@ public class ChapterService implements BaseService<ChapterRequest, String, Chapt
     }
 
 
+    @Cacheable(value = "chapters")
     public List<ChapterResponse> getAllChapters() {
         log.info("ChapterService getAllChapters");
+
         if (chapterRepository.findAll().isEmpty()) {
             throw new AppException(ErrorCode.CHAPTER_EMPTY);
         }
+
         return chapterRepository.findAllChapters();
     }
 
-
+    @Cacheable(value ="chapter",key = "#subjectId")
     public List<ChapterResponse> getChaptersBySubject(String subjectId) {
         log.info("ChapterService getChaptersBySubject subjectId: {}", subjectId);
         if (chapterRepository.findChaptersBySubject(subjectId).isEmpty()) {
@@ -55,7 +61,7 @@ public class ChapterService implements BaseService<ChapterRequest, String, Chapt
         return chapterRepository.findChaptersBySubject(subjectId);
     }
 
-
+    @Cacheable(value = "chapter", key = "T(java.util.Objects).hash(#name.orElse(''), #pageNo.orElse(0), #pageSize.orElse(10))")
     public Page<ChapterResponse> getAllChapters(Optional<String> name, Optional<Integer> pageNo, Optional<Integer> pageSize) {
         log.info("Get chapters by filter name: {}", name);
         Pageable pageable = PageRequest.of(pageNo.orElse(0), pageSize.orElse(5));
