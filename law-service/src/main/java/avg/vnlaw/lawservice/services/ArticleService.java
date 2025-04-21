@@ -8,11 +8,15 @@ import avg.vnlaw.lawservice.entities.Subject;
 import avg.vnlaw.lawservice.entities.Topic;
 import avg.vnlaw.lawservice.enums.ErrorCode;
 import avg.vnlaw.lawservice.exception.AppException;
+import avg.vnlaw.lawservice.mapper.ArticleMapper;
 import avg.vnlaw.lawservice.repositories.ArticleRepository;
 import avg.vnlaw.lawservice.repositories.FileRepository;
 import avg.vnlaw.lawservice.repositories.TableRepository;
 import avg.vnlaw.lawservice.repositories.TopicRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -25,18 +29,20 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ArticleService implements BaseService<ArticleRequest, String> {
+public class ArticleService implements BaseService<ArticleRequest, String, ArticleResponse> {
 
     private final ArticleRepository articleRepository ;
     private final FileRepository fileRepository;
     private final TableRepository tableRepository;
     private final TopicRepository topicRepository;
+    private ArticleMapper articleMapper;
+    private final Logger log = LoggerFactory.getLogger(ArticleService.class);
 
-
+    @Cacheable(value = "article", key = "T(java.util.Objects).hash(#chapterId, #pageNo.orElse(0), #pageSize.orElse(10))")
     public Page<ArticleResponse> getArticleByChapter(String chapterId,
                                                      Optional<Integer> pageNo,
                                                      Optional<Integer> pageSize) {
-
+        log.info("Get article by chapter id {}", chapterId);
         Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(10));
         Page<ArticleIntResponse> list = articleRepository.findAllByChapter_IdOrderByOrder(chapterId,pageable);
         List<ArticleResponse> contents =  new ArrayList<>();
@@ -60,21 +66,24 @@ public class ArticleService implements BaseService<ArticleRequest, String> {
         return new PageImpl<>(contents,list.getPageable(),list.getTotalElements());
     }
 
-
+    @Cacheable(value = "article", key = "T(java.util.Objects).hash(#subjectId.orElse(''), #name.orElse(''), #pageNo.orElse(0), #pageSize.orElse(10))")
     public Page<ArticleResponse> getArticleByFilter(Optional<String> subjectId,
                                                     Optional<String> name,
                                                     Optional<Integer> pageNo,
                                                     Optional<Integer> pageSize) {
+        log.info("Get article by subject id and name {} - {} ", subjectId, name);
+        Pageable pageable = PageRequest.of(pageNo.orElse(0), pageSize.orElse(10));
 
-        Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(10));
         if(subjectId.isPresent()){
-            return articleRepository.findAllFilterWithSubject(subjectId.get(),name.orElse(""),pageable);
+            return articleRepository.findAllFilterWithSubject(subjectId.get(), name.orElse(""), pageable);
         }
-        return articleRepository.findAllFilter(name.orElse(""),pageable);
+        return articleRepository.findAllFilter(name.orElse(""), pageable);
     }
 
 
+    @Cacheable(value = "article", key = "#articleId")
     public ListTreeResponse getTreeViewByArticleId(String articleId) {
+        log.info("Get tree view by article id {}", articleId);
         Article article = articleRepository.findById(articleId).orElseThrow(
                 () -> new AppException(ErrorCode.ARTICLE_EMPTY)
         );
@@ -132,22 +141,44 @@ public class ArticleService implements BaseService<ArticleRequest, String> {
     }
 
     @Override
-    public Optional<ArticleRequest> findById(String id) {
-        return Optional.empty();
+    public Optional<ArticleResponse> findById(String id) {
+        log.info("Get article by id {}", id);
+        if (id == null || id.isEmpty()) {
+            throw new AppException(ErrorCode.ID_EMPTY);
+        }
+
+        Article articleFromDB = articleRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ARTICLE_EMPTY));
+
+        return Optional.of(articleMapper.toResponse(articleFromDB));
+    }
+
+
+    @Override
+    public ArticleResponse create(ArticleRequest entity) {
+        log.info("Create article {}", entity);
+        if(entity == null || entity.getId() == null){
+            throw new AppException(ErrorCode.ARTICLE_EMPTY);
+        }
+
+        articleRepository.save(articleMapper.toEntity(entity));
+        return articleMapper.requestToResponse(entity);
+
     }
 
     @Override
-    public ArticleRequest create(ArticleRequest entity) {
-        return null;
-    }
-
-    @Override
-    public ArticleRequest update(String id, ArticleRequest entity) {
-        return null;
+    public ArticleResponse update(ArticleRequest entity) {
+        log.info("Update article {}", entity);
+        if(entity == null ) throw new AppException(ErrorCode.ARTICLE_EMPTY);
+        if(articleRepository.findById(entity.getId()).isEmpty())
+            throw new AppException(ErrorCode.ARTICLE_IS_NOT_EXISTED);
+        articleRepository.save(articleMapper.toEntity(entity));
+        return articleMapper.requestToResponse(entity);
     }
 
     @Override
     public void delete(String id) {
-
+        if(id == null) throw new AppException(ErrorCode.ARTICLE_IS_NOT_EXISTED);
+        articleRepository.deleteById(id);
     }
 }

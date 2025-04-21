@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Date;
+
 @Entity
 @Table(name ="pdarticle")
 @NoArgsConstructor
@@ -28,8 +30,14 @@ public class Article extends BaseEntity {
     @Column(nullable = false,columnDefinition = "TEXT")
     private String vbqppl;
 
+    @Column(name= "`vbqppl_link`",nullable = true,columnDefinition = "TEXT")
+    private String vbqpplLink;
+
     @Column(name = "`order`", nullable = false)
     private Integer order;
+
+    @Column(name="effective_date", nullable = false)
+    private Date effectiveDate;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)

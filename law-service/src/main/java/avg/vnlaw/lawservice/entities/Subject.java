@@ -16,7 +16,7 @@ public class Subject extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     public String id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String name;
 
     @Column(name = "`order`", nullable = false)

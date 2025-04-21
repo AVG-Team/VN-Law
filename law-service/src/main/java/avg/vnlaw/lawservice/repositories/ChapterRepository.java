@@ -14,23 +14,24 @@ import java.util.List;
 @Repository
 public interface ChapterRepository extends JpaRepository<Chapter,String> {
 
-    @Query("select new avg.vnlaw.lawservice.responses.ResponseChapter(c.id,c.name,c.index,c.order)" +
-            " from Chapter c" +
-            " where c.subject.id = ?1" +
-            " order by  c.order")
+    @Query("SELECT new avg.vnlaw.lawservice.dto.response.ChapterResponse(c.id, c.name, c.index, c.order) " +
+            "FROM Chapter c " +
+            "WHERE c.subject.id = ?1 " +
+            "ORDER BY c.order")
     List<ChapterResponse> findChaptersBySubject(String idSubject);
 
-    @Query("select new avg.vnlaw.lawservice.responses.ResponseChapter(c.id,c.name,c.index,c.order)" +
-            " from Chapter c " +
-            " where c.name = '' or c.name like %?1%")
+    @Query("SELECT new avg.vnlaw.lawservice.dto.response.ChapterResponse(c.id, c.name, c.index, c.order) " +
+            "FROM Chapter c " +
+            "WHERE c.name = '' OR c.name LIKE %?1%")
     Page<ChapterResponse> findAll(String name, Pageable pageable);
 
-    @Query("select new avg.vnlaw.lawservice.responses.ResponseChapter(c.id,c.name,c.index,c.order)" +
-            " from Chapter c " +
-            " where c.id = '' or c.id like %?1%")
+    @Query("SELECT new avg.vnlaw.lawservice.dto.response.ChapterResponse(c.id, c.name, c.index, c.order) " +
+            "FROM Chapter c " +
+            "WHERE c.id = '' OR c.id LIKE %?1%")
     ChapterResponse findChapterById(String id);
 
-    @Query("select new avg.vnlaw.lawservice.responses.ResponseChapter(c.id,c.name,c.index,c.order)" +
-            " from Chapter c ")
+    @Query("SELECT new avg.vnlaw.lawservice.dto.response.ChapterResponse(c.id, c.name, c.index, c.order) " +
+            "FROM Chapter c")
     List<ChapterResponse> findAllChapters();
+
 }

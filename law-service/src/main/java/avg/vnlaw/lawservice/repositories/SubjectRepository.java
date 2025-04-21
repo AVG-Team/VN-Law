@@ -13,18 +13,18 @@ import java.util.List;
 
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, String> {
-    @Query("select new avg.vnlaw.lawservice.responses.ResponseSubject(p.id , p.name, p.order)" +
+    @Query("select new avg.vnlaw.lawservice.dto.response.SubjectResponse(p.id , p.name, p.order) " +
             " from Subject p " +
             " where p.topic.id = ?1 " +
             " order by  p.order ")
     List<SubjectResponse> findAllByTopic(String topicId);
 
-    @Query("Select new avg.vnlaw.lawservice.responses.ResponseSubject(p.id, p.name,p.order)" +
+    @Query("Select new avg.vnlaw.lawservice.dto.response.SubjectResponse(p.id , p.name, p.order) " +
             " from Subject p " +
             " where p.name = '' or p.name like %?1%")
     Page<SubjectResponse> findAllSubjects(String name , Pageable pageable);
 
-    @Query("Select new avg.vnlaw.lawservice.responses.ResponseSubject(p.id, p.name,p.order)" +
+    @Query("Select new avg.vnlaw.lawservice.dto.response.SubjectResponse(p.id , p.name, p.order) " +
             " from Subject p " +
             " where p.id = ?1")
     SubjectResponse findSubjectById(String id);

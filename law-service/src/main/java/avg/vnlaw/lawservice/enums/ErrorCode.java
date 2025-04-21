@@ -45,6 +45,11 @@ public enum ErrorCode {
     VBQPPL_EXISTED(140,"VBQPPL is existed",HttpStatus.BAD_REQUEST),
     VBQPPL_EMPTY(141,"VBQPPL is empty",HttpStatus.BAD_REQUEST),
     VBQPPL_IS_NOT_EXISTED(142,"VBQPPL is not existed",HttpStatus.NOT_FOUND),
+    ID_EMPTY(143,"Id is empty",HttpStatus.BAD_REQUEST),
+    TABLE_NOT_FOUND(144,"Table is not found",HttpStatus.NOT_FOUND ),
+    TABLE_EXISTED(145,"Table is existed",HttpStatus.BAD_REQUEST),
+    TABLE_IS_NOT_EXISTED(146,"Table is not existed",HttpStatus.NOT_FOUND),
+    COMPRESS_FAILD(147,"Compress faild",HttpStatus.INTERNAL_SERVER_ERROR),
     ;
 
     int code ;
