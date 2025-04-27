@@ -1,36 +1,40 @@
 package avg.vnlaw.lawservice.controller;
 
 
-import avg.vnlaw.lawservice.responses.ResponseHandler;
+import avg.vnlaw.lawservice.dto.request.SubjectRequest;
+import avg.vnlaw.lawservice.dto.response.HandlerResponse;
+import avg.vnlaw.lawservice.elastic.services.SubjectDocumentService;
+import avg.vnlaw.lawservice.entities.Subject;
 import avg.vnlaw.lawservice.services.SubjectService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.logging.Handler;
 
 @RestController
-@RequestMapping("/api/v1/subject")
+@RequestMapping("/subject")
+@RequiredArgsConstructor
 public class SubjectController {
 
-    @Autowired
-    private SubjectService subjectService;
+    private final SubjectService subjectService;
+    private final SubjectDocumentService subjectDocumentService;
 
-    public SubjectController(SubjectService subjectService){
-        this.subjectService = subjectService;
-    }
 
     @GetMapping("/{topicId}")
     public ResponseEntity<Object> getSubjectByTopic(@PathVariable("topicId") String topicId){
-        return ResponseHandler.responseBuilder("Complete Get Subject By Topic ",
-                HttpStatus.OK,this.subjectService.getSubjectByTopic(topicId));
+        return HandlerResponse.responseBuilder("Complete Get Subject By Topic ",
+                HttpStatus.OK,subjectService.getSubjectByTopic(topicId));
     }
 
     @GetMapping("{subjectId}")
     public ResponseEntity<Object> getSubjectDetail(@PathVariable("subjectId") String subjectId){
-        return ResponseHandler.responseBuilder("Complete",
-                HttpStatus.OK,this.subjectService.getSubject(subjectId));
+        return HandlerResponse.responseBuilder("Get subject Detail successfully",
+                HttpStatus.OK,subjectService.getSubject(subjectId));
     }
 
     @GetMapping("")
@@ -39,7 +43,13 @@ public class SubjectController {
             @RequestParam(name = "pageSize", value = "pageSize", defaultValue = "") Optional<Integer> pageSize,
             @RequestParam(name = "name", value = "name", defaultValue = "") Optional<String> name
     ){
-        return ResponseHandler.responseBuilder("Complete",
-                HttpStatus.OK,this.subjectService.getAllSubjects(name,pageNo,pageSize));
+        return HandlerResponse.responseBuilder("Get all Subjects successfully",
+                HttpStatus.OK,subjectService.getAllSubjects(name,pageNo,pageSize));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Object> elasticSearch(@RequestParam(name="keyword",value="keyword") String keyword){
+        return HandlerResponse.responseBuilder("Search successfully",
+                HttpStatus.OK,subjectDocumentService.search(keyword));
     }
 }

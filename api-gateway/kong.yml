@@ -3,29 +3,29 @@ _transform: true
 
 services:
   - name: auth-service
-    url: http://auth-service:9001
+    url: http://auth-service:9001/api/auth
     routes:
       - name: auth-route
         paths:
-          - /auth
+          - /api/auth
   - name: law-service
     url: http://law-service:9002
     routes:
       - name: law-route
         paths:
-          - /law
+          - /api/law
   - name: chat-service
     url: http://chat-service:9003
     routes:
       - name: chat-route
         paths:
-          - /chat
+          - /api/chat
   - name: recommendation-service
     url: http://recommendation-service:9004
     routes:
       - name: recommend-route
         paths:
-          - /recommend
+          - /api/recommend
 plugins:
   - name: cors
     config:

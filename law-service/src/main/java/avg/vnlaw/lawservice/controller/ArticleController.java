@@ -1,35 +1,38 @@
 package avg.vnlaw.lawservice.controller;
 
 
-import avg.vnlaw.lawservice.exception.NotFoundException;
-import avg.vnlaw.lawservice.responses.ResponseHandler;
+import avg.vnlaw.lawservice.elastic.services.ArticleDocumentService;
+import avg.vnlaw.lawservice.dto.response.HandlerResponse;
+import avg.vnlaw.lawservice.exception.AppException;
 import avg.vnlaw.lawservice.services.ArticleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/article")
+@RequestMapping("/api/article")
+@RequiredArgsConstructor
 public class ArticleController {
 
-    @Autowired
-    private ArticleService articleService;
+    private final ArticleService articleService;
+    private final ArticleDocumentService articleDocumentService;
 
 
     @GetMapping("/{chapterId}")
     public ResponseEntity<Object> getArticleByChapter(@PathVariable String chapterId,
                                                       @RequestParam(name = "pageNo", value="pageNo") Optional<Integer> pageNo,
                                                       @RequestParam(name = "pageSize", value="pageSize") Optional<Integer> pageSize){
-        return ResponseHandler.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get article by chapter successfully",
                 HttpStatus.OK,articleService.getArticleByChapter(chapterId,pageNo,pageSize));
     }
 
     @GetMapping("/tree/{articleId}")
-    public ResponseEntity<Object> getArticleTreeViewById(@PathVariable String articleId) throws NotFoundException {
-        return ResponseHandler.responseBuilder("Complete",
+    public ResponseEntity<Object> getArticleTreeViewById(@PathVariable String articleId) throws AppException {
+        return HandlerResponse.responseBuilder("Get article tree by article Id successfully ",
                 HttpStatus.OK,articleService.getTreeViewByArticleId(articleId));
     }
 
@@ -40,8 +43,14 @@ public class ArticleController {
             @RequestParam(name = "pageNo", value="pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value="pageSize") Optional<Integer> pageSize
     ){
-        return ResponseHandler.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get article by filter successfully",
                 HttpStatus.OK,articleService.getArticleByFilter(subjectId,name,pageNo,pageSize));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Object> getArticleBySearch(@RequestParam(name = "keywords", value= "keywords") String keywords){
+        return HandlerResponse.responseBuilder("Get article by search successfully",
+                HttpStatus.OK,articleDocumentService.search(keywords));
     }
 
 }

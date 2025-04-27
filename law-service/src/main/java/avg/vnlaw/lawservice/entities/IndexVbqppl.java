@@ -10,16 +10,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class IndexVbqppl {
+public class IndexVbqppl extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "content", columnDefinition = "LONGTEXT",nullable = false)
     private String content;
-
-    @Column(name = "type", nullable = false)
-    private String type;
 
     @Column(nullable = false)
     private String name;
@@ -29,7 +26,7 @@ public class IndexVbqppl {
     private IndexVbqppl indexVbqppl;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_vbqppl")
+    @JoinColumn(name = "vbqppl_id")
     private Vbqppl vbqppl;
 
 }

@@ -1,1 +1,6 @@
-/src/main/java/law_direction/
+# .gitignore
+.env
+*.pyc
+__pycache__/
+.venv/
+/data/*

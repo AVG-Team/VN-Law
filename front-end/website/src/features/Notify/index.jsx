@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Logo from "~/assets/images/logo/logo2.png";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import { verifyEmail } from "../../api/auth-service/authClient";
+import { verifyEmail } from "~/services/authClient";
 
 export default function Notify(props) {
     const defaultTheme = createTheme();
@@ -23,29 +23,33 @@ export default function Notify(props) {
         document.title = title ? `${title}` : "Trang không tồn tại";
 
         const urlParams = new URLSearchParams(window.location.search);
-        const typeParam = urlParams.get('type');
+        const typeParam = urlParams.get("type");
         setType(typeParam);
-        setToken(urlParams.get('token'));
+        setToken(urlParams.get("token"));
     }, [title]);
 
     useEffect(() => {
         if (type === "verifyEmailSuccess") {
             setMessage("Tài khoản của bạn đã được xác minh. Bạn có thể đăng nhập vào tài khoản của mình ngay bây giờ.");
-            handleCheckVerify().then(r => console.log(r));
-        } else if(type === "verifyEmail") {
-            setMessage("Một email đã được gửi đến địa chỉ email của bạn. Vui lòng kiểm tra email để xác minh tài khoản của bạn.");
+            handleCheckVerify().then((r) => console.log(r));
+        } else if (type === "verifyEmail") {
+            setMessage(
+                "Một email đã được gửi đến địa chỉ email của bạn. Vui lòng kiểm tra email để xác minh tài khoản của bạn.",
+            );
         } else if (type === "forgotPassword") {
-            setMessage("Một email đã được gửi đến địa chỉ email của bạn. Vui lòng kiểm tra email của bạn để đặt lại mật khẩu.");
+            setMessage(
+                "Một email đã được gửi đến địa chỉ email của bạn. Vui lòng kiểm tra email của bạn để đặt lại mật khẩu.",
+            );
         }
     }, [type, token]);
 
-    const handleCheckVerify = async() => {
+    const handleCheckVerify = async () => {
         if (!token || !token.startsWith("AVG_") || !token.endsWith("_VNLAW")) {
             const messageToast = "Mã không hợp lệ. Vui lòng thử lại.";
             setMessage(messageToast);
             toast.error(messageToast, {
                 autoClose: 1000,
-                buttonClose: false
+                buttonClose: false,
             });
             return;
         }
@@ -57,16 +61,16 @@ export default function Notify(props) {
             console.log(response);
             let message = response.message;
             toast.success(message, {
-                onClose: () => navigate('/'),
+                onClose: () => navigate("/"),
                 autoClose: 2000,
-                buttonClose: false
+                buttonClose: false,
             });
         } catch (err) {
             toast.error(err.message);
             console.error("Error fetching server: ", err);
             setMessage(err.message);
         }
-    }
+    };
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -84,8 +88,12 @@ export default function Notify(props) {
                                 </Typography>
                             </div>
                             <div>
-                                <DotLottieReact src="https://lottie.host/59f5e53d-ce7c-4d60-aaa9-7ba750fc86a8/OhazetStzz.json"
-                                                loop autoplay direction="1" />
+                                <DotLottieReact
+                                    src="https://lottie.host/59f5e53d-ce7c-4d60-aaa9-7ba750fc86a8/OhazetStzz.json"
+                                    loop
+                                    autoplay
+                                    direction="1"
+                                />
                             </div>
                             <Typography variant="h6" className="!text-sm !text-blue-gray-950 !text-center">
                                 {message}

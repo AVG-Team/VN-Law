@@ -10,16 +10,16 @@ import lombok.*;
 @Setter
 @Getter
 @Builder
-public class Tables {
+public class Tables extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String html;
 
     @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "id_article",nullable = false)
+    @JoinColumn(name = "article_id",nullable = false)
     private Article article;
 }

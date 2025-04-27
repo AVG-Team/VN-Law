@@ -1,155 +1,75 @@
-import { Suspense } from "react";
-import loadable from "@loadable/component";
-import AuthLayout from "~/layouts/AuthLayout";
-import BasicLayout from "~/layouts/BasicLayout";
-import { CircularProgress } from "@mui/material";
-import ContentLayout from "~/layouts/ContentLayout";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Preloader from "./components/ui/Preloader";
+import AuthLayout from "~/components/layout/AuthLayout";
+import BasicLayout from "~/components/layout/BasicLayout";
+import routes from "~/routes";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import './App.css';
 
-const Home = loadable(() => import("~/features/Home"));
-const About = loadable(() => import("~/features/About"));
-const SignUp = loadable(() => import("~/features/SignUp"));
-const VBQPPL = loadable(() => import("~/features/VBQPPL"));
-const SignIn = loadable(() => import("~/features/SignIn"));
-const TreeLaw = loadable(() => import("~/features/TreeLaw"));
-const SignOut = loadable(() => import("~/features/SignOut"));
-const Contact = loadable(() => import("~/features/Contact"));
-const Chatbot = loadable(() => import("~/features/Chatbot"));
-const VerifyEmail = loadable(() => import("~/features/VerifyEmail"));
-const VBBQPPLDetail = loadable(() => import("~/features/VBQPPL/detail"));
-const ForgotPassword = loadable(() => import("~/features/ForgotPassword"));
-const Form = loadable(() => import("~/features/Form"));
-const Notify = loadable(() => import("~/features/Notify"));
-const Confirm = loadable(() => import("~/features/Confirm"));
+const App = () => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [message, setMessage] = useState('');
 
-function App() {
+    useEffect(() => {
+        AOS.init();
+        AOS.refresh();
+
+        // Hide all other components during loading
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 5000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    const handleCrawl = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/crawl', {
+                method: 'POST',
+            });
+            const data = await response.json();
+            setMessage(data.message);
+        } catch (error) {
+            setMessage('Error: ' + error.message);
+        }
+    };
+
+    const handleTestCrawl = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/test-crawl', {
+                method: 'POST',
+            });
+            const data = await response.json();
+            setMessage(data.message);
+        } catch (error) {
+            setMessage('Error: ' + error.message);
+        }
+    };
+
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route element={<AuthLayout />}>
-                    <Route path="/dang-xuat" element={<SignOut />} />
-                    {/* <Route path="/chat-bot" element={<Chatbot />} /> */}
-                    <Route
-                        path="/chatbot"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <Chatbot title="Chat Bot" />
-                            </Suspense>
-                        }
-                    />
-                </Route>
-                <Route element={<BasicLayout />}>
-                    <Route
-                        index
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <Home title="Trang chủ" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path="/gioi-thieu"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <About title="Giới thiệu" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path="/lien-he"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <Contact title="Liên hệ" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path="/van-ban-quy-pham-phap-luat"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <VBQPPL title="Văn Bản Quy Phạm Pháp Luật" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path="/bang-bieu"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <Form title="Bảng Biểu" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path="/vbqppl/:param"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <VBBQPPLDetail />
-                            </Suspense>
-                        }
-                    />
-                </Route>
-                <Route element={<ContentLayout />}>
-                    <Route
-                        path="/dang-nhap"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <SignIn title="Đăng nhập" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path="/dang-ky"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <SignUp title="Đăng ký" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path="/thong-bao"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <Notify title="Thông Báo" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path="/oauth2/redirect"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <Confirm title="Đang Xác Minh..." />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path="/quen-mat-khau"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <ForgotPassword title="Quên Mật Khẩu" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path="/phap-dien"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <TreeLaw title="Pháp Điển" />
-                            </Suspense>
-                        }
-                    />
-                    <Route
-                        path="/xac-thuc"
-                        element={
-                            <Suspense fallback={<CircularProgress />}>
-                                <VerifyEmail />
-                            </Suspense>
-                        }
-                    />
-
-                </Route>
-            </Routes>
-        </BrowserRouter>
+        <Router>
+            {isLoading ? (
+                <Preloader />
+            ) : (
+                <div className="App">
+                    <h1>Crawl Data Control Panel</h1>
+                    <div className="button-container">
+                        <button onClick={handleCrawl}>Start Crawl Data</button>
+                        <button onClick={handleTestCrawl}>Start Test Crawl</button>
+                    </div>
+                    {message && <p className="message">{message}</p>}
+                    <Routes>
+                        {routes.map((route) => {
+                            const Layout = route.private ? AuthLayout : BasicLayout;
+                            return <Route key={route.id} path={route.path} element={<Layout element={route.element} />} />;
+                        })}
+                    </Routes>
+                </div>
+            )}
+        </Router>
     );
-}
+};
 
 export default App;

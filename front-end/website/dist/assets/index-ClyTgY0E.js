@@ -1,0 +1,1 @@
+import{i as s,r as a,q as r,S as i,j as t}from"./index-D8y7tREh.js";function o(){const e=s();return a.useEffect(()=>{r.remove(i.ACCESS_TOKEN),e("/")},[e]),t.jsx("div",{children:t.jsx("p",{children:"Đăng xuất"})})}export{o as default};

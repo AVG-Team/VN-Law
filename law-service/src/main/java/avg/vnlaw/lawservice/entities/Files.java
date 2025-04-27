@@ -10,7 +10,7 @@ import lombok.*;
 @Setter
 @Getter
 @Builder
-public class Files {
+public class Files extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +23,6 @@ public class Files {
     private String path;
 
     @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "id_article",nullable = false)
+    @JoinColumn(name = "article_id",nullable = false)
     private Article article;
 }
