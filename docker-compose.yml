@@ -217,11 +217,27 @@ services:
     volumes:
       - es-data:/usr/share/elasticsearch/data
 
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: chat-service
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - db-network
+
 volumes:
   mysql_data:
   kafka_data:
   grafana-storage:
   es-data:
+  postgres_data:
 
 networks:
   db-network:
