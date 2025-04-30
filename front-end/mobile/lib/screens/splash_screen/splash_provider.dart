@@ -1,15 +1,16 @@
+import 'dart:convert';
+import 'package:VNLAW/utils/environment.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import '../../data/repositories/repository.dart';
+import 'package:http/http.dart' as http;
 import '../../utils/routes.dart';
 import '../../utils/shared_preferences.dart';
 
 class SplashProvider extends ChangeNotifier {
-  String? themeId;
   bool isLoading = false;
   bool _isDisposed = false;
 
-  SplashProvider(context) {
+  SplashProvider(BuildContext context) {
+    print('SplashProvider initialized');
     initFunction(context);
   }
 
@@ -19,80 +20,56 @@ class SplashProvider extends ChangeNotifier {
     super.dispose();
   }
 
-  getThemeID(context) async {
+  Future<bool> checkTokenValidity(String token) async {
     try {
-      isLoading = true;
-      if (!_isDisposed) notifyListeners();
-      
-      var apiResponse = await Repository.baseSettingApi();
-      if (kDebugMode) {
-        print("apiResponse: $apiResponse");
+      print('Checking token validity...');
+      final response = await http.post(
+        Uri.parse('${Env.keycloakUrl}/realms/vnlaw/protocol/openid-connect/token/introspect'),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'token': token,
+          'client_id': Env.keycloakId,
+          'client_secret': Env.keycloakSecret,
+        },
+      );
+      print('Token introspection response: status=${response.statusCode}, body=${response.body}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['active'] == true;
       }
-      
-      if (apiResponse.result == true && apiResponse.data != null) {
-        // Process the data if needed
-        // themeId = apiResponse.data.themeId; // Uncomment if needed
-        // Navigate using named route with arguments
-        if (!_isDisposed) {
-          Navigator.of(context).pushReplacementNamed(
-            AppRoutes.dashboard,
-          );
-        }
-      } else {
-        // Handle API failure
-        await SPUtill.deleteKey(SPUtill.keyAuthToken);
-        if (!_isDisposed) {
-          Navigator.of(context).pushReplacementNamed(AppRoutes.login);
-        }
-      }
+      return false;
     } catch (e) {
-      if (kDebugMode) {
-        print("Error in getThemeID: $e");
-      }
-      // Handle any errors
-      await SPUtill.deleteKey(SPUtill.keyAuthToken);
-      if (!_isDisposed) {
-        Navigator.of(context).pushReplacementNamed(AppRoutes.login);
-      }
-    } finally {
-      isLoading = false;
-      if (!_isDisposed) notifyListeners();
+      print('Error checking token validity: $e');
+      return false;
     }
   }
 
-  initFunction(context) {
-    Future.delayed(const Duration(seconds: 2), () async {
-      var token = await SPUtill.getValue(SPUtill.keyAuthToken);
-      if (kDebugMode) {
-        /// development purpose only
-        print("Bearer token: $token");
-      }
-      if (token != null) {
-        getThemeID(context);
+  Future<void> initFunction(BuildContext context) async {
+    print('initFunction started');
+    var token = await SPUtill.getValue(SPUtill.keyAuthToken);
+    print("Bearer token: $token");
+
+    if (token != null && token.isNotEmpty) {
+      bool isValid = await checkTokenValidity(token);
+      print('Token validity: $isValid');
+      if (isValid && !_isDisposed) {
+        print('Token valid, navigating to dashboard');
+        Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
       } else {
-        if(!_isDisposed) {
-          Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+        print('Token invalid, deleting token and navigating to login');
+        await SPUtill.deleteKey(SPUtill.keyAuthToken);
+        if (!_isDisposed) {
+          Navigator.of(context).pushReplacementNamed(AppRoutes.loginProvider);
         }
       }
-      if (!_isDisposed) notifyListeners();
-    });
+    } else {
+      print('No token found, navigating to login');
+      if (!_isDisposed) {
+        Navigator.of(context).pushReplacementNamed(AppRoutes.loginProvider);
+      }
+    }
+    if (!_isDisposed) notifyListeners();
   }
-
-// /// getToken API .............
-// void getToken(context) async {
-//   var token = await SPUtill.getValue(SPUtill.keyAuthToken);
-//   var bodyToken = BodyToken(
-//       token: token
-//   );
-//   var apiResponse = await Repository.validTokenApi(bodyToken);
-//   if (apiResponse.result == true) {
-//     isValid = true;
-//     initFunction(context);
-//     notifyListeners();
-//   } else {
-//     isValid = false;
-//     notifyListeners();
-//   }
-//
-// }
 }

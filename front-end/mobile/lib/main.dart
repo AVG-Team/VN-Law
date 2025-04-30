@@ -1,7 +1,8 @@
+import 'package:VNLAW/utils/app_const.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'app.dart';
-import 'core/config/environment.dart';
+import 'utils/environment.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -9,6 +10,8 @@ Future<void> main() async {
 
   // Load environment variables
   await Env.init();
+  // Load Keycloak Admin
+  await AppConst.refreshAdminToken();
 
   // Initialize Firebase
   await Firebase.initializeApp(

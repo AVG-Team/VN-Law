@@ -1,4 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class Env {
   static String get fileName =>
       const String.fromEnvironment('ENVIRONMENT', defaultValue: 'dev') == 'prod'
@@ -13,6 +14,11 @@ class Env {
   static String get apiBaseUrl => dotenv.env['API_BASE_URL'] ?? '';
   static String get apiKey => dotenv.env['API_KEY'] ?? '';
   static String get apiNewsKey => dotenv.env['API_NEWS_KEY'] ?? '';
+
+  // Keycloak
+  static String get keycloakUrl => dotenv.env['keycloak_url'] ?? '';
+  static String get keycloakId => dotenv.env['keycloak_id'] ?? '';
+  static String get keycloakSecret => dotenv.env['keycloak_secret'] ?? '';
 
   // App
   static String get appName => dotenv.env['APP_NAME'] ?? '';
