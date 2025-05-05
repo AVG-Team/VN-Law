@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.logging.Handler;
 
 @RestController
-@RequestMapping("/subject")
+@RequestMapping("law/api/subject")
 @RequiredArgsConstructor
 public class SubjectController {
 

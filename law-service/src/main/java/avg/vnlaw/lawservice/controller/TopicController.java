@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/topic")
+@RequestMapping("law/api/topic")
 @RequiredArgsConstructor
 public class TopicController  {
 

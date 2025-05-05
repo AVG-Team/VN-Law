@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/chapter")
+@RequestMapping("law/api/chapter")
 @RequiredArgsConstructor
 public class ChapterController{
 
