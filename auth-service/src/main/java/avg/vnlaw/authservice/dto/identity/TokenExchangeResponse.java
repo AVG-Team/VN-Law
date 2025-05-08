@@ -13,9 +13,12 @@ import lombok.*;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class TokenExchangeResponse {
     private String accessToken;
-    private String expiresIn;
     private String refreshToken;
+    private Integer expiresIn;
+    private Integer refreshExpiresIn;
     private String tokenType;
-    private String idToken;
+    private String sessionState;
     private String scope;
+    private String error;
+    private String errorDescription;
 }

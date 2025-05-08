@@ -21,7 +21,10 @@ public class User {
     private String id;
 
     // userId from keyCloak -> don't show for user
-    private String userId;
+    private String keycloakId;
+
+    @Column(name="googleId", nullable = true)
+    private String googleId = null;
 
     @Column(name = "email", length = 50, unique = true)
     @NotBlank(message = "Email là bắt buộc")
@@ -48,7 +51,7 @@ public class User {
     private Role role;
 
     @Column(name = "is_active", nullable = false)
-    private boolean isActive = false;
+    private boolean active = false;
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

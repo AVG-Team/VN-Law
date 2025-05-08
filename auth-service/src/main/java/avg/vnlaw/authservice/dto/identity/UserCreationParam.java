@@ -18,4 +18,6 @@ public class UserCreationParam {
     private String firstName;
     private String lastName;
     private List<Credential> credentials;
+    @Builder.Default
+    private List<String> requiredActions = List.of("VERIFY_EMAIL");
 }

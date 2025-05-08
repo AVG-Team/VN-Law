@@ -79,7 +79,7 @@
 </head>
 <body>
 <div class="container">
-    <img class="logo" src="https://github.com/AVG-Team/VN-Law/blob/main/front-end/website/src/assets/images/logo/logo-no-bg.png?raw=true" alt="Logo">
+    <img class="logo" src="https://drive.google.com/u/0/drive-viewer/AKGpiha2JAOU7wleD-xA2FCBZP0FW2wOpT94TJNLCGDPzU6ghZLiArAste64kFBSxRInwENTI0_sOZaGjeNV6mKkNHqOBLGbvKofubI=s1600-rw-v1" alt="Logo">
     <div>
         <h1 th:text="${title}"></h1>
         <p>Kính Gửi, <span th:text="${name}"></span>,</p>
@@ -88,12 +88,7 @@
     </div>
     <br>
     <p style="font-weight: bold">Thank You,</p>
-    <p style="font-weight: bold">&copy; <span id="year" style="margin-left: 0.35rem; margin-right: 0.35rem;"></span>VNLAW - AVG TEAM </p>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('year').textContent = new Date().getFullYear();
-        });
-    </script>
+    <p style="font-weight: bold">&copy; <span id="year" style="margin-left: 0.35rem; margin-right: 0.35rem;" th:text="${year}"></span> VNLAW - AVG TEAM </p>
 </div>
 </body>
 </html>

@@ -7,12 +7,18 @@ import avg.vnlaw.authservice.enums.AuthenticationResponseEnum;
 import avg.vnlaw.authservice.exception.AppException;
 import avg.vnlaw.authservice.exception.ErrorCode;
 import avg.vnlaw.authservice.services.AuthenticationService;
+import avg.vnlaw.authservice.services.EmailService;
 import avg.vnlaw.authservice.services.ReCaptchaService;
 import avg.vnlaw.authservice.services.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.logging.Logger;
 
+@Slf4j
 @RestController
 @RequestMapping("api/auth")
 @RequiredArgsConstructor
@@ -21,6 +27,8 @@ public class AuthController {
     private final AuthenticationService authService;
     private final UserService userService;
     private final ReCaptchaService reCaptchaService;
+    private final EmailService emailService;
+    private final Logger logger = Logger.getLogger(AuthenticationService.class.getName());
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
@@ -40,8 +48,9 @@ public class AuthController {
         if (authResponse.getType() == AuthenticationResponseEnum.EMAIL_ALREADY_REGISTERED) {
             message = "Account is already registered";
             throw new AppException(ErrorCode.UNAUTHENTICATED);
+        } else {
+            message = "Account registered successfully";
         }
-        message = "Account registered successfully";
         return ApiResponse.builder()
                 .message(message)
                 .data(authResponse)
@@ -72,7 +81,30 @@ public class AuthController {
                     .data(authResponse)
                     .build();
         } catch (Exception e) {
+            log.info("Unexpected error during authentication: {}", e.getMessage());
             throw new AppException(ErrorCode.PASSWORD_INCORRECT);
+        }
+    }
+
+    @PostMapping("/google-token")
+    public ResponseEntity<ApiResponse<?>> authenticateWithGoogleToken(@RequestBody GoogleTokenRequest request) {
+        log.info("Google token: {}", request.getToken());
+        log.info("Google provider: {}", request.getProvider());
+
+        AuthenticationResponse authResponse = authService.authenticateWithGoogleToken(request.getProvider(), request.getToken());
+        log.info("Authentication response: {}", authResponse);
+
+        if (authResponse.getType() == AuthenticationResponseEnum.OK) {
+            return ResponseEntity.ok(ApiResponse.builder()
+                    .message("Account authenticated successfully")
+                    .data(authResponse)
+                    .build());
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.builder()
+                            .message(authResponse.getMessage() != null ? authResponse.getMessage() : "Authentication failed")
+                            .data(null)
+                            .build());
         }
     }
 

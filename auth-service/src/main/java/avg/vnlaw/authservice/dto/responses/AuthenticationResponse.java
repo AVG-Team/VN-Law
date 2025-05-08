@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 
 @Data
 @Builder
@@ -23,8 +24,10 @@ public class AuthenticationResponse {
     private String name;
     @JsonProperty("email")
     private String email;
-    @JsonProperty("id")
-    private String id;
+    @JsonProperty("keycloak_id")
+    private String keycloakId;
     @JsonProperty("role")
     private String role;
+    @Nullable
+    private String message;
 }

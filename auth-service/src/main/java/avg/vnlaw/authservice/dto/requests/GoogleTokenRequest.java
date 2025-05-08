@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationRequest {
-    private String email;
-    String password;
-    private String recaptchaToken;
+public class GoogleTokenRequest {
+    private String provider;
+    private String token;
 }

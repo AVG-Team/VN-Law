@@ -2,11 +2,10 @@ package avg.vnlaw.authservice.services;
 
 import avg.vnlaw.authservice.dto.identity.Credential;
 import avg.vnlaw.authservice.dto.identity.TokenExchangeParam;
+import avg.vnlaw.authservice.dto.identity.TokenExchangeResponse;
 import avg.vnlaw.authservice.dto.identity.UserCreationParam;
-import avg.vnlaw.authservice.entities.CustomUserDetail;
-import avg.vnlaw.authservice.entities.PasswordResetToken;
-import avg.vnlaw.authservice.entities.Role;
-import avg.vnlaw.authservice.entities.User;
+import avg.vnlaw.authservice.dto.responses.KeycloakErrorResponse;
+import avg.vnlaw.authservice.entities.*;
 import avg.vnlaw.authservice.enums.AuthenticationResponseEnum;
 import avg.vnlaw.authservice.enums.TokenTypeForgotPasswordEnum;
 import avg.vnlaw.authservice.mapper.UserMapper;
@@ -20,6 +19,12 @@ import avg.vnlaw.authservice.dto.responses.AuthenticationResponse;
 import avg.vnlaw.authservice.dto.responses.GetCurrentUserByAccessTokenResponse;
 import avg.vnlaw.authservice.dto.responses.MessageResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
+import io.github.cdimascio.dotenv.Dotenv;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwsHeader;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SigningKeyResolverAdapter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,11 +40,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.Key;
+import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.RSAPublicKeySpec;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Slf4j
@@ -56,6 +64,7 @@ public class AuthenticationService {
     private final EmailService emailService;
     private final TokenService tokenService;
     private final Logger logger = Logger.getLogger(AuthenticationService.class.getName());
+    private final ObjectMapper objectMapper;
     private final IdentityClient identityClient;
     private final UserMapper userMapper;
     @Value("${spring.profiles.active}")
@@ -84,6 +93,20 @@ public class AuthenticationService {
         return splitedPart[splitedPart.length - 1];
     }
 
+    public TokenExchangeResponse getTokenAdmin() {
+        Dotenv dotenv = Dotenv.configure()
+                .directory("./")
+                .load();
+
+        String username_admin = dotenv.get("KEYCLOAK_ADMIN_USERNAME");
+        String password_admin = dotenv.get("KEYCLOAK_ADMIN_PASSWORD");
+        TokenExchangeParam tokenExchangeParam = TokenExchangeParam.builder()
+                .username(username_admin)
+                .password(password_admin)
+                .build();
+        log.info("Token exchange param: {}", tokenExchangeParam.toString());
+        return identityClient.exchangeToken("master",tokenExchangeParam);
+    }
 
     public AuthenticationResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -92,18 +115,22 @@ public class AuthenticationService {
                     .build();
         }
 
-        Role role = roleRepository.findById(request.getRole())
-                .orElse(roleRepository.findFirstByOrderByIdAsc());
+        Role role = roleRepository.findByName(RoleType.USER)
+                .orElseThrow(() -> new IllegalArgumentException("Role USER not found"));
         // create account in keycloak
         // exchange client token
-        var tokenKeyCloak =  identityClient.exchangeToken(TokenExchangeParam.builder()
-                    .grant_type("client_credentials")
-                    .client_id(idpClientId)
-                    .client_secret(idpClientSecret)
-                    .scope("openid")
-                .build());
+        log.info("Client id: {}", idpClientId);
 
-        log.info("Client token: {}",tokenKeyCloak.getAccessToken());
+        var tokenKeyCloak = getTokenAdmin();
+        if (tokenKeyCloak == null) {
+            log.error("Failed to get token from Keycloak");
+            return AuthenticationResponse.builder()
+                    .type(AuthenticationResponseEnum.KEYCLOAK_ERROR)
+                    .build();
+        }
+
+        log.info("Client token: {}", tokenKeyCloak.getAccessToken());
+        log.info("INfo request: {}", request.toString());
         // create user with client token and given info
         var creationResponse = identityClient.createUser(
                 "Bearer " + tokenKeyCloak.getAccessToken(),
@@ -115,9 +142,9 @@ public class AuthenticationService {
                         .enabled(true)
                         .emailVerified(false)
                         .credentials(List.of(Credential.builder()
-                                        .type("password")
-                                        .temporary(false)
-                                        .value(request.getPassword())
+                                .type("password")
+                                .temporary(false)
+                                .value(request.getPassword())
                                 .build()))
                         .build()
         );
@@ -125,15 +152,15 @@ public class AuthenticationService {
         String userId = extractUserId(creationResponse);
 
         User user = new User();
-        log.info("user: {}",user.toString());
-        log.info("request: {}",request.toString());
+        log.info("user: {}", user.toString());
+        log.info("request: {}", request.toString());
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(role);
-        user.setUserId(userId);
+        user.setKeycloakId(userId);
         user.setActive("prod".equalsIgnoreCase(activeProfile));
 
         userRepository.save(user);
@@ -151,42 +178,188 @@ public class AuthenticationService {
         response.setRefreshToken(tokenKeyCloak.getRefreshToken());
         response.setAccessToken(tokenKeyCloak.getAccessToken());
         response.setType(AuthenticationResponseEnum.OK);
+        response.setEmail(user.getEmail());
+        response.setName(user.getFirstName() + " " + user.getLastName());
 
         return response;
     }
 
-    
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        TokenExchangeParam tokenExchangeParam = TokenExchangeParam.builder()
+                .username(request.getEmail())
+                .password(request.getPassword())
+                .client_id(idpClientId)
+                .client_secret(idpClientSecret)
+                .grant_type("password")
+                .build();
 
-        CustomUserDetail customUserDetail = new CustomUserDetail(user);
-        if(!customUserDetail.isEnabled()){
+        try {
+            TokenExchangeResponse tokenResponse = identityClient.exchangeToken("vnlaw", tokenExchangeParam);
+            log.info("Token exchange response: {}", tokenResponse.toString());
+            if (tokenResponse.getAccessToken() == null) {
+                return AuthenticationResponse.builder()
+                        .type(AuthenticationResponseEnum.INVALID_CREDENTIALS)
+                        .build();
+            }
+
+            // Find user in local database
+            User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+            CustomUserDetail customUserDetail = new CustomUserDetail(user);
+            if (!customUserDetail.isEnabled()) {
+                return AuthenticationResponse.builder()
+                        .type(AuthenticationResponseEnum.ACCOUNT_NOT_ACTIVATED)
+                        .build();
+            }
+
+            // Save token to local database
+            tokenService.revokedAllUserTokens(user);
+            tokenService.saveUserToken(user, tokenResponse.getAccessToken());
+
             return AuthenticationResponse.builder()
-                    .type(AuthenticationResponseEnum.ACCOUNT_NOT_ACTIVATED)
+                    .accessToken(tokenResponse.getAccessToken())
+                    .refreshToken(tokenResponse.getRefreshToken())
+                    .name(user.getUsername())
+                    .email(user.getEmail())
+                    .role(user.getRole().getName().name())
+                    .type(AuthenticationResponseEnum.OK)
+                    .build();
+        } catch (FeignException.BadRequest ex) {
+            log.error("Keycloak authentication failed: {}", ex.getMessage());
+            try {
+                // Parse Keycloak error response
+                String errorResponse = ex.contentUTF8();
+                KeycloakErrorResponse error = objectMapper.readValue(errorResponse, KeycloakErrorResponse.class);
+                if ("invalid_grant".equals(error.getError()) && "Account is not fully set up".equals(error.getErrorDescription())) {
+                    return AuthenticationResponse.builder()
+                            .type(AuthenticationResponseEnum.ACCOUNT_NOT_ACTIVATED)
+                            .message("Account is not fully set up. Please verify your email.")
+                            .build();
+                }
+                return AuthenticationResponse.builder()
+                        .type(AuthenticationResponseEnum.INVALID_CREDENTIALS)
+                        .message(error.getErrorDescription())
+                        .build();
+            } catch (IOException e) {
+                log.error("Failed to parse Keycloak error response: {}", e.getMessage());
+                return AuthenticationResponse.builder()
+                        .type(AuthenticationResponseEnum.KEYCLOAK_ERROR)
+                        .message("Authentication failed due to Keycloak error")
+                        .build();
+            }
+        } catch (Exception ex) {
+            log.error("Unexpected error during authentication: {}", ex.getMessage());
+            return AuthenticationResponse.builder()
+                    .type(AuthenticationResponseEnum.KEYCLOAK_ERROR)
+                    .message("Unexpected error during authentication")
                     .build();
         }
-
-        String jwtToken = jwtService.generateToken(customUserDetail, true);
-        String refreshToken = jwtService.generateRefreshToken(customUserDetail);
-
-        tokenService.revokedAllUserTokens(user);
-        tokenService.saveUserToken(user,jwtToken);
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .name(user.getUsername())
-                .role(user.getRole().getName())
-                .type(AuthenticationResponseEnum.OK)
-                .build();
     }
 
-    
+    public AuthenticationResponse authenticateWithGoogleToken(String provider, String googleToken) {
+        TokenExchangeParam tokenExchangeParam = TokenExchangeParam.builder()
+                .grant_type("urn:ietf:params:oauth:grant-type:token-exchange")
+                .subject_token_type("urn:ietf:params:oauth:token-type:access_token")
+                .client_id(idpClientId)
+                .client_secret(idpClientSecret)
+                .subject_issuer(provider)
+                .subject_token(googleToken)
+                .build();
+
+        try {
+            TokenExchangeResponse tokenResponse = identityClient.exchangeToken("vnlaw", tokenExchangeParam);
+            log.info("Token exchange response: {}", tokenResponse.toString());
+            if (tokenResponse.getAccessToken() == null) {
+                return AuthenticationResponse.builder()
+                        .type(AuthenticationResponseEnum.INVALID_CREDENTIALS)
+                        .message("Invalid Google token")
+                        .build();
+            }
+
+            ResponseEntity<Map<String, Object>> certsResponse = identityClient.getCerts();
+            Map<String, Object> certs = certsResponse.getBody();
+            if (certs == null || !certs.containsKey("keys")) {
+                throw new RuntimeException("Failed to retrieve Keycloak public keys");
+            }
+
+            List<Map<String, Object>> keys = (List<Map<String, Object>>) certs.get("keys");
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKeyResolver(new SigningKeyResolverAdapter() {
+                        @Override
+                        public PublicKey resolveSigningKey(JwsHeader header, Claims claims) {
+                            String kid = header.getKeyId();
+                            for (Map<String, Object> key : keys) {
+                                if (kid.equals(key.get("kid"))) {
+                                    try {
+                                        String n = (String) key.get("n");
+                                        String e = (String) key.get("e");
+                                        BigInteger modulus = new BigInteger(1, Base64.getUrlDecoder().decode(n));
+                                        BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode(e));
+                                        RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, exponent);
+                                        KeyFactory factory = KeyFactory.getInstance("RSA");
+                                        return factory.generatePublic(spec);
+                                    } catch (Exception ex) {
+                                        log.error("Failed to parse public key: {}", ex.getMessage());
+                                        return null;
+                                    }
+                                }
+                            }
+                            log.error("No matching key found for kid: {}", kid);
+                            return null;
+                        }
+                    })
+                    .build()
+                    .parseClaimsJws(tokenResponse.getAccessToken())
+                    .getBody();
+
+            String email = claims.get("email", String.class);
+            String username = claims.get("preferred_username", String.class);
+            String firstName = claims.get("given_name", String.class);
+            String lastName = claims.get("family_name", String.class);
+            String keycloakId = claims.get("sub", String.class);
+
+            log.info("User info from token: email={}, username={}, firstName={}, lastName={}, keycloakId={}",
+                    email, username, firstName, lastName, keycloakId);
+
+            User user = userRepository.findByEmail(email).orElseGet(() -> {
+                User newUser = new User();
+                newUser.setEmail(email);
+                newUser.setUsername(username);
+                newUser.setFirstName(firstName);
+                newUser.setLastName(lastName);
+                newUser.setRole(roleRepository.findByName(RoleType.USER).orElseThrow());
+                newUser.setKeycloakId(keycloakId);
+                newUser.setActive(true);
+                newUser.setPassword(passwordEncoder.encode("avg_vnlaw"));
+                return userRepository.save(newUser);
+            });
+
+            tokenService.revokedAllUserTokens(user);
+            tokenService.saveUserToken(user, tokenResponse.getAccessToken());
+
+            return AuthenticationResponse.builder()
+                    .accessToken(tokenResponse.getAccessToken())
+                    .refreshToken(tokenResponse.getRefreshToken())
+                    .name(user.getFirstName() + " " + user.getLastName())
+                    .email(user.getEmail())
+                    .keycloakId(user.getKeycloakId())
+                    .role(user.getRole().getName().name())
+                    .type(AuthenticationResponseEnum.OK)
+                    .build();
+        } catch (FeignException ex) {
+            log.error("Keycloak authentication failed: {}", ex.getMessage());
+            return AuthenticationResponse.builder()
+                    .type(AuthenticationResponseEnum.KEYCLOAK_ERROR)
+                    .message("Authentication failed due to Keycloak error")
+                    .build();
+        } catch (Exception ex) {
+            log.error("Unexpected error during Google authentication: {}", ex.getMessage());
+            return AuthenticationResponse.builder()
+                    .type(AuthenticationResponseEnum.KEYCLOAK_ERROR)
+                    .message("Unexpected error during authentication")
+                    .build();
+        }
+    }
+
     public void refreshToken(
             HttpServletRequest request,
             HttpServletResponse response
@@ -194,18 +367,18 @@ public class AuthenticationService {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String userEmail;
-        if(authHeader == null || !authHeader.startsWith("Bearer")){
+        if (authHeader == null || !authHeader.startsWith("Bearer")) {
             return;
         }
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
-        if(userEmail != null){
+        if (userEmail != null) {
             User user = userRepository.findByEmail(userEmail).orElseThrow();
             CustomUserDetail customUserDetail = new CustomUserDetail(user);
-            if (jwtService.isTokenValid(refreshToken,customUserDetail)){
+            if (jwtService.isTokenValid(refreshToken, customUserDetail)) {
                 var accessToken = jwtService.generateToken(customUserDetail);
                 tokenService.revokedAllUserTokens(user);
-                tokenService.saveUserToken(user,accessToken);
+                tokenService.saveUserToken(user, accessToken);
                 var authResponse = AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
@@ -215,7 +388,7 @@ public class AuthenticationService {
         }
     }
 
-    
+
     public MessageResponse confirm(String token) {
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token).orElseThrow();
         if (passwordResetToken.getExpiryDate().before(new Date())) {
@@ -229,22 +402,34 @@ public class AuthenticationService {
         passwordResetToken.getUser().setActive(true);
         passwordResetTokenRepository.save(passwordResetToken);
 
+        User user = passwordResetToken.getUser();
+        String keycloakId = user.getKeycloakId();
+
+        try {
+            emailService.verifyEmail(keycloakId, getTokenAdmin().getAccessToken());
+        } catch (Exception e) {
+            logger.warning("error Send Mail : " + e.getMessage());
+            return MessageResponse.builder()
+                    .type(HttpStatus.BAD_REQUEST)
+                    .message("Error Send Mail")
+                    .build();
+        }
+
         return MessageResponse.builder()
                 .type(HttpStatus.OK)
                 .message("Verify Successfully")
                 .build();
     }
 
-    
     public GetCurrentUserByAccessTokenResponse getCurrentUserByAccessToken(String token) {
         User user = tokenService.getUserByToken(token);
         return GetCurrentUserByAccessTokenResponse.builder()
                 .name(user.getUsername())
-                .role(user.getRole().getName())
+                .role(user.getRole().getName().name())
                 .build();
     }
 
-    
+
     public MessageResponse forgotPassword(String email) {
         if (email == null || email.isEmpty()) {
             return MessageResponse.builder()
@@ -296,7 +481,6 @@ public class AuthenticationService {
                 .build();
     }
 
-    
     public MessageResponse changePassword(String token, String password) {
         if (token == null || token.isEmpty() || password == null || password.isEmpty()) {
             return MessageResponse.builder()

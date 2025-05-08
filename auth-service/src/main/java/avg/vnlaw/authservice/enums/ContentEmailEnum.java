@@ -5,17 +5,17 @@ import lombok.Setter;
 
 @Getter
 public enum ContentEmailEnum {
-    REGISTRATION("Registration Successful",
-            "Congratulations on your Successful Registration!!!",
-            "Thank you for registering on our platform. Please click the link below to verify your email address."),
+    REGISTRATION("Đăng ký thành công",
+            "Chúc mừng bạn đã đăng ký thành công!!!",
+            "Cảm ơn bạn đã đăng ký trên nền tảng của chúng tôi. Vui lòng nhấp vào liên kết bên dưới để xác minh địa chỉ email của bạn."),
 
-    REGISTER_WITH_PASSWORD("Login Successful",
-            "Congratulations on your Successful Login!!!",
-            "Thank you for logging in with us. Your account has been successfully logged in and is now ready to use. We are delighted to have you on board and look forward to providing you with the best experience. Your Password is: `%s`; Please login now by clicking the button below."),
+    REGISTER_WITH_PASSWORD("Đăng nhập thành công",
+            "Chúc mừng bạn đã đăng nhập thành công!!!",
+            "Cảm ơn bạn đã đăng nhập với chúng tôi. Tài khoản của bạn đã được đăng nhập thành công và sẵn sàng sử dụng. Chúng tôi rất vui được chào đón bạn và mong muốn mang đến cho bạn trải nghiệm tốt nhất. Mật khẩu của bạn là: `%s`; Vui lòng đăng nhập ngay bây giờ bằng cách nhấp vào nút bên dưới."),
 
-    FORGOT_PASSWORD("Password Reset Request",
-            "Forgot Your Password?",
-            "Please click the link below to reset your password.");
+    FORGOT_PASSWORD("Yêu cầu đặt lại mật khẩu",
+            "Quên mật khẩu của bạn?",
+            "Vui lòng nhấp vào liên kết bên dưới để đặt lại mật khẩu của bạn.");
 
     private final String subject;
     private final String title;
