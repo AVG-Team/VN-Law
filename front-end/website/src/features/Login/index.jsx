@@ -11,10 +11,13 @@ import {
     EyeInvisibleOutlined,
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import Logo from "~/assets/images/logo/logo.png";
+import GoogleLoginButton from "../SignIn/components/GoogleLoginButton";
+import SocialButton from "../SignIn/components/GoogleLoginButton";
+import axios from "axios";
 
 const { Title, Text } = Typography;
 
@@ -50,39 +53,26 @@ const cardVariants = {
     },
 };
 
-const SocialButton = ({ icon, text, onClick }) => (
-    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-        <Button
-            icon={icon}
-            className="flex items-center justify-center w-full h-12 gap-2 transition-all duration-300 border-gray-300 hover:border-blue-500 hover:text-blue-500"
-            onClick={onClick}
-        >
-            {text}
-        </Button>
-    </motion.div>
-);
-
-SocialButton.propTypes = {
-    icon: PropTypes.node.isRequired,
-    text: PropTypes.string.isRequired,
-    onClick: PropTypes.func.isRequired,
-};
-
 const Login = () => {
     const [form] = Form.useForm();
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const onFinish = async (values) => {
         setIsLoading(true);
         try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-            console.log("Success:", values);
+            const response = await axios.post('http://localhost:9001/api/auth/authenticate', {
+                email: values.email,
+                password: values.password,
+            });
+            console.log('Response from server:', response.data);
             message.success("Đăng nhập thành công!");
-            // Add your login logic here
+            navigate('/');
+            //Todo: Alert Success
         } catch (error) {
-            message.error("Đăng nhập thất bại. Vui lòng thử lại!");
+            console.error('Login failed:', error);
+            alert('Đăng nhập thất bại');
         } finally {
             setIsLoading(false);
         }
@@ -220,9 +210,9 @@ const Login = () => {
 
                                 <div className="space-y-4">
                                     <SocialButton
+                                        provider="google"
                                         icon={<GoogleOutlined />}
                                         text="Đăng nhập với Google"
-                                        onClick={() => console.log("Google login")}
                                     />
                                     <SocialButton
                                         icon={<FacebookOutlined />}

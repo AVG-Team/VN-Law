@@ -123,6 +123,7 @@ class AuthProvider extends ChangeNotifier {
           backgroundColor: Colors.green,
           textColor: Colors.white,
         );
+        print("Đăng nhập thành công");
       } else {
         Fluttertoast.showToast(
           msg: apiResponse.message ?? "Đăng nhập thất bại",
@@ -369,7 +370,9 @@ class AuthProvider extends ChangeNotifier {
       await SPUtill.setValue(SPUtill.keyEmail, userEmail);
       await SPUtill.setValue(SPUtill.keyRoles, jsonEncode(roles));
 
+      print("-------------------------");
       print("Save Data : " + keycloakToken + ' ' + userId + ' ' + userName + ' ' + userEmail + ' ' + roles.toString());
+      print("-------------------------");
 
       // Điều hướng đến dashboard
       Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
@@ -431,7 +434,7 @@ class AuthProvider extends ChangeNotifier {
       await SPUtill.deleteKey(SPUtill.keyRoles);
 
       // Điều hướng về LoginScreen
-      Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+      Navigator.of(context).pushReplacementNamed(AppRoutes.loginProvider);
     } catch (e) {
       print('Lỗi đăng xuất: $e');
       Fluttertoast.showToast(

@@ -21,16 +21,13 @@ public interface IdentityClient {
     ResponseEntity<?> createUser(@RequestHeader("Authorization") String token, @RequestBody UserCreationParam param);
 
     @GetMapping(value = "/admin/realms/vnlaw/users/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getUserByEmail(@PathVariable("userId") String userId, @RequestHeader("Authorization") String token);
+    ResponseEntity<Map<String, Object>> getUserByUserId(@PathVariable("userId") String userId, @RequestHeader("Authorization") String token);
 
     @PutMapping(value = "/admin/realms/vnlaw/users/{userId}/execute-actions-email", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> executeActionsEmail(@PathVariable("userId") String userId, @RequestHeader("Authorization") String token, @RequestBody String[] actions);
 
     @PutMapping(value = "/admin/realms/vnlaw/users/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> updateUser(@PathVariable("userId") String userId, @RequestHeader("Authorization") String token, @RequestBody Map<String, Object> userUpdate);
-
-    @GetMapping("/realms/vnlaw/protocol/openid-connect/userinfo")
-    ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String authorization);
 
     @GetMapping("/realms/vnlaw/protocol/openid-connect/certs")
     ResponseEntity<Map<String, Object>> getCerts();

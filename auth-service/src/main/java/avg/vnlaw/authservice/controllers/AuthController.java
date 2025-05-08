@@ -71,19 +71,24 @@ public class AuthController {
 
         String message;
         AuthenticationResponse authResponse = authService.authenticate(request);
-        try {
-            if (authResponse.getType() == AuthenticationResponseEnum.ACCOUNT_NOT_ACTIVATED)
-                throw new AppException(ErrorCode.ACCOUNT_NOT_ACTIVATED);
+        log.info("Authentication response: {}", authResponse);
 
-            message = "Account authenticated successfully";
-            return ApiResponse.builder()
-                    .message(message)
-                    .data(authResponse)
-                    .build();
-        } catch (Exception e) {
-            log.info("Unexpected error during authentication: {}", e.getMessage());
-            throw new AppException(ErrorCode.PASSWORD_INCORRECT);
+        if (authResponse.getType() == AuthenticationResponseEnum.INVALID_CREDENTIALS) {
+            message = "Invalid credentials";
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        } else if (authResponse.getType() == AuthenticationResponseEnum.ACCOUNT_NOT_ACTIVATED) {
+            message = "Account not activated";
+            throw new AppException(ErrorCode.ACCOUNT_NOT_ACTIVATED);
+        } else if (authResponse.getType() == AuthenticationResponseEnum.KEYCLOAK_ERROR) {
+            message = authResponse.getMessage();
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
+
+        message = "Account authenticated successfully";
+        return ApiResponse.builder()
+                .message(message)
+                .data(authResponse)
+                .build();
     }
 
     @PostMapping("/google-token")
@@ -109,11 +114,19 @@ public class AuthController {
     }
 
     @PostMapping("/confirm-email")
-    public ApiResponse<?> confirm(
-            @RequestBody ConfirmEmailRequest request
-    ) {
+    public ApiResponse<?> confirm(@RequestBody ConfirmEmailRequest request) {
         MessageResponse authResponse = authService.confirm(request.getToken());
+
+        if(authResponse.getType() == HttpStatus.BAD_REQUEST) {
+            return ApiResponse.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message(authResponse.getMessage())
+                    .data(null)
+                    .build();
+        }
+
         return ApiResponse.builder()
+                .code(HttpStatus.OK.value())
                 .message(authResponse.getMessage())
                 .data(authResponse.getType())
                 .build();
@@ -123,9 +136,12 @@ public class AuthController {
     public ApiResponse<?> forgotPassword(
             @RequestBody PasswordResetTokenRequest request
     ) {
-        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
-        if (!reCaptchaResponse.isSuccess()) {
-            throw new AppException(ErrorCode.RECAPCHA_INVALID);
+//        Todo: Recaptcha
+        if (!"dev".equalsIgnoreCase(activeProfile)) {
+            ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+            if (!reCaptchaResponse.isSuccess()) {
+                throw new AppException(ErrorCode.RECAPCHA_INVALID);
+            }
         }
 
         MessageResponse authResponse = authService.forgotPassword(request.getEmail());
@@ -135,13 +151,16 @@ public class AuthController {
                 .build();
     }
 
-    @PostMapping("/change-password")
+    @PostMapping("/change-password-with-token")
     public ApiResponse<?> changePassword(
             @RequestBody ChangePasswordRequest request
     ) {
-        ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
-        if (!reCaptchaResponse.isSuccess()) {
-            throw new AppException(ErrorCode.RECAPCHA_INVALID);
+//        Todo: Recaptcha
+        if (!"dev".equalsIgnoreCase(activeProfile)) {
+            ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+            if (!reCaptchaResponse.isSuccess()) {
+                throw new AppException(ErrorCode.RECAPCHA_INVALID);
+            }
         }
         MessageResponse authResponse = authService.changePassword(request.getToken(), request.getPassword());
         return ApiResponse.builder()

@@ -25,6 +25,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SigningKeyResolverAdapter;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -132,56 +133,65 @@ public class AuthenticationService {
         log.info("Client token: {}", tokenKeyCloak.getAccessToken());
         log.info("INfo request: {}", request.toString());
         // create user with client token and given info
-        var creationResponse = identityClient.createUser(
-                "Bearer " + tokenKeyCloak.getAccessToken(),
-                UserCreationParam.builder()
-                        .username(request.getUsername())
-                        .email(request.getEmail())
-                        .firstName(request.getFirstName())
-                        .lastName(request.getLastName())
-                        .enabled(true)
-                        .emailVerified(false)
-                        .credentials(List.of(Credential.builder()
-                                .type("password")
-                                .temporary(false)
-                                .value(request.getPassword())
-                                .build()))
-                        .build()
-        );
-        // get userid from keyCloak
-        String userId = extractUserId(creationResponse);
-
-        User user = new User();
-        log.info("user: {}", user.toString());
-        log.info("request: {}", request.toString());
-        user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(role);
-        user.setKeycloakId(userId);
-        user.setActive("prod".equalsIgnoreCase(activeProfile));
-
-        userRepository.save(user);
-
-        String token = "AVG_" + UUID.randomUUID() + System.currentTimeMillis() + "_VNLAW";
-        setPasswordResetToken(user, TokenTypeForgotPasswordEnum.EMAIL_VERIFICATION, token);
-
         try {
-            emailService.sendEmailRegister(user.getEmail(), user.getUsername(), token);
+            var creationResponse = identityClient.createUser(
+                    "Bearer " + tokenKeyCloak.getAccessToken(),
+                    UserCreationParam.builder()
+                            .username(request.getEmail())
+                            .email(request.getEmail())
+                            .firstName(request.getFirstName())
+                            .lastName(request.getLastName())
+                            .enabled(true)
+                            .emailVerified(false)
+                            .credentials(List.of(Credential.builder()
+                                    .type("password")
+                                    .temporary(false)
+                                    .value(request.getPassword())
+                                    .build()))
+                            .build()
+            );
+
+
+            // get userid from keyCloak
+            String userId = extractUserId(creationResponse);
+
+            User user = new User();
+            log.info("user: {}", user.toString());
+            log.info("request: {}", request.toString());
+            user.setUsername(request.getUsername());
+            user.setEmail(request.getEmail());
+            user.setFirstName(request.getFirstName());
+            user.setLastName(request.getLastName());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setRole(role);
+            user.setKeycloakId(userId);
+            user.setActive("prod".equalsIgnoreCase(activeProfile));
+
+            userRepository.save(user);
+
+            String token = "AVG_" + UUID.randomUUID() + System.currentTimeMillis() + "_VNLAW";
+            setPasswordResetToken(user, TokenTypeForgotPasswordEnum.EMAIL_VERIFICATION, token);
+
+            try {
+                emailService.sendEmailRegister(user.getEmail(), user.getUsername(), token);
+            } catch (Exception e) {
+                logger.warning("error Send Mail : " + e.getMessage());
+            }
+
+            AuthenticationResponse response = new AuthenticationResponse();
+            response.setRefreshToken(tokenKeyCloak.getRefreshToken());
+            response.setAccessToken(tokenKeyCloak.getAccessToken());
+            response.setType(AuthenticationResponseEnum.OK);
+            response.setEmail(user.getEmail());
+            response.setName(user.getFirstName() + " " + user.getLastName());
+
+            return response;
         } catch (Exception e) {
-            logger.warning("error Send Mail : " + e.getMessage());
+            log.error("Failed to create user in Keycloak: {}", e.getMessage());
+            return AuthenticationResponse.builder()
+                    .type(AuthenticationResponseEnum.KEYCLOAK_ERROR)
+                    .build();
         }
-
-        AuthenticationResponse response = new AuthenticationResponse();
-        response.setRefreshToken(tokenKeyCloak.getRefreshToken());
-        response.setAccessToken(tokenKeyCloak.getAccessToken());
-        response.setType(AuthenticationResponseEnum.OK);
-        response.setEmail(user.getEmail());
-        response.setName(user.getFirstName() + " " + user.getLastName());
-
-        return response;
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -390,7 +400,18 @@ public class AuthenticationService {
 
 
     public MessageResponse confirm(String token) {
-        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token).orElseThrow();
+        log.info("Confirm token: {}", token);
+        Optional<PasswordResetToken> passwordResetTokenOptional = passwordResetTokenRepository.findByToken(token);
+
+        if (passwordResetTokenOptional.isEmpty()) {
+            return MessageResponse.builder()
+                    .type(HttpStatus.NOT_FOUND)
+                    .message("Token không tồn tại hoặc không hợp lệ")
+                    .build();
+        }
+
+        PasswordResetToken passwordResetToken = passwordResetTokenOptional.get();
+
         if (passwordResetToken.getExpiryDate().before(new Date())) {
             return MessageResponse.builder()
                     .type(HttpStatus.BAD_REQUEST)
@@ -406,7 +427,11 @@ public class AuthenticationService {
         String keycloakId = user.getKeycloakId();
 
         try {
-            emailService.verifyEmail(keycloakId, getTokenAdmin().getAccessToken());
+            MessageResponse response = emailService.verifyEmail(keycloakId, getTokenAdmin().getAccessToken());
+            return MessageResponse.builder()
+                    .type(HttpStatus.OK)
+                    .message("Verify Successfully")
+                    .build();
         } catch (Exception e) {
             logger.warning("error Send Mail : " + e.getMessage());
             return MessageResponse.builder()
@@ -414,11 +439,6 @@ public class AuthenticationService {
                     .message("Error Send Mail")
                     .build();
         }
-
-        return MessageResponse.builder()
-                .type(HttpStatus.OK)
-                .message("Verify Successfully")
-                .build();
     }
 
     public GetCurrentUserByAccessTokenResponse getCurrentUserByAccessToken(String token) {
@@ -501,14 +521,42 @@ public class AuthenticationService {
         }
 
         User user = passwordResetToken.getUser();
-        user.setPassword(passwordEncoder.encode(password));
-        userRepository.save(user);
-        passwordResetToken.setActivated(true);
-        passwordResetTokenRepository.save(passwordResetToken);
 
-        return MessageResponse.builder()
-                .type(HttpStatus.OK)
-                .message("Password reset successfully")
-                .build();
+        try {
+            Map<String, Object> credentials = new HashMap<>();
+            credentials.put("type", "password");
+            credentials.put("value", password);
+            credentials.put("temporary", false);
+
+            List<Map<String, Object>> credentialsList = new ArrayList<>();
+            credentialsList.add(credentials);
+
+            Map<String, Object> userUpdate = new HashMap<>();
+            userUpdate.put("credentials", credentialsList);
+
+            ResponseEntity<?> updateResponse = identityClient.updateUser(user.getKeycloakId(), "Bearer " + getTokenAdmin().getAccessToken(), userUpdate);
+            if (updateResponse.getStatusCode().is2xxSuccessful()) {
+                log.info("Password updated successfully for user: {}", user.getKeycloakId());
+
+                user.setPassword(passwordEncoder.encode(password));
+                userRepository.save(user);
+                passwordResetToken.setActivated(true);
+                passwordResetTokenRepository.save(passwordResetToken);
+
+                return MessageResponse.builder()
+                        .type(HttpStatus.OK)
+                        .message("Password reset successfully")
+                        .build();
+            } else {
+                log.error("Failed to update password for user: {}, status: {}", user.getKeycloakId(), updateResponse.getStatusCode());
+                throw new MessagingException("Failed to update password for user: " + user.getKeycloakId());
+            }
+        } catch (Exception e) {
+            logger.warning("Error Change Password : " + e.getMessage());
+            return MessageResponse.builder()
+                    .type(HttpStatus.BAD_REQUEST)
+                    .message("Error Change Password")
+                    .build();
+        }
     }
 }

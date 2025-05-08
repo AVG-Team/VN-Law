@@ -22,7 +22,7 @@ export default function ForgotPassword(props) {
 
     function renderPage() {
         switch (type) {
-            case "doi-mat-khau":
+            case "change-password":
                 return <ResetPasswordForm token={token}/>;
             default:
                 return <ForgotForm />;

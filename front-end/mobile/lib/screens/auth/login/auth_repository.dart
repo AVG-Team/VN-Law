@@ -14,6 +14,8 @@ class AuthRepository {
       'subject_token': token,
     };
 
+    print(data.toString());
+
     try {
       final response = await http.post(
         Uri.parse('${Env.keycloakUrl}/realms/vnlaw/protocol/openid-connect/token'),
