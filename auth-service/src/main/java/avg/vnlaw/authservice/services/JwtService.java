@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -116,14 +115,14 @@ public class JwtService {
         return hexString.toString();
     }
 
-    private static String md5Hex(String input) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("MD5");
+    private static String sha256Hex(String input) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
         byte[] hash = md.digest(input.getBytes(StandardCharsets.UTF_8));
         return toHex(hash);
     }
 
     private static String hexToHex(String input) throws NoSuchAlgorithmException {
-        String md5Hex = md5Hex(input);
+        String md5Hex = sha256Hex(input);
         StringBuilder hexBuilder = new StringBuilder();
         for (char c : md5Hex.toCharArray()) {
             hexBuilder.append(Integer.toHexString(c));

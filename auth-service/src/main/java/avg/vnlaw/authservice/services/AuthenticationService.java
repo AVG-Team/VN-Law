@@ -443,9 +443,9 @@ public class AuthenticationService {
         }
     }
 
-    public GetCurrentUserByAccessTokenResponse getCurrentUserByAccessToken(String token) {
+    public AuthenticationResponse getCurrentUserByAccessToken(String token) {
         User user = tokenService.getUserByToken(token);
-        return GetCurrentUserByAccessTokenResponse.builder()
+        return AuthenticationResponse.builder()
                 .name(user.getUsername())
                 .role(user.getRole().getName().name())
                 .build();

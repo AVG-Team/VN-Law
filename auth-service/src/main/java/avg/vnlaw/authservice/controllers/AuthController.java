@@ -171,7 +171,7 @@ public class AuthController {
 
     @PostMapping("/get-current-user")
     public ApiResponse<?> getCurrentUser(@RequestBody AccessTokenRequest request) {
-        GetCurrentUserByAccessTokenResponse response = authService.getCurrentUserByAccessToken(request.getToken());
+        AuthenticationResponse response = authService.getCurrentUserByAccessToken(request.getToken());
         return ApiResponse.builder()
                 .message("Profile retrieved successfully")
                 .data(response)
