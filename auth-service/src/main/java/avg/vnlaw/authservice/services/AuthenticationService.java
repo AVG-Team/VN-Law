@@ -1,9 +1,6 @@
 package avg.vnlaw.authservice.services;
 
-import avg.vnlaw.authservice.dto.identity.Credential;
-import avg.vnlaw.authservice.dto.identity.TokenExchangeParam;
-import avg.vnlaw.authservice.dto.identity.TokenExchangeResponse;
-import avg.vnlaw.authservice.dto.identity.UserCreationParam;
+import avg.vnlaw.authservice.dto.identity.*;
 import avg.vnlaw.authservice.dto.responses.KeycloakErrorResponse;
 import avg.vnlaw.authservice.entities.*;
 import avg.vnlaw.authservice.enums.AuthenticationResponseEnum;
@@ -76,6 +73,9 @@ public class AuthenticationService {
     @Value("${idp.client_secret}")
     @NonFinal
     private String idpClientSecret;
+    @Value("${idp.realm}")
+    @NonFinal
+    private String realm;
 
     private void setPasswordResetToken(User user, TokenTypeForgotPasswordEnum tokenType, String token) {
         long expiration = 24L * 60 * 60 * 1000L;
@@ -204,7 +204,9 @@ public class AuthenticationService {
                 .build();
 
         try {
-            TokenExchangeResponse tokenResponse = identityClient.exchangeToken("vnlaw", tokenExchangeParam);
+            log.info("Token exchange param: {}", tokenExchangeParam.toString());
+            log.info("realm: {}", realm);
+            TokenExchangeResponse tokenResponse = identityClient.exchangeToken(realm, tokenExchangeParam);
             log.info("Token exchange response: {}", tokenResponse.toString());
             if (tokenResponse.getAccessToken() == null) {
                 return AuthenticationResponse.builder()
@@ -276,7 +278,7 @@ public class AuthenticationService {
                 .build();
 
         try {
-            TokenExchangeResponse tokenResponse = identityClient.exchangeToken("vnlaw", tokenExchangeParam);
+            TokenExchangeResponse tokenResponse = identityClient.exchangeToken(realm, tokenExchangeParam);
             log.info("Token exchange response: {}", tokenResponse.toString());
             if (tokenResponse.getAccessToken() == null) {
                 return AuthenticationResponse.builder()
@@ -285,7 +287,7 @@ public class AuthenticationService {
                         .build();
             }
 
-            ResponseEntity<Map<String, Object>> certsResponse = identityClient.getCerts();
+            ResponseEntity<Map<String, Object>> certsResponse = identityClient.getCerts(realm);
             Map<String, Object> certs = certsResponse.getBody();
             if (certs == null || !certs.containsKey("keys")) {
                 throw new RuntimeException("Failed to retrieve Keycloak public keys");
@@ -556,6 +558,74 @@ public class AuthenticationService {
             return MessageResponse.builder()
                     .type(HttpStatus.BAD_REQUEST)
                     .message("Error Change Password")
+                    .build();
+        }
+    }
+
+    public MessageResponse checkTokenKeycloak(String token) {
+        if (token == null || token.isEmpty()) {
+            return MessageResponse.builder()
+                    .type(HttpStatus.BAD_REQUEST)
+                    .message("Token is required")
+                    .build();
+        }
+
+        CheckTokenParam checkTokenParam = CheckTokenParam.builder()
+                .client_id(idpClientId)
+                .client_secret(idpClientSecret)
+                .token(token)
+                .build();
+
+        CheckTokenResponse tokenResponse = identityClient.introspectToken(realm, checkTokenParam);
+        log.info("Check token response: {}", tokenResponse.toString());
+        if (!tokenResponse.isActive()) {
+            log.error("Failed to check token: {}, status: {}", token, tokenResponse);
+            return MessageResponse.builder()
+                    .type(HttpStatus.BAD_REQUEST)
+                    .message("Token is invalid")
+                    .build();
+        }
+
+        return MessageResponse.builder()
+                .type(HttpStatus.OK)
+                .message("Token is valid")
+                .build();
+    }
+
+    public MessageResponse logoutKeycloak(String token) {
+        if (token == null || token.isEmpty()) {
+            return MessageResponse.builder()
+                    .type(HttpStatus.BAD_REQUEST)
+                    .message("Token is required")
+                    .build();
+        }
+
+        LogoutKeycloakParam logoutKeycloakParam = LogoutKeycloakParam.builder()
+                .refresh_token(token)
+                .client_id(idpClientId)
+                .client_secret(idpClientSecret)
+                .build();
+
+        try {
+            ResponseEntity<?> response = identityClient.logout(realm, logoutKeycloakParam);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("Logout successful for token: {}", token);
+                return MessageResponse.builder()
+                        .type(HttpStatus.OK)
+                        .message("Logout successful")
+                        .build();
+            } else {
+                log.error("Failed to logout for token: {}, status: {}", token, response.getStatusCode());
+                return MessageResponse.builder()
+                        .type(HttpStatus.BAD_REQUEST)
+                        .message("Logout failed")
+                        .build();
+            }
+        } catch (Exception e) {
+            logger.warning("Error Logout : " + e.getMessage());
+            return MessageResponse.builder()
+                    .type(HttpStatus.BAD_REQUEST)
+                    .message("Error Logout")
                     .build();
         }
     }

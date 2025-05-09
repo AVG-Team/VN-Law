@@ -10,8 +10,6 @@ Future<void> main() async {
 
   // Load environment variables
   await Env.init();
-  // Load Keycloak Admin
-  await AppConst.refreshAdminToken();
 
   // Initialize Firebase
   await Firebase.initializeApp(

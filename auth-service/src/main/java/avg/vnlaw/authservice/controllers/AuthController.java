@@ -177,4 +177,24 @@ public class AuthController {
                 .data(response)
                 .build();
     }
+
+    @PostMapping("/check-token-keycloak")
+    public ApiResponse<?> checkTokenKeycloak(@RequestBody AccessTokenRequest request) {
+        log.info("Check token request: {}", request);
+        MessageResponse authResponse = authService.checkTokenKeycloak(request.getToken());
+        return ApiResponse.builder()
+                .message(authResponse.getMessage())
+                .data(authResponse.getType())
+                .build();
+    }
+
+    @PostMapping("/logout-keycloak")
+    public ApiResponse<?> logoutKeycloak(@RequestBody AccessTokenRequest request) {
+        log.info("Logout request: {}", request);
+        MessageResponse authResponse = authService.logoutKeycloak(request.getToken());
+        return ApiResponse.builder()
+                .message(authResponse.getMessage())
+                .data(authResponse.getType())
+                .build();
+    }
 }

@@ -15,6 +15,9 @@ class Env {
   static String get apiKey => dotenv.env['API_KEY'] ?? '';
   static String get apiNewsKey => dotenv.env['API_NEWS_KEY'] ?? '';
 
+  // Auth
+  static String get apiAuthUrl => dotenv.env['API_AUTH_URL'] ?? '';
+
   // Keycloak
   static String get keycloakUrl => dotenv.env['keycloak_url'] ?? '';
   static String get keycloakId => dotenv.env['keycloak_id'] ?? '';

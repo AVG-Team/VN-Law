@@ -23,21 +23,19 @@ class SplashProvider extends ChangeNotifier {
   Future<bool> checkTokenValidity(String token) async {
     try {
       print('Checking token validity...');
+      print('${Env.apiAuthUrl}/api/auth/check-token-keycloak');
       final response = await http.post(
-        Uri.parse('${Env.keycloakUrl}/realms/vnlaw/protocol/openid-connect/token/introspect'),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: {
+        Uri.parse('${Env.apiAuthUrl}/api/auth/check-token-keycloak'),
+        headers: { 'Content-Type': 'application/json', },
+        body: jsonEncode({
           'token': token,
-          'client_id': Env.keycloakId,
-          'client_secret': Env.keycloakSecret,
-        },
+        }),
       );
       print('Token introspection response: status=${response.statusCode}, body=${response.body}');
+      print(response);
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['active'] == true;
+        final data = jsonDecode(response.body)['data'];
+        return data == "OK";
       }
       return false;
     } catch (e) {

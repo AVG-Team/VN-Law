@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:VNLAW/utils/app_const.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -21,26 +22,63 @@ class AuthProvider extends ChangeNotifier {
     scopes: ['email', 'profile', 'openid'],
   );
 
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  OverlayEntry? _overlayEntry;
+
+  // Show loading overlay
+  void _showLoadingOverlay(BuildContext context) {
+    _isLoading = true;
+    notifyListeners();
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          ModalBarrier(
+            color: Colors.black.withOpacity(0.4),
+            dismissible: false,
+          ),
+          Center(
+            child: SpinKitCircle(
+              color: Colors.cyanAccent[400],
+              size: 60.0,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  // Hide loading overlay
+  void _hideLoadingOverlay() {
+    _isLoading = false;
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    notifyListeners();
+  }
+
   // Đăng nhập bằng email và mật khẩu
   Future<void> loginWithEmail(BuildContext context) async {
+    _showLoadingOverlay(context);
     final email = emailTextController.text;
     final password = passwordTextController.text;
     try {
       final response = await http.post(
-        Uri.parse('${Env.keycloakUrl}/realms/vnlaw/protocol/openid-connect/token'),
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: {
-          'grant_type': 'password',
-          'client_id': Env.keycloakId,
-          'client_secret': Env.keycloakSecret,
-          'username': email,
+        Uri.parse('http://localhost:9001/api/auth/authenticate'),
+        headers: { 'Content-Type': 'application/json' },
+        body: jsonEncode({
+          'email': email,
           'password': password,
-        },
+        }),
       );
       print(response.body);
+      print(response.statusCode);
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = jsonDecode(response.body)['data'];
         final keycloakToken = data['access_token'];
         await _processKeycloakToken(context, keycloakToken);
         Fluttertoast.showToast(
@@ -50,9 +88,10 @@ class AuthProvider extends ChangeNotifier {
           backgroundColor: Colors.green,
           textColor: Colors.white,
         );
+        resetTextField();
       } else {
         try {
-          final errorData = jsonDecode(response.body);
+          final errorData = jsonDecode(response.body)['data'];
           if (errorData['error'] == 'invalid_grant') {
             Fluttertoast.showToast(
               msg: 'Vui lòng xác minh email của bạn trước khi đăng nhập',
@@ -90,16 +129,20 @@ class AuthProvider extends ChangeNotifier {
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
+    } finally {
+      _hideLoadingOverlay();
     }
   }
 
   // Đăng nhập bằng Google
   Future<void> loginWithGoogle(BuildContext context) async {
+    _showLoadingOverlay(context);
     try {
       // Gọi Google Sign-In
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         // Người dùng hủy đăng nhập
+        _hideLoadingOverlay();
         return;
       }
 
@@ -108,10 +151,18 @@ class AuthProvider extends ChangeNotifier {
       final String accessToken = googleAuth.accessToken!;
 
       // Trao đổi token với Keycloak
-      final KeycloakResponse<Map<String, dynamic>> apiResponse = await AuthRepository.exchangeToken('google', accessToken);
-
-      if (apiResponse.result == true && apiResponse.data != null) {
-        final keycloakToken = apiResponse.data!['access_token'];
+      final response = await http.post(
+        Uri.parse('http://localhost:9001/api/auth/google-token'),
+        headers: { 'Content-Type': 'application/json' },
+        body: jsonEncode({
+          'provider': "google",
+          'token': accessToken,
+        }),
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print("Keycloak token: " + data.toString());
+        final keycloakToken = data['data']['access_token'];
 
         // Xử lý thông tin từ Keycloak token
         await _processKeycloakToken(context, keycloakToken);
@@ -123,10 +174,11 @@ class AuthProvider extends ChangeNotifier {
           backgroundColor: Colors.green,
           textColor: Colors.white,
         );
+        resetTextField();
         print("Đăng nhập thành công");
       } else {
         Fluttertoast.showToast(
-          msg: apiResponse.message ?? "Đăng nhập thất bại",
+          msg: jsonDecode(response.body)['message'] ?? "Đăng nhập thất bại",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           backgroundColor: Colors.red,
@@ -142,110 +194,43 @@ class AuthProvider extends ChangeNotifier {
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
+    } finally {
+      _hideLoadingOverlay();
     }
   }
 
   // Register user
   Future<void> registerUser(BuildContext context) async {
+    _showLoadingOverlay(context);
     final email = emailTextController.text;
     final password = passwordTextController.text;
     final name = nameTextController.text;
 
     try {
-      // Lấy token admin hợp lệ
-      final adminToken = await AppConst.getAdminToken();
-
       // Bước 1: Tạo người dùng
       final createUserResponse = await http.post(
-        Uri.parse('http://localhost:9090/admin/realms/vnlaw/users'),
+        Uri.parse('http://localhost:9001/api/auth/register'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $adminToken',
         },
         body: jsonEncode({
           'email': email,
           'username': email,
           'firstName': name,
-          'enabled': true,
-          'emailVerified': false,
-          'requiredActions': ['VERIFY_EMAIL'],
-          'credentials': [
-            {
-              'type': 'password',
-              'value': password,
-              'temporary': false,
-            }
-          ],
+          'password': password,
         }),
       );
 
-      print('Create user response: ${createUserResponse.statusCode} - ${createUserResponse.body}');
-      print('Location header: ${createUserResponse.headers['location']}');
-
-      if (createUserResponse.statusCode == 201) {
-        // Bước 2: Lấy user ID từ header Location
-        String? userId;
-        final locationHeader = createUserResponse.headers['location'];
-        if (locationHeader != null) {
-          // Location header có dạng: http://localhost:9090/admin/realms/vnlaw/users/{userId}
-          final uri = Uri.parse(locationHeader);
-          userId = uri.pathSegments.last; // Lấy userId từ phần cuối của URL
-          print('Extracted user ID: $userId');
-        } else {
-          // Nếu không có Location header, tìm user ID bằng API
-          final findUserResponse = await http.get(
-            Uri.parse('c'),
-            headers: {
-              'Authorization': 'Bearer $adminToken',
-            },
-          );
-
-          print('Find user response: ${findUserResponse.statusCode} - ${findUserResponse.body}');
-
-          if (findUserResponse.statusCode == 200) {
-            final users = jsonDecode(findUserResponse.body) as List;
-            if (users.isNotEmpty) {
-              userId = users[0]['id'];
-              print('Found user ID: $userId');
-            }
-          }
-        }
-
-        if (userId == null) {
-          throw Exception('Không thể lấy user ID sau khi tạo người dùng');
-        }
-
-        // Bước 3: Gửi email xác minh
-        final sendEmailResponse = await http.put(
-          Uri.parse(
-              'http://localhost:9090/admin/realms/vnlaw/users/$userId/execute-actions-email'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $adminToken',
-          },
-          body: jsonEncode(['VERIFY_EMAIL']),
+      if (createUserResponse.statusCode == 200) {
+        Fluttertoast.showToast(
+          msg: 'Đăng ký thành công! Vui lòng kiểm tra email để xác minh tài khoản.',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
         );
-
-        print('Send email response: ${sendEmailResponse.statusCode} - ${sendEmailResponse.body}');
-
-        if (sendEmailResponse.statusCode == 204) {
-          Fluttertoast.showToast(
-            msg: 'Đăng ký thành công! Vui lòng kiểm tra email để xác minh tài khoản.',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-          );
-          Navigator.of(context).pushReplacementNamed(AppRoutes.login);
-        } else {
-          Fluttertoast.showToast(
-            msg: 'Đăng ký thành công nhưng không thể gửi email xác minh: ${sendEmailResponse.body}',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-          );
-        }
+        resetTextField();
+        Navigator.of(context).pushReplacementNamed(AppRoutes.login);
       } else {
         Fluttertoast.showToast(
           msg: 'Đăng ký thất bại: ${createUserResponse.body}',
@@ -264,75 +249,42 @@ class AuthProvider extends ChangeNotifier {
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
+    } finally {
+      _hideLoadingOverlay();
     }
   }
 
   // Hàm reset mật khẩu mới
   Future<void> resetPassword(BuildContext context, email) async {
+    _showLoadingOverlay(context);
     try {
       print("email : " + email);
-      // Lấy token admin hợp lệ
-      final adminToken = await AppConst.getAdminToken();
 
-      // Bước 1: Tìm user ID từ email
-      final findUserResponse = await http.get(
-        Uri.parse('http://localhost:9090/admin/realms/vnlaw/users?email=$email'),
-        headers: {
-          'Authorization': 'Bearer $adminToken',
-        },
+      final response = await http.post(
+        Uri.parse('http://localhost:9001/api/auth/forgot-password'),
+        headers: { 'Content-Type': 'application/json' },
+        body: jsonEncode({
+          'email': email,
+        }),
       );
 
-      print('Find user response: ${findUserResponse.statusCode} - ${findUserResponse.body}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print("Forgot password token: " + data.toString());
 
-      if (findUserResponse.statusCode == 200) {
-        final users = jsonDecode(findUserResponse.body) as List;
-        if (users.isEmpty) {
-          Fluttertoast.showToast(
-            msg: 'Email không tồn tại',
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-          );
-          return;
-        }
-
-        final userId = users[0]['id'];
-        print('Found user ID: $userId');
-
-        // Bước 2: Gửi email reset mật khẩu
-        final resetPasswordResponse = await http.put(
-          Uri.parse(
-              'http://localhost:9090/admin/realms/vnlaw/users/$userId/reset-password-email'),
-          headers: {
-            'Authorization': 'Bearer $adminToken',
-          },
+        Fluttertoast.showToast(
+          msg: 'Email đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra hộp thư của bạn.',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
         );
+        resetTextField();
 
-        print('Reset password response: ${resetPasswordResponse.statusCode} - ${resetPasswordResponse.body}');
-
-        if (resetPasswordResponse.statusCode == 204) {
-          Fluttertoast.showToast(
-            msg: 'Email đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra hộp thư của bạn.',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-          );
-
-          Navigator.of(context).pushReplacementNamed(AppRoutes.login);
-        } else {
-          Fluttertoast.showToast(
-            msg: 'Không thể gửi email đặt lại mật khẩu: ${resetPasswordResponse.body}',
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-          );
-        }
+        Navigator.of(context).pushReplacementNamed(AppRoutes.login);
       } else {
         Fluttertoast.showToast(
-          msg: 'Lỗi khi tìm người dùng: ${findUserResponse.body}',
+          msg: 'Có lỗi xảy ra, vui lòng kiểm tra lại email của bạn',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           backgroundColor: Colors.red,
@@ -342,12 +294,14 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       print('Lỗi khi đặt lại mật khẩu: $e');
       Fluttertoast.showToast(
-        msg: 'Có lỗi xảy ra, vui lòng thử lại: $e',
+        msg: 'Có lỗi xảy ra, vui lòng thử lại',
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
+    } finally {
+      _hideLoadingOverlay();
     }
   }
 
@@ -389,17 +343,16 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout(BuildContext context) async {
+    _showLoadingOverlay(context);
     try {
       // Lấy refresh token từ SharedPreferences
       final refreshToken = await SPUtill.getValue(SPUtill.keyRefreshToken);
       if (refreshToken != null && refreshToken.isNotEmpty) {
         final response = await http.post(
-          Uri.parse('${Env.keycloakUrl}/realms/vnlaw/protocol/openid-connect/logout'),
-          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          Uri.parse('http://localhost:9001/api/auth/logout-keycloak'),
+          headers: { 'Content-Type': 'application/json' },
           body: {
-            'client_id': Env.keycloakId,
-            'client_secret': Env.keycloakSecret,
-            'refresh_token': refreshToken,
+            'token': refreshToken,
           },
         );
 
@@ -444,6 +397,8 @@ class AuthProvider extends ChangeNotifier {
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
+    } finally {
+      _hideLoadingOverlay();
     }
   }
 
