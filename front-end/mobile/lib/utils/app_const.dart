@@ -1,6 +1,9 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-import '../core/config/environment.dart';
+import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'environment.dart';
+import 'package:http/http.dart' as http;
 
 class AppConst {
   /// This is Live URL
@@ -41,6 +44,15 @@ class AppConst {
 
   static int approve = 1;
   static int reject = 6;
+
+
+  static String _keycloakAdminToken = '';
+  static int _tokenExpiration = 0; // Thời gian hết hạn (Unix timestamp)
+
+  // Định dạng timestamp thành thời gian đọc được
+  static String _formatTimestamp(int timestamp) {
+    return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000).toString();
+  }
 }
 
 class CustomColors {

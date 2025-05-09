@@ -18,6 +18,8 @@ class SPUtill {
   static String keySelectLanguage = "key_select_language";
   static String keyRemoteModeType = "key_remote_mode_type";
   static String keyMenuList = "key_menu_list";
+  static String keyRoles= "user_roles";
+  static const String keyRefreshToken = 'refresh_token';
 
   static setValue(String key, String? value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

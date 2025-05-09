@@ -1,6 +1,7 @@
 package avg.vnlaw.authservice.config;
 
 import avg.vnlaw.authservice.entities.Role;
+import avg.vnlaw.authservice.entities.RoleType;
 import avg.vnlaw.authservice.repositories.RoleRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -14,19 +15,19 @@ public class DataInitializer {
 
     @PostConstruct
     public void init() {
-        if (roleRepository.findByName(Role.RoleType.USER).isEmpty()) {
+        if (roleRepository.findByName(RoleType.USER).isEmpty()) {
             Role userRole = new Role();
-            userRole.setName(Role.RoleType.USER);
+            userRole.setName(RoleType.USER);
             roleRepository.save(userRole);
         }
-        if (roleRepository.findByName(Role.RoleType.ADMIN).isEmpty()) {
+        if (roleRepository.findByName(RoleType.ADMIN).isEmpty()) {
             Role adminRole = new Role();
-            adminRole.setName(Role.RoleType.ADMIN);
+            adminRole.setName(RoleType.ADMIN);
             roleRepository.save(adminRole);
         }
-        if (roleRepository.findByName(Role.RoleType.SUPER_USER).isEmpty()) {
+        if (roleRepository.findByName(RoleType.SUPER_USER).isEmpty()) {
             Role superUserRole = new Role();
-            superUserRole.setName(Role.RoleType.SUPER_USER);
+            superUserRole.setName(RoleType.SUPER_USER);
             roleRepository.save(superUserRole);
         }
     }

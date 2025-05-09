@@ -11,10 +11,12 @@ import {
     EyeInvisibleOutlined,
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import Logo from "~/assets/images/logo/logo.png";
+import axios from "axios";
+import SocialButton from "../SignIn/components/GoogleLoginButton";
 
 const { Title, Text } = Typography;
 
@@ -50,39 +52,29 @@ const cardVariants = {
     },
 };
 
-const SocialButton = ({ icon, text, onClick }) => (
-    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-        <Button
-            icon={icon}
-            className="flex items-center justify-center w-full h-12 gap-2 transition-all duration-300 border-gray-300 hover:border-blue-500 hover:text-blue-500"
-            onClick={onClick}
-        >
-            {text}
-        </Button>
-    </motion.div>
-);
-
-SocialButton.propTypes = {
-    icon: PropTypes.node.isRequired,
-    text: PropTypes.string.isRequired,
-    onClick: PropTypes.func.isRequired,
-};
-
 const SignUp = () => {
     const [form] = Form.useForm();
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const onFinish = async (values) => {
         setIsLoading(true);
         try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-            console.log("Success:", values);
+            const response = await axios.post('http://localhost:9001/api/auth/register', {
+                firstName: values.firstname,
+                lastName: values.lastName,
+                email: values.email,
+                password: values.password,
+            });
+            console.log('Response from server:', response.data);
             message.success("Đăng ký thành công!");
-            // Add your login logic here
+            navigate('/login');
+            // Todo: Alert Success
+            alert('Đăng Ký thành công');
         } catch (error) {
-            message.error("Đăng ký thất bại. Vui lòng thử lại!");
+            console.error('Register failed:', error);
+            alert('Đăng Ký thất bại');
         } finally {
             setIsLoading(false);
         }
@@ -133,21 +125,40 @@ const SignUp = () => {
                                     size="large"
                                 >
                                     <Form.Item
-                                        name="fullName"
+                                        name="firstname"
                                         rules={[
                                             {
                                                 required: true,
-                                                message: "Vui lòng nhập họ và tên!",
+                                                message: "Vui lòng nhập họ và tên đệm!",
                                             },
                                             {
                                                 type: "string",
-                                                message: "Họ và tên không hợp lệ!",
+                                                message: "Họ và tên đệm không hợp lệ!",
                                             },
                                         ]}
                                     >
                                         <Input
                                             prefix={<UserOutlined className="text-gray-400" />}
-                                            placeholder="Họ và tên"
+                                            placeholder="Họ và Tên Đệm"
+                                            className="h-12 text-gray-700 placeholder-gray-400 transition-all duration-300 border-gray-200 rounded-lg hover:border-blue-500 focus:border-blue-500"
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name="lastName"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: "Vui lòng nhập tên của bạn!",
+                                            },
+                                            {
+                                                type: "string",
+                                                message: "Tên của bạn không hợp lệ!!",
+                                            },
+                                        ]}
+                                    >
+                                        <Input
+                                            prefix={<UserOutlined className="text-gray-400" />}
+                                            placeholder="Tên của bạn"
                                             className="h-12 text-gray-700 placeholder-gray-400 transition-all duration-300 border-gray-200 rounded-lg hover:border-blue-500 focus:border-blue-500"
                                         />
                                     </Form.Item>
@@ -227,9 +238,9 @@ const SignUp = () => {
 
                                 <div className="space-y-4">
                                     <SocialButton
+                                        provider="google"
                                         icon={<GoogleOutlined />}
                                         text="Đăng nhập với Google"
-                                        onClick={() => console.log("Google login")}
                                     />
                                     <SocialButton
                                         icon={<FacebookOutlined />}
