@@ -16,7 +16,7 @@ public class Subject extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     public String id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String name;
 
     @Column(name = "`order`", nullable = false)
@@ -24,6 +24,6 @@ public class Subject extends BaseEntity {
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_topic", nullable = false)
+    @JoinColumn(name = "topic_id", nullable = false)
     private Topic topic;
 }

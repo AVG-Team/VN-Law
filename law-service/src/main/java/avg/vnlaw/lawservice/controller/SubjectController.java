@@ -3,6 +3,7 @@ package avg.vnlaw.lawservice.controller;
 
 import avg.vnlaw.lawservice.dto.request.SubjectRequest;
 import avg.vnlaw.lawservice.dto.response.HandlerResponse;
+import avg.vnlaw.lawservice.elastic.services.SubjectDocumentService;
 import avg.vnlaw.lawservice.entities.Subject;
 import avg.vnlaw.lawservice.services.SubjectService;
 import lombok.RequiredArgsConstructor;
@@ -13,28 +14,27 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Handler;
 
 @RestController
 @RequestMapping("/subject")
 @RequiredArgsConstructor
-public class SubjectController extends BaseController<Subject, SubjectRequest,String> {
+public class SubjectController {
 
-    private SubjectService subjectService;
+    private final SubjectService subjectService;
+    private final SubjectDocumentService subjectDocumentService;
 
-    public SubjectController(SubjectService subjectService){
-        this.subjectService = subjectService;
-    }
 
     @GetMapping("/{topicId}")
     public ResponseEntity<Object> getSubjectByTopic(@PathVariable("topicId") String topicId){
         return HandlerResponse.responseBuilder("Complete Get Subject By Topic ",
-                HttpStatus.OK,this.subjectService.getSubjectByTopic(topicId));
+                HttpStatus.OK,subjectService.getSubjectByTopic(topicId));
     }
 
     @GetMapping("{subjectId}")
     public ResponseEntity<Object> getSubjectDetail(@PathVariable("subjectId") String subjectId){
-        return HandlerResponse.responseBuilder("Complete",
-                HttpStatus.OK,this.subjectService.getSubject(subjectId));
+        return HandlerResponse.responseBuilder("Get subject Detail successfully",
+                HttpStatus.OK,subjectService.getSubject(subjectId));
     }
 
     @GetMapping("")
@@ -43,32 +43,13 @@ public class SubjectController extends BaseController<Subject, SubjectRequest,St
             @RequestParam(name = "pageSize", value = "pageSize", defaultValue = "") Optional<Integer> pageSize,
             @RequestParam(name = "name", value = "name", defaultValue = "") Optional<String> name
     ){
-        return HandlerResponse.responseBuilder("Complete",
-                HttpStatus.OK,this.subjectService.getAllSubjects(name,pageNo,pageSize));
+        return HandlerResponse.responseBuilder("Get all Subjects successfully",
+                HttpStatus.OK,subjectService.getAllSubjects(name,pageNo,pageSize));
     }
 
-    @Override
-    public ResponseEntity<Subject> create(SubjectRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Subject> update(String id, SubjectRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Subject> delete(SubjectRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Subject> get(SubjectRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<List<Subject>> getAll() {
-        return null;
+    @GetMapping("/search")
+    public ResponseEntity<Object> elasticSearch(@RequestParam(name="keyword",value="keyword") String keyword){
+        return HandlerResponse.responseBuilder("Search successfully",
+                HttpStatus.OK,subjectDocumentService.search(keyword));
     }
 }

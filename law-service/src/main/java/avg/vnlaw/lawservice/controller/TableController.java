@@ -20,15 +20,15 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/table")
 @RequiredArgsConstructor
-public class TableController extends BaseController<Table, TableRequest,Integer> {
+public class TableController {
 
-    private TableService tableService;
+    private final TableService tableService;
 
     @GetMapping("")
     public ResponseEntity<Object> getAllTables(
             @RequestParam(name = "pageNo", value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get all tables successfully",
                 HttpStatus.OK,tableService.getAllTable(pageNo,pageSize));
     }
     @GetMapping("/filter")
@@ -36,32 +36,8 @@ public class TableController extends BaseController<Table, TableRequest,Integer>
             @RequestParam(name = "content", value = "content") Optional<String> content,
             @RequestParam(name = "pageNo", value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value = "pageSize") Optional<Integer> pageSize){
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get all tables by filter successfully",
                 HttpStatus.OK,tableService.getAllTableByFilter(content,pageNo,pageSize));
     }
 
-    @Override
-    public ResponseEntity<Table> create(TableRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Table> update(Integer id, TableRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Table> delete(TableRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Table> get(TableRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<List<Table>> getAll() {
-        return null;
-    }
 }

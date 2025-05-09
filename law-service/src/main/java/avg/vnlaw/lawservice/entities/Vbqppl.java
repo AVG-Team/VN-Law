@@ -13,9 +13,9 @@ import lombok.*;
 public class Vbqppl extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer Vbqppl_id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
     @Column(nullable = false)
@@ -27,6 +27,6 @@ public class Vbqppl extends BaseEntity {
     @Column(nullable = false)
     private String number;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String html;
 }

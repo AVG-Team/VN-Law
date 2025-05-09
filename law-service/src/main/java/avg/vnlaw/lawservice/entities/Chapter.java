@@ -28,6 +28,6 @@ public class Chapter extends BaseEntity {
 
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "id_subject", nullable = false)
+    @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 }

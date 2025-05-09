@@ -78,20 +78,6 @@ services:
       timeout: 5s
       retries: 5
 
-  law-service:
-    build: ./law-service
-    restart: always
-    depends_on:
-      - mysql-db
-    networks:
-      - db-network
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:4000/law_service
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: password
-    ports:
-      - "9002:9002"
-
   phpmyadmin:
     image: phpmyadmin
     restart: always
@@ -119,6 +105,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/auth_service
     ports:
       - "9001:9001"
+    volumes:
+      - ./auth-service/src:/app/src
 
   react-frontend:
     build:
@@ -192,9 +180,42 @@ services:
 
   redis:
     image: redis:alpine
+    container_name: redis
     restart: always
+    ports:
+      - "6379:6379"
     networks:
       - db-network
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false  # Disable security for local dev
+      - xpack.security.transport.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
 
   keycloak:
     image: quay.io/keycloak/keycloak:22.0.4
@@ -228,6 +249,8 @@ volumes:
   mysql_data:
   keycloak-db-data:
   kafka_data:
+  grafana-storage:
+  es-data:
 
 networks:
   db-network:

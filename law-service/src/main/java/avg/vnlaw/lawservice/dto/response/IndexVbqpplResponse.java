@@ -11,7 +11,6 @@ import lombok.*;
 public class IndexVbqpplResponse {
     private Integer id;
     private String content;
-    private String type;
     private String name;
     private Integer idParent;
     private Integer idVbqppl;

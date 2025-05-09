@@ -18,9 +18,6 @@ public class IndexVbqppl extends BaseEntity {
     @Column(name = "content", columnDefinition = "LONGTEXT",nullable = false)
     private String content;
 
-    @Column(name = "type", nullable = false)
-    private String type;
-
     @Column(nullable = false)
     private String name;
 
@@ -29,7 +26,7 @@ public class IndexVbqppl extends BaseEntity {
     private IndexVbqppl indexVbqppl;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_vbqppl")
+    @JoinColumn(name = "vbqppl_id")
     private Vbqppl vbqppl;
 
 }

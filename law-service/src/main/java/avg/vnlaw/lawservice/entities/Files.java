@@ -23,6 +23,6 @@ public class Files extends BaseEntity {
     private String path;
 
     @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "id_article",nullable = false)
+    @JoinColumn(name = "article_id",nullable = false)
     private Article article;
 }

@@ -13,19 +13,19 @@ import java.util.Optional;
 @Repository
 public interface VbqpplRepository extends JpaRepository<Vbqppl,Integer> {
 
-    @Query("select new avg.vnlaw.lawservice.responses.ResponseVbqppl(v.id,v.content,v.name,v.number,v.type,v.html)" +
+    @Query("select new avg.vnlaw.lawservice.dto.response.VbqpplResponse(v.Vbqppl_id,v.content,v.name,v.number,v.type,v.html) " +
             "from Vbqppl v " +
             "where ( v.type like %?1%  or ?1 = '') and v.html is not null")
     public Page<VbqpplResponse> findAllByType (Optional<String> type, Pageable pageable);
 
-    @Query("select new avg.vnlaw.lawservice.responses.ResponseVbqppl(v.id,v.content,v.name,v.number,v.type,v.html)" +
+    @Query("select new avg.vnlaw.lawservice.dto.response.VbqpplResponse(v.Vbqppl_id,v.content,v.name,v.number,v.type,v.html) " +
             "from Vbqppl v " +
-            "where v.html is not null")
+            "where v.Vbqppl_id is not null")
     public Page<VbqpplResponse> findAllVbs(Pageable pageable);
 
-    @Query("select new avg.vnlaw.lawservice.responses.ResponseVbqppl(v.id,v.content,v.name,v.number,v.type,v.html)" +
+    @Query("select new avg.vnlaw.lawservice.dto.response.VbqpplResponse(v.Vbqppl_id,v.content,v.name,v.number,v.type,v.html) " +
             "from Vbqppl v " +
-            "where v.id = ?1 and v.html is not null")
+            "where v.Vbqppl_id = ?1 and v.html is not null")
     public VbqpplResponse findVbById(Integer id);
 
 

@@ -2,6 +2,8 @@ package avg.vnlaw.lawservice.controller;
 
 
 import avg.vnlaw.lawservice.dto.request.ChapterRequest;
+import avg.vnlaw.lawservice.elastic.documents.ChapterDocument;
+import avg.vnlaw.lawservice.elastic.services.ChapterDocumentService;
 import avg.vnlaw.lawservice.entities.Chapter;
 import avg.vnlaw.lawservice.dto.response.HandlerResponse;
 import avg.vnlaw.lawservice.exception.AppException;
@@ -15,31 +17,32 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/chapter")
+@RequestMapping("/api/chapter")
 @RequiredArgsConstructor
-public class ChapterController extends BaseController <Chapter, ChapterRequest,String>{
+public class ChapterController{
 
     private ChapterService chapterService;
+    private ChapterDocumentService chapterDocumentService;
 
     public ChapterController(ChapterService chapterService){
         this.chapterService = chapterService;
     }
 
-    @GetMapping("{chapterId}")
+    @GetMapping("/{chapterId}")
     public ResponseEntity<Object> getChapterById(@PathVariable(name = "chapterId") String chapterId) throws AppException {
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get chapter by id successfully",
                 HttpStatus.OK,this.chapterService.getChapter(chapterId));
     }
 
     @GetMapping("/{subjectId}")
     public ResponseEntity<Object> getChapterBySubject(@PathVariable(name = "subjectId") String subjectId) throws AppException{
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get chapter by subjectId successfully",
                 HttpStatus.OK,this.chapterService.getChaptersBySubject(subjectId));
     }
 
     @GetMapping("")
     public ResponseEntity<Object> getAllChapters() throws AppException {
-        return HandlerResponse.responseBuilder("Complete",
+        return HandlerResponse.responseBuilder("Get all chapters successfully",
                 HttpStatus.OK,this.chapterService.getAllChapters());
     }
 
@@ -49,32 +52,13 @@ public class ChapterController extends BaseController <Chapter, ChapterRequest,S
             @RequestParam(name = "pageNo", value ="pageNo", defaultValue = "" ) Optional<Integer> pageNo,
             @RequestParam(name = "pageSize", value= "pageSize", defaultValue = "") Optional<Integer> pageSize
     ){
-       return HandlerResponse.responseBuilder("Complete",
+       return HandlerResponse.responseBuilder("Filter chapters successfully",
                HttpStatus.OK,this.chapterService.getAllChapters(name,pageNo,pageSize));
     }
 
-    @Override
-    public ResponseEntity<Chapter> create(ChapterRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Chapter> update(String id, ChapterRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Chapter> delete(ChapterRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Chapter> get(ChapterRequest request) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<List<Chapter>> getAll() {
-        return null;
+    @GetMapping("/search")
+    public ResponseEntity<Object> elasticSearch(@RequestParam(name="keyword", value="keyword")String keyword) throws AppException {
+        return HandlerResponse.responseBuilder("Search successfully",
+                HttpStatus.OK,chapterDocumentService.search(keyword));
     }
 }
