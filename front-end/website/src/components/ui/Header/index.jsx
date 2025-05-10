@@ -6,7 +6,7 @@ export default function Header() {
     const isHomePage = url.includes("/home") || url.endsWith("/");
 
     return (
-        <header className={`relative flex justify-center bg-white ${isHomePage ? "min-h-screen" : "min-h-16"}`}>
+        <header className={`relative flex justify-center w-full bg-white ${isHomePage ? "min-h-screen" : "min-h-20"}`}>
             <Navbar />
             {isHomePage && <HeroSection />}
         </header>

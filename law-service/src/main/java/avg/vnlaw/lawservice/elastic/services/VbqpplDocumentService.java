@@ -26,7 +26,6 @@ public class VbqpplDocumentService {
     public void index(Vbqppl entity) {
         VbqpplDocument vbqpplDocument = VbqpplDocument.builder()
                 .id(entity.getVbqppl_id())
-                .name(entity.getName())
                 .html(entity.getHtml())
                 .content(entity.getContent())
                 .type(entity.getType())
@@ -37,7 +36,6 @@ public class VbqpplDocumentService {
 
     public List<VbqpplDocument> search(String keyword) {
         Query matchQuery = MatchQuery.of(m -> m
-                .field("name")
                 .field("html")
                 .field("content")
                 .field("type")
