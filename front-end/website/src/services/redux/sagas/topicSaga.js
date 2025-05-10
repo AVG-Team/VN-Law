@@ -1,28 +1,38 @@
 import { call, put, takeLatest } from "redux-saga/effects";
 import axios from "~/config/axios";
-import { TopicActionTypes } from "../actions/topicActions";
+import { TopicActionTypes } from "../actions/topicAction";
 
-const urlLaw = "law/api/topic";
+const BASE_URL = "http://localhost:9002/law/api/topic";
 
-function* getAllByPageSaga(action) {
+function getAllSaga(params) {
+    return axios.get(`${BASE_URL}`, { params });
+}
+function* fetchGetAllSaga(action) {
     try {
-        const response = yield call(axios.get, urlLaw, { params: action.payload });
-        yield put({ type: TopicActionTypes.GET_ALL_BY_PAGE_SUCCESS, payload: response.data });
+        const response = yield call(getAllSaga, action.payload);
+        console.log("response", response.data);
+        yield put({ type: TopicActionTypes.GET_ALL_TOPICS_SUCCESS, payload: response });
     } catch (error) {
-        yield put({ type: TopicActionTypes.GET_ALL_BY_PAGE_FAILURE, payload: error.message });
+        yield put({ type: TopicActionTypes.GET_ALL_TOPICS_FAILURE, payload: error.message });
     }
 }
 
-function* getByTopicIdSaga(action) {
+function getByTopicIdSaga(param) {
+    return axios.get(`${BASE_URL}/${param}`);
+}
+
+function* fetchGetByTopicIdSaga(action) {
     try {
-        const response = yield call(axios.get, `${urlLaw}/${action.payload}`);
-        yield put({ type: TopicActionTypes.GET_BY_ID_SUCCESS, payload: response.data });
+        const response = yield call(getByTopicIdSaga, action.payload);
+        console.log("response", response.data);
+        yield put({ type: TopicActionTypes.GET_BY_TOPIC_ID_SUCCESS, payload: response });
     } catch (error) {
-        yield put({ type: TopicActionTypes.GET_BY_ID_FAILURE, payload: error.message });
+        yield put({ type: TopicActionTypes.GET_BY_TOPIC_ID_FAILURE, payload: error.message });
     }
 }
 
 export default function* topicSaga() {
-    yield takeLatest(TopicActionTypes.GET_ALL_BY_PAGE_REQUEST, getAllByPageSaga);
-    yield takeLatest(TopicActionTypes.GET_BY_ID_REQUEST, getBySubjectIdSaga);
+    yield takeLatest(TopicActionTypes.GET_ALL_TOPICS_REQUEST, fetchGetAllSaga);
+    yield takeLatest(TopicActionTypes.GET_BY_TOPIC_ID_REQUEST, fetchGetByTopicIdSaga);
 }
+export { getAllSaga, getByTopicIdSaga };

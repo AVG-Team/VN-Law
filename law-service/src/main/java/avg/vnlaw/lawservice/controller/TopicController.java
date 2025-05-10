@@ -23,7 +23,7 @@ public class TopicController  {
     private final TopicDocumentService topicDocumentService;
 
 
-    @GetMapping("{topicId}")
+    @GetMapping("/{topicId}")
     public ResponseEntity<Object> getTopicDetails(@PathVariable("topicId") String topicId){
         return HandlerResponse.responseBuilder("Get topic details successfully",
                 HttpStatus.OK,topicService.getTopic(topicId));

@@ -3,6 +3,8 @@ package avg.vnlaw.lawservice.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Date;
+
 @Entity
 @Table(name="vbqppl")
 @AllArgsConstructor
@@ -21,10 +23,27 @@ public class Vbqppl extends BaseEntity {
     @Column(nullable = false)
     private String type;
 
-
     @Column(nullable = false)
     private String number;
 
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String html;
+
+    @Column(nullable = false,name = "effective_Date")
+    private Date effectiveDate;
+
+    @Column(name="effective_end_date",nullable = true)
+    private Date effectiveEndDate;
+
+    @Column(name="status_code",nullable = false)
+    private Integer statusCode;
+
+    @Column(name="issue_date")
+    private Date issueDate;
+
+    @Column(name="issuer")
+    private String issuer;
+
+    @Column(name="title")
+    private String title;
 }

@@ -10,11 +10,11 @@ const initialState = {
 const articleReducer = (state = initialState, action) => {
     switch (action.type) {
         // Xử lý khi lấy danh sách tất cả các bài viết
-        case ArticleActionTypes.GET_ALL_BY_PAGE_REQUEST:
+        case ArticleActionTypes.GET_ALL_ARTICLES_BY_PAGE_REQUEST:
             return { ...state, loading: true, error: null };
-        case ArticleActionTypes.GET_ALL_BY_PAGE_SUCCESS:
+        case ArticleActionTypes.GET_ALL_ARTICLES_BY_PAGE_SUCCESS:
             return { ...state, loading: false, articles: action.payload };
-        case ArticleActionTypes.GET_ALL_BY_PAGE_FAILURE:
+        case ArticleActionTypes.GET_ALL_ARTICLES_BY_PAGE_FAILURE:
             return { ...state, loading: false, error: action.payload };
 
         // Xử lý khi lấy chi tiết một bài viết

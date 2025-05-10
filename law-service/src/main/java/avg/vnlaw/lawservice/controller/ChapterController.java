@@ -18,14 +18,14 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("law/api/chapter")
-@RequiredArgsConstructor
 public class ChapterController{
 
-    private ChapterService chapterService;
-    private ChapterDocumentService chapterDocumentService;
+    private final ChapterService chapterService;
+    private final ChapterDocumentService chapterDocumentService;
 
-    public ChapterController(ChapterService chapterService){
+    public ChapterController(ChapterService chapterService, ChapterDocumentService chapterDocumentService){
         this.chapterService = chapterService;
+        this.chapterDocumentService = chapterDocumentService;
     }
 
     @GetMapping("/{chapterId}")
@@ -34,7 +34,7 @@ public class ChapterController{
                 HttpStatus.OK,this.chapterService.getChapter(chapterId));
     }
 
-    @GetMapping("/{subjectId}")
+    @GetMapping("/subject/{subjectId}")
     public ResponseEntity<Object> getChapterBySubject(@PathVariable(name = "subjectId") String subjectId) throws AppException{
         return HandlerResponse.responseBuilder("Get chapter by subjectId successfully",
                 HttpStatus.OK,this.chapterService.getChaptersBySubject(subjectId));

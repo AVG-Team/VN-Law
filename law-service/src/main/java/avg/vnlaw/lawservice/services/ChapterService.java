@@ -31,7 +31,7 @@ public class ChapterService implements BaseService<ChapterRequest, String, Chapt
     private ChapterMapper chapterMapper;
     private final Logger log = LoggerFactory.getLogger(ChapterService.class);
 
-    @Cacheable(value ="chapter",key = "#chapterId")
+//    @Cacheable(value ="chapter",key = "#chapterId")
     public ChapterResponse getChapter(String chapterId) {
         log.info("ChapterService getChapter chapterId: {}", chapterId);
         chapterRepository.findById(chapterId).orElseThrow(
@@ -52,12 +52,13 @@ public class ChapterService implements BaseService<ChapterRequest, String, Chapt
         return chapterRepository.findAllChapters();
     }
 
-    @Cacheable(value ="chapter",key = "#subjectId")
+//    @Cacheable(value ="chapter",key = "#subjectId")
     public List<ChapterResponse> getChaptersBySubject(String subjectId) {
         log.info("ChapterService getChaptersBySubject subjectId: {}", subjectId);
         if (chapterRepository.findChaptersBySubject(subjectId).isEmpty()) {
             throw new AppException(ErrorCode.CHAPTER_EMPTY);
         }
+        log.info("ChapterService getChaptersBySubject subjectId: {}", chapterRepository.findChaptersBySubject(subjectId));
         return chapterRepository.findChaptersBySubject(subjectId);
     }
 

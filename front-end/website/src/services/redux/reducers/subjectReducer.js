@@ -10,19 +10,19 @@ const initialState = {
 const subjectReducer = (state = initialState, action) => {
     switch (action.type) {
         // Xử lý khi lấy danh sách tất cả các môn học
-        case SubjectActionTypes.GET_ALL_BY_PAGE_REQUEST:
+        case SubjectActionTypes.GET_ALL_SUBJECTS_BY_PAGE_REQUEST:
             return { ...state, loading: true, error: null };
-        case SubjectActionTypes.GET_ALL_BY_PAGE_SUCCESS:
+        case SubjectActionTypes.GET_ALL_SUBJECTS_BY_PAGE_SUCCESS:
             return { ...state, loading: false, subjects: action.payload };
-        case SubjectActionTypes.GET_ALL_BY_PAGE_FAILURE:
+        case SubjectActionTypes.GET_ALL_SUBJECTS_BY_PAGE_FAILURE:
             return { ...state, loading: false, error: action.payload };
 
         // Xử lý khi lấy chi tiết một môn học
-        case SubjectActionTypes.GET_BY_ID_REQUEST:
+        case SubjectActionTypes.GET_BY_SUBJECT_ID_REQUEST:
             return { ...state, loading: true, error: null };
-        case SubjectActionTypes.GET_BY_ID_SUCCESS:
+        case SubjectActionTypes.GET_BY_SUBJECT_ID_SUCCESS:
             return { ...state, loading: false, subject: action.payload };
-        case SubjectActionTypes.GET_BY_ID_FAILURE:
+        case SubjectActionTypes.GET_BY_SUBJECT_ID_FAILURE:
             return { ...state, loading: false, error: action.payload };
 
         // Xử lý khi lấy danh sách môn học theo chủ đề

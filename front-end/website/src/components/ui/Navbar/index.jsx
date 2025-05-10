@@ -32,9 +32,9 @@ const Navbar = memo(() => {
     }, []);
 
     const navItems = [
-        { href: "/vbqppl", label: "Văn bản pháp luật" },
+        { href: "/van-ban-quy-pham-phap-luat", label: "Văn bản pháp luật" },
         { href: "/chat-bot", label: "Chatbot" },
-        { href: "/tree-law", label: "Tra cứu pháp điển" },
+        { href: "/phap-dien", label: "Tra cứu pháp điển" },
         { href: "/", label: "Learn" },
         { href: "/tin-tuc", label: "Tin tức" },
     ];
