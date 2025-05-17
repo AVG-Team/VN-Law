@@ -18,7 +18,7 @@ public class PasswordResetToken {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2048)
     private String token;
 
     @Column(nullable = false)

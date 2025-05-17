@@ -2,6 +2,7 @@ package avg.vnlaw.authservice.o2auth.services;
 
 import avg.vnlaw.authservice.entities.CustomUserDetail;
 import avg.vnlaw.authservice.entities.Role;
+import avg.vnlaw.authservice.entities.RoleType;
 import avg.vnlaw.authservice.entities.User;
 import avg.vnlaw.authservice.o2auth.services.CustomOAuth2User;
 import avg.vnlaw.authservice.repositories.RoleRepository;
@@ -61,17 +62,16 @@ public class OAuth2Service extends DefaultOAuth2UserService {
     private User registerNewUser(String email, String googleId, String name) {
         User user = new User();
         user.setEmail(email);
-        user.setName(name);
-        user.setGoogleId(googleId);
-        user.setEmailVerified(true);
+        user.setFirstName(name);
+        user.setActive(true);
         String randomPassword = generateRandomPassword(12); // 12 ký tự
         user.setPassword(passwordEncoder.encode(randomPassword));
 
         // Lấy Role từ database thay vì tạo mới
-        Role role = roleRepository.findByName(Role.RoleType.USER)
+        Role role = roleRepository.findByName(RoleType.USER)
                 .orElseGet(() -> {
                     Role newRole = new Role();
-                    newRole.setName(Role.RoleType.USER);
+                    newRole.setName(RoleType.USER);
                     return roleRepository.save(newRole); // Lưu Role nếu chưa tồn tại
                 });
         user.setRole(role);
@@ -84,17 +84,5 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         byte[] bytes = new byte[length];
         random.nextBytes(bytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes).substring(0, length);
-    }
-
-    private void sendPasswordEmail(String email, String password) {
-        try {
-            emailService.sendPasswordEmail(email, "Your Login Password",
-                    "Welcome! You can now log in with your email and this password:\n\n" +
-                            "Password: " + password + "\n\n" +
-                            "For security, please change your password after logging in.");
-            logger.info("Password email sent to: {}", email);
-        } catch (Exception e) {
-            logger.error("Failed to send password email to {}: {}", email, e.getMessage());
-        }
     }
 }

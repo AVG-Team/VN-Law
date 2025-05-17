@@ -15,6 +15,5 @@ public class VbqpplDocument {
     Integer id;
     String content;
     String type;
-    String name;
     String html;
 }

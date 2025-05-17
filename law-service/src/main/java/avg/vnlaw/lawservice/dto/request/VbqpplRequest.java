@@ -14,6 +14,5 @@ public class VbqpplRequest {
     Integer id;
     String content;
     String type;
-    String name;
     String html;
 }

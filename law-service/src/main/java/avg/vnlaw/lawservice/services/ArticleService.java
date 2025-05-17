@@ -38,7 +38,7 @@ public class ArticleService implements BaseService<ArticleRequest, String, Artic
     private ArticleMapper articleMapper;
     private final Logger log = LoggerFactory.getLogger(ArticleService.class);
 
-    @Cacheable(value = "article", key = "T(java.util.Objects).hash(#chapterId, #pageNo.orElse(0), #pageSize.orElse(10))")
+//    @Cacheable(value = "article", key = "T(java.util.Objects).hash(#chapterId, #pageNo.orElse(0), #pageSize.orElse(10))")
     public Page<ArticleResponse> getArticleByChapter(String chapterId,
                                                      Optional<Integer> pageNo,
                                                      Optional<Integer> pageSize) {

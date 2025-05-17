@@ -79,7 +79,7 @@ const HeroSection = memo(() => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-                        className="text-[35px] sm:text-[55px] font-semibold leading-[45px] sm:leading-[70px] h-36"
+                        className="text-[35px] sm:text-[55px] font-semibold leading-[45px] sm:leading-[70px] h-52"
                     >
                         <span className="text-[#050505]">Legal Wise</span>{" "}
                         <ReactTyped
@@ -88,7 +88,7 @@ const HeroSection = memo(() => {
                             backSpeed={100}
                             backDelay={5000}
                             loop
-                            className="mb-2 text-5xl font-semibold text-blue-gray-950"
+                            className="mb-2 text-5xl font-semibold text-blue-gray-950 white-space-nowrap"
                         />
                     </motion.h2>
                     <motion.p

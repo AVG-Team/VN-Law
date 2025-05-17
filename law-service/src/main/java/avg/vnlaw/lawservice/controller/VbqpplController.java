@@ -18,12 +18,12 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/vbqppl")
+@RequestMapping("law/api/vbqppl")
 @RequiredArgsConstructor
 public class VbqpplController  {
 
-    private VbqpplService vbqpplService;
-    private VbqpplDocumentService vbqpplDocumentService;
+    private final VbqpplService vbqpplService;
+    private final VbqpplDocumentService vbqpplDocumentService;
 
     @GetMapping("")
     public ResponseEntity<Object> getAllVbqppl(

@@ -2,25 +2,36 @@ import PropTypes from "prop-types";
 import MarkdownIt from "markdown-it";
 import { Card, Spin, Typography, Button, Space, Tooltip } from "antd";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux"; // Thêm useDispatch, useSelector
 import articleApi from "~/services/articleApi";
+import { updateChapterArticles } from "../../../services/redux/actions/treeLawAction"; // Import action
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { motion } from "framer-motion";
-import { ShareAltOutlined, PrinterOutlined, BookOutlined, ArrowUpOutlined } from "@ant-design/icons";
+import {
+    ShareAltOutlined,
+    PrinterOutlined,
+    BookOutlined,
+    ArrowUpOutlined,
+    PlusOutlined,
+    MinusOutlined,
+    ProfileOutlined,
+} from "@ant-design/icons";
+import { getById } from "../../../services/redux/actions/chapterAction"; // Import action
 
 const { Title, Text } = Typography;
 const md = new MarkdownIt({ html: true });
 let loaded = false;
 
-export default function Reader({ selectedChapter, setSeletedChapter }) {
+export default function Reader() {
     const [autoAnimateParent] = useAutoAnimate();
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const [expanded, setExpanded] = useState(false);
 
-    Reader.propTypes = {
-        selectedChapter: PropTypes.object,
-        setSeletedChapter: PropTypes.func,
-    };
+    const dispatch = useDispatch();
+    const selectedChapter = useSelector((state) => state.treelaw?.chapterSelected); // Lấy từ Redux
+    const { chapter } = useSelector((state) => state.chapter);
 
     useEffect(() => {
         resetState();
@@ -62,11 +73,7 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
                 loaded = true;
                 return;
             }
-
-            setSeletedChapter((prevChapter) => ({
-                ...prevChapter,
-                articles: [...(prevChapter?.articles || []), ...articles.content],
-            }));
+            dispatch(updateChapterArticles(articles.content));
             setPage((prevPage) => prevPage + 1);
         } catch (error) {
             console.error("Error fetching articles:", error);
@@ -77,10 +84,16 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
         window.print();
     };
 
+    useEffect(() => {
+        if (selectedChapter?.id) {
+            dispatch(getById(selectedChapter.id));
+        }
+    }, [selectedChapter?.id, dispatch]);
+
     const handleShare = () => {
         if (navigator.share && selectedChapter?.name) {
             navigator.share({
-                title: selectedChapter.name,
+                title: chapter.data.name,
                 text: "Xem nội dung pháp điển",
                 url: window.location.href,
             });
@@ -93,16 +106,16 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <Card className="shadow-sm hover:shadow-md transition-shadow">
+            <Card className="transition-shadow shadow-sm hover:shadow-md">
                 <div
                     className="sticky top-0 z-10 bg-white border-b border-gray-100 rounded-t-lg"
                     style={{ margin: "-24px -24px 24px -24px", padding: "16px 24px" }}
                 >
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                            <BookOutlined className="text-blue-500 text-xl" />
+                            <BookOutlined className="text-xl text-blue-500" />
                             <Title level={4} className="!mb-0">
-                                {selectedChapter?.name || "Chọn một mục để xem"}
+                                {chapter?.data.name || "Chọn một mục để xem nội dung"}
                             </Title>
                         </div>
                         <Space>
@@ -135,33 +148,57 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
                             transition={{ duration: 0.5, delay: index * 0.1 }}
                         >
                             <Card
-                                bordered={false}
-                                className="mb-4 hover:shadow-md transition-shadow"
+                                variant={false}
+                                className="mb-4 transition-shadow hover:shadow-md"
                                 title={
                                     <div className="flex items-center justify-between">
                                         <Text strong className="text-lg">
                                             {article.name}
                                         </Text>
+                                        <Space>
+                                            <Button
+                                                size="small"
+                                                type="text"
+                                                className="p-3 rounded-full hover:text-blue-600"
+                                                onClick={() => alert("Tóm tắt nội dung: " + article.name)} // Placeholder, thay bằng logic tóm tắt
+                                            >
+                                                <ProfileOutlined />
+                                                Tóm tắt
+                                            </Button>
+                                            <Button
+                                                size="small"
+                                                type="text"
+                                                className="hover:text-blue-600 rounded-4"
+                                                onClick={() => setExpanded(!expanded)} // Toggle mở rộng/thu nhỏ
+                                            >
+                                                {expanded ? <MinusOutlined /> : <PlusOutlined />}
+                                            </Button>
+                                        </Space>
                                     </div>
                                 }
                             >
-                                <div
-                                    id={article.id}
-                                    className="markdown-body"
-                                    dangerouslySetInnerHTML={{ __html: md.render(article.content) }}
-                                />
-                                {article.tables?.map((table) => (
+                                <motion.div className="flex items-center justify-between mb-4 text-sm text-gray-500">
                                     <div
-                                        key={table.id}
-                                        className="markdown-body mt-4"
-                                        dangerouslySetInnerHTML={{ __html: md.render(table.html) }}
+                                        id={article.id}
+                                        className="markdown-body"
+                                        dangerouslySetInnerHTML={{
+                                            __html: expanded
+                                                ? md.render(article.content) // Hiển thị toàn bộ nội dung khi mở rộng
+                                                : md.render(article.content.substring(0, 500) + "..."), // Hiển thị 100 ký tự đầu tiên khi thu nhỏ
+                                        }}
                                     />
-                                ))}
+                                    {article.tables?.map((table) => (
+                                        <div
+                                            key={table.id}
+                                            className="mt-4 markdown-body"
+                                            dangerouslySetInnerHTML={{ __html: md.render(table.html) }}
+                                        />
+                                    ))}
+                                </motion.div>
                             </Card>
                         </motion.div>
                     ))}
                 </div>
-
                 {loading && (
                     <div className="flex justify-center w-full py-8">
                         <Spin size="large" />
@@ -173,7 +210,7 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed bottom-8 right-8 z-50"
+                        className="fixed z-50 bottom-8 right-8"
                     >
                         <Tooltip title="Lên đầu trang">
                             <Button
@@ -181,7 +218,7 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
                                 shape="circle"
                                 icon={<ArrowUpOutlined />}
                                 onClick={scrollToTop}
-                                className="shadow-lg hover:shadow-xl transition-shadow"
+                                className="transition-shadow shadow-lg hover:shadow-xl"
                             />
                         </Tooltip>
                     </motion.div>
