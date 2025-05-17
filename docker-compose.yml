@@ -245,12 +245,28 @@ services:
     volumes:
       - keycloak-db-data:/var/lib/postgresql/data
 
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: chat-service
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - db-network
+
 volumes:
   mysql_data:
   keycloak-db-data:
   kafka_data:
   grafana-storage:
   es-data:
+  postgres_data:
 
 networks:
   db-network:
