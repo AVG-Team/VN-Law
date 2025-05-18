@@ -28,14 +28,14 @@ const publicRoutes = [
     },
     {
         id: 2,
-        path: "/about",
+        path: "/ve-chung-toi",
         element: <About />,
         title: "Giới thiệu",
         layout: ContentLayout,
     },
     {
         id: 3,
-        path: "/register",
+        path: "/dang-ky",
         element: <SignUp />,
         title: "Đăng ký",
         layout: ContentLayout,
@@ -49,7 +49,7 @@ const publicRoutes = [
     },
     {
         id: 5,
-        path: "/login",
+        path: "/dang-nhap",
         element: <Login />,
         title: "Đăng nhập",
         layout: ContentLayout,
@@ -63,7 +63,7 @@ const publicRoutes = [
     },
     {
         id: 7,
-        path: "/contact",
+        path: "/lien-he",
         element: <Contact />,
         title: "Liên hệ",
         layout: ContentLayout,
@@ -77,7 +77,7 @@ const publicRoutes = [
     },
     {
         id: 9,
-        path: "/forgot-password",
+        path: "/quen-mat-khau",
         element: <ForgotPassword />,
         title: "Quên mật khẩu",
         layout: ContentLayout,
