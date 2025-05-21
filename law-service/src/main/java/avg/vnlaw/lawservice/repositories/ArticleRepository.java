@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ArticleRepository extends JpaRepository<Article,String> {
+public  interface ArticleRepository extends JpaRepository<Article,String> {
 
     Page<ArticleIntResponse> findAllByChapter_IdOrderByOrder(String chapterId, Pageable pageable);
     List<ArticleIntResponse> findAllByChapter_IdOrderByOrder(String chapterId);
@@ -32,4 +32,10 @@ public interface ArticleRepository extends JpaRepository<Article,String> {
             "from Article a " +
             "where ?1 = '' or a.vbqppl like %?1%")
     Page<ArticleResponse> findAllFilterVbqppl(String name, Pageable pageable);
+
+    @Query("Select a, s, c ,t From Article a " +
+            "Join Subject s On a.subject.id = s.id " +
+            "Join Chapter c On a.chapter.id = c.id " +
+            "Join Topic t On a.topic.id = t.id ")
+    List<Object[]> findAllArticlesForKafka();
 }

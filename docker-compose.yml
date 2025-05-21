@@ -41,7 +41,7 @@ services:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER  # Thêm biến này để chỉ định rõ listener cho controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
@@ -260,6 +260,19 @@ services:
     networks:
       - db-network
 
+  chroma-db:
+      image: chromadb/chroma:0.6.1
+      environment:
+        - IS_PERSISTENT=TRUE
+        - PERSIST_DIRECTORY=/chroma/chroma
+        - ANONYMIZED_TELEMETRY=FALSE
+      volumes:
+        - chroma-data:/chroma/chroma
+      ports:
+        - "8010:8000"
+      networks:
+        - db-network
+
 volumes:
   mysql_data:
   keycloak-db-data:
@@ -267,6 +280,8 @@ volumes:
   grafana-storage:
   es-data:
   postgres_data:
+  chroma-data:
+      driver: local
 
 networks:
   db-network:
