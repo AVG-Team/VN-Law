@@ -12,7 +12,6 @@ import java.util.Optional;
 
 @Repository
 public interface VbqpplRepository extends JpaRepository<Vbqppl,Integer> {
-
     @Query("select new avg.vnlaw.lawservice.dto.response.VbqpplResponse(v.vbqppl_id,v.content,v.number,v.type,v.html,v.effectiveDate,v.effectiveEndDate,v.statusCode,v.issueDate,v.issuer,v.title) " +
             "from Vbqppl v " +
             "where ( v.type like %?1%  or ?1 = '') and v.html is not null")
@@ -26,8 +25,4 @@ public interface VbqpplRepository extends JpaRepository<Vbqppl,Integer> {
             "from Vbqppl v " +
             "where v.vbqppl_id = ?1 and v.html is not null")
     public VbqpplResponse findVbById(Integer id);
-
-
-
-
 }

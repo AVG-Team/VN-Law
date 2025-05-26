@@ -1,5 +1,7 @@
 import 'package:VNLAW/screens/auth/login/auth_provider.dart';
+import 'package:VNLAW/screens/dashboard_screen.dart';
 import 'package:VNLAW/screens/home/home_provider.dart';
+import 'package:VNLAW/screens/legal_document/legal_document_provider.dart';
 import 'package:VNLAW/screens/splash_screen/splash_screen.dart';
 import 'package:VNLAW/utils/app_color.dart';
 import 'package:VNLAW/utils/routes.dart';
@@ -48,13 +50,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     print('Build MyApp');
     configLoading();
-    
+
     return MultiProvider(providers: [
       ChangeNotifierProvider(create: (_) => ApiProvider()),
       // ChangeNotifierProvider(create: (_) => LoginProvider()),
       ChangeNotifierProvider(create: (_) => HomeProvider()),
       ChangeNotifierProvider(create: (_) => AuthProvider()),
       ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
+      ChangeNotifierProvider(create: (_) => LegalDocumentProvider()),
     ], child: MaterialApp(
           navigatorKey: GlobalKey<NavigatorState>(),
           title: 'VNLAW',
@@ -74,7 +77,7 @@ class MyApp extends StatelessWidget {
                   WidgetStateProperty.all(AppColors.colorPrimary),
                 )),
           ),
-          home: const SplashScreen(),
+          home: const DashboardScreen(),
           builder: EasyLoading.init(),
           onGenerateRoute: AppRoutes.onGenerateRoute,
     ));
