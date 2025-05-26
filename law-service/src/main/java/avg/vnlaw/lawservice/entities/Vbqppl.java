@@ -29,7 +29,7 @@ public class Vbqppl extends BaseEntity {
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String html;
 
-    @Column(nullable = false,name = "effective_Date")
+    @Column(nullable = false,name = "effective_date")
     private Date effectiveDate;
 
     @Column(name="effective_end_date",nullable = true)

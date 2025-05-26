@@ -13,7 +13,6 @@ import avg.vnlaw.authservice.repositories.UserRepository;
 import avg.vnlaw.authservice.dto.requests.AuthenticationRequest;
 import avg.vnlaw.authservice.dto.requests.RegisterRequest;
 import avg.vnlaw.authservice.dto.responses.AuthenticationResponse;
-import avg.vnlaw.authservice.dto.responses.GetCurrentUserByAccessTokenResponse;
 import avg.vnlaw.authservice.dto.responses.MessageResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
