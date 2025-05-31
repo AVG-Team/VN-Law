@@ -29,6 +29,7 @@ public class VbqpplController  {
     private final VbqpplDocumentService vbqpplDocumentService;
 
     @GetMapping("")
+    @PreAuthorize("hasAnyRole('user-VN-Law', 'admin-VN-Law')")
     public ResponseEntity<Object> getAllVbqppl(
             @RequestParam(name = "pageNo",value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize",value = "pageSize") Optional<Integer> pageSize
