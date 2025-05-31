@@ -1,6 +1,7 @@
 package avg.vnlaw.authservice.controllers;
 
 import avg.vnlaw.authservice.dto.ApiResponse;
+import avg.vnlaw.authservice.dto.identity.CheckTokenResponse;
 import avg.vnlaw.authservice.dto.requests.*;
 import avg.vnlaw.authservice.dto.responses.*;
 import avg.vnlaw.authservice.enums.AuthenticationResponseEnum;
@@ -12,6 +13,7 @@ import avg.vnlaw.authservice.services.ReCaptchaService;
 import avg.vnlaw.authservice.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.authorization.client.representation.TokenIntrospectionResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -186,6 +188,14 @@ public class AuthController {
                 .message(authResponse.getMessage())
                 .data(authResponse.getType())
                 .build();
+    }
+
+    @PostMapping("/validate-token")
+    public ResponseEntity<CheckTokenResponse> validateToken(@RequestBody String token) {
+        log.info("Received token validation request : {}", token);
+        CheckTokenResponse response = authService.validateToken(token);
+        log.info("Token validation response: {}", response);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout-keycloak")

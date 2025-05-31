@@ -206,7 +206,7 @@ public class AuthenticationService {
             log.info("Token exchange param: {}", tokenExchangeParam.toString());
             log.info("realm: {}", realm);
             TokenExchangeResponse tokenResponse = identityClient.exchangeToken(realm, tokenExchangeParam);
-            log.info("Token exchange response: {}", tokenResponse.toString());
+            log.info("Token response: {}", tokenResponse.toString());
             if (tokenResponse.getAccessToken() == null) {
                 return AuthenticationResponse.builder()
                         .type(AuthenticationResponseEnum.INVALID_CREDENTIALS)
@@ -589,6 +589,33 @@ public class AuthenticationService {
                 .type(HttpStatus.OK)
                 .message("Token is valid")
                 .build();
+    }
+
+    public CheckTokenResponse validateToken(String token) {
+        if (token == null || token.isEmpty()) {
+            log.error("Token is required for validation");
+            throw new IllegalArgumentException("Token is required");
+        }
+
+        token = token.replace("\"", "").trim();
+
+        CheckTokenParam checkTokenParam = CheckTokenParam.builder()
+                .client_id(idpClientId)
+                .client_secret(idpClientSecret)
+                .token(token)
+                .build();
+
+        log.info(checkTokenParam.toString());
+        log.info("Validating token: {}", token);
+
+        CheckTokenResponse tokenResponse = identityClient.introspectToken(realm, checkTokenParam);
+        log.info("Check token response: {}", tokenResponse.toString());
+        if (!tokenResponse.isActive()) {
+            log.error("Failed to check token: {}, status: {}", token, tokenResponse);
+            throw new IllegalArgumentException("Token is invalid");
+        }
+
+        return tokenResponse;
     }
 
     public MessageResponse logoutKeycloak(String token) {
