@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
                   WidgetStateProperty.all(AppColors.colorPrimary),
                 )),
           ),
-          home: const DashboardScreen(),
+          home: const SplashScreen(),
           builder: EasyLoading.init(),
           onGenerateRoute: AppRoutes.onGenerateRoute,
     ));

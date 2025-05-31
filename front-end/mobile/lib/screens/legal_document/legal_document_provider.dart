@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../../data/models/legal_document.dart';
 import '../../data/models/response/api_response_law_service.dart';
+import '../../utils/shared_preferences.dart';
 
 class LegalDocumentProvider with ChangeNotifier {
   List<LegalDocument> _documents = [];
@@ -16,6 +17,7 @@ class LegalDocumentProvider with ChangeNotifier {
   String _searchQuery = '';
   String _selectedType = 'All';
   String _sortOrder = 'Mới nhất';
+  String _accessToken = '';
 
   List<LegalDocument> get documents => _documents;
   int get currentPage => _currentPage;
@@ -29,9 +31,41 @@ class LegalDocumentProvider with ChangeNotifier {
 
   final List<String> documentTypes = ['All', 'Luật', 'Nghị định', 'Quyết định', 'Thông tư', 'Chính trị'];
 
+  // Load access token từ SharedPreferences
+  Future<void> _loadAccessToken() async {
+    try {
+      _accessToken = await SPUtill.getValue(SPUtill.keyAuthToken) ?? '';
+      print('Access token loaded: $_accessToken');
+    } catch (e) {
+      print('Error loading access token: $e');
+    }
+  }
+
+  Map<String, String> _getHeaders() {
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    if (_accessToken.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $_accessToken';
+      print('Added Authorization header');
+    } else {
+      print('No access token available');
+    }
+
+    return headers;
+  }
   Future<void> fetchDocuments() async {
     _isLoading = true;
     notifyListeners();
+    await _loadAccessToken();
+    if (_accessToken.isEmpty) {
+      print('Access token is null, cannot fetch documents');
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
 
     String url = 'http://10.0.2.2:9002/law/api/vbqppl/search?pageNo=${_currentPage - 1}&pageSize=$_pageSize';
 
@@ -55,7 +89,10 @@ class LegalDocumentProvider with ChangeNotifier {
     print('Fetching URL: $url');
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(
+          Uri.parse(url),
+          headers: _getHeaders()
+      );
       if (response.statusCode == 200) {
         final decodedBody = utf8.decode(response.bodyBytes);
         final apiResponse = ApiResponse.fromJson(jsonDecode(decodedBody));

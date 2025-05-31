@@ -18,6 +18,7 @@ import Logo from "~/assets/images/logo/logo.png";
 import GoogleLoginButton from "../SignIn/components/GoogleLoginButton";
 import SocialButton from "../SignIn/components/GoogleLoginButton";
 import axios from "axios";
+import {setToken} from "../../mock/auth";
 
 const { Title, Text } = Typography;
 
@@ -66,7 +67,8 @@ const Login = () => {
                 email: values.email,
                 password: values.password,
             });
-            console.log('Response from server:', response.data);
+            console.log('Response from server:', response.data.data);
+            setToken(response.data.data.access_token, response.data.data.name, response.data.data.role);
             message.success("Đăng nhập thành công!");
             navigate('/');
             //Todo: Alert Success
