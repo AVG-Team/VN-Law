@@ -1,7 +1,7 @@
 from process.download import download_and_extract_zip
 from models.db import get_session
 from models.models import *
-from process.process_dictionary import process_json_data, insert_topics, insert_subjects, tree_nodes
+from process.process_dictionary import process_json_data, insert_topics, insert_subjects, tree_nodes, process_one_file
 from process.process_vbqppl import process_vbqppl
 from process.split_document import process_split_document
 from celery_app import celery_app
@@ -22,10 +22,10 @@ def crawl_data():
         tree_nodes(subjects)
 
         # Step 4: Crawl vbqppl
-        crawl_vbqppl()
+        # crawl_vbqppl()
 
         # Step 5: Split documents
-        split_documents()
+        # split_documents()
 
     except Exception as e:
         print(f"Error: {e}")
@@ -56,6 +56,7 @@ if __name__ == "__main__":
     if not test_connect():
         print("Database connection failed. Exiting.")
         exit(1)
-
+    # process_one_file("012d9b93-c11d-48b6-b08e-14d77515ca1e.html")
+    # Tạo bảng nếu chưa tồn tại
     # Gọi hàm crawl_data
     crawl_data()

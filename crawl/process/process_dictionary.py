@@ -27,6 +27,14 @@ logging.basicConfig(
     ]
 )
 
+# Thiết lập logger cho lỗi
+error_logger = logging.getLogger('error_logger')
+error_handler = logging.FileHandler('error_log.txt', encoding='utf-8')
+error_handler.setLevel(logging.ERROR)
+error_formatter = logging.Formatter('%(asctime)s - %(levelname)s - File: %(filename)s - %(message)s')
+error_handler.setFormatter(error_formatter)
+error_logger.addHandler(error_handler)
+
 def process_json_data():
     # Đường dẫn tới file JS (sử dụng đường dẫn đầy đủ)
     js_filepath = r'.\data\phap-dien\jsonData.js'
@@ -42,14 +50,10 @@ def process_json_data():
 def insert_topics():
     print("Load Topics From File ...")
     chudes = read_json_file(TOPIC_FILE)
-    with get_session() as session:
-        for chude in chudes:
-            if not session.query(Pdtopic).filter_by(id=chude["Value"]).first():
-                session.add(Pdtopic(id=chude["Value"], name=chude["Text"], order=chude["STT"]))
-            else:
-                print(f"Topic {chude['Value']} already exists, skipping.")
-        session.commit()
-    print("Inserted all topics!")
+    # KHÔNG SUBMIT - chỉ log
+    for chude in chudes:
+        logging.info(f"Would insert topic: {chude['Value']} - {chude['Text']}")
+    print("Topics processed (not submitted to DB)!")
     pass
 
 def insert_subjects():
@@ -81,6 +85,7 @@ def process_file(file_name, json_tree_nodes, dieus_lienquan):
             chapters_data = []
             order = 10
             processed_chapter_ids = set()
+
             for chuong in chapter_nodes:
                 if chuong["MAPC"] in processed_chapter_ids or session.query(Pdchapter).filter_by(id=chuong["MAPC"]).first():
                     continue
@@ -92,7 +97,6 @@ def process_file(file_name, json_tree_nodes, dieus_lienquan):
                     order=order_val,
                     subject_id=chuong["DeMucID"]
                 )
-                session.add(chuong_data)
                 chapters_data.append(chuong_data)
                 processed_chapter_ids.add(chuong["MAPC"])
                 if chuong["TEN"].startswith("Phần "):
@@ -105,22 +109,16 @@ def process_file(file_name, json_tree_nodes, dieus_lienquan):
                     order=0,
                     subject_id=file_name.split(".")[0]
                 )
-                if not session.query(Pdchapter).filter_by(id=chuong_data.id).first():
-                    session.add(chuong_data)
                 chapters_data.append(chuong_data)
-            session.commit()
 
             logging.info(f"Processing articles for {file_name}")
             article_nodes = [n for n in demuc_nodes if n not in chapter_nodes]
             order = 10
             batch = []
             batch_ids = set()
+
             for i, dieu in enumerate(article_nodes, 1):
                 logging.info(f"Processing article {i}/{len(article_nodes)}: {dieu['MAPC']}")
-                if dieu["MAPC"] in batch_ids or session.query(Pdarticle).filter_by(id=dieu["MAPC"]).first():
-                    logging.info(f"Skipping duplicate article: {dieu['MAPC']}")
-                    continue
-
                 if len(chapters_data) == 1:
                     dieu["ChuongID"] = chapters_data[0].id
                 else:
@@ -131,6 +129,7 @@ def process_file(file_name, json_tree_nodes, dieus_lienquan):
 
                 dieu_html = demuc_html.select_one(f'a[name="{dieu["MAPC"]}"]')
                 if not dieu_html:
+                    logging.warning(f"No matching HTML element for article {dieu['MAPC']} in {file_name}")
                     continue
 
                 name = str(dieu_html.next_sibling)
@@ -166,41 +165,91 @@ def process_file(file_name, json_tree_nodes, dieus_lienquan):
                     topic_id=dieu.get("ChuDeID"),
                     effective_date=effective_date
                 )
+                batch_ids.add(dieu["MAPC"])
 
-                if len(content_str) > 1000000:
-                    session.add(pdarticle)
-                    session.commit()
-                else:
-                    batch.append(pdarticle)
-                    batch_ids.add(dieu["MAPC"])
+                # Kiểm tra Pdarticle tồn tại
+                article_exists = session.query(Pdarticle).filter_by(id=dieu["MAPC"]).first()
+                if not article_exists:
+                    error_msg = f"Article {dieu['MAPC']} not found in Pdarticle for file {file_name}"
+                    logging.error(error_msg)
+                    error_logger.error(error_msg)
+                    continue
 
+                # Xử lý Pdtable
                 for table in tables:
                     if not session.query(Pdtable).filter_by(article_id=dieu["MAPC"], html=table).first():
-                        batch.append(Pdtable(article_id=dieu["MAPC"], html=table))
+                        logging.info(f"Adding Pdtable for article {dieu['MAPC']}")
+                        pdtable = Pdtable(article_id=dieu["MAPC"], html=table)
+                        try:
+                            batch.append(pdtable)
+                        except Exception as e:
+                            error_msg = f"Error adding Pdtable for article {dieu['MAPC']} in {file_name}: {e}"
+                            logging.error(error_msg)
+                            error_logger.error(error_msg)
 
+                # Xử lý Pdfile và Pdrelation
                 file_elem = dieu_html.parent.next_sibling
-                while file_elem and file_elem.name == "a":
-                    if not session.query(Pdfile).filter_by(article_id=dieu["MAPC"], link=file_elem["href"]).first():
-                        batch.append(Pdfile(article_id=dieu["MAPC"], link=file_elem["href"], path=""))
+                filesHtml = []
+                while file_elem:
+                    if file_elem.name == "p" and "pDieu" not in file_elem.get("class", []):
+                        anchors = file_elem.select("a[href]")
+                        filesHtml.extend(anchors)
+                        if "pChiDan" in file_elem.get("class", []):
+                            for link in file_elem.select("a"):
+                                if "onclick" in link.attrs and link["onclick"]:
+                                    id_relation = extract_input(link["onclick"].replace("'", ""))
+                                    logging.info(f"Found Pdrelation: {dieu['MAPC']} -> {id_relation}")
+                                    if session.query(Pdarticle).filter_by(id=id_relation).first():
+                                        dieus_lienquan.append({"idRelation1": dieu["MAPC"], "idRelation2": id_relation})
+                                    else:
+                                        error_msg = f"Relation ID {id_relation} not found in Pdarticle for article {dieu['MAPC']} in {file_name}"
+                                        logging.warning(error_msg)
+                                        error_logger.warning(error_msg)
+                    if file_elem and "pDieu" in file_elem.get("class", []):
+                        break
                     file_elem = file_elem.next_sibling
 
-                if file_elem and file_elem.name == "p" and "pChiDan" in file_elem.get("class", []):
-                    for link in file_elem.select("a"):
-                        if "onclick" in link.attrs and link["onclick"]:
-                            id_relation = extract_input(link["onclick"].replace("'", ""))
-                            dieus_lienquan.append({"idRelation1": dieu["MAPC"], "idRelation2": id_relation})
+                for item in filesHtml:
+                    if item.name == "a":
+                        if item["href"] and item["href"] != "#" and not session.query(Pdfile).filter_by(article_id=dieu["MAPC"], link=item["href"]).first():
+                            logging.info(f"Adding Pdfile for article {dieu['MAPC']}: {item["href"]}")
+                            pdfile = Pdfile(
+                                article_id=dieu["MAPC"],
+                                link=item["href"],
+                                path=""
+                            )
+                            try:
+                                batch.append(pdfile)
+                            except Exception as e:
+                                error_msg = f"Error adding Pdfile for article {dieu['MAPC']} in {file_name}: {e}"
+                                logging.error(error_msg)
+                                error_logger.error(error_msg)
 
                 order += 1
 
                 if len(batch) >= 5:
-                    session.bulk_save_objects(batch)
-                    session.commit()
+                    logging.info(f"Committing batch of {len(batch)} items")
+                    try:
+                        session.bulk_save_objects(batch)
+                        session.commit()
+                    except Exception as e:
+                        session.rollback()
+                        error_msg = f"Error committing batch for file {file_name}: {e}"
+                        logging.error(error_msg)
+                        raise
                     batch.clear()
                     batch_ids.clear()
 
             if batch:
-                session.bulk_save_objects(batch)
-                session.commit()
+                logging.info(f"Committing final batch of {len(batch)} items")
+                try:
+                    session.bulk_save_objects(batch)
+                    session.commit()
+                except Exception as e:
+                    session.rollback()
+                    error_msg = f"Error committing final batch for file {file_name}: {e}"
+                    logging.error(error_msg)
+                    raise
 
 def tree_nodes(subjects=None):
     if subjects is None:
@@ -237,8 +286,7 @@ def tree_nodes(subjects=None):
         except Exception as e:
             logging.error(f"Error processing file {file_name} after retries: {e}")
             print(f"Error processing file {file_name} after retries: {e}")
-            raise
-
+            error_logger.error(f"Error processing file {file_name}: {e}")
     # Xử lý relations
     with get_session() as session:
         try:
@@ -258,6 +306,14 @@ def tree_nodes(subjects=None):
             session.rollback()
             logging.error(f"Error inserting relations: {e}")
             print(f"Error inserting relations: {e}")
-            raise
+            error_logger.error(f"Error inserting relations: {e}")
+
     logging.info("Inserted all relations!")
     print("Inserted all relations!")
+
+def process_one_file(file_name):
+    # Chức năng này sẽ xử lý một file duy nhất
+    json_tree_nodes = read_json_file(TREE_NODE)
+    dieus_lienquan = []
+    process_file(file_name, json_tree_nodes, dieus_lienquan)
+    return dieus_lienquan
