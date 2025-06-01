@@ -5,7 +5,10 @@ import axios from "../../../config/axios";
 const BASE_URL = "http://localhost:9002/law/api/vbqppl";
 
 function getAllByPageSaga(params) {
-    return axios.get(`${BASE_URL}`, { params });
+    const token = localStorage.getItem('accessToken');
+    return axios.get(`${BASE_URL}`, { params, headers: {
+            Authorization: `Bearer ${token}`,
+        }, });
 }
 
 function* fetchGetAllByPageSaga(action) {

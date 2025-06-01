@@ -1,10 +1,12 @@
 package avg.vnlaw.authservice.dto.identity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Getter
@@ -33,4 +35,44 @@ public class CheckTokenResponse {
         private String acr;
         private String sid;
         private String username;
+        private String client_id;
+        private String scope;
+        @JsonProperty("allowed-origins")
+        private List<String> allowedOrigins;
+        private RealmAccess realm_access;
+        private Map<String, ResourceAccess> resource_access;
+        // Inner classes cho phân quyền
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class RealmAccess {
+                private List<String> roles;
+        }
+
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class ResourceAccess {
+                private List<String> roles;
+        }
+
+        // HELPER METHODS để lấy roles dễ dàng
+        public List<String> getRealmRoles() {
+                return realm_access != null ? realm_access.getRoles() : List.of();
+        }
+
+        public List<String> getResourceRoles(String clientId) {
+                if (resource_access != null && resource_access.containsKey(clientId)) {
+                        return resource_access.get(clientId).getRoles();
+                }
+                return List.of();
+        }
+
+        public boolean hasRealmRole(String role) {
+                return getRealmRoles().contains(role);
+        }
+
+        public boolean hasResourceRole(String clientId, String role) {
+                return getResourceRoles(clientId).contains(role);
+        }
 }

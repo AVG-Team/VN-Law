@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLDecoder;
@@ -28,6 +29,7 @@ public class VbqpplController  {
     private final VbqpplDocumentService vbqpplDocumentService;
 
     @GetMapping("")
+    @PreAuthorize("hasAnyRole('user-VN-Law', 'admin-VN-Law')")
     public ResponseEntity<Object> getAllVbqppl(
             @RequestParam(name = "pageNo",value = "pageNo") Optional<Integer> pageNo,
             @RequestParam(name = "pageSize",value = "pageSize") Optional<Integer> pageSize
@@ -55,6 +57,7 @@ public class VbqpplController  {
     }
 
     @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('user-VN-Law', 'admin-VN-Law')")
     public ResponseEntity<Object> elasticSearch(
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(name = "type", required = false) String type,

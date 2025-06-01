@@ -32,17 +32,17 @@ class LegalDocument {
 
   factory LegalDocument.fromJson(Map<String, dynamic> json) {
     return LegalDocument(
-      id: json['id'],
-      title: json['title'],
-      issueDate: json['issueDate'],
-      effectiveDate: json['effectiveDate'],
-      effectiveEndDate: json['effectiveEndDate'],
-      issuer: json['issuer'],
-      number: json['number'],
-      statusCode: json['statusCode'],
-      type: json['type'],
-      content: json['content'],
-      html: json['html'],
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      issueDate: json['issueDate'] ?? '',
+      effectiveDate: json['effectiveDate'] ?? '',
+      effectiveEndDate: json['effectiveEndDate'] ?? null,
+      issuer: json['issuer'] ?? '',
+      number: json['number'] ?? '',
+      statusCode: json['statusCode'] ?? 0,
+      type: json['type'] ?? '',
+      content: json['content'] ?? '',
+      html: json['html'] ?? '<p>Không có nội dung</p>',
     );
   }
 }

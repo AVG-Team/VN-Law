@@ -67,14 +67,14 @@ class AuthProvider extends ChangeNotifier {
     final password = passwordTextController.text;
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:9001/api/auth/authenticate'),
+        Uri.parse('http://10.0.2.2:9001/api/auth/authenticate'),
         headers: { 'Content-Type': 'application/json' },
         body: jsonEncode({
           'email': email,
           'password': password,
         }),
       );
-      print(response.body);
+      print(jsonDecode(response.body));
       print(response.statusCode);
 
       if (response.statusCode == 200) {
@@ -152,7 +152,7 @@ class AuthProvider extends ChangeNotifier {
 
       // Trao đổi token với Keycloak
       final response = await http.post(
-        Uri.parse('http://localhost:9001/api/auth/google-token'),
+        Uri.parse('http://10.0.2.2:9001/api/auth/google-token'),
         headers: { 'Content-Type': 'application/json' },
         body: jsonEncode({
           'provider': "google",
@@ -209,7 +209,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       // Bước 1: Tạo người dùng
       final createUserResponse = await http.post(
-        Uri.parse('http://localhost:9001/api/auth/register'),
+        Uri.parse('http://10.0.2.2:9001/api/auth/register'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -261,7 +261,7 @@ class AuthProvider extends ChangeNotifier {
       print("email : " + email);
 
       final response = await http.post(
-        Uri.parse('http://localhost:9001/api/auth/forgot-password'),
+        Uri.parse('http://10.0.2.2:9001/api/auth/forgot-password'),
         headers: { 'Content-Type': 'application/json' },
         body: jsonEncode({
           'email': email,
@@ -327,6 +327,7 @@ class AuthProvider extends ChangeNotifier {
       print("-------------------------");
       print("Save Data : " + keycloakToken + ' ' + userId + ' ' + userName + ' ' + userEmail + ' ' + roles.toString());
       print("-------------------------");
+      print("check token : " + (await SPUtill.getValue(SPUtill.keyAuthToken) ?? ''));
 
       // Điều hướng đến dashboard
       Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
@@ -349,7 +350,7 @@ class AuthProvider extends ChangeNotifier {
       final refreshToken = await SPUtill.getValue(SPUtill.keyRefreshToken);
       if (refreshToken != null && refreshToken.isNotEmpty) {
         final response = await http.post(
-          Uri.parse('http://localhost:9001/api/auth/logout-keycloak'),
+          Uri.parse('http://10.0.2.2:9001/api/auth/logout-keycloak'),
           headers: { 'Content-Type': 'application/json' },
           body: {
             'token': refreshToken,
