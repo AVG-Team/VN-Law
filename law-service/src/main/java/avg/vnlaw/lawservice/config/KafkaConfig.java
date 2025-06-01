@@ -34,7 +34,7 @@ public class KafkaConfig {
         configProps.put(ProducerConfig.RETRIES_CONFIG, 5);
         configProps.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);
         configProps.put(ProducerConfig.BATCH_SIZE_CONFIG, 16384);
-        configProps.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, 5242880);
+        configProps.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, 33554432);
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
@@ -50,9 +50,9 @@ public class KafkaConfig {
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.RETRIES_CONFIG, 5);
-        configProps.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);
+        configProps.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 1073741824);
         configProps.put(ProducerConfig.BATCH_SIZE_CONFIG, 16384);
-        configProps.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, 5242880);
+        configProps.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, 1073741824);
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
@@ -83,6 +83,9 @@ public class KafkaConfig {
 
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "avg.vnlaw.lawservice.dto.request");
         props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, LawRequest.class.getName());
+
+        props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, 1073741824);
+        props.put(ConsumerConfig.FETCH_MAX_BYTES_CONFIG, 1073741824);
 
 //        props.put(ErrorHandlingDeserializer.VALUE_FUNCTION, FailedRecordProcessor.class.getName());
 

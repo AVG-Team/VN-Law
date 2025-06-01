@@ -1,0 +1,19 @@
+groups:
+  - name: kafka_alerts
+    rules:
+      - alert: HighConsumerLag
+        expr: kafka_consumer_fetch_manager_metrics_records_lag_max{group="law-service-group"} > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High consumer lag detected for group {{ $labels.group }}"
+          description: "Consumer lag for group {{ $labels.group }} is {{ $value }} messages, exceeding threshold."
+      - alert: BrokerDown
+        expr: kafka_controller_kafkacontroller_activebrokercount < 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Kafka broker is down"
+          description: "No active brokers detected in the cluster."

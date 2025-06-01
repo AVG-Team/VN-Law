@@ -236,6 +236,7 @@ class RAGService:
                 logging.error(f"Error adding documents to ChromaDB: {e}")
                 self.producer.send(self.error_topic, value={"error": str(e)})
                 raise
+    
     def trigger_embedding(self):
             try:
                 request = {"requestType": "ALL"}
@@ -279,7 +280,7 @@ class RAGService:
                         enable_auto_commit=False,
                         value_deserializer=lambda x: json.loads(x.decode("utf-8")) if x and x.strip() else {},
                         max_poll_records=batch_size,
-                        max_partition_fetch_bytes=5242880
+                        max_partition_fetch_bytes=1073741824
                     )
                     logging.info(f"Connected to Kafka topic: {self.kafka_config['topic']}")
 
@@ -343,7 +344,6 @@ class RAGService:
             except:
                 pass
         
-
     def rerank_documents(self, query: str, documents: list[str]) -> list[str]:
         """Rerank documents based on relevance to the query."""
         pairs = [[query, doc] for doc in documents]
@@ -405,7 +405,8 @@ class RAGService:
         except:
             pass
 
-if __name__ == '__main__':
+
+# if __name__ == '__main__':
     rag_service = RAGService(
     bootstrap_servers="localhost:9092",
     chroma_host="localhost",
