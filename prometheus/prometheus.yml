@@ -31,3 +31,10 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: [ 'kong:4000' ]
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9091']
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['localhost:9092']
