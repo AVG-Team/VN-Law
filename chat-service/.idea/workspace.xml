@@ -5,11 +5,76 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c61decd0-867b-4621-a3ab-ec288fabf87f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/services/retrieve/RetrieveDocuments.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/services/retrieve/RetrieveService.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/api/RAGAPI.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/api/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/services/ChatService.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/services/LLMService.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/fine-tuning.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/bpe.codes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-1800/bpe.codes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-1800/model.safetensors" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-1800/optimizer.pt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-1800/rng_state.pth" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-1800/scheduler.pt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-1800/training_args.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-1800/vocab.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2200/bpe.codes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2200/model.safetensors" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2200/optimizer.pt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2200/rng_state.pth" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2200/scheduler.pt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2200/training_args.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2200/vocab.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2400/bpe.codes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2400/model.safetensors" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2400/optimizer.pt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2400/rng_state.pth" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2400/scheduler.pt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2400/training_args.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/checkpoint-2400/vocab.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/model.safetensors" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/training_args.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert-legal-qa-finetuned/vocab.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert_training_data/classification.jsonl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/phobert_training_data/qa_pairs.jsonl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/processing_checkpoint.pkl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/script.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/wandb/run-20250601_204100-reredi6s/files/config.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/wandb/run-20250601_204100-reredi6s/files/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/wandb/run-20250601_204100-reredi6s/run-reredi6s.wandb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/wandb/run-20250601_205214-nj0f0yl3/files/config.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/wandb/run-20250601_205214-nj0f0yl3/files/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/wandb/run-20250601_205214-nj0f0yl3/run-nj0f0yl3.wandb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/wandb/run-20250601_205731-zv8c2ovp/files/config.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/wandb/run-20250601_205731-zv8c2ovp/files/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/wandb/run-20250601_205731-zv8c2ovp/run-zv8c2ovp.wandb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/wandb/run-20250601_210924-2j1dbed7/files/config.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/wandb/run-20250601_210924-2j1dbed7/files/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fine-tuning/wandb/run-20250601_210924-2j1dbed7/run-2j1dbed7.wandb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/flow.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/manage.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rustup-init.exe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wandb/run-20250601_201915-3tbqkj6d/files/config.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wandb/run-20250601_201915-3tbqkj6d/files/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wandb/run-20250601_201915-3tbqkj6d/run-3tbqkj6d.wandb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/controller/VbqpplController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/controller/VbqpplController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/manage.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routes/chat_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/chat_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/RAGService.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/RAGService.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/config/KafkaConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/config/KafkaConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../prometheus/alert_rules.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../prometheus/alert_rules.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../prometheus/alertmanager.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../prometheus/alertmanager.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../prometheus/kafka.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../prometheus/kafka.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../prometheus/prometheus.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../prometheus/prometheus.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,13 +95,13 @@
   <component name="GitHubPullRequestSearchHistory"><![CDATA[{
   "lastFilter": {
     "state": "OPEN",
-    "assignee": "ntd1683"
+    "assignee": "huynguyenjv"
   }
 }]]></component>
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "https://github.com/AVG-Team/VN-Law.git",
-    "accountId": "8cded55e-46c4-4151-adfe-4c026b28b6c4"
+    "accountId": "0fb1c262-f775-4507-b2fe-f62ea6000fbb"
   }
 }]]></component>
   <component name="ProjectColorInfo">{
@@ -50,8 +115,12 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "develop",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "#72 on huynguyen/handleChatbot",
     "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/Source/AVG/VN-Law/chat-service",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -81,8 +150,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-PY-242.21829.153" />
-        <option value="bundled-python-sdk-464836ebc622-b74155a9e76b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.21829.153" />
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
       </set>
     </attachedChunks>
   </component>
@@ -98,7 +167,7 @@
       <workItem from="1721139529134" duration="222000" />
       <workItem from="1721144057646" duration="600000" />
       <workItem from="1721545416719" duration="595000" />
-      <workItem from="1749013217971" duration="164000" />
+      <workItem from="1748813222809" duration="104000" />
     </task>
     <servers />
   </component>
