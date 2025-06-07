@@ -99,7 +99,6 @@ class RAGService:
             TENANT_NAME = "default_tenant"
             DB_NAME = "default"
 
-    
 
             # Tạo client chính để sử dụng database và tenant mới
             self.client = chromadb.HttpClient(

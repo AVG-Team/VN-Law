@@ -76,7 +76,7 @@ if __name__ == "__main__":
     """
 
     # Nhập câu hỏi từ người dùng
-    question = "Tôi lỡ tay giết một người thì có làm sao không?"
+    question = "Tô lâm có bị phạt không?"
 
     # Sử dụng LLM để tạo câu trả lời ban đầu (từ RAG + LLM)
     raw_answer = chatbot.llm_service.answer_question(question,context)
