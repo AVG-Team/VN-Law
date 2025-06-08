@@ -50,9 +50,14 @@ def process_json_data():
 def insert_topics():
     print("Load Topics From File ...")
     chudes = read_json_file(TOPIC_FILE)
-    # KHÔNG SUBMIT - chỉ log
-    for chude in chudes:
-        logging.info(f"Would insert topic: {chude['Value']} - {chude['Text']}")
+    with get_session() as session:
+        for chude in chudes:
+            logging.info(f"Would insert topic: {chude['Value']} - {chude['Text']}")
+            if not session.query(Pdtopic).filter_by(id=chude["Value"]).first():
+                session.add(Pdtopic(id=chude["Value"], name=chude["Text"], order=chude["STT"]))
+            else:
+                logging.info(f"Topic {chude['Value']} already exists, skipping.")
+        session.commit()
     print("Topics processed (not submitted to DB)!")
     pass
 
@@ -97,6 +102,7 @@ def process_file(file_name, json_tree_nodes, dieus_lienquan):
                     order=order_val,
                     subject_id=chuong["DeMucID"]
                 )
+                session.add(chuong_data)
                 chapters_data.append(chuong_data)
                 processed_chapter_ids.add(chuong["MAPC"])
                 if chuong["TEN"].startswith("Phần "):
@@ -109,7 +115,10 @@ def process_file(file_name, json_tree_nodes, dieus_lienquan):
                     order=0,
                     subject_id=file_name.split(".")[0]
                 )
+                if not session.query(Pdchapter).filter_by(id=chuong_data.id).first():
+                    session.add(chuong_data)
                 chapters_data.append(chuong_data)
+            session.commit()
 
             logging.info(f"Processing articles for {file_name}")
             article_nodes = [n for n in demuc_nodes if n not in chapter_nodes]
@@ -119,6 +128,10 @@ def process_file(file_name, json_tree_nodes, dieus_lienquan):
 
             for i, dieu in enumerate(article_nodes, 1):
                 logging.info(f"Processing article {i}/{len(article_nodes)}: {dieu['MAPC']}")
+                if dieu["MAPC"] in batch_ids or session.query(Pdarticle).filter_by(id=dieu["MAPC"]).first():
+                    logging.info(f"Skipping duplicate article: {dieu['MAPC']}")
+                    continue
+
                 if len(chapters_data) == 1:
                     dieu["ChuongID"] = chapters_data[0].id
                 else:
@@ -143,7 +156,16 @@ def process_file(file_name, json_tree_nodes, dieus_lienquan):
                     if match:
                         effective_date = datetime.strptime(match.group(1), "%d/%m/%Y").date()
 
-                content_html = dieu_html.parent.find_next_siblings()
+                content_dieu_html = dieu_html.parent.find_next_siblings()
+                content_html = []
+                for content in content_dieu_html:
+                    if 'pNoiDung' in content.get('class', []):
+                        content_html = content.contents
+                        break
+                if dieu["MAPC"] == "01004000000000002000015000000000000000000040252820112000110000802572100095000600":
+                    print(1)
+                    tmp = content_html[1]
+                    print(tmp)
                 content_str = ""
                 tables = []
                 for content in content_html:
@@ -165,15 +187,13 @@ def process_file(file_name, json_tree_nodes, dieus_lienquan):
                     topic_id=dieu.get("ChuDeID"),
                     effective_date=effective_date
                 )
-                batch_ids.add(dieu["MAPC"])
 
-                # Kiểm tra Pdarticle tồn tại
-                article_exists = session.query(Pdarticle).filter_by(id=dieu["MAPC"]).first()
-                if not article_exists:
-                    error_msg = f"Article {dieu['MAPC']} not found in Pdarticle for file {file_name}"
-                    logging.error(error_msg)
-                    error_logger.error(error_msg)
-                    continue
+                if len(content_str) > 1000000:
+                    session.add(pdarticle)
+                    session.commit()
+                else:
+                    batch.append(pdarticle)
+                    batch_ids.add(dieu["MAPC"])
 
                 # Xử lý Pdtable
                 for table in tables:
@@ -312,6 +332,8 @@ def tree_nodes(subjects=None):
     print("Inserted all relations!")
 
 def process_one_file(file_name):
+    insert_topics()
+    insert_subjects()
     # Chức năng này sẽ xử lý một file duy nhất
     json_tree_nodes = read_json_file(TREE_NODE)
     dieus_lienquan = []

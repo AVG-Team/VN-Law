@@ -1,0 +1,30 @@
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+rules:
+  # Kafka Broker Metrics
+  - pattern: 'kafka.server<type=BrokerTopicMetrics, name=(MessagesInTotal|BytesInTotal|BytesOutTotal), topic=(.+)><>Count'
+    name: kafka_server_brokertopicmetrics_$1_total
+    labels:
+      topic: '$2'
+  - pattern: 'kafka.server<type=BrokerTopicMetrics, name=(MessagesInTotal|BytesInTotal|BytesOutTotal), topic=(.+)><>OneMinuteRate'
+    name: kafka_server_brokertopicmetrics_$1_rate
+    labels:
+      topic: '$2'
+
+  # Consumer Group Metrics
+  - pattern: 'kafka.consumer<type=consumer-coordinator-metrics, name=(assigned-partitions|sync-time-avg|sync-time-max)><>(value|count)'
+    name: kafka_consumer_coordinator_metrics_$1
+  - pattern: 'kafka.consumer<type=consumer-fetch-manager-metrics, name=(records-lag-max|records-consumed-total|bytes-consumed-total)><>(value|count)'
+    name: kafka_consumer_fetch_manager_metrics_$1
+
+  # JVM Metrics
+  - pattern: 'java.lang<type=(Memory|Threading|GarbageCollector), name=(.*?)><>(.*)'
+    name: jvm_$1_$3
+    labels:
+      name: '$2'
+
+  # System Metrics
+  - pattern: 'process_cpu_seconds_total'
+    name: process_cpu_seconds_total
+  - pattern: 'process_open_fds'
+    name: process_open_fds

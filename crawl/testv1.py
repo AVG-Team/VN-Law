@@ -22,7 +22,7 @@ def crawl_data():
         tree_nodes(subjects)
 
         # Step 4: Crawl vbqppl
-        # crawl_vbqppl()
+        crawl_vbqppl()
 
         # Step 5: Split documents
         # split_documents()
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     if not test_connect():
         print("Database connection failed. Exiting.")
         exit(1)
-    # process_one_file("012d9b93-c11d-48b6-b08e-14d77515ca1e.html")
+    # process_one_file("8b06986b-89cf-4a8d-8a2f-e14ff9e3123e.html")
     # Tạo bảng nếu chưa tồn tại
     # Gọi hàm crawl_data
     crawl_data()
