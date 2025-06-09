@@ -101,6 +101,8 @@ services:
     depends_on:
       mysql-db:
         condition: service_healthy  # Chờ MySQL sẵn sàng
+      keycloak:
+        condition: service_started
     networks:
       - db-network
     env_file:
@@ -109,6 +111,19 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/auth_service
     ports:
       - "9001:9001"
+
+  law-service:
+    build: ./law-service
+    restart: always
+    depends_on:
+      mysql-db:
+        condition: service_healthy  # Chờ MySQL sẵn sàng
+    networks:
+      - db-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/law_service
+    ports:
+      - "9002:9002"
 
 #  react-frontend:
 #    build:
@@ -247,6 +262,8 @@ services:
     depends_on:
       - keycloak-db
     command: start-dev
+    networks:
+      - db-network
 
   keycloak-db:
     image: postgres:14
@@ -257,6 +274,8 @@ services:
       - POSTGRES_PASSWORD=keycloak
     volumes:
       - keycloak-db-data:/var/lib/postgresql/data
+    networks:
+      - db-network
 
   postgres:
     image: postgres:15
