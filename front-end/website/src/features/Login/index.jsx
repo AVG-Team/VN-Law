@@ -68,7 +68,7 @@ const Login = () => {
                 password: values.password,
             });
             console.log('Response from server:', response.data.data);
-            setToken(response.data.data.access_token, response.data.data.name, response.data.data.role);
+            setToken(response.data.data);
             message.success("Đăng nhập thành công!");
             navigate('/');
             //Todo: Alert Success

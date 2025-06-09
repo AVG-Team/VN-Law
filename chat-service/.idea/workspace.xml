@@ -5,13 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c61decd0-867b-4621-a3ab-ec288fabf87f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_v1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test_v2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/RAGService.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/RAGService.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -198,7 +192,7 @@
       <workItem from="1721545416719" duration="595000" />
       <workItem from="1748813222809" duration="104000" />
       <workItem from="1749095113941" duration="35361000" />
-      <workItem from="1749251714491" duration="32751000" />
+      <workItem from="1749251714491" duration="33152000" />
     </task>
     <servers />
   </component>
