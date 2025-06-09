@@ -42,4 +42,27 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const LoginProviderScreen());
     }
   }
+
+  static Widget getRoute(String name) {
+    switch (name) {
+      case splash:
+        return const SplashScreen();
+      case login:
+        return const LoginScreen();
+      case loginProvider:
+        return const LoginProviderScreen();
+      case forgotPassword:
+        return const ForgotPasswordScreen();
+      case dashboard:
+        return const DashboardScreen();
+      case profile:
+        return const ProfileScreen();
+      case chatbot:
+        return const DashboardScreen();
+      case test:
+        return const TestScreen();
+      default:
+        return const LoginProviderScreen();
+    }
+  }
 }

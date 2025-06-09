@@ -1,6 +1,7 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Env {
+
   static String get fileName =>
       const String.fromEnvironment('ENVIRONMENT', defaultValue: 'dev') == 'prod'
           ? '.env.prod'
@@ -17,6 +18,9 @@ class Env {
 
   // Auth
   static String get apiAuthUrl => dotenv.env['API_AUTH_URL'] ?? '';
+
+  // Law
+  static String get apiLawUrl => dotenv.env['API_LAW_URL'] ?? '';
 
   // Keycloak
   static String get keycloakUrl => dotenv.env['keycloak_url'] ?? '';

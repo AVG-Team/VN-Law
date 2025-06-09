@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:VNLAW/utils/app_const.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import '../../../utils/environment.dart';
 import '../../../utils/routes.dart';
 import '../../../utils/shared_preferences.dart';
 import 'keycloak_response.dart';
@@ -17,6 +17,8 @@ class AuthProvider extends ChangeNotifier {
   final TextEditingController emailTextController = TextEditingController();
   final TextEditingController passwordTextController = TextEditingController();
   final TextEditingController nameTextController = TextEditingController();
+  final String apiUrlAuth = AppConst.apiAuthUrl;
+
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile', 'openid'],
@@ -67,7 +69,7 @@ class AuthProvider extends ChangeNotifier {
     final password = passwordTextController.text;
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:9001/api/auth/authenticate'),
+        Uri.parse('$apiUrlAuth/api/auth/authenticate'),
         headers: { 'Content-Type': 'application/json' },
         body: jsonEncode({
           'email': email,
@@ -135,7 +137,8 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // Đăng nhập bằng Google
-  Future<void> loginWithGoogle(BuildContext context) async {
+  Future<bool> loginWithGoogle(BuildContext context) async {
+    bool isSuccess = false;
     _showLoadingOverlay(context);
     try {
       // Gọi Google Sign-In
@@ -143,7 +146,7 @@ class AuthProvider extends ChangeNotifier {
       if (googleUser == null) {
         // Người dùng hủy đăng nhập
         _hideLoadingOverlay();
-        return;
+        return isSuccess;
       }
 
       // Lấy access token từ Google
@@ -152,7 +155,7 @@ class AuthProvider extends ChangeNotifier {
 
       // Trao đổi token với Keycloak
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:9001/api/auth/google-token'),
+        Uri.parse('$apiUrlAuth/api/auth/google-token'),
         headers: { 'Content-Type': 'application/json' },
         body: jsonEncode({
           'provider': "google",
@@ -176,6 +179,7 @@ class AuthProvider extends ChangeNotifier {
         );
         resetTextField();
         print("Đăng nhập thành công");
+        isSuccess = true;
       } else {
         Fluttertoast.showToast(
           msg: jsonDecode(response.body)['message'] ?? "Đăng nhập thất bại",
@@ -197,6 +201,7 @@ class AuthProvider extends ChangeNotifier {
     } finally {
       _hideLoadingOverlay();
     }
+    return isSuccess;
   }
 
   // Register user
@@ -209,7 +214,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       // Bước 1: Tạo người dùng
       final createUserResponse = await http.post(
-        Uri.parse('http://10.0.2.2:9001/api/auth/register'),
+        Uri.parse('$apiUrlAuth/api/auth/register'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -261,7 +266,7 @@ class AuthProvider extends ChangeNotifier {
       print("email : " + email);
 
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:9001/api/auth/forgot-password'),
+        Uri.parse('$apiUrlAuth/api/auth/forgot-password'),
         headers: { 'Content-Type': 'application/json' },
         body: jsonEncode({
           'email': email,
@@ -328,9 +333,6 @@ class AuthProvider extends ChangeNotifier {
       print("Save Data : " + keycloakToken + ' ' + userId + ' ' + userName + ' ' + userEmail + ' ' + roles.toString());
       print("-------------------------");
       print("check token : " + (await SPUtill.getValue(SPUtill.keyAuthToken) ?? ''));
-
-      // Điều hướng đến dashboard
-      Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
     } catch (e) {
       print('Lỗi khi giải mã Keycloak token: $e');
       Fluttertoast.showToast(
@@ -350,7 +352,7 @@ class AuthProvider extends ChangeNotifier {
       final refreshToken = await SPUtill.getValue(SPUtill.keyRefreshToken);
       if (refreshToken != null && refreshToken.isNotEmpty) {
         final response = await http.post(
-          Uri.parse('http://10.0.2.2:9001/api/auth/logout-keycloak'),
+          Uri.parse('$apiUrlAuth/api/auth/logout-keycloak'),
           headers: { 'Content-Type': 'application/json' },
           body: {
             'token': refreshToken,
