@@ -15,6 +15,8 @@ class AppConst {
   /// Make sure you are in live server or test server by base url
   static String baseUrlApi = Env.apiBaseUrl;
   static String apiKeyAuth = Env.apiKey;
+  static String apiAuthUrl = Env.apiAuthUrl;
+  static String apiLawUrl = Env.apiLawUrl;
 
   static String? endPoint;
   static String? bariKoiApiKey;

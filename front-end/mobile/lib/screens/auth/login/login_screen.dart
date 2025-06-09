@@ -1,3 +1,4 @@
+import 'package:VNLAW/utils/nav_util_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../api_service/connectivity/no_internet_screen.dart';
@@ -295,7 +296,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                     size: 28,
                   ),
                   onPressed: () {
-                    Navigator.of(context).pop(); // Quay lại màn hình trước (LoginProviderScreen)
+                    NavUtilAnimation.navigateScreenRevert(
+                      context,
+                      AppRoutes.loginProvider,
+                    );
                   },
                 ),
               ),
