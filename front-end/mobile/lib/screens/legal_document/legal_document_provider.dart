@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../../data/models/legal_document.dart';
 import '../../data/models/response/api_response_law_service.dart';
+import '../../utils/app_const.dart';
 import '../../utils/shared_preferences.dart';
 
 class LegalDocumentProvider with ChangeNotifier {
@@ -67,7 +68,7 @@ class LegalDocumentProvider with ChangeNotifier {
       return;
     }
 
-    String url = 'http://10.0.2.2:9002/law/api/vbqppl/search?pageNo=${_currentPage - 1}&pageSize=$_pageSize';
+    String url = '${AppConst.apiLawUrl}/law/api/vbqppl/search?pageNo=${_currentPage - 1}&pageSize=$_pageSize';
 
     if (_searchQuery.isNotEmpty) {
       url += '&keyword=$_searchQuery';

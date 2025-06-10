@@ -5,8 +5,11 @@ import { Button } from 'antd';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import {useNavigate} from "react-router-dom";
+import {setToken} from "../../../mock/auth";
 
 const GoogleLoginWrapper = ({ icon, text }) => {
+    const navigate = useNavigate();
+
     const login = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
             try {
@@ -17,15 +20,12 @@ const GoogleLoginWrapper = ({ icon, text }) => {
                 });
 
                 console.log('Response from server:', response.data);
-
-                localStorage.setItem('accessToken', response.data.data.access_token);
-                localStorage.setItem('refreshToken', response.data.data.refresh_token);
-                localStorage.setItem('name', response.data.data.name);
-                localStorage.setItem('role', response.data.data.role);
-                localStorage.setItem('email', response.data.data.email);
-                localStorage.setItem('keycloakId', response.data.data.keycloak_id);
-
-                const navigate = useNavigate();
+                if (response.data.status !== 'success') {
+                    console.error('Authentication failed:', response.data.message);
+                    alert('Đăng nhập thất bại');
+                    return;
+                }
+                setToken(response.data.data);
                 navigate('/');
             } catch (error) {
                 console.error('Authentication failed:', error);

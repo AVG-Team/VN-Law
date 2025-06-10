@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:VNLAW/utils/app_const.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
@@ -9,7 +10,7 @@ import '../data/models/vbqppl/subject.dart';
 import '../data/models/vbqppl/topic.dart';
 
 class ApiServiceLaw {
-  static const String baseUrl = 'http://10.0.2.2:9002/law/api';
+  static String baseUrl = AppConst.apiLawUrl;
 
   // Lấy danh sách topic
   Future<List<Topic>> getTopics() async {

@@ -253,7 +253,7 @@ const SignUp = () => {
                                     <Text className="text-gray-600">
                                         Bạn đã có tài khoản?{" "}
                                         <Link
-                                            to="/register"
+                                            to="/login"
                                             className="font-medium text-blue-600 transition-colors duration-300 hover:text-blue-700"
                                         >
                                             Đăng nhập ngay

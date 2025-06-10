@@ -3,10 +3,14 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
 export const getUserInfo = () => {
-    const name = localStorage.getItem(StorageKeys.USER_NAME);
-    const role = localStorage.getItem(StorageKeys.USER_ROLE);
+    const name = localStorage.getItem(StorageKeys.USER_NAME) || "Guest";
+    const role = localStorage.getItem(StorageKeys.USER_ROLE) || "GUEST";
     const token = Cookies.get(StorageKeys.ACCESS_TOKEN);
-    return { name, role, token };
+    const email = localStorage.getItem(StorageKeys.USER_EMAIL) || "";
+    const keycloakId = localStorage.getItem(StorageKeys.USER_KEYCLOAK_ID) || "";
+    const accessToken = localStorage.getItem(StorageKeys.ACCESS_TOKEN);
+    const refreshToken = localStorage.getItem(StorageKeys.REFRESH_TOKEN);
+    return { name, role, token, email, keycloakId, accessToken, refreshToken };
 };
 
 export const checkAuth = () => {
@@ -17,11 +21,25 @@ export const checkAdmin = () => {
     return !!Cookies.get(StorageKeys.ACCESS_TOKEN) && localStorage.getItem(StorageKeys.USER_ROLE) === "ADMIN";
 }
 
-export const setToken = (token, name , role) => {
+export const setToken = (response) => {
     const decodedToken = jwtDecode(token);
     const expirationTime = decodedToken.exp * 1000;
 
-    Cookies.set(StorageKeys.ACCESS_TOKEN, token, { expires: new Date(expirationTime) });
-    localStorage.setItem(StorageKeys.USER_NAME, name);
-    localStorage.setItem(StorageKeys.USER_ROLE, role);
+    Cookies.set(StorageKeys.ACCESS_TOKEN, response.token, { expires: new Date(expirationTime) });
+    localStorage.setItem(StorageKeys.ACCESS_TOKEN, response.token);
+    localStorage.setItem(StorageKeys.USER_NAME, response.name);
+    localStorage.setItem(StorageKeys.USER_ROLE, response.role);
+    localStorage.setItem(StorageKeys.USER_EMAIL, response.email);
+    localStorage.setItem(StorageKeys.USER_KEYCLOAK_ID, response.keycloakId);
+    localStorage.setItem(StorageKeys.REFRESH_TOKEN, response.refreshToken);
+};
+
+export const clearToken = () => {
+    Cookies.remove(StorageKeys.ACCESS_TOKEN);
+    localStorage.removeItem(StorageKeys.ACCESS_TOKEN);
+    localStorage.removeItem(StorageKeys.USER_NAME);
+    localStorage.removeItem(StorageKeys.USER_ROLE);
+    localStorage.removeItem(StorageKeys.USER_EMAIL);
+    localStorage.removeItem(StorageKeys.USER_KEYCLOAK_ID);
+    localStorage.removeItem(StorageKeys.REFRESH_TOKEN);
 };

@@ -2,8 +2,10 @@ import React, { memo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, Close } from "@mui/icons-material";
 import { Link, useLocation } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaUserTie } from "react-icons/fa";
 import { IoMenu } from "react-icons/io5";
+import {StorageKeys} from "../../../common/constants/keys";
+import {checkAuth, getUserInfo} from "../../../mock/auth";
 
 const NavLink = memo(({ href, children, className = "" }) => (
     <motion.a
@@ -39,11 +41,24 @@ const Navbar = memo(() => {
         { href: "/tin-tuc", label: "Tin tức" },
     ];
 
-    const userMenuItems = [
+    const isLoggedIn = checkAuth();
+
+    const baseMenuItems = [
+        { label: "Đăng nhập", path: "/login" },
         { label: "Thông tin cá nhân", path: "/profile" },
         { label: "Cài đặt", path: "/settings" },
-        { label: "Đăng xuất", path: "/logout" },
+        { label: "Đăng xuất", path: "/sign-out" },
     ];
+
+    const userMenuItems = baseMenuItems.filter((item) => {
+        if (isLoggedIn) {
+            return item.label !== 'Đăng nhập';
+        } else {
+            return item.label !== 'Đăng xuất';
+        }
+    });
+
+    const userInfo = getUserInfo();
 
     return (
         <div className="fixed top-0 left-0 right-0 z-50 flex justify-center">
@@ -90,8 +105,12 @@ const Navbar = memo(() => {
                             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                             className="flex items-center space-x-2 text-gray-700 hover:text-[#1bddff] transition-colors duration-200"
                         >
-                            <FaUserCircle className="w-6 h-6" />
-                            <span className="text-sm font-medium">John Doe</span>
+                            {userInfo && userInfo.role === "ADMIN" ? (
+                                <FaUserTie className="w-8 h-8 text-gray-600" />
+                            ) : (
+                                <FaUserCircle className="w-8 h-8 text-gray-600" />
+                            )}
+                            <span className="text-sm font-medium">{ userInfo.name }</span>
                         </motion.button>
 
                         {/* User Dropdown Menu */}
@@ -192,10 +211,14 @@ const Navbar = memo(() => {
                                     className="pt-4 border-t"
                                 >
                                     <div className="flex items-center px-4 py-3 space-x-3">
-                                        <FaUserCircle className="w-8 h-8 text-gray-600" />
+                                        {userInfo && userInfo.role === "ADMIN" ? (
+                                            <FaUserTie className="w-8 h-8 text-gray-600" />
+                                        ) : (
+                                            <FaUserCircle className="w-8 h-8 text-gray-600" />
+                                        )}
                                         <div>
-                                            <div className="text-lg font-medium text-gray-800">John Doe</div>
-                                            <div className="text-sm text-gray-500">user@example.com</div>
+                                            <div className="text-lg font-medium text-gray-800">{userInfo.name}</div>
+                                            <div className="text-sm text-gray-500">{userInfo.email}</div>
                                         </div>
                                     </div>
                                     <div className="mt-2 space-y-1">
