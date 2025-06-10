@@ -1,9 +1,11 @@
 import 'package:VNLAW/screens/screen_tmp.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 // import 'package:mobile/screens/news/news_screen.dart';
 
 import 'app_flow/navigation_bar/custom_bottom_navbar.dart';
 import 'auth/login/test_screen.dart';
+import 'chat/chatbot_provider.dart';
 import 'home/home_screen.dart';
 import 'home/profile_screen.dart';
 import 'chat/chatbot_screen.dart';
@@ -33,6 +35,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (_currentIndex != index) {
       setState(() {
         _currentIndex = index;
+        if (index == 1) {
+          Provider.of<ChatbotProvider>(context, listen: false).resetState();
+        }
       });
     }
   }

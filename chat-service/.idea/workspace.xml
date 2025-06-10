@@ -5,12 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c61decd0-867b-4621-a3ab-ec288fabf87f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/api/ChatApi.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/models/response_model_chat_api.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/models/user_info.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/user_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/user_model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +52,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "Dung/fix-front-end",
+    "git-widget-placeholder": "Dung/fix-front-end-and-feat-chat-service",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/Project/VN-Law/chat-service",
@@ -223,12 +218,23 @@
       <workItem from="1748813222809" duration="104000" />
       <workItem from="1749095113941" duration="35361000" />
       <workItem from="1749251714491" duration="33152000" />
-      <workItem from="1749487406759" duration="2744000" />
+      <workItem from="1749487406759" duration="3244000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/chat_service$test_v1.coverage" NAME="test_v1 Coverage Results" MODIFIED="1749301978900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

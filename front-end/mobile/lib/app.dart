@@ -1,4 +1,5 @@
 import 'package:VNLAW/screens/auth/login/auth_provider.dart';
+import 'package:VNLAW/screens/chat/chatbot_provider.dart';
 import 'package:VNLAW/screens/dashboard_screen.dart';
 import 'package:VNLAW/screens/home/home_provider.dart';
 import 'package:VNLAW/screens/legal_document/legal_document_provider.dart';
@@ -58,6 +59,7 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(create: (_) => AuthProvider()),
       ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
       ChangeNotifierProvider(create: (_) => LegalDocumentProvider()),
+      ChangeNotifierProvider(create: (_) => ChatbotProvider()),
     ], child: MaterialApp(
           navigatorKey: GlobalKey<NavigatorState>(),
           title: 'VNLAW',
