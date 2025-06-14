@@ -6,7 +6,7 @@ import json
 from transformers import pipeline
 from typing import List
 import torch
-from EmbeddingService import EmbeddingService
+from app.services.embedding_service import EmbeddingService
 from sentence_transformers import CrossEncoder
 
 
@@ -179,51 +179,51 @@ class RAGService:
         responses = self.llm_pipeline(prompts, max_new_tokens=128, do_sample=False)
         return [resp["generated_text"].replace(prompt, "").strip() for prompt, resp in zip(prompts, responses)]
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
-embedding_service = EmbeddingService()
+# embedding_service = EmbeddingService()
 
-rag_service = RAGService(embedding_service=embedding_service, use_cpu=False)
+# rag_service = RAGService(embedding_service=embedding_service, use_cpu=False)
 
-@app.route('/query', methods=['POST'])
-def query_endpoint():
-    start_time = time.time()
-    data = request.get_json()
-    query = data.get('query', '')
-    if not query:
-        return jsonify({"error": "Query is required"}), 400
-    answer = rag_service.generate_answer(query)
-    return jsonify({
-        "answers": answer,
-        "time_taken": time.time() - start_time
-    })
+# @app.route('/query', methods=['POST'])
+# def query_endpoint():
+#     start_time = time.time()
+#     data = request.get_json()
+#     query = data.get('query', '')
+#     if not query:
+#         return jsonify({"error": "Query is required"}), 400
+#     answer = rag_service.generate_answer(query)
+#     return jsonify({
+#         "answers": answer,
+#         "time_taken": time.time() - start_time
+#     })
 
-@app.route('/query_batch', methods=['POST'])
-def query_batch_endpoint():
-    start_time = time.time()
-    data = request.get_json()
-    queries = data.get('queries', [])
-    if not queries:
-        return jsonify({"error": "Queries list is required"}), 400
-    answers = rag_service.generate_answer_batch(queries)
-    return jsonify({
-        "answers": answers,
-        "time_taken": time.time() - start_time
-    })
+# @app.route('/query_batch', methods=['POST'])
+# def query_batch_endpoint():
+#     start_time = time.time()
+#     data = request.get_json()
+#     queries = data.get('queries', [])
+#     if not queries:
+#         return jsonify({"error": "Queries list is required"}), 400
+#     answers = rag_service.generate_answer_batch(queries)
+#     return jsonify({
+#         "answers": answers,
+#         "time_taken": time.time() - start_time
+#     })
 
-@app.route('/retrieve', methods=['POST'])
-def retrieve_endpoint():
-    start_time = time.time()
-    data = request.get_json()
-    query = data.get('query', '')
-    if not query:
-        return jsonify({"error": "Query is required"}), 400
-    answers = rag_service.retrieve_documents(query)
-    return jsonify({
-        "answers": answers,
-        "time_taken": time.time() - start_time
-    })
+# @app.route('/retrieve', methods=['POST'])
+# def retrieve_endpoint():
+#     start_time = time.time()
+#     data = request.get_json()
+#     query = data.get('query', '')
+#     if not query:
+#         return jsonify({"error": "Query is required"}), 400
+#     answers = rag_service.retrieve_documents(query)
+#     return jsonify({
+#         "answers": answers,
+#         "time_taken": time.time() - start_time
+#     })
 
-if __name__ == '__main__':
-    from waitress import serve
-    serve(app, host='0.0.0.0', port=8000, threads=8)
+# if __name__ == '__main__':
+#     from waitress import serve
+#     serve(app, host='0.0.0.0', port=8000, threads=8)
