@@ -28,7 +28,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
       curve: Curves.easeInOutCubic,
     );
 
-    // Reset trạng thái khi khởi tạo màn hình
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ChatbotProvider>(context, listen: false).resetState();
     });
@@ -44,7 +43,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
   Widget build(BuildContext context) {
     final provider = Provider.of<ChatbotProvider>(context);
 
-    // Đồng bộ animation controller với trạng thái sidebar
     if (provider.isSidebarOpen && _animationController.status != AnimationStatus.forward) {
       _animationController.forward();
     } else if (!provider.isSidebarOpen && _animationController.status != AnimationStatus.reverse) {
@@ -53,44 +51,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: provider.isSidebarOpen
-          ? null
-          : AppBar(
-        title: const Text('VN Law Chatbot', style: TextStyle(fontWeight: FontWeight.w600)),
-        centerTitle: true,
-        backgroundColor: Colors.blue.shade700,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue.shade700, Colors.blue.shade500],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        leading: IconButton(
-          icon: AnimatedIcon(
-            icon: AnimatedIcons.menu_close,
-            progress: _animationController,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            provider.toggleSidebar();
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share, color: Colors.white),
-            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Đã chia sẻ cuộc trò chuyện này')),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.email, color: Colors.white),
-            onPressed: () => _showContactAdminDialog(context, provider),
-          ),
-        ],
-      ),
+      appBar: _buildAppBar(provider),
       body: Stack(
         children: [
           Column(
@@ -168,16 +129,17 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
                     }
                     final message = provider.messages[index];
                     return FadeTransition(
-                        opacity: animation,
-                        child: SlideTransition(
-                          position: Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(animation),
-                          child: ChatMessage(
-                            message: message,
-                            isFirst: index == 0 || provider.messages[index - 1].isUser != message.isUser,
-                            isLast: index == provider.messages.length - 1 ||
-                                provider.messages[index + 1].isUser != message.isUser,
-                          ),
+                      opacity: animation,
+                      child: SlideTransition(
+                        position: Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(animation),
+                        child: ChatMessage(
+                          message: message,
+                          isFirst: index == 0 || provider.messages[index - 1].isUser != message.isUser,
+                          isLast: index == provider.messages.length - 1 ||
+                              provider.messages[index + 1].isUser != message.isUser,
+                          isNewChat: provider.isNewChat,
                         ),
+                      ),
                     );
                   },
                 ),
@@ -327,12 +289,84 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
                   )
                       : null,
                 ),
-              )
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  PreferredSizeWidget? _buildAppBar(ChatbotProvider provider) {
+    if (provider.isSidebarOpen) {
+      return null;
+    } else if (provider.messages.isEmpty) {
+      return AppBar(
+        title: const Text('VN Law Chatbot', style: TextStyle(fontWeight: FontWeight.w600)),
+        centerTitle: true,
+        backgroundColor: Colors.blue.shade700,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blue.shade700, Colors.blue.shade500],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        leading: IconButton(
+          icon: AnimatedIcon(
+            icon: AnimatedIcons.menu_close,
+            progress: _animationController,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            provider.toggleSidebar();
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.email, color: Colors.white),
+            onPressed: () => _showContactAdminDialog(context, provider),
+          ),
+        ],
+      );
+    } else {
+      return AppBar(
+        title: const Text('VN Law Chatbot', style: TextStyle(fontWeight: FontWeight.w600)),
+        centerTitle: true,
+        backgroundColor: Colors.blue.shade700,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blue.shade700, Colors.blue.shade500],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            provider.resetState();
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.push_pin, color: Colors.white),
+            onPressed: () {
+              // TODO: Implement pin functionality
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.share, color: Colors.white),
+            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Đã chia sẻ cuộc trò chuyện này')),
+            ),
+          ),
+        ],
+      );
+    }
   }
 
   Widget _buildConversationTile(

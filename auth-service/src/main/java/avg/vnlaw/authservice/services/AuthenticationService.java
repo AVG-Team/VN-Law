@@ -1,7 +1,7 @@
 package avg.vnlaw.authservice.services;
 
 import avg.vnlaw.authservice.dto.identity.*;
-import avg.vnlaw.authservice.dto.responses.KeycloakErrorResponse;
+import avg.vnlaw.authservice.dto.responses.*;
 import avg.vnlaw.authservice.entities.*;
 import avg.vnlaw.authservice.enums.AuthenticationResponseEnum;
 import avg.vnlaw.authservice.enums.TokenTypeForgotPasswordEnum;
@@ -12,8 +12,6 @@ import avg.vnlaw.authservice.repositories.RoleRepository;
 import avg.vnlaw.authservice.repositories.UserRepository;
 import avg.vnlaw.authservice.dto.requests.AuthenticationRequest;
 import avg.vnlaw.authservice.dto.requests.RegisterRequest;
-import avg.vnlaw.authservice.dto.responses.AuthenticationResponse;
-import avg.vnlaw.authservice.dto.responses.MessageResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -32,13 +30,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.Key;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -104,7 +100,7 @@ public class AuthenticationService {
                 .username(username_admin)
                 .password(password_admin)
                 .build();
-        log.info("Token exchange param: {}", tokenExchangeParam.toString());
+//        log.info("Token exchange param: {}", tokenExchangeParam.toString());
         return identityClient.exchangeToken("master",tokenExchangeParam);
     }
 
@@ -203,7 +199,7 @@ public class AuthenticationService {
                 .build();
 
         try {
-            log.info("Token exchange param: {}", tokenExchangeParam.toString());
+//            log.info("Token exchange param: {}", tokenExchangeParam.toString());
             log.info("realm: {}", realm);
             TokenExchangeResponse tokenResponse = identityClient.exchangeToken(realm, tokenExchangeParam);
             log.info("Token response: {}", tokenResponse.toString());
@@ -616,6 +612,62 @@ public class AuthenticationService {
         }
 
         return tokenResponse;
+    }
+
+    public TokenExchangeResponse getAccessTokenFromRefreshToken(String token) {
+        TokenExchangeParam tokenExchangeParam = TokenExchangeParam.builder()
+                .client_id(idpClientId)
+                .client_secret(idpClientSecret)
+                .grant_type("refresh_token")
+                .refresh_token(token)
+                .build();
+        log.info("Token exchange param: {}", tokenExchangeParam.toString());
+        try {
+            log.info("realm: {}", realm);
+            TokenExchangeResponse tokenResponse = identityClient.exchangeToken(realm, tokenExchangeParam);
+            log.info("Token response: {}", tokenResponse.toString());
+            return tokenResponse;
+        } catch (Exception e) {
+            log.error("Unexpected error get access token: {}", e.getMessage());
+            throw new IllegalArgumentException("Unexpected error get access token", e);
+        }
+    }
+
+    public UserDetailResponse getUserById(String userId) {
+        if (userId == null || userId.isEmpty()) {
+            throw new IllegalArgumentException("User ID is required");
+        }
+
+        try {
+            ResponseEntity<Map<String, Object>> response = identityClient.getUserByUserId(userId, "Bearer " + getTokenAdmin().getAccessToken());
+            if (response.getStatusCode().is2xxSuccessful()) {
+                Map<String, Object> user = response.getBody();
+                if (user == null) {
+                    log.error("User data is null for userId: {}", userId);
+                    throw new IllegalArgumentException("User data is null for userId: " + userId);
+                }
+
+                return UserDetailResponse.builder()
+                        .id(userId)
+                        .username((String) user.get("username"))
+                        .email((String) user.get("email"))
+                        .firstName((String) user.get("firstName"))
+                        .lastName((String) user.get("lastName"))
+                        .enabled((Boolean) user.get("enabled"))
+                        .emailVerified((Boolean) user.get("emailVerified"))
+                        .requiredActions((List<String>) user.get("requiredActions"))
+                        .federatedIdentities((List<Object>) user.get("federatedIdentities"))
+                        .notBefore((Integer) user.get("notBefore"))
+                        .access((Map<String, Boolean>) user.get("access"))
+                        .build();
+            } else {
+                log.error("Failed to get user by ID: {}, status: {}", userId, response.getStatusCode());
+                throw new IllegalArgumentException("Failed to get user by ID");
+            }
+        } catch (FeignException e) {
+            log.error("Error getting user by ID: {}, error: {}", userId, e.getMessage());
+            throw new IllegalArgumentException("Error getting user by ID", e);
+        }
     }
 
     public MessageResponse logoutKeycloak(String token) {

@@ -1,7 +1,7 @@
 package avg.vnlaw.authservice.controllers;
 
 import avg.vnlaw.authservice.dto.ApiResponse;
-import avg.vnlaw.authservice.dto.identity.CheckTokenResponse;
+import avg.vnlaw.authservice.dto.responses.CheckTokenResponse;
 import avg.vnlaw.authservice.dto.requests.*;
 import avg.vnlaw.authservice.dto.responses.*;
 import avg.vnlaw.authservice.enums.AuthenticationResponseEnum;
@@ -13,11 +13,12 @@ import avg.vnlaw.authservice.services.ReCaptchaService;
 import avg.vnlaw.authservice.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.keycloak.authorization.client.representation.TokenIntrospectionResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Slf4j
@@ -180,6 +181,16 @@ public class AuthController {
                 .build();
     }
 
+    @GetMapping("/get-user-by-id/{userId}")
+    public ApiResponse<?> getUserById(@PathVariable String userId) {
+        log.info("Get user by ID request: {}", userId);
+        UserDetailResponse userInfo = authService.getUserById(userId);
+        return ApiResponse.builder()
+                .message("Get User By User Id successfully")
+                .data(userInfo)
+                .build();
+    }
+
     @PostMapping("/check-token-keycloak")
     public ApiResponse<?> checkTokenKeycloak(@RequestBody AccessTokenRequest request) {
         log.info("Check token request: {}", request);
@@ -196,6 +207,24 @@ public class AuthController {
         CheckTokenResponse response = authService.validateToken(token);
         log.info("Token validation response: {}", response);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/get-access-token-from-refresh-token")
+    public ApiResponse<?> getAccessTokenFromRefreshToken(@RequestBody Map<String, String> request) {
+        log.info("Get access token from refresh token request: {}", request);
+        String token = request.get("token"); // Lấy chuỗi token từ JSON
+        TokenExchangeResponse authResponse = authService.getAccessTokenFromRefreshToken(token);
+        if (authResponse != null) {
+            return ApiResponse.builder()
+                    .message("Access token retrieved successfully")
+                    .data(authResponse)
+                    .build();
+        } else {
+            return ApiResponse.builder()
+                    .message("Failed to get access token from refresh token")
+                    .data(null)
+                    .build();
+        }
     }
 
     @PostMapping("/logout-keycloak")

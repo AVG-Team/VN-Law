@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SPUtill {
-  static String keyAuthToken = "key_auth_token";
+  // static String keyAuthToken = "key_auth_token";
   static String keyIsAdmin = "key_is_admin";
   static String keyIsUser = "key_is_user";
   static String keyUserId = "user_id";
@@ -20,6 +20,7 @@ class SPUtill {
   static String keyMenuList = "key_menu_list";
   static String keyRoles= "user_roles";
   static const String keyRefreshToken = 'refresh_token';
+  static const String keyAccessToken = 'access_token';
 
   static setValue(String key, String? value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

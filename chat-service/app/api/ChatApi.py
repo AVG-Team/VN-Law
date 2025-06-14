@@ -98,7 +98,7 @@ async def get_messages(request: Request, question: QuestionRequest, user_info: U
         data={"answer": answer}
     )
 
-@app.post("/api/chat/get-answer")
+@app.post("/api/chat/get-history")
 async def get_settings(request: Request, auth: Optional[None] = Depends(authenticate_user)):
     return ResponseModel(
         status_code=200,

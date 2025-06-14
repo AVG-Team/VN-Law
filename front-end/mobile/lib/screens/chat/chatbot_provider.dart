@@ -9,6 +9,7 @@ class ChatbotProvider extends ChangeNotifier {
   final List<ConversationModel> _pinnedConversations = [];
   bool _isSidebarOpen = false;
   bool _isTyping = false;
+  bool _isNewChat = false; // Thêm biến để kiểm tra chat mới
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -23,6 +24,7 @@ class ChatbotProvider extends ChangeNotifier {
   List<ConversationModel> get pinnedConversations => _pinnedConversations;
   bool get isSidebarOpen => _isSidebarOpen;
   bool get isTyping => _isTyping;
+  bool get isNewChat => _isNewChat;
   TextEditingController get emailController => _emailController;
   TextEditingController get messageController => _messageController;
   ScrollController get scrollController => _scrollController;
@@ -118,7 +120,6 @@ class ChatbotProvider extends ChangeNotifier {
       ),
     ]);
     _pinnedConversations.add(_conversations[0]);
-    _pinnedConversations.add(_conversations[2]);
     notifyListeners();
   }
 
@@ -133,6 +134,7 @@ class ChatbotProvider extends ChangeNotifier {
 
     _messages.add(message);
     _listKey.currentState?.insertItem(_messages.length - 1);
+    _isNewChat = true; // Đánh dấu là chat mới
     notifyListeners();
     _scrollToBottom();
 
@@ -218,6 +220,7 @@ class ChatbotProvider extends ChangeNotifier {
     _messages.clear();
     _messages.addAll(conversation.messages);
     _isSidebarOpen = false;
+    _isNewChat = false; // Không phải chat mới khi load từ lịch sử
     notifyListeners();
   }
 
@@ -225,7 +228,7 @@ class ChatbotProvider extends ChangeNotifier {
     _messages.clear();
     _isTyping = false;
     _isSidebarOpen = false;
-    print('State reset');
+    _isNewChat = false;
     notifyListeners();
   }
 

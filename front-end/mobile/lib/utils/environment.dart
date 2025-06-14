@@ -22,6 +22,9 @@ class Env {
   // Law
   static String get apiLawUrl => dotenv.env['API_LAW_URL'] ?? '';
 
+  // Forum
+  static String get apiForumUrl => dotenv.env['API_FORUM_URL'] ?? '';
+
   // Keycloak
   static String get keycloakUrl => dotenv.env['keycloak_url'] ?? '';
   static String get keycloakId => dotenv.env['keycloak_id'] ?? '';

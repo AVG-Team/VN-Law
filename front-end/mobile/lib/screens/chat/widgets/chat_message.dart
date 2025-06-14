@@ -6,12 +6,14 @@ class ChatMessage extends StatefulWidget {
   final ChatMessageModel message;
   final bool isFirst;
   final bool isLast;
+  final bool isNewChat;
 
   const ChatMessage({
     super.key,
     required this.message,
     required this.isFirst,
     required this.isLast,
+    required this.isNewChat,
   });
 
   @override
@@ -22,6 +24,8 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
+  String _displayText = '';
+  int _currentCharIndex = 0;
 
   @override
   void initState() {
@@ -36,15 +40,35 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
       curve: Curves.easeOutBack,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeIn,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
 
     _animationController.forward();
+
+    if (!widget.message.isUser && widget.isNewChat) {
+      _startTypingEffect();
+    } else {
+      _displayText = widget.message.text;
+    }
+  }
+
+  void _startTypingEffect() {
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _typeNextCharacter();
+      }
+    });
+  }
+
+  void _typeNextCharacter() {
+    if (_currentCharIndex < widget.message.text.length) {
+      setState(() {
+        _displayText = widget.message.text.substring(0, _currentCharIndex + 1);
+        _currentCharIndex++;
+      });
+      Future.delayed(const Duration(milliseconds: 50), _typeNextCharacter);
+    }
   }
 
   @override
@@ -82,9 +106,7 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
             right: 12.0,
           ),
           child: Row(
-            mainAxisAlignment: widget.message.isUser
-                ? MainAxisAlignment.end
-                : MainAxisAlignment.start,
+            mainAxisAlignment: widget.message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!widget.message.isUser) ...[
@@ -101,9 +123,7 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
               ],
               Flexible(
                 child: Column(
-                  crossAxisAlignment: widget.message.isUser
-                      ? CrossAxisAlignment.end
-                      : CrossAxisAlignment.start,
+                  crossAxisAlignment: widget.message.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
                     Container(
                       constraints: BoxConstraints(
@@ -123,12 +143,8 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(20).copyWith(
-                          bottomRight: widget.message.isUser
-                              ? const Radius.circular(4)
-                              : null,
-                          bottomLeft: !widget.message.isUser
-                              ? const Radius.circular(4)
-                              : null,
+                          bottomRight: widget.message.isUser ? const Radius.circular(4) : null,
+                          bottomLeft: !widget.message.isUser ? const Radius.circular(4) : null,
                         ),
                         boxShadow: [
                           BoxShadow(
@@ -139,21 +155,16 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
                         ],
                       ),
                       child: Text(
-                        widget.message.text,
+                        _displayText,
                         style: TextStyle(
-                          color: widget.message.isUser
-                              ? Colors.white
-                              : Colors.black87,
+                          color: widget.message.isUser ? Colors.white : Colors.black87,
                           fontSize: 15,
                           height: 1.4,
                         ),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       child: Text(
                         timeText,
                         style: TextStyle(

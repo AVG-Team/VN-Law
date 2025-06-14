@@ -1,6 +1,8 @@
 package avg.vnlaw.authservice.repositories;
 
 import avg.vnlaw.authservice.dto.identity.*;
+import avg.vnlaw.authservice.dto.responses.CheckTokenResponse;
+import avg.vnlaw.authservice.dto.responses.TokenExchangeResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
