@@ -1,4 +1,4 @@
-package avg.vnlaw.authservice.dto.identity;
+package avg.vnlaw.authservice.dto.responses;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

@@ -1,0 +1,24 @@
+# .gitignore file
+# This file is used to specify files and directories that Git should ignore.
+# Any files or directories listed here will not be tracked by Git.
+# Common examples include build artifacts, temporary files, and sensitive information.
+
+# Ignore Python bytecode files
+*.pyc
+
+# Ignore Python cache directories
+__pycache__/
+
+# Ignore environment variable files
+.env
+
+# Ignore virtual environment directories
+venv/
+env/
+
+# Ignore pip dependency files
+*.egg-info/
+
+# Ignore logs and temporary files
+*.log
+*.tmp

@@ -4,6 +4,7 @@ import uuid
 import torch
 from chromadb.utils.embedding_functions.sentence_transformer_embedding_function import SentenceTransformerEmbeddingFunction
 from dotenv import load_dotenv
+from oauthlib.uri_validate import query
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.cross_encoder import CrossEncoder
 from transformers import pipeline
@@ -48,60 +49,60 @@ class RAGNotKafkaService:
             mysql_password (str): MySQL password.
             mysql_database (str): MySQL database name.
         """
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        logging.info(f"Using device: {self.device}")
+        # self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        # logging.info(f"Using device: {self.device}")
 
         # MySQL connection parameters
-        self.mysql_config = {
-            'host': mysql_host,
-            'port': mysql_port,
-            'user': mysql_user,
-            'password': mysql_password,
-            'database': mysql_database,
-            'charset': 'utf8mb4',
-            'collation': 'utf8mb4_unicode_ci',
-            'autocommit': True
-        }
+        # self.mysql_config = {
+        #     'host': mysql_host,
+        #     'port': mysql_port,
+        #     'user': mysql_user,
+        #     'password': mysql_password,
+        #     'database': mysql_database,
+        #     'charset': 'utf8mb4',
+        #     'collation': 'utf8mb4_unicode_ci',
+        #     'autocommit': True
+        # }
 
         # Load embedding model
-        try:
-            self.sentence_transformer = SentenceTransformer(embedding_model)
-        except Exception as e:
-            logging.error(f"Error loading embedding model: {e}")
-            raise
+        # try:
+        #     self.sentence_transformer = SentenceTransformer(embedding_model)
+        # except Exception as e:
+        #     logging.error(f"Error loading embedding model: {e}")
+        #     raise
 
         # Load cross-encoder for reranking
-        try:
-            self.cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
-        except Exception as e:
-            logging.error(f"Error loading cross-encoder: {e}")
-            raise
+        # try:
+        #     self.cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+        # except Exception as e:
+        #     logging.error(f"Error loading cross-encoder: {e}")
+        #     raise
 
         # Load LLM pipeline
-        try:
-            self.llm_pipeline = pipeline(
-                "text-generation",
-                model=generator_model,
-                tokenizer=generator_model,
-                device=0 if self.device == "cuda" else -1,
-                max_length=256,
-                token=hf_token,
-            )
-        except Exception as e:
-            logging.warning(f"Error loading {generator_model}: {e}")
-            logging.info("Falling back to facebook/xglm-4.5B")
-            try:
-                self.llm_pipeline = pipeline(
-                    "text-generation",
-                    model="facebook/xglm-4.5B",
-                    tokenizer="facebook/xglm-4.5B",
-                    device=0 if self.device == "cuda" else -1,
-                    max_length=256,
-                    token=hf_token,
-                )
-            except Exception as e:
-                logging.error(f"Error loading fallback model: {e}")
-                raise
+        # try:
+        #     self.llm_pipeline = pipeline(
+        #         "text-generation",
+        #         model=generator_model,
+        #         tokenizer=generator_model,
+        #         device=0 if self.device == "cuda" else -1,
+        #         max_length=256,
+        #         token=hf_token,
+        #     )
+        # except Exception as e:
+        #     logging.warning(f"Error loading {generator_model}: {e}")
+        #     logging.info("Falling back to facebook/xglm-4.5B")
+        #     try:
+        #         self.llm_pipeline = pipeline(
+        #             "text-generation",
+        #             model="facebook/xglm-4.5B",
+        #             tokenizer="facebook/xglm-4.5B",
+        #             device=0 if self.device == "cuda" else -1,
+        #             max_length=256,
+        #             token=hf_token,
+        #         )
+        #     except Exception as e:
+        #         logging.error(f"Error loading fallback model: {e}")
+        #         raise
 
         # Initialize ChromaDB HTTP client
         try:
@@ -482,6 +483,33 @@ class RAGNotKafkaService:
             logging.error(f"Error retrieving documents: {e}")
             raise
 
+    def retrieve_documents_v1(self, query: str) -> Dict:
+        """Retrieve relevant documents for a query without reranking."""
+        query = self.preprocess_text(query)
+        query_embedding = self.sentence_transformer.encode(query, convert_to_numpy=True).tolist()
+        try:
+            results = self.collection.query(
+                query_embeddings=[query_embedding],
+                n_results=self.top_k,
+                # where={"source": {"$in": ["mysql_db"]}},
+            )
+            return results
+        except Exception as e:
+            logging.error(f"Error retrieving documents: {e}")
+            raise
+
+    def get_documents(self):
+        """Retrieve all documents from the collection."""
+        try:
+            results = self.collection.get(
+                limit=10,
+                offset=0
+            )
+            return results
+        except Exception as e:
+            logging.error(f"Error retrieving all documents: {e}")
+            raise
+
     def generate_answer(self, query: str) -> str:
         """Generate an answer for a query using retrieved documents."""
         try:
@@ -565,11 +593,26 @@ if __name__ == '__main__':
         hf_token=os.getenv("HF_TOKEN")  # Uncomment if needed
     )
 
+    print("Embedding documents from database...")
+    documents = rag_service.get_documents()
+    print("Retrieved documents:")
+    print(documents)
+
     # Get database statistics
-    stats = rag_service.get_database_stats()
-    print("Database Statistics:")
-    for key, value in stats.items():
-        print(f"  {key}: {value}")
+    # stats = rag_service.get_database_stats()
+    # print("Database Statistics:")
+    # for key, value in stats.items():
+    #     print(f"  {key}: {value}")
+
+    # query = "Luật về bảo vệ môi trường"
+    # retrieved_docs = rag_service.retrieve_documents_v1(query)
+    # print("Retrieved documents:")
+    # print(retrieved_docs)
+    # print("Documents content:")
+    # print(retrieved_docs["documents"])
+    # print("Metadatas:")
+    # print(retrieved_docs["documents"][0])
+    # print(f"Retrieved {len(retrieved_docs['documents'][0])} documents for query: {query}")
 
     # rag_service.embed_documents_from_db(load_type="articles")
-    rag_service.embed_documents_from_db(load_type="documents", limit=10)
+    # rag_service.embed_documents_from_db(load_type="documents", limit=10)

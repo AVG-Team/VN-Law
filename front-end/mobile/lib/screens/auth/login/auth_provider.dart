@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:VNLAW/utils/app_const.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +8,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import '../../../utils/routes.dart';
 import '../../../utils/shared_preferences.dart';
-import 'keycloak_response.dart';
-import 'auth_repository.dart';
 import 'package:http/http.dart' as http;
 
 class AuthProvider extends ChangeNotifier {
@@ -81,7 +78,7 @@ class AuthProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body)['data'];
-        final keycloakToken = data['access_token'];
+        final keycloakToken = data;
         await _processKeycloakToken(context, keycloakToken);
         Fluttertoast.showToast(
           msg: 'Đăng nhập thành công',
@@ -164,8 +161,8 @@ class AuthProvider extends ChangeNotifier {
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print("Keycloak token: " + data.toString());
-        final keycloakToken = data['data']['access_token'];
+        print("Keycloak token: $data");
+        final keycloakToken = data['data'];
 
         // Xử lý thông tin từ Keycloak token
         await _processKeycloakToken(context, keycloakToken);
@@ -311,11 +308,14 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // Hàm xử lý Keycloak token, lưu thông tin người dùng
-  Future<void> _processKeycloakToken(BuildContext context, String keycloakToken) async {
+  Future<void> _processKeycloakToken(BuildContext context, Map<String, dynamic> tokenData ) async {
     try {
       // Giải mã token
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(keycloakToken);
+      String accessToken = tokenData['access_token'] ?? '';
+      String refreshToken = tokenData['refresh_token'] ?? '';
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken);
 
+      print("Decoded Token: " + decodedToken.toString());
       // Lấy thông tin từ token
       String userId = decodedToken['sub'] ?? '';
       String userName = decodedToken['name'] ?? decodedToken['preferred_username'] ?? '';
@@ -323,16 +323,20 @@ class AuthProvider extends ChangeNotifier {
       List<String> roles = (decodedToken['realm_access']?['roles'] as List<dynamic>?)?.cast<String>() ?? [];
 
       // Lưu vào SharedPreferences
-      await SPUtill.setValue(SPUtill.keyAuthToken, keycloakToken);
+      await SPUtill.setValue(SPUtill.keyAccessToken, accessToken);
+      await SPUtill.setValue(SPUtill.keyRefreshToken, refreshToken);
       await SPUtill.setValue(SPUtill.keyUserId, userId);
       await SPUtill.setValue(SPUtill.keyName, userName);
       await SPUtill.setValue(SPUtill.keyEmail, userEmail);
       await SPUtill.setValue(SPUtill.keyRoles, jsonEncode(roles));
 
+      String isExistAccessToken = accessToken != '' ? "access_token exist" : 'no exist';
+      String isExistRefreshToken = refreshToken != '' ? "refresh token exist" : 'no exist';
+
       print("-------------------------");
-      print("Save Data : " + keycloakToken + ' ' + userId + ' ' + userName + ' ' + userEmail + ' ' + roles.toString());
+      print("Save Data : " + isExistAccessToken + ' ' + isExistRefreshToken + ' ' + userId + ' ' + userName + ' ' + userEmail + ' ' + roles.toString());
       print("-------------------------");
-      print("check token : " + (await SPUtill.getValue(SPUtill.keyAuthToken) ?? ''));
+      print("check token : " + (await SPUtill.getValue(SPUtill.keyRefreshToken) ?? ''));
     } catch (e) {
       print('Lỗi khi giải mã Keycloak token: $e');
       Fluttertoast.showToast(
@@ -354,9 +358,7 @@ class AuthProvider extends ChangeNotifier {
         final response = await http.post(
           Uri.parse('$apiUrlAuth/api/auth/logout-keycloak'),
           headers: { 'Content-Type': 'application/json' },
-          body: {
-            'token': refreshToken,
-          },
+          body: jsonEncode({'token': refreshToken}),
         );
 
         if (response.statusCode == 204) {
@@ -382,7 +384,7 @@ class AuthProvider extends ChangeNotifier {
       await _googleSignIn.signOut();
 
       // Xóa dữ liệu trong SharedPreferences
-      await SPUtill.deleteKey(SPUtill.keyAuthToken);
+      await SPUtill.deleteKey(SPUtill.keyAccessToken);
       await SPUtill.deleteKey(SPUtill.keyRefreshToken);
       await SPUtill.deleteKey(SPUtill.keyUserId);
       await SPUtill.deleteKey(SPUtill.keyName);

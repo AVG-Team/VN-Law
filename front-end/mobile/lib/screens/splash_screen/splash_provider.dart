@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:VNLAW/utils/auth.dart';
 import 'package:VNLAW/utils/environment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,38 +23,14 @@ class SplashProvider extends ChangeNotifier {
     super.dispose();
   }
 
-  Future<bool> checkTokenValidity(String token) async {
-    try {
-      print('Checking token validity...');
-      print('${Env.apiAuthUrl}/api/auth/check-token-keycloak');
-      final response = await http.post(
-        Uri.parse('${Env.apiAuthUrl}/api/auth/check-token-keycloak'),
-        headers: { 'Content-Type': 'application/json', },
-        body: jsonEncode({
-          'token': token,
-        }),
-      );
-      print('Token introspection response: status=${response.statusCode}, body=${response.body}');
-      print(response);
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body)['data'];
-        return data == "OK";
-      }
-      return false;
-    } catch (e) {
-      print('Error checking token validity: $e');
-      return false;
-    }
-  }
-
   Future<void> initFunction(BuildContext context) async {
     print('initFunction started');
-    var token = await SPUtill.getValue(SPUtill.keyAuthToken);
+    var token = await SPUtill.getValue(SPUtill.keyRefreshToken);
     print("Bearer token: $token");
     await Future.delayed(const Duration(milliseconds: 1000));
 
     if (token != null && token.isNotEmpty) {
-      bool isValid = await checkTokenValidity(token);
+      bool isValid = await AuthHelper.checkTokenValidity(token);
       print('Token validity: $isValid');
       if (isValid && !_isDisposed) {
         print('Token valid, navigating to dashboard');
@@ -63,7 +40,7 @@ class SplashProvider extends ChangeNotifier {
         );
       } else {
         print('Token invalid, deleting token and navigating to login');
-        await SPUtill.deleteKey(SPUtill.keyAuthToken);
+        await SPUtill.deleteKey(SPUtill.keyRefreshToken);
         if (!_isDisposed) {
           NavUtilAnimation.navigateScreen(
             context,

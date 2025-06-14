@@ -35,7 +35,7 @@ class LegalDocumentProvider with ChangeNotifier {
   // Load access token từ SharedPreferences
   Future<void> _loadAccessToken() async {
     try {
-      _accessToken = await SPUtill.getValue(SPUtill.keyAuthToken) ?? '';
+      _accessToken = await SPUtill.getValue(SPUtill.keyAccessToken) ?? '';
       print('Access token loaded: $_accessToken');
     } catch (e) {
       print('Error loading access token: $e');
