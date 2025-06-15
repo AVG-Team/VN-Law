@@ -40,7 +40,7 @@ class TestScreen extends StatelessWidget {
             icon: const Icon(Icons.logout),
             onPressed: () async {
               // Giả sử AuthProvider có phương thức để lấy access token
-              var accessToken = await SPUtill.getValue(SPUtill.keyAuthToken);
+              var accessToken = await SPUtill.getValue(SPUtill.keyAccessToken);
               print(accessToken);
 
               if (accessToken != null && accessToken.isNotEmpty) {

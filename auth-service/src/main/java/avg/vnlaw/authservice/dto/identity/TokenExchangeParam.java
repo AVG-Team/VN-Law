@@ -21,6 +21,8 @@ public class TokenExchangeParam  {
     @Nullable
     private String code;
     @Nullable
+    private String refresh_token;
+    @Nullable
     private String redirect_uri;
     @Nullable
     private String subject_token_type;

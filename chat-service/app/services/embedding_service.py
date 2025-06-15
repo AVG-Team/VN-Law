@@ -116,6 +116,7 @@ class EmbeddingService:
             logging.error(f"Error connecting to MySQL: {e}")
             raise
         return None
+
     def preprocess_text(self, text: str) -> str:
         """Normalize Vietnamese text."""
         if not text:

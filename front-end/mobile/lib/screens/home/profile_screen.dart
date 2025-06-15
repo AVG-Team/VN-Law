@@ -72,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     String? rolesJson = await SPUtill.getValue(SPUtill.keyRoles);
 
     List<String> roles = rolesJson != null ? List<String>.from(jsonDecode(rolesJson)) : [];
-    String userRole = roles.contains('admin') ? 'Admin' : 'User'; // Xác định vai trò
+    String userRole = roles.contains('admin') ? 'Admin' : 'User';
 
     setState(() {
       userName = name;
