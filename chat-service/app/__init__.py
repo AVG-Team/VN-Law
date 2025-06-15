@@ -1,17 +1,26 @@
+# app/__init__.py
 from flask import Flask
 from flask_socketio import SocketIO
-from .routes.chat_routes import register_chat_routes
+from flask_migrate import Migrate
+from .models.base import db
+from .socket_events import register_chat_routes
+from config import config_by_name
 
-socketio = SocketIO(cors_allowed_origins="*", async_mode='eventlet')  # or 'threading'
-
-def create_app():
+def create_app(config_name='dev'):
     app = Flask(__name__)
-    app.config.from_object('app.config.Config')
+    app.config.from_object(config_by_name[config_name])
 
-    # Register WebSocket
-    socketio.init_app(app)
+    db.init_app(app)
 
-    # Register routes
+    # Khởi tạo Migrate cho app
+    migrate = Migrate(app, db)
+
+    # Khởi tạo WebSocket
+    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+
+    # Đăng ký các route (chat_routes)
     register_chat_routes(socketio)
 
-    return app
+    return app, socketio  # Trả về app và socketio
+
+app, socketio = create_app('dev')

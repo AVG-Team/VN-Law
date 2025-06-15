@@ -1,5 +1,5 @@
 import openai
-from app.services.LLMService import LLMService
+from app.services.llm_service import LLMService
 import os
 import sys
 

@@ -8,6 +8,9 @@ import hypercorn.asyncio
 from hypercorn.config import Config
 import asyncio
 from pydantic import BaseModel
+from services import RAGService, EmbeddingService
+import time
+
 
 from app.models.response_model_chat_api import ResponseModel
 from app.models.user_info import UserInfo
@@ -20,6 +23,10 @@ logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
 handler.setLevel(logging.INFO)
 logger.addHandler(handler)
+
+# Import các thư viện cần thiết
+embedding_service = EmbeddingService()
+rag_service = RAGService(embedding_service=embedding_service,use_cpu=False)
 
 app = FastAPI()
 load_dotenv()
@@ -89,14 +96,25 @@ class QuestionRequest(BaseModel):
 # Các endpoint
 @app.post("/api/chat/get-answer")
 async def get_messages(request: Request, question: QuestionRequest, user_info: UserInfo = Depends(authenticate_user)):
-    logger.info(f"Fetching answer for question: {question.question}")
-    name_user = user_info.name or "GUEST"
-    answer = f"Chào {name_user} bạn, tôi là trợ lý ảo pháp luật của bạn. Câu trả lời cho câu hỏi '{question.question}' của bạn là: ..............................."
-    return ResponseModel(
-        status_code=200,
-        message="Success",
-        data={"answer": answer}
-    )
+    start_time = time.time()
+    data = request.get_json()
+    query = data.get('query', '')
+    if not query:
+        return ResponseModel(
+            status_code=400,
+            message="Query is required",
+            data=None
+        )
+    answer = rag_service.generate_answer(query)
+    return ResponseModel({
+        "status_code": 200,
+        "message": "Success",
+        "data": {
+            "answer": answer,
+            "query": query,
+            "execution_time": f"{time.time() - start_time:.2f} seconds"
+        }
+    })
 
 @app.post("/api/chat/get-history")
 async def get_settings(request: Request, auth: Optional[None] = Depends(authenticate_user)):
@@ -106,15 +124,37 @@ async def get_settings(request: Request, auth: Optional[None] = Depends(authenti
         data={"history": messages}
     )
 
-# Cấu hình Hypercorn
-config = Config()
-config.bind = ["0.0.0.0:9068"]  # Chạy trên cổng 9005
+@app.route('/retrieve', methods=['POST'])
+async def retrieve_endpoint(request: Request, user_info: UserInfo = Depends(authenticate_user)):
+    start_time = time.time()
+    data = await request.json()
+    query = data.get('query', '')
+    if not query:
+        return ResponseModel(
+            status_code=400,
+            message="Query is required",
+            data=None
+        )
+    answers = rag_service.retrieve_documents(query)
+    return ResponseModel({
+        "status_code": 200,
+        "message": "Success",
+        "data": {
+            "answers": answers,
+            "query": query,
+            "execution_time": f"{time.time() - start_time:.2f} seconds"
+        }
+    })
+
+# # Cấu hình Hypercorn
+# config = Config()
+# config.bind = ["0.0.0.0:9068"]  # Chạy trên cổng 9005
 
 
-# Hàm chạy ứng dụng
-async def main():
-    await hypercorn.asyncio.serve(app, config)
+# # Hàm chạy ứng dụng
+# async def main():
+#     await hypercorn.asyncio.serve(app, config)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+# if __name__ == "__main__":
+#     asyncio.run(main())
