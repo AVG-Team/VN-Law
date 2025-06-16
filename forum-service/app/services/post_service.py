@@ -6,12 +6,12 @@ from fastapi import HTTPException
 from app.schemas.post_schema import PostCreateOrUpdate, Post
 from app.schemas.comment_schema import CommentCreate, Comment, CommentUpdate
 from app.database.fake_data import get_fake_posts, get_fake_likes, get_fake_stars
-from app.services.auth_service import get_user_info
+from app.services.auth_service import get_user_info, get_admin_user_ids
 
 
 class PostService:
     @staticmethod
-    def create_post(db, post: PostCreateOrUpdate, keycloak_id: str) -> str:
+    def create_post(db, post: PostCreateOrUpdate, keycloak_id: str) -> dict:
         cursor = db.cursor()
         post_id = str(uuid.uuid4())
         cursor.execute(
@@ -19,7 +19,18 @@ class PostService:
             (post_id, post.title, post.content, keycloak_id)
         )
         db.commit()
-        return post_id
+        # Lấy lại bài viết vừa tạo
+        cursor.execute("""
+               SELECT p.id, p.title, p.content, p.keycloak_id, p.created_at, p.updated_at
+               FROM Posts p
+               WHERE p.id = %s
+           """, (post_id,))
+        result = cursor.fetchone()
+
+        if not result:
+            raise Exception("Failed to retrieve created post.")
+
+        return result
 
 
     @staticmethod
@@ -69,9 +80,13 @@ class PostService:
             # Thêm pinned posts vào đầu danh sách, loại bỏ trùng lặp
             posts = pinned_posts + [post for post in posts if post['id'] not in [p['id'] for p in pinned_posts]]
 
+            # lấy danh sách id admin
+        admin_user_ids = get_admin_user_ids()
+
         for post in posts:
             user_info = get_user_info(post["keycloak_id"])
             post["name"] = user_info.getName()
+            post["is_admin"] = post["keycloak_id"] in admin_user_ids
             cursor.execute(
                 """
                 SELECT c.*
@@ -83,6 +98,7 @@ class PostService:
             for comment in comments:
                 comment_user_info = get_user_info(comment["keycloak_id"])
                 comment["name"] = comment_user_info.getName()
+                comment["is_admin"] = comment["keycloak_id"] in admin_user_ids
             post["comments"] = comments
         return posts
 
@@ -103,9 +119,11 @@ class PostService:
         if not post:
             raise Exception("Post not found")
 
-        # Lấy username từ auth-service
+        # Get Admin List Id
+        admin_user_ids = get_admin_user_ids()
         user_info = get_user_info(post["keycloak_id"])
         post["name"] = user_info.getName()
+        post["is_admin"] = post["keycloak_id"] in admin_user_ids
 
         # Lấy comments
         cursor.execute(
@@ -115,23 +133,39 @@ class PostService:
             WHERE c.post_id = %s
             """, (post_id,)
         )
+
         comments = cursor.fetchall()
         for comment in comments:
             comment_user_info = get_user_info(comment["keycloak_id"])
             comment["name"] = comment_user_info.getName()
+            comment["is_admin"] = comment["keycloak_id"] in admin_user_ids
         post["comments"] = comments
         return post
 
     @staticmethod
-    def create_comment(db, post_id: str, comment: CommentCreate, keycloak_id: str) -> int:
-        cursor = db.cursor()
+    def create_comment(db, post_id: str, comment: CommentCreate, keycloak_id: str) -> dict:
+        cursor = db.cursor(dictionary=True)
+
+        # Insert comment
         cursor.execute(
             "INSERT INTO Comments (post_id, keycloak_id, content, parent_id) VALUES (%s, %s, %s, %s)",
             (post_id, keycloak_id, comment.content, comment.parent_id)
         )
         comment_id = cursor.lastrowid
         db.commit()
-        return comment_id
+
+        # Lấy thông tin comment vừa tạo
+        cursor.execute("""
+            SELECT *
+            FROM Comments c
+            WHERE c.id = %s
+        """, (comment_id,))
+        new_comment = cursor.fetchone()
+
+        if not new_comment:
+            raise Exception("Failed to retrieve created comment.")
+
+        return new_comment
 
     @staticmethod
     def like_post(db, post_id: str, keycloak_id: str):
@@ -232,7 +266,7 @@ class PostService:
         db.commit()
 
     @staticmethod
-    def update_post(db, post_id: str, post: PostCreateOrUpdate, keycloak_id: str, is_admin: bool) -> None:
+    def update_post(db, post_id: str, post: PostCreateOrUpdate, keycloak_id: str, is_admin: bool) -> dict:
         cursor = db.cursor(dictionary=True)
         try:
             cursor.execute(
@@ -259,6 +293,16 @@ class PostService:
             if cursor.rowcount == 0:
                 raise HTTPException(status_code=400, detail="Failed to update post")
             db.commit()
+
+            # Trả về bài viết sau khi cập nhật
+            cursor.execute("""
+                        SELECT p.id, p.title, p.content, p.keycloak_id, p.created_at, p.updated_at
+                        FROM Posts p
+                        WHERE p.id = %s
+                    """, (post_id,))
+            updated_post = cursor.fetchone()
+
+            return updated_post
         except HTTPException:
             raise
         except Exception as e:
@@ -268,7 +312,7 @@ class PostService:
             cursor.close()
 
     @staticmethod
-    def update_comment(db, comment_id: str, comment: CommentUpdate, keycloak_id: str, is_admin: bool) -> None:
+    def update_comment(db, comment_id: str, comment: CommentUpdate, keycloak_id: str, is_admin: bool) -> dict:
         cursor = db.cursor(dictionary=True)
         try:
             # Kiểm tra bình luận tồn tại
@@ -296,22 +340,81 @@ class PostService:
             if cursor.rowcount == 0:
                 raise HTTPException(status_code=400, detail="Failed to update comment")
             db.commit()
+
+            cursor.execute("""
+                        SELECT c.id, c.content, c.post_id, c.keycloak_id, c.parent_id, c.created_at, c.updated_at
+                        FROM Comments c
+                        WHERE c.id = %s
+                    """, (comment_id,))
+            updated_comment = cursor.fetchone()
+
+            return updated_comment
         except HTTPException:
             raise
         except Exception as e:
             db.rollback()
-            raise HTTPException(status_code=500, detail="Internal server error")
+            raise HTTPException(status_code=500, detail="Internal server error " + str(e))
         finally:
             cursor.close()
 
     @staticmethod
-    def delete_post(db, post_id: str):
-        cursor = db.cursor()
-        cursor.execute("UPDATE Posts SET is_deleted = TRUE WHERE id = %s", (post_id,))
-        db.commit()
+    def delete_post(db, post_id: str, keycloak_id: str, is_admin: bool):
+        cursor = db.cursor(dictionary=True)
+        try:
+            # Kiểm tra bài viết tồn tại
+            cursor.execute(
+                "SELECT keycloak_id FROM Posts WHERE id = %s",
+                (post_id,)
+            )
+            post_record = cursor.fetchone()
+            if not post_record:
+                raise HTTPException(status_code=404, detail="Post not found")
+
+            # Kiểm tra quyền xoá: chỉ admin hoặc chính chủ
+            if post_record["keycloak_id"] != keycloak_id and not is_admin:
+                raise HTTPException(status_code=403, detail="Not authorized to delete this post")
+
+            # Đánh dấu đã xoá
+            cursor.execute("UPDATE Posts SET is_deleted = TRUE WHERE id = %s", (post_id,))
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=400, detail="Failed to delete post")
+
+            db.commit()
+            return {"message": "Post deleted successfully"}
+
+        except HTTPException:
+            raise
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(status_code=500, detail="Internal server error " + str(e))
+        finally:
+            cursor.close()
 
     @staticmethod
-    def delete_comment(db, comment_id: int):
-        cursor = db.cursor()
-        cursor.execute("DELETE FROM Comments WHERE id = %s", (comment_id,))
-        db.commit()
+    def delete_comment(db, comment_id: int, keycloak_id: str, is_admin: bool):
+        cursor = db.cursor(dictionary=True)
+        try:
+            cursor.execute(
+                "SELECT keycloak_id FROM Comments WHERE id = %s",
+                (comment_id,)
+            )
+            comment_record = cursor.fetchone()
+            if not comment_record:
+                raise HTTPException(status_code=404, detail="Comment not found")
+
+            # Kiểm tra quyền xoá: chỉ admin hoặc chính chủ
+            if comment_record["keycloak_id"] != keycloak_id and not is_admin:
+                raise HTTPException(status_code=403, detail="Not authorized to delete this comment")
+
+            cursor.execute("DELETE FROM Comments WHERE id = %s", (comment_id,))
+            if cursor.rowcount == 0:
+                raise HTTPException(status_code=400, detail="Failed to delete comment")
+            db.commit()
+            return {"message": "Comment deleted successfully"}
+        except HTTPException:
+            raise
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(status_code=500, detail="Internal server error " + str(e))
+        finally:
+            cursor.close()

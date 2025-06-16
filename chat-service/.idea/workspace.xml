@@ -5,81 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c61decd0-867b-4621-a3ab-ec288fabf87f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/dto/responses/UserDetailResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/database/db_init.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/database/fake_data.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/database/insert_fake_data.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/models/comment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/models/like.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/models/notification.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/models/post.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/models/star.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/models/user.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/schemas/comment_schema.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/schemas/post_schema.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/schemas/response_model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/schemas/user_response.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/schemas/user_schema.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/services/auth_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/services/notification_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/app/services/post_service.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/requirements.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../forum-service/run.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/assets/json/no_internet.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/lib/data/models/forum/post.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/lib/data/models/forum/user.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/lib/data/models/user_info.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/NotificationsScreen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/create_post_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/forum_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/post_details_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/providers/post_details_provider.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/providers/post_provider.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/services/post_service.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/widget/like_button.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/widget/post_card.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../front-end/mobile/lib/utils/auth.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/controllers/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/controllers/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/dto/identity/CheckTokenResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/dto/responses/CheckTokenResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/dto/identity/TokenExchangeParam.java" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/dto/identity/TokenExchangeParam.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/dto/identity/TokenExchangeResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/dto/responses/TokenExchangeResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/repositories/IdentityClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/repositories/IdentityClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/services/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/src/main/java/avg/vnlaw/authservice/services/AuthenticationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../auth-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/api/ChatApi.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/ChatApi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/RAGNotKafkaService.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/RAGNotKafkaService.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/.env.dev" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/.env.dev" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/api_service/api_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/api_service/api_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/app.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/app.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/app_flow/navigation_bar/custom_bottom_navbar.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/app_flow/navigation_bar/custom_bottom_navbar.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/auth/login/auth_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/auth/login/auth_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/auth/login/test_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/auth/login/test_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/chatbot_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/chatbot_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/chatbot_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/chatbot_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/widgets/chat_message.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/widgets/chat_message.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/dashboard_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/dashboard_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/home/profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/home/profile_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/legal_document/legal_document_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/legal_document/legal_document_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/splash_screen/splash_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/splash_screen/splash_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/utils/app_const.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/utils/app_const.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/utils/environment.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/utils/environment.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/utils/shared_preferences.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/utils/shared_preferences.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../front-end/mobile/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/windows/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -126,7 +54,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Dung/fix-front-end&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Dung/feat&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/Project/VN-Law/chat-service&quot;,
@@ -303,6 +231,9 @@
       <workItem from="1749828681420" duration="3322000" />
       <workItem from="1749893438758" duration="376000" />
       <workItem from="1749893999685" duration="26000" />
+      <workItem from="1749894327830" duration="706000" />
+      <workItem from="1749912806308" duration="649000" />
+      <workItem from="1749944762433" duration="7000" />
     </task>
     <servers />
   </component>

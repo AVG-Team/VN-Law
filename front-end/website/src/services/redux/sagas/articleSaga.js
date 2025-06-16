@@ -2,7 +2,7 @@ import { call, put, takeLatest } from "redux-saga/effects";
 import axios from "~/config/axios";
 import { ArticleActionTypes } from "../actions/articleAction";
 
-const BASE_URL = "http://law-service:9002/law/api/article";
+const BASE_URL = "http://localhost:9002/law/api/article";
 
 function getAllByPageSaga(params) {
     return axios.get(`${BASE_URL}/filter`, { params });
