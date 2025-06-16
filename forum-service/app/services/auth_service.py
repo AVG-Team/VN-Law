@@ -1,4 +1,5 @@
 import requests
+from typing import List, Union
 from fastapi import HTTPException, Request
 
 from app.models.user import UserInfo
@@ -104,3 +105,45 @@ def get_user_info(keycloak_id: str) -> UserResponse | dict[str, str]:
     except ValueError as e:
         logger.error(f"Lỗi khi phân tích phản hồi API: {str(e)}")
         return {"name": "Unknown"}
+
+def get_users_by_realm_role(realm_role: str) -> Union[List[UserResponse], dict[str, str]]:
+    api_url = f"{os.getenv('API_AUTH_URL', 'http://localhost:9001')}/api/auth/get-users-by-realm-role/{realm_role}"
+    try:
+        response = requests.get(api_url)
+        response.raise_for_status()
+        data = response.json()
+        logger.info(f"Phản hồi từ API lấy thông tin người dùng: {data}")
+
+        # Kiểm tra xem phản hồi có chứa trường 'data' không
+        if "data" not in data:
+            logger.error(f"Phản hồi API không chứa trường 'data': {data}")
+            return {"name": "Unknown"}
+
+        if "data" not in data or not isinstance(data["data"], list):
+            logger.error(f"Dữ liệu không hợp lệ hoặc không phải danh sách: {data}")
+            return {"name": "Unknown"}
+
+        # Trích xuất phần 'data'
+        user_data = data["data"]
+        print("User info retrieved successfully", user_data)
+
+        # Chuyển đổi thành UserResponse
+        users = [UserResponse(**user) for user in data["data"]]
+        logger.info(f"Thông tin người dùng đã lấy: {len(users)} người dùng")
+        logger.info(f"Thông tin người dùng đã lấy: {', '.join(user.username for user in users)}")
+        return users
+    except requests.RequestException as e:
+        logger.error(f"Lỗi khi gọi API lấy thông tin người dùng: {str(e)}")
+        return {"name": "Unknown"}
+    except ValueError as e:
+        logger.error(f"Lỗi khi phân tích phản hồi API: {str(e)}")
+        return {"name": "Unknown"}
+
+def get_admin_user_ids() -> List[str]:
+    users = get_users_by_realm_role("admin-VN-Law")
+
+    if isinstance(users, dict):
+        logger.warning("Không thể lấy danh sách user")
+        return []
+
+    return [user.id for user in users if user.id]

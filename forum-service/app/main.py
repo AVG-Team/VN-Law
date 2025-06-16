@@ -1,4 +1,6 @@
 import logging
+import os
+
 from fastapi import FastAPI, Depends, HTTPException, Query
 from dotenv import load_dotenv
 import mysql.connector
@@ -20,13 +22,17 @@ logger.addHandler(handler)
 
 app = FastAPI()
 load_dotenv()
+db_host = os.getenv("DB_IP", "localhost")
+db_username = os.getenv("DB_USERNAME", "root")
+db_password = os.getenv("DB_PASSWORD", "password")
+db_name = os.getenv("DB_NAME", "forum_service")
 
 # Cấu hình database
 db_config = {
-    "host": "localhost",
-    "user": "root",
-    "password": "password",
-    "database": "forum_service"
+    "host": db_host,
+    "user": db_username,
+    "password": db_password,
+    "database": db_name,
 }
 
 # Dependency để lấy kết nối database
@@ -41,8 +47,8 @@ def get_db():
 async def create_post(post: PostCreateOrUpdate, user: UserInfo = Depends(authenticate_user), db=Depends(get_db)):
     logger.info(f"Creating post by user: {user.username}")
     try:
-        post_id = PostService.create_post(db, post, user.sub)
-        return ResponseModel(status_code=200, message="Post created successfully", data={"post_id": post_id})
+        new_post = PostService.create_post(db, post, user.sub)
+        return ResponseModel(status_code=200, message="Post created successfully", data={"post": new_post})
     except Exception as e:
         logger.error(f"Failed to create post: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
@@ -112,10 +118,10 @@ async def get_post(post_id: str, db=Depends(get_db)):
 async def create_comment(post_id: str, comment: CommentCreate, user: UserInfo = Depends(authenticate_user), db=Depends(get_db)):
     logger.info(f"Creating comment on post: {post_id} by user: {user.username}")
     try:
-        comment_id = PostService.create_comment(db, post_id, comment, user.sub)
+        new_comment = PostService.create_comment(db, post_id, comment, user.sub)
         # Gửi thông báo
         NotificationService.create_notification(db, post_id, user.sub, user.name)
-        return ResponseModel(status_code=200, message="Comment created successfully", data={"comment_id": comment_id})
+        return ResponseModel(status_code=200, message="Comment created successfully", data={"comment": new_comment})
     except Exception as e:
         logger.error(f"Failed to create comment: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
@@ -210,11 +216,11 @@ async def update_post(
     logger.info(f"Updating post: {post_id} by user: {user.username}")
     try:
         is_admin = "admin-VN-Law" in (user.realm_access.roles if user.realm_access else [])
-        PostService.update_post(db, post_id, post, user.sub, is_admin)
+        updated_post = PostService.update_post(db, post_id, post, user.sub, is_admin)
         return ResponseModel(
             status_code=200,
             message="Post updated successfully",
-            data={}
+            data={"post": updated_post}
         )
     except HTTPException as e:
         logger.error(f"Failed to update post: {e.detail}")
@@ -234,11 +240,11 @@ async def update_comment(
     logger.info(f"Updating comment: {comment_id} by user: {user.username}")
     try:
         is_admin = "admin-VN-Law" in (user.realm_access.roles if user.realm_access else [])
-        PostService.update_comment(db, comment_id, comment, user.sub, is_admin)
+        updated_comment = PostService.update_comment(db, comment_id, comment, user.sub, is_admin)
         return ResponseModel(
             status_code=200,
             message="Comment updated successfully",
-            data={}
+            data={"comment": updated_comment}
         )
     except HTTPException as e:
         logger.error(f"Failed to update comment: {e.detail}")
@@ -251,12 +257,9 @@ async def update_comment(
 async def delete_post(post_id: str, user: UserInfo = Depends(authenticate_user), db=Depends(get_db)):
     logger.info(f"Deleting post: {post_id} by user: {user.username}")
     # required_roles = {"user-VN-Law", "admin-VN-Law"}
-    realm_roles = user.realm_access.roles if user.realm_access else []
-    if "admin-VN-Law" not in realm_roles:
-        logger.warning("Unauthorized delete attempt")
-        raise HTTPException(status_code=403, detail="Admin only")
     try:
-        PostService.delete_post(db, post_id)
+        is_admin = "admin-VN-Law" in (user.realm_access.roles if user.realm_access else [])
+        PostService.delete_post(db, post_id, user.sub, is_admin)
         return ResponseModel(status_code=200, message="Post deleted successfully", data={})
     except Exception as e:
         logger.error(f"Failed to delete post: {str(e)}")
@@ -265,12 +268,9 @@ async def delete_post(post_id: str, user: UserInfo = Depends(authenticate_user),
 @app.delete("/api/comments/{comment_id}", response_model=ResponseModel)
 async def delete_comment(comment_id: int, user: UserInfo = Depends(authenticate_user), db=Depends(get_db)):
     logger.info(f"Deleting comment: {comment_id} by user: {user.username}")
-    realm_roles = user.realm_access.roles if user.realm_access else []
-    if "admin-VN-Law" not in realm_roles:
-        logger.warning("Unauthorized delete attempt")
-        raise HTTPException(status_code=403, detail="Admin only")
     try:
-        PostService.delete_comment(db, comment_id)
+        is_admin = "admin-VN-Law" in (user.realm_access.roles if user.realm_access else [])
+        PostService.delete_comment(db, comment_id, user.sub, is_admin)
         return ResponseModel(status_code=200, message="Comment deleted successfully", data={})
     except Exception as e:
         logger.error(f"Failed to delete comment: {str(e)}")

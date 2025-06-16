@@ -12,6 +12,7 @@ import avg.vnlaw.authservice.repositories.RoleRepository;
 import avg.vnlaw.authservice.repositories.UserRepository;
 import avg.vnlaw.authservice.dto.requests.AuthenticationRequest;
 import avg.vnlaw.authservice.dto.requests.RegisterRequest;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -667,6 +668,35 @@ public class AuthenticationService {
         } catch (FeignException e) {
             log.error("Error getting user by ID: {}, error: {}", userId, e.getMessage());
             throw new IllegalArgumentException("Error getting user by ID", e);
+        }
+    }
+
+    public List<UserDetailResponse> getUsersByRealmRole(String realmRole) {
+        if (realmRole == null || realmRole.isEmpty()) {
+            throw new IllegalArgumentException("Realm Role is required");
+        }
+
+        try {
+            ResponseEntity<Object> response = identityClient.getUsersByRealmRole(realmRole, "Bearer " + getTokenAdmin().getAccessToken());
+            if (response.getStatusCode().is2xxSuccessful()) {
+                Object body = response.getBody();
+                List<UserDetailResponse> users = objectMapper.convertValue(
+                        body,
+                        new TypeReference<List<UserDetailResponse>>() {}
+                );
+                if (users == null) {
+                    log.error("Users data is null for realmRole: {}", realmRole);
+                    throw new IllegalArgumentException("User data is null for realmRole: " + realmRole);
+                }
+
+                return users;
+            } else {
+                log.error("Failed to get user by realmRole: {}, status: {}", realmRole, response.getStatusCode());
+                throw new IllegalArgumentException("Failed to get user by ID");
+            }
+        } catch (FeignException e) {
+            log.error("Error getting user by realmRole: {}, error: {}", realmRole, e.getMessage());
+            throw new IllegalArgumentException("Error getting user by realmRole", e);
         }
     }
 
