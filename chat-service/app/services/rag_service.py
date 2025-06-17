@@ -69,7 +69,7 @@ class RAGService:
             )
             self.cross_encoder = CrossEncoder(cross_encoder_model, device="cpu")
         
-        self.cache = redis.Redis(host='localhost', port=6379, db=0)
+        self.cache = redis.Redis(host='14.225.218.42', port=6379, db=0)
         self.top_k = top_k
 
     def preprocess_text(self, text: str) -> str:

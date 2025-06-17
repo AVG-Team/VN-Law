@@ -42,7 +42,7 @@ async def authenticate_user(request: Request) -> UserInfo:
     token = auth_header.split(" ")[1]
     logger.info(f"Extracted token: {token}")
 
-    api_auth_url = os.getenv("API_URL", "http://localhost:9001")
+    api_auth_url = os.getenv("API_AUTH_URL", "http://localhost:9001")
     validation_url = f"{api_auth_url}/api/auth/validate-token"
     logger.info(f"Validation URL: {validation_url}")
 

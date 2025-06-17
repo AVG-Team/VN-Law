@@ -1,8 +1,9 @@
 import { call, put, takeLatest } from "redux-saga/effects";
 import { VbqpplActionTypes } from "../actions/vbqpplAction";
 import axios from "../../../config/axios";
+import { LAW_API_BASE_URL } from "~/common/constants/keys";
 
-const BASE_URL = "http://law-service:9002/law/api/vbqppl";
+const BASE_URL = LAW_API_BASE_URL + "/vbqppl";
 
 function getAllByPageSaga(params) {
     const token = localStorage.getItem("accessToken");
