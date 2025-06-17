@@ -1,0 +1,45 @@
+
+
+// Data Models tương thích với backend
+class Post {
+  constructor(data) {
+    this.id = data.id;
+    this.title = data.title;
+    this.content = data.content;
+    this.authorName = data.name || data.authorName;
+    this.keycloakId = data.keycloak_id || data.keycloakId;
+    this.isPinned = data.is_pinned === 1 || data.is_pinned === true || data.isPinned;
+    this.createdAt = new Date(data.created_at || data.createdAt);
+    this.updatedAt = new Date(data.updated_at || data.updatedAt);
+    this.likes = typeof data.likes === 'string' ? parseInt(data.likes) : (data.likes || 0);
+    this.commentsCount = typeof data.commentsCount === 'string' ? parseInt(data.commentsCount) : (data.commentsCount || 0);
+    this.isAdmin = data.is_admin || data.isAdmin || false;
+    this.isLiked = data.isLiked || false;
+    this.isStarred = data.isStarred || false;
+    this.comments = data.comments ? data.comments.map(c => new Comment(c)) : [];
+  }
+
+  static fromJson(json) {
+    return new Post(json);
+  }
+}
+
+class Comment {
+  constructor(data) {
+    this.id = data.id;
+    this.postId = data.post_id || data.postId;
+    this.content = data.content;
+    this.authorName = data.name || data.authorName;
+    this.keycloakId = data.keycloak_id || data.keycloakId;
+    this.parentId = data.parent_id === null ? null : 
+      (typeof data.parent_id === 'string' ? parseInt(data.parent_id) : data.parent_id);
+    this.createdAt = new Date(data.created_at || data.createdAt);
+    this.updatedAt = new Date(data.updated_at || data.updatedAt);
+    this.isAdmin = data.is_admin || data.isAdmin || false;
+    this.replies = [];
+  }
+
+  static fromJson(json) {
+    return new Comment(json);
+  }
+}
