@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.models.response_model_chat_api import ResponseModel
 from app.models.user_info import UserInfo
-from app.services import RAGService, EmbeddingService
+from app.services import RAGService, EmbeddingService, LLMService, ChatbotService
 import logging
 import requests
 import os
@@ -15,6 +15,8 @@ load_dotenv()
 
 embedding_service = EmbeddingService()
 rag_service = RAGService(embedding_service=embedding_service, use_cpu=False)
+llm_service = LLMService()
+chat_service = ChatbotService()
 
 def authenticate_user(auth_header) -> UserInfo:
     if not auth_header or not auth_header.startswith("Bearer "):
@@ -73,11 +75,11 @@ def get_answer():
         query = data.get('question', '')
         if not query:
             return jsonify(ResponseModel(status_code=400, message="Query is required", data=None).dict()), 400
-        answer = rag_service.generate_answer(query)
+        response = chat_service.generate_response(query)
         return jsonify(ResponseModel(
             status_code=200,
             message="Success",
-            data={"answer": answer, "query": query, "execution_time": f"{time.time() - start_time:.2f} seconds"}
+            data={"answer": response['answer'],"context": response["context"], "query": query, "execution_time": f"{time.time() - start_time:.2f} seconds"}
         ).dict()), 200
     except Exception as e:
         logger.error(f"Error in get_answer: {str(e)}")

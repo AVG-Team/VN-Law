@@ -45,3 +45,5 @@ def create_app(config_name='dev'):
         return jsonify(response), 500
 
     return app, socketio  # Trả về app và socketio
+
+app, socketio = create_app('dev')

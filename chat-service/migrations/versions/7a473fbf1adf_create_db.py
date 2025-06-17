@@ -1,8 +1,8 @@
-"""migration vps
+"""create db
 
-Revision ID: 6e7b48f6a829
+Revision ID: 7a473fbf1adf
 Revises: 
-Create Date: 2025-06-17 14:21:35.158031
+Create Date: 2025-06-18 06:18:45.310407
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '6e7b48f6a829'
+revision = '7a473fbf1adf'
 down_revision = None
 branch_labels = None
 depends_on = None

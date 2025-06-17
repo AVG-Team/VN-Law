@@ -33,7 +33,7 @@ class RAGService:
         self.initialized = True
         
         # Force CPU if requested or if CUDA causes issues
-        self.device = "cpu" if use_cpu else ("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = "cuda" 
         self.embedding_service = embedding_service
         
         try:
