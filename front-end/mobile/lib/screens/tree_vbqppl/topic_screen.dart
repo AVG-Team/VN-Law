@@ -2,7 +2,6 @@ import 'package:VNLAW/api_service/api_service_law.dart';
 import 'package:VNLAW/screens/tree_vbqppl/subject_screen.dart';
 import 'package:VNLAW/utils/loading.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../data/models/vbqppl/topic.dart';
 
 class TopicScreen extends StatefulWidget {
@@ -50,12 +49,12 @@ class _TopicScreenState extends State<TopicScreen> {
         title: _isSearching
             ? TextField(
           controller: _searchController,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'Tìm kiếm...',
             border: InputBorder.none,
             hintStyle: TextStyle(color: Colors.white70),
           ),
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
           onChanged: _filterTopics,
         )
             : const Text('Hệ thống pháp luật Việt Nam'),
@@ -96,7 +95,7 @@ class _TopicScreenState extends State<TopicScreen> {
                       backgroundColor: Theme.of(context).primaryColor,
                       child: Text(
                         '${topic.order}',
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                     title: Text(

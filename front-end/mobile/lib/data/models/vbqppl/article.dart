@@ -3,7 +3,7 @@ class Article {
   final String name;
   final String content;
   final String index;
-  final int order;
+  final int? order;
   final String vbqppl;
   final String vbqpplLink;
   final List<dynamic> tables;
@@ -14,7 +14,7 @@ class Article {
     required this.name,
     required this.content,
     required this.index,
-    required this.order,
+    this.order,
     required this.vbqppl,
     required this.vbqpplLink,
     required this.tables,

@@ -68,9 +68,14 @@ class CustomColors {
   final Color _accentColor = const Color(0xFF8C98A8);
   final Color _accentDarkColor = const Color(0xFF9999aa);
   final Color _scaffoldColor = const Color(0xFFFAFAFA);
+  final Color _appBarColor = const Color(0xFF1976D2);
 
   Color mainColor({double? opacity}) {
     return _mainColor.withOpacity(opacity ?? 1.0);
+  }
+
+  Color appBarColor({double? opacity}) {
+    return _appBarColor.withOpacity(opacity ?? 1.0);
   }
 
   Color secondColor(double opacity) {

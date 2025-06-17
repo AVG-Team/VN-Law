@@ -5,6 +5,7 @@ import { LAW_API_BASE_URL } from "~/common/constants/keys";
 
 const BASE_URL = LAW_API_BASE_URL + "/article";
 
+
 function getAllByPageSaga(params) {
     return axios.get(`${BASE_URL}/filter`, { params });
 }

@@ -1,13 +1,20 @@
+import os
 import mysql.connector
 from mysql.connector import Error
+from dotenv import load_dotenv
 
 def init_db():
     try:
+        load_dotenv()
+        db_host = os.getenv("DB_IP", "localhost")
+        db_username = os.getenv("DB_USERNAME", "root")
+        db_password = os.getenv("DB_PASSWORD", "password")
+        db_name = os.getenv("DB_NAME", "forum_service")
         connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="password",
-            database="forum_service"
+            host=db_host,
+            user=db_username,
+            password=db_password,
+            database=db_name
         )
         cursor = connection.cursor()
 

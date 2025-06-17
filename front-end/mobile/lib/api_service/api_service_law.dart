@@ -10,10 +10,11 @@ import '../data/models/vbqppl/subject.dart';
 import '../data/models/vbqppl/topic.dart';
 
 class ApiServiceLaw {
-  static String baseUrl = AppConst.apiLawUrl;
+  static String baseUrl = '${AppConst.apiLawUrl}/law/api';
 
   // Lấy danh sách topic
   Future<List<Topic>> getTopics() async {
+    print("baseUrl: " + baseUrl);
     final response = await http.get(
         Uri.parse('$baseUrl/topic'),
         headers: {
@@ -21,6 +22,9 @@ class ApiServiceLaw {
           'Accept': 'application/json',
         },
     );
+    print("response: " + response.toString());
+    print("response: " + response.statusCode.toString());
+    print("response: " + response.body);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));
@@ -81,15 +85,19 @@ class ApiServiceLaw {
         },
     );
 
+    print("response: " + response.body.toString());
+
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));
       final Map<String, dynamic> articleData = responseData['data'];
       final List<dynamic> content = articleData['content'];
-
+      int totalElements = articleData['total_elements'] ?? 0;
+      int totalPages = articleData['total_pages'] ?? 0;
+      int currentPage = articleData['number'] ?? 0;
       return {
         'articles': content.map((json) => Article.fromJson(json)).toList(),
-        'totalPages': articleData['totalPages'],
-        'totalElements': articleData['totalElements'],
+        'totalPages': articleData['total_pages'],
+        'totalElements': articleData['total_elements'],
         'currentPage': articleData['number'],
       };
     } else {

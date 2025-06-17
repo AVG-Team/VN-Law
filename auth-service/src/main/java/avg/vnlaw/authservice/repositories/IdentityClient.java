@@ -25,6 +25,9 @@ public interface IdentityClient {
     @GetMapping(value = "/admin/realms/vnlaw/users/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Map<String, Object>> getUserByUserId(@PathVariable("userId") String userId, @RequestHeader("Authorization") String token);
 
+    @GetMapping(value = "/admin/realms/vnlaw/roles/{realmRole}/users", consumes = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Object> getUsersByRealmRole(@PathVariable("realmRole") String realmRole, @RequestHeader("Authorization") String token);
+
     @PutMapping(value = "/admin/realms/vnlaw/users/{userId}/execute-actions-email", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> executeActionsEmail(@PathVariable("userId") String userId, @RequestHeader("Authorization") String token, @RequestBody String[] actions);
 

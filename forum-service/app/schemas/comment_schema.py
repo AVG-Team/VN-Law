@@ -14,6 +14,7 @@ class Comment(BaseModel):
     content: str
     parent_id: Optional[int]
     created_at: datetime
+    updated_at: datetime
 
 class CommentUpdate(BaseModel):
     content: Optional[str] = None

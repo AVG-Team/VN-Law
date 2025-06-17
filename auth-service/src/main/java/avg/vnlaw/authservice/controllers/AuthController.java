@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -188,6 +189,16 @@ public class AuthController {
         return ApiResponse.builder()
                 .message("Get User By User Id successfully")
                 .data(userInfo)
+                .build();
+    }
+
+    @GetMapping("/get-users-by-realm-role/{realmRole}")
+    public ApiResponse<?> getUsersByRealmRole(@PathVariable String realmRole) {
+        log.info("Get user by realmRole request: {}", realmRole);
+        List<UserDetailResponse> userList = authService.getUsersByRealmRole(realmRole);
+        return ApiResponse.builder()
+                .message("Get Users By Realm Role successfully")
+                .data(userList)
                 .build();
     }
 

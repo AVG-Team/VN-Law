@@ -8,6 +8,7 @@ class UserInfo {
   final String accessToken;
   final String refreshToken;
   final String userRole;
+  final String userId;
 
   UserInfo({
     this.name = '',
@@ -16,6 +17,7 @@ class UserInfo {
     this.accessToken = '',
     this.refreshToken = '',
     this.userRole = 'User',
+    this.userId = '',
   });
 
   factory UserInfo.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class UserInfo {
       accessToken: json['accessToken'] as String? ?? '',
       refreshToken: json['refreshToken'] as String? ?? '',
       userRole: json['userRole'] as String? ?? 'User',
+      userId: json['userId'] as String? ?? '',
     );
   }
 
@@ -36,6 +39,7 @@ class UserInfo {
     'accessToken': accessToken,
     'refreshToken': refreshToken,
     'userRole': userRole,
+    'userId': userId,
   };
 
   static Future<UserInfo> initialize() async {
@@ -45,7 +49,7 @@ class UserInfo {
     final accessToken = await SPUtill.getValue(SPUtill.keyAccessToken) ?? '';
     final refreshToken = await SPUtill.getValue(SPUtill.keyRefreshToken) ?? '';
     final rolesJson = await SPUtill.getValue(SPUtill.keyRoles);
-
+    final userId = await SPUtill.getValue(SPUtill.keyUserId) ?? '';
     final roles = rolesJson != null ? List<String>.from(jsonDecode(rolesJson)) : [];
     final userRole = roles.contains('admin') ? 'Admin' : 'User';
 
@@ -56,6 +60,7 @@ class UserInfo {
       accessToken: accessToken,
       refreshToken: refreshToken,
       userRole: userRole,
+      userId: userId,
     );
   }
 }

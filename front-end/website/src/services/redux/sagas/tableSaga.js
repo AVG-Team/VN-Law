@@ -3,7 +3,9 @@ import axios from "~/config/axios";
 import { TableActionTypes } from "../actions/tableAction";
 import { LAW_API_BASE_URL } from "~/common/constants/keys";
 
+
 const BASE_URL = LAW_API_BASE_URL + "/table";
+
 
 function getAllByPageSaga(params) {
     return axios.get(`${BASE_URL}`, { params });
