@@ -4,6 +4,7 @@ import os
 from fastapi import FastAPI, Depends, HTTPException, Query
 from dotenv import load_dotenv
 import mysql.connector
+from starlette.middleware.cors import CORSMiddleware
 
 from app.models.user import UserInfo
 from app.services.auth_service import authenticate_user, get_user_info
@@ -34,6 +35,15 @@ db_config = {
     "password": db_password,
     "database": db_name,
 }
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Dependency để lấy kết nối database
 def get_db():
