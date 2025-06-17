@@ -4,8 +4,8 @@ import { Menu, Close } from "@mui/icons-material";
 import { Link, useLocation } from "react-router-dom";
 import { FaUserCircle, FaUserTie } from "react-icons/fa";
 import { IoMenu } from "react-icons/io5";
-import {StorageKeys} from "../../../common/constants/keys";
-import {checkAuth, getUserInfo} from "../../../mock/auth";
+import { StorageKeys } from "../../../common/constants/keys";
+import { checkAuth, getUserInfo } from "../../../mock/auth";
 
 const NavLink = memo(({ href, children, className = "" }) => (
     <motion.a
@@ -37,7 +37,7 @@ const Navbar = memo(() => {
         { href: "/van-ban-quy-pham-phap-luat", label: "Văn bản pháp luật" },
         { href: "/chat-bot", label: "Chatbot" },
         { href: "/phap-dien", label: "Tra cứu pháp điển" },
-        { href: "/", label: "Learn" },
+        { href: "/dien-dan", label: "Diễn đàn" },
         { href: "/tin-tuc", label: "Tin tức" },
     ];
 
@@ -52,9 +52,9 @@ const Navbar = memo(() => {
 
     const userMenuItems = baseMenuItems.filter((item) => {
         if (isLoggedIn) {
-            return item.label !== 'Đăng nhập';
+            return item.label !== "Đăng nhập";
         } else {
-            return item.label !== 'Đăng xuất';
+            return item.label !== "Đăng xuất";
         }
     });
 
@@ -110,7 +110,7 @@ const Navbar = memo(() => {
                             ) : (
                                 <FaUserCircle className="w-8 h-8 text-gray-600" />
                             )}
-                            <span className="text-sm font-medium">{ userInfo.name }</span>
+                            <span className="text-sm font-medium">{userInfo.name}</span>
                         </motion.button>
 
                         {/* User Dropdown Menu */}

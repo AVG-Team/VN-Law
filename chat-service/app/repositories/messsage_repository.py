@@ -23,7 +23,7 @@ class MessageRepository:
     @staticmethod
     def delete(message):
         try:
-            db.session.delete(messages)
+            db.session.delete(message)
             db.session.commit()
         except Exception as e:
             db.session.rollback()

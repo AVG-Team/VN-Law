@@ -10,7 +10,7 @@ class DocumentService:
     def __init__(
         self,
         topic: str = "law-document",
-        bootstrap_servers: str = "localhost:9092",
+        bootstrap_servers: str = "14.225.218.42:9092",
         group_id: str = "law-document-group",
         auto_offset_reset: str = "earliest",
         enable_auto_commit: bool = True,
