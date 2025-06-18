@@ -4,11 +4,14 @@ import Logo from "../../assets/images/logo/logo-circle.png";
 import { getCurrentUser } from "~/services/authClient";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import {message} from "antd";
 // import {setToken} from "../../../services/apis/auth.js";
 
 export default function Notify(props) {
     const navigate = useNavigate();
     const [token, setToken] = useState("");
+    const [type, setType] = useState("");
     const [isVerify, setIsVerify] = useState(false);
 
     // eslint-disable-next-line react/prop-types
@@ -17,22 +20,27 @@ export default function Notify(props) {
         document.title = title ? `${title}` : "Trang không tồn tại";
         const urlParams = new URLSearchParams(window.location.search);
         setToken(urlParams.get("token"));
+        setType(urlParams.get("type"));
     }, [title]);
 
     useEffect(() => {
-        if (token) handleCheckVerify().then();
+        if (type === "verify-email-success") {
+            if (token) handleCheckVerify().then();
+        }
     }, [token]);
 
     const handleCheckVerify = async () => {
         try {
             setIsVerify(false);
-            const response = await getCurrentUser({
+            const response = await axios.post('http://localhost:9001/api/auth/confirm-email', {
                 token: token,
             });
-            let message = response.message;
+            console.log('Response from server:', response.data);
+            //Todo: Alert Success
+            let message = response.data.message;
             setIsVerify(true);
             toast.success(message, {
-                onClose: () => navigate("/"),
+                onClose: () => navigate("/login"),
                 autoClose: 2000,
                 buttonClose: false,
             });

@@ -9,6 +9,7 @@ import Typography from "@mui/material/Typography";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { changePassword } from "~/services/authClient";
 import { GoogleReCaptchaProvider, GoogleReCaptcha } from "react-google-recaptcha-v3";
+import axios from "axios";
 
 export function ResetPasswordForm({ token }) {
     const navigate = useNavigate();
@@ -63,8 +64,14 @@ export function ResetPasswordForm({ token }) {
         if (Object.keys(validationErrors).length === 0) {
             try {
                 setLoading(true);
-                const response = await changePassword({ password, token, recaptchaToken });
-                toast.success(response.message, {
+                const response = await axios.post('http://localhost:9001/api/auth/change-password-with-token', {
+                    password: password,
+                    token: token,
+                });
+                console.log('Response from server:', response.data);
+                let message = response.data.message;
+
+                toast.success(message, {
                     onClose: () => navigate("/dang-nhap"),
                     autoClose: 1000,
                     buttonClose: false,

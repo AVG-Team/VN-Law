@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/table")
+@RequestMapping("law/api/table")
 @RequiredArgsConstructor
 public class TableController {
 

@@ -19,7 +19,7 @@ public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     public String id;
-    @Column(unique = true)
+    @Column(unique = true, length = 2048)
     public String token;
     public boolean revoked;
     public boolean expired;

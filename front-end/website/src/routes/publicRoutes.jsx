@@ -42,7 +42,7 @@ const publicRoutes = [
     },
     {
         id: 4,
-        path: "/vbqppl",
+        path: "/van-ban-quy-pham-phap-luat",
         element: <VBQPPL />,
         title: "Văn bản quy phạm pháp luật",
         layout: ContentLayout,
@@ -56,7 +56,7 @@ const publicRoutes = [
     },
     {
         id: 6,
-        path: "/tree-law",
+        path: "/phap-dien",
         element: <TreeLaw />,
         title: "Tra cứu pháp điển",
         layout: ContentLayout,
@@ -70,7 +70,7 @@ const publicRoutes = [
     },
     {
         id: 8,
-        path: "/vbqppl/:id",
+        path: "/van-ban-quy-pham-phap-luat/:param",
         element: <VBBQPPLDetail />,
         title: "Chi tiết văn bản quy phạm pháp luật",
         layout: ContentLayout,

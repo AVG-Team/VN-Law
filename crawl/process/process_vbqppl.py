@@ -1,6 +1,8 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from sqlalchemy import text
+
 from models.db import create_tables, get_session
 from models.models import Vbqppl, Pdarticle
 import re
@@ -34,10 +36,10 @@ def save_data(vbqppls):
 
 def process_vbqppl():
     with get_session() as session:
-        df = pd.read_sql('SELECT vbqppl_link FROM pdarticle GROUP BY vbqppl_link;', con=session.bind)
-        session.close()
+        result = session.execute(text('SELECT DISTINCT vbqppl_link FROM pdarticle')).fetchall()
+        vbqppl_links = [row[0] for row in result]
 
-    list_vb = [get_info(row["vbqppl_link"]) for _, row in df.iterrows()]
+    list_vb = [get_info(link) for link in vbqppl_links]
     list_vb = [x for x in list_vb if x]  # Loại bỏ None
     list_vb = list(dict.fromkeys(list_vb))  # Loại bỏ trùng lặp
 

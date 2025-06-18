@@ -42,3 +42,12 @@ data/
 *.out
 *.bak
 *.tmp
+
+/fine-tuning/phobert-legal-qa-finetuned/
+/fine-tuning/phobert_training_data/
+/fine-tuning/wandb/
+/fine-tuning/processing_checkpoint.pkl
+/wandb/
+/test.py
+/test_v1.py
+/test_v2.py

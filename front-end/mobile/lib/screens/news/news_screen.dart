@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/screens/news/news_detail_widget.dart';
-import 'package:mobile/screens/news/news_provider.dart';
 
 // import '../../data/models/news_response/news_article.dart';
 import '../../data/models/news_response/response_news.dart';
+import 'news_detail_widget.dart';
+import 'news_provider.dart';
 // import 'package:mobile/pages/News/widgets/news_detail_widget.dart';
 // import '../../models/news_article.dart';
 // import '../../services/news_service.dart';

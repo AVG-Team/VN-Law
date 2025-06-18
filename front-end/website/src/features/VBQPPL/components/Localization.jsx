@@ -21,7 +21,7 @@ const Localization = ({ item }) => {
         <ThemeContext.Provider value={themeContext} className="flex justify-center">
             <LocalizationContext.Provider value={localizationContext}>
                 <div
-                    className={`rpv-core__viewer rpv-core__viewer--${currentTheme} lg:w-2/3 w-full h-[950px] flex flex-col border border-[#0000004d]`}
+                    className={`rpv-core__viewer rpv-core__viewer--${currentTheme}  w-full h-[950px] flex flex-col border border-[#0000004d]`}
                 >
                     <div
                         style={{

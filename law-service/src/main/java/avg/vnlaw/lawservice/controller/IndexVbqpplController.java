@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/index-vbqppl")
+@RequestMapping("law/api/index-vbqppl")
 @RequiredArgsConstructor
 public class IndexVbqpplController {
 

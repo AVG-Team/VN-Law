@@ -1,45 +1,48 @@
-import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
+// Data model for the legal document
 class LegalDocument {
   final int id;
-  final String type;
+  final String? title;
+  final String issueDate;
+  final String effectiveDate;
+  final String? effectiveEndDate;
+  final String issuer;
   final String number;
-  final String title;
-  final String organization;
-  final String date;
-  final String htmlContent;
+  final int statusCode;
+  final String? type;
+  final String content;
+  final String html;
 
   LegalDocument({
     required this.id,
-    String? type,
+    this.title,
+    required this.issueDate,
+    required this.effectiveDate,
+    this.effectiveEndDate,
+    required this.issuer,
     required this.number,
-    required this.title,
-    String? organization,
-    required this.date,
-    required this.htmlContent,
-  }) :
-        type = type ?? 'CHƯA PHÂN LOẠI',
-        organization = organization ?? _randomOrganization();
+    required this.statusCode,
+    this.type,
+    required this.content,
+    required this.html,
+  });
 
   factory LegalDocument.fromJson(Map<String, dynamic> json) {
     return LegalDocument(
       id: json['id'] ?? 0,
-      type: json['type'],
+      title: json['title'] ?? '',
+      issueDate: json['issueDate'] ?? '',
+      effectiveDate: json['effectiveDate'] ?? '',
+      effectiveEndDate: json['effectiveEndDate'] ?? null,
+      issuer: json['issuer'] ?? '',
       number: json['number'] ?? '',
-      title: json['title'] ?? 'Văn bản pháp luật Việt Nam',
-      organization: json['organization'],
-      date: json['date'] ?? '',
-      htmlContent: json['html'] ?? '',
+      statusCode: json['statusCode'] ?? 0,
+      type: json['type'] ?? '',
+      content: json['content'] ?? '',
+      html: json['html'] ?? '<p>Không có nội dung</p>',
     );
-  }
-
-  static String _randomOrganization() {
-    final organizations = [
-      'Chính Phủ', 'Bộ Công An', 'Bộ Tài Chính', 'Quốc Hội',
-      'UBND Hà Nội', 'UBND TP Hồ Chí Minh', 'Bộ Tư Pháp',
-      'Sở Y Tế', 'Sở Giáo Dục', 'Bộ Khoa Học và Công Nghệ'
-    ];
-    final randomIndex = Random().nextInt(organizations.length);
-    return organizations[randomIndex];
   }
 }

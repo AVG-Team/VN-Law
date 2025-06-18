@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.logging.Handler;
 
 @RestController
-@RequestMapping("/subject")
+@RequestMapping("law/api/subject")
 @RequiredArgsConstructor
 public class SubjectController {
 
@@ -25,13 +25,13 @@ public class SubjectController {
     private final SubjectDocumentService subjectDocumentService;
 
 
-    @GetMapping("/{topicId}")
+    @GetMapping("/topic/{topicId}")
     public ResponseEntity<Object> getSubjectByTopic(@PathVariable("topicId") String topicId){
         return HandlerResponse.responseBuilder("Complete Get Subject By Topic ",
                 HttpStatus.OK,subjectService.getSubjectByTopic(topicId));
     }
 
-    @GetMapping("{subjectId}")
+    @GetMapping("/{subjectId}")
     public ResponseEntity<Object> getSubjectDetail(@PathVariable("subjectId") String subjectId){
         return HandlerResponse.responseBuilder("Get subject Detail successfully",
                 HttpStatus.OK,subjectService.getSubject(subjectId));

@@ -39,3 +39,6 @@ build/
 front-end/website/src/mock/test.js
 /crawl/src/main/java/law_direction/
 node_modules
+/chat-service/fine-tuning/wandb/
+/chat-service/fine-tuning/phobert_training_data/
+/chat-service/fine-tuning/phobert-legal-qa-finetuned/

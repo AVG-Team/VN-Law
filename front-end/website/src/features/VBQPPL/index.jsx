@@ -1,11 +1,12 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { Col, Pagination, Row, Card, Tag, Select, Input, Breadcrumb, Space, Typography, Button } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { Col, Pagination, Row, Card, Tag, Select, Input, Breadcrumb, Typography, Button } from "antd";
 import { SearchOutlined, FileTextOutlined, CalendarOutlined, FilterOutlined, ReloadOutlined } from "@ant-design/icons";
-import VbqpplApi from "~/services/vbqpplApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileLines, faScaleBalanced } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
+import { filter } from "../../services/redux/actions/vbqpplAction";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -25,13 +26,13 @@ const sortOptions = [
 ];
 
 const VBQPPL = (props) => {
+    const dispatch = useDispatch();
+    const { vbqppls, total, loading } = useSelector((state) => state.vbqppl);
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(9);
-    const [total, setTotal] = useState(0);
-    const [content, setContent] = useState([]);
+    const [pageSize, setPageSize] = useState(12);
     const [type, setType] = useState("");
     const [searchText, setSearchText] = useState("");
-    const [sortBy, setSortBy] = useState("newest");
+    const [sortBy, setSortBy] = useState("");
     const [isFilterVisible, setIsFilterVisible] = useState(false);
 
     VBQPPL.propTypes = {
@@ -39,10 +40,21 @@ const VBQPPL = (props) => {
     };
 
     const { title } = props;
+    const pageTitle = title || "Văn bản quy phạm pháp luật";
+    const pageDescription = "Tra cứu và xem các văn bản quy phạm pháp luật mới nhất";
 
     useEffect(() => {
         document.title = title || "Trang không tồn tại";
     }, [title]);
+    useEffect(() => {
+        dispatch(
+            filter({
+                pageNo: page,
+                pageSize,
+                type,
+            }),
+        );
+    }, [page, pageSize, type, searchText, sortBy, dispatch]);
 
     const handleCategoryChange = (value) => {
         setType(value);
@@ -65,26 +77,6 @@ const VBQPPL = (props) => {
         setSortBy("newest");
         setPage(1);
     };
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const { content, totalElements, size } = await VbqpplApi.filter({
-                    type,
-                    pageNo: page,
-                    pageSize,
-                    search: searchText,
-                    sortBy,
-                });
-                setContent(content);
-                setTotal(Math.ceil(totalElements / size));
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        fetchData();
-    }, [type, page, pageSize, searchText, sortBy]);
 
     return (
         <div className="px-4 py-6 lg:px-8">
@@ -131,7 +123,7 @@ const VBQPPL = (props) => {
                             placeholder="Chọn loại văn bản"
                             className="w-full"
                             onChange={handleCategoryChange}
-                            value={type}
+                            value={type === "" ? undefined : type}
                             allowClear
                             suffixIcon={<FontAwesomeIcon icon={faFileLines} />}
                         >
@@ -156,7 +148,7 @@ const VBQPPL = (props) => {
                                 placeholder="Sắp xếp theo"
                                 className="w-full"
                                 onChange={handleSortChange}
-                                value={sortBy}
+                                value={sortBy == "" ? undefined : sortBy}
                             >
                                 {sortOptions.map((option) => (
                                     <Option key={option.value} value={option.value}>
@@ -176,48 +168,51 @@ const VBQPPL = (props) => {
             </motion.div>
 
             <Row gutter={[16, 16]} className="mt-6">
-                {content.map((item, index) => (
+                {vbqppls.map((item, index) => (
                     <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
+                            className="h-[350px]"
                         >
                             <Card
                                 hoverable
-                                onClick={() => window.open(`/vbqppl/${item.id}`, "_self")}
-                                className="h-full transition-all duration-300 hover:shadow-lg hover:border-blue-200"
+                                onClick={() => window.open(`/van-ban-quy-pham-phap-luat/${item.id}`, "_self")}
+                                className="h-full overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-blue-200"
                                 cover={
                                     <div className="p-4 bg-gradient-to-br from-gray-50 to-white">
                                         <div className="flex items-center justify-between mb-2">
                                             <Tag color="blue" className="px-3 py-1 rounded-full">
                                                 {item.type}
                                             </Tag>
-                                            <Text type="secondary" className="flex items-center text-sm">
+                                            <Text type="secondary" className="flex items-center text-sm truncate">
                                                 <CalendarOutlined className="mr-1" />
-                                                {new Date(item.date).toLocaleDateString("vi-VN")}
+                                                {new Date(item.effectiveDate).toLocaleDateString("vi-VN")}
                                             </Text>
                                         </div>
-                                        <Title
-                                            level={4}
-                                            className="mb-2 transition-colors line-clamp-2 hover:text-blue-600"
-                                        >
+                                        <Title level={5} className="mb-2 text-blue-600 truncate">
                                             {item.title}
                                         </Title>
-                                        <Text type="secondary" className="text-sm line-clamp-2">
-                                            {item.description}
+                                        <Text
+                                            type="secondary"
+                                            className="flex items-center mb-1 overflow-hidden text-sm truncate"
+                                        >
+                                            <FileTextOutlined className="mr-1" />
+                                            Cơ quan ban hành: {item.issuer}
+                                        </Text>
+                                        <Text
+                                            type="secondary"
+                                            className="flex items-center overflow-hidden text-sm truncate"
+                                        >
+                                            <FileTextOutlined className="mr-1" />
+                                            Số hiệu: {item.number}
                                         </Text>
                                     </div>
                                 }
                             >
-                                <div className="flex items-center justify-between">
-                                    <Text type="secondary" className="flex items-center text-sm">
-                                        <FileTextOutlined className="mr-1" />
-                                        Số hiệu: {item.number}
-                                    </Text>
-                                    <Text type="secondary" className="text-sm">
-                                        {item.pages} trang
-                                    </Text>
+                                <div className="flex items-center content-center justify-center h-full">
+                                    <div dangerouslySetInnerHTML={{ __html: item.html }}></div>
                                 </div>
                             </Card>
                         </motion.div>

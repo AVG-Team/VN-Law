@@ -20,6 +20,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    // userId from keyCloak -> don't show for user
+    private String keycloakId;
+
+    @Column(name="googleId", nullable = true)
+    private String googleId = null;
+
     @Column(name = "email", length = 50, unique = true)
     @NotBlank(message = "Email là bắt buộc")
     @Size(min = 1, max = 50, message = "Email phải từ 1 đến 50 ký tự")
@@ -30,18 +36,22 @@ public class User {
     @NotBlank(message = "Mật khẩu là bắt buộc")
     private String password;
 
-    private String googleId;
+    @Column(name = "username", length = 80, nullable = true)
+    private String username;
 
-    @Column(name = "name", length = 80, nullable = true)
-    private String name;
+    @Column(name="firstName", nullable = true)
+    private String firstName;
+
+    @Column(name="lastName")
+    private String lastName;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
     @JsonBackReference
     private Role role;
 
-    @Column(name = "email_verified", nullable = false)
-    private boolean emailVerified = false;
+    @Column(name = "is_active", nullable = false)
+    private boolean active = false;
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

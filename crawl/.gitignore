@@ -4,3 +4,6 @@
 __pycache__/
 .venv/
 /data/*
+*.log
+processed_files_*.txt
+error_log.txt

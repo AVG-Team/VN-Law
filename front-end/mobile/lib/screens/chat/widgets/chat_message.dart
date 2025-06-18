@@ -6,13 +6,15 @@ class ChatMessage extends StatefulWidget {
   final ChatMessageModel message;
   final bool isFirst;
   final bool isLast;
+  final bool isNewChat;
 
   const ChatMessage({
-    Key? key,
+    super.key,
     required this.message,
     required this.isFirst,
     required this.isLast,
-  }) : super(key: key);
+    required this.isNewChat,
+  });
 
   @override
   State<ChatMessage> createState() => _ChatMessageState();
@@ -21,14 +23,16 @@ class ChatMessage extends StatefulWidget {
 class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
-  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+  String _displayText = '';
+  int _currentCharIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 600),
     );
 
     _scaleAnimation = CurvedAnimation(
@@ -36,17 +40,35 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
       curve: Curves.easeOutBack,
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: widget.message.isUser 
-          ? const Offset(1, 0) 
-          : const Offset(-1, 0),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.elasticOut,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
 
     _animationController.forward();
+
+    if (!widget.message.isUser && widget.isNewChat) {
+      _startTypingEffect();
+    } else {
+      _displayText = widget.message.text;
+    }
+  }
+
+  void _startTypingEffect() {
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _typeNextCharacter();
+      }
+    });
+  }
+
+  void _typeNextCharacter() {
+    if (_currentCharIndex < widget.message.text.length) {
+      setState(() {
+        _displayText = widget.message.text.substring(0, _currentCharIndex + 1);
+        _currentCharIndex++;
+      });
+      Future.delayed(const Duration(milliseconds: 50), _typeNextCharacter);
+    }
   }
 
   @override
@@ -57,94 +79,96 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    // Chỉ hiển thị giờ cho tin nhắn hôm nay
     String timeText = '';
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final messageDay = DateTime(
-      widget.message.timestamp.year, 
-      widget.message.timestamp.month, 
-      widget.message.timestamp.day
+      widget.message.timestamp.year,
+      widget.message.timestamp.month,
+      widget.message.timestamp.day,
     );
-    
+
     if (messageDay == today) {
       timeText = DateFormat('HH:mm').format(widget.message.timestamp);
     } else {
       timeText = DateFormat('dd/MM HH:mm').format(widget.message.timestamp);
     }
 
-    return SlideTransition(
-      position: _slideAnimation,
+    return FadeTransition(
+      opacity: _fadeAnimation,
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: Padding(
           padding: EdgeInsets.only(
-            top: widget.isFirst ? 8.0 : 2.0,
-            bottom: widget.isLast ? 8.0 : 2.0,
+            top: widget.isFirst ? 12.0 : 4.0,
+            bottom: widget.isLast ? 12.0 : 4.0,
+            left: 12.0,
+            right: 12.0,
           ),
           child: Row(
-            mainAxisAlignment: widget.message.isUser 
-                ? MainAxisAlignment.end 
-                : MainAxisAlignment.start,
+            mainAxisAlignment: widget.message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!widget.message.isUser) ...[
                 CircleAvatar(
                   backgroundColor: Colors.blue.shade600,
+                  radius: 18,
                   child: const Icon(
                     Icons.smart_toy,
                     color: Colors.white,
-                    size: 16,
+                    size: 20,
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
               ],
               Flexible(
                 child: Column(
-                  crossAxisAlignment: widget.message.isUser 
-                      ? CrossAxisAlignment.end 
-                      : CrossAxisAlignment.start,
+                  crossAxisAlignment: widget.message.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.75,
+                      ),
+                      padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: widget.message.isUser 
-                            ? Colors.blue.shade600 
-                            : Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(16).copyWith(
-                          bottomRight: widget.message.isUser 
-                              ? const Radius.circular(2) 
-                              : null,
-                          bottomLeft: !widget.message.isUser 
-                              ? const Radius.circular(2) 
-                              : null,
+                        gradient: widget.message.isUser
+                            ? LinearGradient(
+                          colors: [Colors.blue.shade600, Colors.blue.shade400],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        )
+                            : LinearGradient(
+                          colors: [Colors.grey.shade100, Colors.grey.shade200],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(20).copyWith(
+                          bottomRight: widget.message.isUser ? const Radius.circular(4) : null,
+                          bottomLeft: !widget.message.isUser ? const Radius.circular(4) : null,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 3,
-                            offset: const Offset(0, 1),
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
                       child: Text(
-                        widget.message.text,
+                        _displayText,
                         style: TextStyle(
-                          color: widget.message.isUser 
-                              ? Colors.white 
-                              : Colors.black87,
+                          color: widget.message.isUser ? Colors.white : Colors.black87,
+                          fontSize: 15,
+                          height: 1.4,
                         ),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4, 
-                        vertical: 2,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       child: Text(
                         timeText,
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 12,
                           color: Colors.grey.shade600,
                         ),
                       ),
@@ -153,13 +177,14 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
                 ),
               ),
               if (widget.message.isUser) ...[
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 CircleAvatar(
                   backgroundColor: Colors.blue.shade100,
+                  radius: 18,
                   child: Icon(
                     Icons.person,
                     color: Colors.blue.shade600,
-                    size: 16,
+                    size: 20,
                   ),
                 ),
               ],
@@ -169,4 +194,4 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
       ),
     );
   }
-} 
+}
