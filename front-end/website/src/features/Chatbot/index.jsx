@@ -3,14 +3,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
 
 import ChatHeader from "./components/ChatHeader";
 import ChatMessage from "./components/ChatMessage";
 import ChatInput from "./components/ChatInput";
 import ChatSidebar from "./components/ChatSidebar";
 import { STORAGE_KEY, MAX_HISTORY_ITEMS, processResponse, sampleResponses } from "./utils/chatUtils";
+import { answerChatRequest } from "../../services/redux/actions/chatAction";
 
 const Chatbot = () => {
+    const dispatch = useDispatch();
+    const chatHistoryResponse = useSelector((state) => state.chatbot.chatHistory);
+    const answerChatResponse = useSelector((state) => state.chatbot.answer);
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -20,6 +25,14 @@ const Chatbot = () => {
     const [currentChatId, setCurrentChatId] = useState(null);
     const messagesEndRef = useRef(null);
     const [parent] = useAutoAnimate();
+
+    useEffect(() => {
+        dispatch(
+            answerChatRequest({
+                question: inputMessage,
+            }),
+        );
+    }, [inputMessage, dispatch]);
 
     // Load chat history on component mount
     useEffect(() => {
@@ -80,7 +93,7 @@ const Chatbot = () => {
         try {
             // Simulate API delay
             await new Promise((resolve) => setTimeout(resolve, 1000));
-            const response = processResponse(inputMessage);
+            const response = answerChatResponse ? data.answer : processResponse(inputMessage);
 
             const botMessage = {
                 id: Date.now() + 1,
