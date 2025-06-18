@@ -1,10 +1,8 @@
 import { call, put, takeLatest } from "redux-saga/effects";
 import axios from "~/config/axios";
 import { TopicActionTypes } from "../actions/topicAction";
-import { LAW_API_BASE_URL } from "~/common/constants/keys";
 
-
-const BASE_URL = LAW_API_BASE_URL + "/topic";
+const BASE_URL = "http://localhost:9002/law/api/topic";
 
 function getAllSaga(params) {
     return axios.get(`${BASE_URL}`, { params });

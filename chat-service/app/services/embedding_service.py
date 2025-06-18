@@ -20,11 +20,11 @@ class EmbeddingService:
             self,
             embedding_model: str = "bkai-foundation-models/vietnamese-bi-encoder",
             top_k: int = 5,
-            chroma_host: str = "14.225.218.42",
+            chroma_host: str = "localhost",
             chroma_port: int = 8000,
             hf_token: str = None,
             # MySQL connection parameters
-            mysql_host: str = "14.225.218.42",
+            mysql_host: str = "localhost",
             mysql_port: int = 3306,
             mysql_user: str = "root",
             mysql_password: str = "password",

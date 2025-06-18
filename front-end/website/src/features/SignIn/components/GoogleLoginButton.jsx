@@ -1,11 +1,11 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { motion } from "framer-motion";
-import { Button } from "antd";
-import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { setToken } from "../../../mock/auth";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
+import { Button } from 'antd';
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
+import {useNavigate} from "react-router-dom";
+import {setToken} from "../../../mock/auth";
 
 const GoogleLoginWrapper = ({ icon, text }) => {
     const navigate = useNavigate();
@@ -13,31 +13,31 @@ const GoogleLoginWrapper = ({ icon, text }) => {
     const login = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
             try {
-                console.log("Google Access Token:", tokenResponse.access_token);
-                const response = await axios.post("http://localhost:9001/api/auth/google-token", {
-                    provider: "google",
+                console.log('Google Access Token:', tokenResponse.access_token);
+                const response = await axios.post('http://localhost:9001/api/auth/google-token', {
+                    provider: 'google',
                     token: tokenResponse.access_token,
                 });
 
-                console.log("Response from server:", response.data);
-                if (response.data.code !== 0) {
-                    console.error("Authentication failed:", response.data.message);
-                    alert("Đăng nhập thất bại");
+                console.log('Response from server:', response.data);
+                if (response.data.status !== 'success') {
+                    console.error('Authentication failed:', response.data.message);
+                    alert('Đăng nhập thất bại');
                     return;
                 }
                 setToken(response.data.data);
-                navigate("/");
+                navigate('/');
             } catch (error) {
-                console.error("Authentication failed:", error);
-                alert("Đăng nhập thất bại");
+                console.error('Authentication failed:', error);
+                alert('Đăng nhập thất bại');
             }
         },
         onError: () => {
-            console.error("Google login failed");
-            alert("Đăng nhập thất bại");
+            console.error('Google login failed');
+            alert('Đăng nhập thất bại');
         },
-        scope: "openid email profile",
-        flow: "implicit",
+        scope: 'openid email profile',
+        flow: 'implicit',
     });
 
     return (
@@ -54,7 +54,7 @@ const GoogleLoginWrapper = ({ icon, text }) => {
 };
 
 const SocialButton = ({ icon, text, onClick, provider }) => {
-    if (provider === "google") {
+    if (provider === 'google') {
         return (
             <GoogleOAuthProvider clientId="739767436237-uglpa7ugbl215feiikhftn0ndqcllgkd.apps.googleusercontent.com">
                 <GoogleLoginWrapper icon={icon} text={text} />
@@ -79,7 +79,7 @@ SocialButton.propTypes = {
     icon: PropTypes.node.isRequired,
     text: PropTypes.string.isRequired,
     onClick: PropTypes.func,
-    provider: PropTypes.oneOf(["google", "facebook"]),
+    provider: PropTypes.oneOf(['google', 'facebook']),
 };
 
 export default SocialButton;

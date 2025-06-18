@@ -19,19 +19,19 @@ export const checkAuth = () => {
 
 export const checkAdmin = () => {
     return !!Cookies.get(StorageKeys.ACCESS_TOKEN) && localStorage.getItem(StorageKeys.USER_ROLE) === "ADMIN";
-};
+}
 
 export const setToken = (response) => {
-    const decodedToken = jwtDecode(response.access_token);
+    const decodedToken = jwtDecode(token);
     const expirationTime = decodedToken.exp * 1000;
 
-    Cookies.set(StorageKeys.ACCESS_TOKEN, response.access_token, { expires: new Date(expirationTime) });
-    localStorage.setItem(StorageKeys.ACCESS_TOKEN, response.access_token);
+    Cookies.set(StorageKeys.ACCESS_TOKEN, response.token, { expires: new Date(expirationTime) });
+    localStorage.setItem(StorageKeys.ACCESS_TOKEN, response.token);
     localStorage.setItem(StorageKeys.USER_NAME, response.name);
     localStorage.setItem(StorageKeys.USER_ROLE, response.role);
     localStorage.setItem(StorageKeys.USER_EMAIL, response.email);
-    localStorage.setItem(StorageKeys.USER_KEYCLOAK_ID, response.keycloak_id);
-    localStorage.setItem(StorageKeys.REFRESH_TOKEN, response.refresh_token);
+    localStorage.setItem(StorageKeys.USER_KEYCLOAK_ID, response.keycloakId);
+    localStorage.setItem(StorageKeys.REFRESH_TOKEN, response.refreshToken);
 };
 
 export const clearToken = () => {

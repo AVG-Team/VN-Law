@@ -3,8 +3,7 @@ package avg.vnlaw.lawservice.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
-
+import java.sql.Date;
 
 @Entity
 @Table(name="vbqppl")

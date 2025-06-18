@@ -1,10 +1,8 @@
 import { call, put, takeLatest } from "redux-saga/effects";
 import axios from "~/config/axios";
 import { ChapterActionTypes } from "../actions/chapterAction";
-import { LAW_API_BASE_URL } from "~/common/constants/keys";
 
-const BASE_URL = LAW_API_BASE_URL + "/chapter";
-
+const BASE_URL = "http://localhost:9002/law/api/chapter";
 
 function getAllByPageSaga(params) {
     return axios.get(`${BASE_URL}/filter`, { params });
