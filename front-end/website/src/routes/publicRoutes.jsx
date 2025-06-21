@@ -17,6 +17,8 @@ import Forum from "~/features/Forum";
 import Login from "~/features/Login";
 import BasicLayout from "~/components/layout/BasicLayout";
 import ContentLayout from "~/components/layout/ContentLayout";
+import NotFound from "~/components/ui/NotFound";
+import Maintenance from "~/components/ui/Maintenance";
 
 const publicRoutes = [
     {
@@ -115,6 +117,20 @@ const publicRoutes = [
         path: "/dien-dan",
         element: <Forum />,
         title: "Diễn đàn",
+        layout: ContentLayout,
+    },
+    {
+        id: 15,
+        path: "/trang-khong-ton-tai",
+        element: <NotFound />,
+        title: "Trang không tồn tại",
+        layout: ContentLayout,
+    },
+    {
+        id: 16,
+        path: "/bao-tri",
+        element: <Maintenance />,
+        title: "Bảo trì",
         layout: ContentLayout,
     },
 ];

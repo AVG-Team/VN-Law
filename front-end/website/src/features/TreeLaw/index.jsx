@@ -10,7 +10,7 @@ const { Title, Text } = Typography;
 
 export default function TreeLaw() {
     // Loại bỏ useState, lấy chapterSelected từ Redux
-    const chapterSelected = useSelector((state) => state.treelaw?.chapterSelected);
+    const { chapterSelected, loading } = useSelector((state) => state.treelaw);
 
     return (
         <motion.div
@@ -32,6 +32,15 @@ export default function TreeLaw() {
             </div>
 
             <Row gutter={[24, 24]} className="mt-6">
+                {loading && (
+                    <Col span={24}>
+                        <LoadingComponent
+                            fullscreen={false}
+                            title="Đang tải văn bản quy phạm pháp luật..."
+                            size="large"
+                        />
+                    </Col>
+                )}
                 <Col xs={24} lg={8}>
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
