@@ -13,7 +13,7 @@ public class AuthServiceClient {
 
     private final RestTemplate restTemplate;
 
-    @Value("${auth-service.url-validate:http://localhost:9001/api/auth/validate-token}")
+    @Value("${auth-service.url-validate:http://14.225.218.42:9001/api/auth/validate-token}")
     private String authServiceUrl;
 
     // Đảm bảo constructor được khai báo công khai

@@ -11,7 +11,7 @@ import {
     EyeInvisibleOutlined,
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
-import {Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import Logo from "~/assets/images/logo/logo.png";
@@ -61,20 +61,20 @@ const SignUp = () => {
     const onFinish = async (values) => {
         setIsLoading(true);
         try {
-            const response = await axios.post('http://localhost:9001/api/auth/register', {
+            const response = await axios.post("http://14.225.218.42:9001/api/auth/register", {
                 firstName: values.firstname,
                 lastName: values.lastName,
                 email: values.email,
                 password: values.password,
             });
-            console.log('Response from server:', response.data);
+            console.log("Response from server:", response.data);
             message.success("Đăng ký thành công!");
-            navigate('/login');
+            navigate("/login");
             // Todo: Alert Success
-            alert('Đăng Ký thành công');
+            alert("Đăng Ký thành công");
         } catch (error) {
-            console.error('Register failed:', error);
-            alert('Đăng Ký thất bại');
+            console.error("Register failed:", error);
+            alert("Đăng Ký thất bại");
         } finally {
             setIsLoading(false);
         }

@@ -20,10 +20,10 @@ export function ForgotForm() {
 
         try {
             setLoading(true);
-            const response = await axios.post('http://localhost:9001/api/auth/forgot-password', {
+            const response = await axios.post("http://14.225.218.42:9001/api/auth/forgot-password", {
                 email: email,
             });
-            console.log('Response from server:', response.data);
+            console.log("Response from server:", response.data);
             let message = response.data.message;
             toast.success(message, {
                 onClose: () => navigate("/login"),

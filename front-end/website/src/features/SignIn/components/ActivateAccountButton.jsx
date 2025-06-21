@@ -20,7 +20,7 @@ export default function ActivateAccountButton() {
             if (verificationCode) {
                 try {
                     const response = await axios.get(
-                        `http://localhost:9000/api/auth/confirm?verificationCode=${verificationCode}`,
+                        `http://14.225.218.42:9000/api/auth/confirm?verificationCode=${verificationCode}`,
                     );
                     toast.success(response.data);
                 } catch (err) {

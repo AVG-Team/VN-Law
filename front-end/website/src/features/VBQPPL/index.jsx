@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileLines, faScaleBalanced } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
 import { filter } from "../../services/redux/actions/vbqpplAction";
+import LoadingComponent from "../../components/ui/Loading";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -168,6 +169,15 @@ const VBQPPL = (props) => {
             </motion.div>
 
             <Row gutter={[16, 16]} className="mt-6">
+                {loading && (
+                    <Col span={24}>
+                        <LoadingComponent
+                            fullscreen={false}
+                            title="Đang tải văn bản quy phạm pháp luật..."
+                            size="large"
+                        />
+                    </Col>
+                )}
                 {vbqppls.map((item, index) => (
                     <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
                         <motion.div

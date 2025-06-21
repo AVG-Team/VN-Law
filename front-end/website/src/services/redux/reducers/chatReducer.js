@@ -1,23 +1,63 @@
 import { ChatActionTypes } from "../actions/chatAction";
 
 const initialState = {
-    chatHistory: [],
-    chatByUser: [],
-    answerChat: null, // Kết quả trả lời của chat
-    chatById: null, // Chi tiết một chat
-    allChats: [], // Danh sách tất cả các chat
-    loading: false, // Trạng thái đang tải
+    messages: [],
+    conversationId: null,
+    isTyping: false,
+    loading: false,
+    error: null,
+    suggestions: [],
 };
 
 const chatReducer = (state = initialState, action) => {
     switch (action.type) {
         // Xử lý khi trả lời chat
-        case ChatActionTypes.ANSWER_CHAT_REQUEST:
-            return { ...state, loading: true, answerChat: null };
-        case ChatActionTypes.ANSWER_CHAT_SUCCESS:
-            return { ...state, loading: false, answerChat: action.payload };
-        case ChatActionTypes.ANSWER_CHAT_FAILURE:
-            return { ...state, loading: false, error: action.payload };
+        case ChatActionTypes.SEND_MESSAGE_REQUEST:
+            return {
+                ...state,
+                loading: true,
+                error: null,
+            };
+        case ChatActionTypes.SEND_MESSAGE_SUCCESS:
+            return {
+                ...state,
+                messages: [...state.messages, action.payload],
+                loading: false,
+                suggestions: action.payload.suggestions || [],
+            };
+        case ChatActionTypes.SEND_MESSAGE_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
+
+        case ChatActionTypes.ADD_MESSAGE:
+            return {
+                ...state,
+                messages: [...state.messages, action.payload],
+            };
+
+        case ChatActionTypes.SET_TYPING:
+            return {
+                ...state,
+                isTyping: action.payload,
+            };
+
+        case ChatActionTypes.CLEAR_CHAT:
+            return {
+                ...state,
+                messages: [
+                    {
+                        id: "welcome_new",
+                        type: "bot",
+                        content: "🗑️ Cuộc trò chuyện đã được xóa.\n\n**Tôi có thể giúp gì khác cho bạn?**",
+                        timestamp: new Date(),
+                    },
+                ],
+                conversationId: null,
+                suggestions: [],
+            };
 
         // Xử lý khi lấy lịch sử chat
         case ChatActionTypes.GET_CHAT_HISTORY_REQUEST:

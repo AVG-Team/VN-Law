@@ -14,7 +14,7 @@ const GoogleLoginWrapper = ({ icon, text }) => {
         onSuccess: async (tokenResponse) => {
             try {
                 console.log("Google Access Token:", tokenResponse.access_token);
-                const response = await axios.post("http://localhost:9001/api/auth/google-token", {
+                const response = await axios.post("http://14.225.218.42:9001/api/auth/google-token", {
                     provider: "google",
                     token: tokenResponse.access_token,
                 });

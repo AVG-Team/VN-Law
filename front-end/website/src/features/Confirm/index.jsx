@@ -5,7 +5,7 @@ import { getCurrentUser } from "~/services/authClient";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {message} from "antd";
+import { message } from "antd";
 // import {setToken} from "../../../services/apis/auth.js";
 
 export default function Notify(props) {
@@ -32,10 +32,10 @@ export default function Notify(props) {
     const handleCheckVerify = async () => {
         try {
             setIsVerify(false);
-            const response = await axios.post('http://localhost:9001/api/auth/confirm-email', {
+            const response = await axios.post("http://14.225.218.42:9001/api/auth/confirm-email", {
                 token: token,
             });
-            console.log('Response from server:', response.data);
+            console.log("Response from server:", response.data);
             //Todo: Alert Success
             let message = response.data.message;
             setIsVerify(true);
