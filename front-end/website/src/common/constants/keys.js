@@ -12,6 +12,8 @@ const OAUTH2_REDIRECT_URI = import.meta.env.VITE_OAUTH2_REDIRECT_URI;
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 const GOOGLE_AUTH_URL = API_BASE_URL + "/auth" + "/oauth2/authorize/google?redirect_uri=" + OAUTH2_REDIRECT_URI;
 
-const LAW_API_BASE_URL = import.meta.env.VITE_LAWYER_API_BASE_URL || "http://localhost:9002/law/api";
+const LAW_API_BASE_URL =
+    import.meta.env.VITE_LAWYER_API_BASE_URL || "https://2597-2a09-bac1-7a80-10-00-3c5-15.ngrok-free.app/law/api";
+const CHAT_API_BASE_URL = import.meta.env.VITE_CHAT_API_BASE_URL || "http://0.0.0.0:9006/api/chat";
 
-export { StorageKeys, API_BASE_URL, GOOGLE_AUTH_URL, LAW_API_BASE_URL };
+export { StorageKeys, API_BASE_URL, GOOGLE_AUTH_URL, LAW_API_BASE_URL, CHAT_API_BASE_URL };

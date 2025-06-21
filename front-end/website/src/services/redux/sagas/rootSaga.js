@@ -6,7 +6,7 @@ import topicSaga from "./topicSaga";
 import tableSaga from "./tableSaga";
 import chapterSaga from "./chapterSaga";
 import treeLawSaga from "./treeLawSaga";
-import chatSaga from "./chatSage";
+import chatSaga from "./chatSaga";
 // Assuming you have a treeLawSaga to handle tree-related actions
 
 export default function* rootSaga() {
