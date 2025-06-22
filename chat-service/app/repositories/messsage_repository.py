@@ -4,11 +4,15 @@ from datetime import datetime
 
 class MessageRepository:
     @staticmethod
-    def get_by_id(conversation_id):
-        conversation = Message.query.get(conversation_id)
-        if not conversation:
-            raise ValueError("Conversation not found")
-        return conversation
+    def get_by_id(message_id):
+        messages = Message.query.get(message_id)
+        return messages if messages else None
+
+    @staticmethod
+    def get_messages_by_conversation_id(conversation_id):
+        messages = Message.query.filter_by(conversation_id=conversation_id).all()
+        print(f"Messages for conversation {conversation_id}: {messages}")
+        return messages if messages else []
     
     @staticmethod
     def save(message):

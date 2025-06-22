@@ -1,5 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+
+import '../../data/models/user_info.dart';
+import '../../utils/app_const.dart';
+import '../../utils/shared_preferences.dart';
 import 'models/chat_message_model.dart';
 import 'models/conversation_model.dart';
 
@@ -9,14 +15,16 @@ class ChatbotProvider extends ChangeNotifier {
   final List<ConversationModel> _pinnedConversations = [];
   bool _isSidebarOpen = false;
   bool _isTyping = false;
-  bool _isNewChat = false; // Thêm biến để kiểm tra chat mới
+  bool _isNewChat = false;
+  String? _currentConversationId;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final _listKey = GlobalKey<AnimatedListState>();
+  final String _baseUrl = '${AppConst.apiChatUrl}/api/chat';
 
   ChatbotProvider() {
-    _loadFakeData();
+    fetchConversations();
   }
 
   List<ChatMessageModel> get messages => _messages;
@@ -30,159 +38,147 @@ class ChatbotProvider extends ChangeNotifier {
   ScrollController get scrollController => _scrollController;
   GlobalKey<AnimatedListState> get listKey => _listKey;
 
-  void _loadFakeData() {
-    final now = DateTime.now();
-    _conversations.addAll([
-      ConversationModel(
-        id: '1',
-        title: 'Thông tin về luật dân sự mới nhất',
-        lastMessageTime: now.subtract(const Duration(minutes: 30)),
-        messages: [
-          ChatMessageModel(
-            text: 'Cho tôi biết thông tin về luật dân sự mới nhất',
-            isUser: true,
-            timestamp: now.subtract(const Duration(minutes: 35)),
-          ),
-          ChatMessageModel(
-            text: 'Luật dân sự Việt Nam mới nhất là Bộ luật Dân sự 2015...',
-            isUser: false,
-            timestamp: now.subtract(const Duration(minutes: 30)),
-          ),
-        ],
-      ),
-      ConversationModel(
-        id: '2',
-        title: 'Quy định về hợp đồng lao động theo luật mới',
-        lastMessageTime: now.subtract(const Duration(hours: 3)),
-        messages: [
-          ChatMessageModel(
-            text: 'Quy định về hợp đồng lao động theo luật mới như thế nào?',
-            isUser: true,
-            timestamp: now.subtract(const Duration(hours: 3, minutes: 5)),
-          ),
-          ChatMessageModel(
-            text: 'Theo Bộ luật Lao động 2019 (có hiệu lực từ 01/01/2021)...',
-            isUser: false,
-            timestamp: now.subtract(const Duration(hours: 3)),
-          ),
-        ],
-      ),
-      ConversationModel(
-        id: '3',
-        title: 'Quy định về thừa kế di sản không có di chúc',
-        lastMessageTime: now.subtract(const Duration(days: 2)),
-        messages: [
-          ChatMessageModel(
-            text: 'Quy định về thừa kế di sản không có di chúc theo pháp luật Việt Nam hiện nay như thế nào?',
-            isUser: true,
-            timestamp: now.subtract(const Duration(days: 2, hours: 1)),
-          ),
-          ChatMessageModel(
-            text: 'Theo Bộ luật Dân sự 2015, thừa kế theo pháp luật...',
-            isUser: false,
-            timestamp: now.subtract(const Duration(days: 2)),
-          ),
-        ],
-      ),
-      ConversationModel(
-        id: '4',
-        title: 'Thủ tục xin cấp lại sổ đỏ bị mất',
-        lastMessageTime: now.subtract(const Duration(days: 6)),
-        messages: [
-          ChatMessageModel(
-            text: 'Tôi bị mất sổ đỏ, thủ tục xin cấp lại như thế nào?',
-            isUser: true,
-            timestamp: now.subtract(const Duration(days: 6, hours: 2)),
-          ),
-          ChatMessageModel(
-            text: 'Để cấp lại sổ đỏ bị mất, bạn cần thực hiện các bước sau...',
-            isUser: false,
-            timestamp: now.subtract(const Duration(days: 6)),
-          ),
-        ],
-      ),
-      ConversationModel(
-        id: '5',
-        title: 'Mức phạt vượt đèn đỏ mới nhất',
-        lastMessageTime: now.subtract(const Duration(days: 10)),
-        messages: [
-          ChatMessageModel(
-            text: 'Mức phạt vượt đèn đỏ mới nhất là bao nhiêu?',
-            isUser: true,
-            timestamp: now.subtract(const Duration(days: 10, hours: 3)),
-          ),
-          ChatMessageModel(
-            text: 'Theo Nghị định 100/2019/NĐ-CP và Nghị định 123/2021/NĐ-CP...',
-            isUser: false,
-            timestamp: now.subtract(const Duration(days: 10)),
-          ),
-        ],
-      ),
-    ]);
-    _pinnedConversations.add(_conversations[0]);
-    notifyListeners();
+  Future<void> fetchConversations() async {
+    final url = Uri.parse('$_baseUrl/get-history');
+    final token = await SPUtill.getValue(SPUtill.keyAccessToken);
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final conversationsData = data['data']['conversations'] as List? ?? [];
+      _conversations.clear();
+      if (conversationsData.isNotEmpty) {
+        _conversations.addAll(conversationsData.map((conv) {
+          final conversation = ConversationModel.fromJson(conv);
+          // Gán lastMessageTime từ endedAt nếu có, nếu không thì từ startedAt
+          conversation.lastMessageTime = conversation.endedAt ?? conversation.startedAt;
+          return conversation;
+        }));
+      }
+      notifyListeners();
+    } else {
+      print('Error fetching conversations: ${response.statusCode}');
+      _conversations.clear();
+    }
   }
 
-  void handleSendMessage(String text) {
-    if (text.trim().isEmpty) return;
-
-    final message = ChatMessageModel(
-      text: text,
-      isUser: true,
-      timestamp: DateTime.now(),
+  Future<void> fetchMessages(String conversationId) async {
+    final url = Uri.parse('$_baseUrl/get-messages?conversation_id=$conversationId');
+    final token = await SPUtill.getValue(SPUtill.keyAccessToken);
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
     );
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final messagesData = data['data']['messages'] as List;
+      _messages.clear();
+      for (var msg in messagesData) {
+        _messages.add(ChatMessageModel.fromJson(msg, isUser: true));
+        _messages.add(ChatMessageModel.fromJson(msg, isUser: false));
+      }
+      notifyListeners();
+    } else {
+      // Xử lý lỗi
+      print('Error fetching messages: ${response.statusCode}');
+    }
+  }
 
-    _messages.add(message);
+  Future<void> sendQuestion(String question) async {
+    final url = Uri.parse('$_baseUrl/get-answer');
+    final token = await SPUtill.getValue(SPUtill.keyAccessToken);
+    final body = {
+      'question': question,
+      if (_currentConversationId != null) 'conversation_id': _currentConversationId,
+    };
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(body),
+    );
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final answerData = data['data'];
+      final conversationId = answerData['conversation_id'];
+      if (_currentConversationId == null) {
+        _currentConversationId = conversationId;
+        final userInfo = await UserInfo.initialize();
+        final newConversation = ConversationModel(
+          id: conversationId,
+          userId: userInfo.userId,
+          context: question,
+          startedAt: DateTime.now(),
+          messages: [],
+        );
+        _conversations.insert(0, newConversation);
+      }
+      final botMessage = ChatMessageModel(
+        id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+        conversationId: conversationId,
+        question: null,
+        content: answerData['answer'],
+        context: answerData['context'],
+        intent: answerData['intent'] ?? '',
+        userId: 'bot',
+        timestamp: DateTime.now(),
+        isUser: false,
+      );
+      _messages.add(botMessage);
+      _listKey.currentState?.insertItem(_messages.length - 1);
+      notifyListeners();
+    } else {
+      // Xử lý lỗi
+      _messages.add(ChatMessageModel(
+        id: 'error_${DateTime.now().millisecondsSinceEpoch}',
+        conversationId: _currentConversationId ?? '',
+        question: null,
+        content: 'Có lỗi xảy ra, vui lòng thử lại',
+        context: '',
+        intent: '',
+        userId: 'bot',
+        timestamp: DateTime.now(),
+        isUser: false,
+      ));
+      notifyListeners();
+    }
+  }
+
+  Future<void> handleSendMessage(String text) async {
+    if (text.trim().isEmpty) return;
+    final userInfo = await UserInfo.initialize();
+    final userMessage = ChatMessageModel(
+      id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+      conversationId: _currentConversationId ?? '',
+      question: text,
+      content: null,
+      context: '',
+      intent: '',
+      userId: userInfo.userId,
+      timestamp: DateTime.now(),
+      isUser: true,
+    );
+    _messages.add(userMessage);
     _listKey.currentState?.insertItem(_messages.length - 1);
-    _isNewChat = true; // Đánh dấu là chat mới
+    _isNewChat = true;
+    _isTyping = true;
     notifyListeners();
     _scrollToBottom();
-
-    Future.delayed(const Duration(milliseconds: 500), () {
-      _isTyping = true;
+    sendQuestion(text).then((_) {
+      _isTyping = false;
       notifyListeners();
       _scrollToBottom();
-
-      Future.delayed(const Duration(milliseconds: 1500), () {
-        _isTyping = false;
-        _simulateBotResponse(text);
-      });
     });
-  }
-
-  void _simulateBotResponse(String userMessage) {
-    String botResponse = '';
-    if (userMessage.toLowerCase().contains('xin chào') ||
-        userMessage.toLowerCase().contains('chào') ||
-        userMessage.toLowerCase().contains('hello')) {
-      botResponse = 'Xin chào! Tôi là VN-Law bot, tôi có thể giúp gì cho bạn về các vấn đề pháp luật Việt Nam?';
-    } else {
-      botResponse = 'Xin lỗi, tôi chưa có thông tin cụ thể về vấn đề này. Bạn có thể đặt câu hỏi khác hoặc làm rõ hơn vấn đề bạn đang quan tâm để tôi có thể giúp đỡ tốt hơn.';
-    }
-
-    final botMessage = ChatMessageModel(
-      text: botResponse,
-      isUser: false,
-      timestamp: DateTime.now(),
-    );
-
-    _messages.add(botMessage);
-    _listKey.currentState?.insertItem(_messages.length - 1);
-
-    if (_messages.length == 2) {
-      final newConversation = ConversationModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: _messages.first.text.length > 150
-            ? '${_messages.first.text.substring(0, 150)}...'
-            : _messages.first.text,
-        lastMessageTime: DateTime.now(),
-        messages: List.from(_messages),
-      );
-      _conversations.insert(0, newConversation);
-    }
-
-    notifyListeners();
-    _scrollToBottom();
   }
 
   void _scrollToBottom() {
@@ -217,11 +213,20 @@ class ChatbotProvider extends ChangeNotifier {
   }
 
   void loadConversation(ConversationModel conversation) {
+    _currentConversationId = conversation.id;
     _messages.clear();
-    _messages.addAll(conversation.messages);
-    _isSidebarOpen = false;
-    _isNewChat = false; // Không phải chat mới khi load từ lịch sử
-    notifyListeners();
+    fetchMessages(conversation.id).then((_) {
+      _isSidebarOpen = false;
+      _isNewChat = false;
+      notifyListeners();
+    });
+  }
+
+  void updateLastMessageTime(ConversationModel conversation) {
+    if (conversation.lastMessageTime == null) {
+      conversation.lastMessageTime = DateTime.now();
+      notifyListeners();
+    }
   }
 
   void resetState() {
@@ -229,26 +234,22 @@ class ChatbotProvider extends ChangeNotifier {
     _isTyping = false;
     _isSidebarOpen = false;
     _isNewChat = false;
+    _currentConversationId = null;
     notifyListeners();
   }
 
-  String getConversationTimeGroup(DateTime time) {
+  String getConversationTimeGroup(DateTime? time) {
+    if (time == null) return 'Không xác định';
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
     final lastWeek = today.subtract(const Duration(days: 7));
-
     final messageDay = DateTime(time.year, time.month, time.day);
 
-    if (messageDay == today) {
-      return 'Hôm nay';
-    } else if (messageDay == yesterday) {
-      return 'Hôm qua';
-    } else if (messageDay.isAfter(lastWeek)) {
-      return 'Trong 7 ngày';
-    } else {
-      return 'Cũ hơn';
-    }
+    if (messageDay == today) return 'Hôm nay';
+    if (messageDay == yesterday) return 'Hôm qua';
+    if (messageDay.isAfter(lastWeek)) return 'Trong 7 ngày';
+    return 'Cũ hơn';
   }
 
   String getTimeDisplay(DateTime time) {
@@ -258,9 +259,8 @@ class ChatbotProvider extends ChangeNotifier {
 
     if (messageDay == today) {
       return DateFormat('HH:mm').format(time);
-    } else {
-      return DateFormat('dd/MM/yyyy HH:mm').format(time);
     }
+    return DateFormat('dd/MM/yyyy HH:mm').format(time);
   }
 
   void disposeControllers() {

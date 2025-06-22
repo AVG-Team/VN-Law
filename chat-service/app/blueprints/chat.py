@@ -1,7 +1,9 @@
+from uuid import uuid4
+
 from flask import Blueprint, request, jsonify
 from app.models.response_model_chat_api import ResponseModel
 from app.models.user_info import UserInfo
-from app.services import RAGService, EmbeddingService, LLMService, ChatbotService
+from app.services import RAGService, EmbeddingService, LLMService, ChatbotService, ConversationService, MessageService
 import logging
 import requests
 import os
@@ -73,26 +75,74 @@ def get_answer():
         user_info = authenticate_user(request.headers.get("Authorization"))
         data = request.get_json()
         query = data.get('question', '')
+        conversation_id = data.get('conversation_id', '')
         if not query:
             return jsonify(ResponseModel(status_code=400, message="Query is required", data=None).dict()), 400
-        response = chat_service.generate_response(query)
+
+        if not conversation_id:
+            conversation_id = str(uuid4())
+
+        keycloak_id = user_info.sub
+        response = llm_service.answer_question(keycloak_id, query, conversation_id)
         return jsonify(ResponseModel(
             status_code=200,
             message="Success",
-            data={"answer": response['answer'],"context": response["context"], "query": query, "execution_time": f"{time.time() - start_time:.2f} seconds"}
+            data={
+                "conversation_id": conversation_id,
+                "answer": response['answer'],
+                "context": response["context"],
+                "url_relate": response["url_relate"],
+                "query": query,
+                "execution_time": f"{time.time() - start_time:.2f} seconds"
+        }
         ).dict()), 200
     except Exception as e:
         logger.error(f"Error in get_answer: {str(e)}")
         return jsonify(ResponseModel(status_code=e.status_code, message=e.detail, data=None).dict()), e.status_code
 
-@chat_bp.route('/api/chat/get-history', methods=['POST'])
+@chat_bp.route('/api/chat/get-history', methods=['GET'])
 def get_history():
     try:
-        authenticate_user(request.headers.get("Authorization"))
+        user_info = authenticate_user(request.headers.get("Authorization"))
+        keycloak_id = user_info.sub
+
+        query = request.args.get('query', '')
+        offset = request.args.get('offset', 0, type=int)
+        limit = request.args.get('limit', 10, type=int)
+
+        conversation_service = ConversationService()
+        conversations, total = conversation_service.get_conversations_by_user_id(keycloak_id, query, offset, limit)
+
         return jsonify(ResponseModel(
             status_code=200,
             message="Success",
-            data={"history": [{"id": 1, "text": "Xin chào"}, {"id": 2, "text": "Thế giới"}]}
+            data={
+                "conversations": conversations,
+                "total": total,
+                "offset": offset,
+                "limit": limit
+            }
+        ).dict()), 200
+    except Exception as e:
+        logger.error(f"Error in get_history: {str(e)}")
+        return jsonify(ResponseModel(status_code=e.status_code, message=e.detail, data=None).dict()), e.status_code
+
+@chat_bp.route('/api/chat/get-messages', methods=['GET'])
+def get_messages():
+    try:
+        authenticate_user(request.headers.get("Authorization"))
+        conversation_id = request.args.get('conversation_id', '')
+
+        if not conversation_id:
+            raise ValueError("Conversation ID is required")
+
+        message_service = MessageService()
+        messages = message_service.get_messages_by_id(conversation_id)
+
+        return jsonify(ResponseModel(
+            status_code=200,
+            message="Success",
+            data={"messages": messages}
         ).dict()), 200
     except Exception as e:
         logger.error(f"Error in get_history: {str(e)}")

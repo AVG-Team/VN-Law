@@ -6,9 +6,7 @@ class ConversationRepository:
     @staticmethod
     def get_by_id(conversation_id):
         conversation = Conversation.query.get(conversation_id)
-        if not conversation:
-            raise ValueError("Conversation not found")
-        return conversation
+        return conversation if conversation else None
     
     @staticmethod
     def save(conversation):
@@ -34,6 +32,12 @@ class ConversationRepository:
         return Conversation.query.all()
     
     @staticmethod
-    def get_all_by_user_id(user_id):
-        return Conversation.query.filter_by(user_id=user_id).all()
+    def get_all_by_user_id(user_id, query='', offset=0, limit=10):
+        q = Conversation.query.filter_by(user_id=user_id)
+        if query:
+            q = q.filter(Conversation.context.like(f'%{query}%'))
+
+        total = q.count()
+        conversations = q.order_by(Conversation.started_at.desc()).offset(offset).limit(limit).all()
+        return conversations, total
     
