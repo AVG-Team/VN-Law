@@ -5,9 +5,49 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c61decd0-867b-4621-a3ab-ec288fabf87f" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../forum-service/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../auth-service/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../auth-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../auth-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/blueprints/chat.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/blueprints/chat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/conversation_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/conversation_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/message_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/message_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/repositories/conversation_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repositories/conversation_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/repositories/messsage_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repositories/messsage_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/chat_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/chat_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/conversation_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/conversation_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/llm_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/llm_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/messsage_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/messsage_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/rag_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/rag_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backupv1/migrations/versions/7b373fb292e6_initial_migration.py" beforeDir="false" afterPath="$PROJECT_DIR$/backupv1/migrations/versions/7b373fb292e6_initial_migration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/README" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/alembic.ini" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/env.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/script.py.mako" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/7a473fbf1adf_create_db.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../forum-service/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../forum-service/app/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../forum-service/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/../forum-service/run.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/.env.dev" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/.env.dev" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/app.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/app.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/auth/login/auth_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/auth/login/auth_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/chatbot_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/chatbot_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/chatbot_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/chatbot_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/models/chat_message_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/models/chat_message_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/models/conversation_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/models/conversation_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/widgets/chat_message.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/widgets/chat_message.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/dashboard_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/dashboard_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/utils/app_const.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/utils/app_const.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/utils/environment.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/utils/environment.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/windows/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/config/KafkaAdminConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/config/KafkaAdminConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/config/KafkaConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/config/KafkaConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/config/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/config/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/controller/VbqpplController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/controller/VbqpplController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +89,7 @@
   &quot;keyToString&quot;: {
     &quot;Python.ChatApi.executor&quot;: &quot;Run&quot;,
     &quot;Python.RAGNotKafkaService.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
     &quot;Python.test_v1.executor&quot;: &quot;Run&quot;,
     &quot;Python.test_v2.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
@@ -80,7 +121,7 @@
       <recent name="D:\Project\VN-Law\chat-service\app\services" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.RAGNotKafkaService">
+  <component name="RunManager" selected="Python.app">
     <configuration name="ChatApi" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="chat-service" />
       <option name="ENV_FILES" value="" />
@@ -119,6 +160,29 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/services/RAGNotKafkaService.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="app" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="chat-service" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -190,6 +254,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.app" />
         <item itemvalue="Python.RAGNotKafkaService" />
         <item itemvalue="Python.ChatApi" />
         <item itemvalue="Python.test_v1" />
@@ -234,6 +299,15 @@
       <workItem from="1749894327830" duration="706000" />
       <workItem from="1749912806308" duration="649000" />
       <workItem from="1749944762433" duration="7000" />
+      <workItem from="1750139651587" duration="1230000" />
+      <workItem from="1750239070837" duration="953000" />
+      <workItem from="1750344048664" duration="449000" />
+      <workItem from="1750386607139" duration="747000" />
+      <workItem from="1750472246806" duration="3180000" />
+      <workItem from="1750492729833" duration="38019000" />
+      <workItem from="1750575905298" duration="4633000" />
+      <workItem from="1750583570865" duration="7000" />
+      <workItem from="1750598588649" duration="4484000" />
     </task>
     <servers />
   </component>
@@ -253,6 +327,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/chat_service$test_v1.coverage" NAME="test_v1 Coverage Results" MODIFIED="1749301978900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/chat_service$app.coverage" NAME="app Coverage Results" MODIFIED="1750580791441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/chat_service$ChatApi.coverage" NAME="ChatApi Coverage Results" MODIFIED="1749490535397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/api" />
     <SUITE FILE_PATH="coverage/chat_service$RAGNotKafkaService.coverage" NAME="RAGNotKafkaService Coverage Results" MODIFIED="1749831276328" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/services" />
     <SUITE FILE_PATH="coverage/chat_service$test_v2.coverage" NAME="test_v2 Coverage Results" MODIFIED="1749233104911" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

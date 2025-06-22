@@ -5,10 +5,12 @@ import re
 import uuid
 import time
 import logging
-from typing import Dict, Any, Union, Optional
+from typing import Dict, Any, Union, Optional, List
 from dataclasses import dataclass
 from contextlib import contextmanager
 import os
+
+from app.services.chat_service import ChatbotService
 from app.services.rag_service import RAGService
 from app.services.conversation_service import ConversationService
 from app.services.messsage_service import MessageService
@@ -64,6 +66,7 @@ class LLMService:
             )
             self.conversation_service = ConversationService()
             self.message_service = MessageService()
+            self.chat_service = ChatbotService()
             
             logging.info("External services initialized successfully")
             
@@ -144,9 +147,15 @@ class LLMService:
         
         return answer
     
-    def create_conversation(self, user_id: str, context: str = None) -> int:
+    def create_conversation(self, user_id: str, conversation_id:str, context: str = None) -> str:
         try:
-            conversation = self.conversation_service.create_conversation(user_id, context)
+            conversation_exists = self.conversation_service.get_conversation_by_id(conversation_id)
+            if conversation_exists:
+                logging.info(f"Conversation {conversation_id} already exists")
+                self.conversation_service.end_conversation(conversation_id)
+                return conversation_id
+
+            conversation = self.conversation_service.create_conversation(user_id, conversation_id, context)
             conversation_id = conversation.conversation_id
             logging.info(f"Conversation created with ID: {conversation_id}")
             return conversation_id
@@ -164,29 +173,20 @@ class LLMService:
         except Exception as e:
             logging.error(f"Failed to end conversation {conversation_id}: {e}")
             return False
-    
-    def create_message(self, conversation_id: int, user_id: str, content: str) -> bool:
+
+    def create_message(self, conversation_id: str, user_id: str, question:str, content: str, context:str) -> bool:
         try:
-            self.message_service.create_message(conversation_id, user_id, content)
+            self.message_service.create_message(
+                conversation_id=conversation_id, user_id=user_id,
+                question=question, content=content, context=context
+            )
             logging.info(f"User message created in conversation {conversation_id}")
             return True
             
         except Exception as e:
             logging.error(f"Failed to create message: {e}")
             return False
-    
-    def create_answer_message(self, conversation_id: int, user_id: str, content: str) -> bool:
-        try:
-            self.message_service.create_message(
-                conversation_id, user_id, content, sender='bot'
-            )
-            logging.info(f"Bot answer created in conversation {conversation_id}")
-            return True
-            
-        except Exception as e:
-            logging.error(f"Failed to create answer message: {e}")
-            return False
-    
+
     def _validate_question(self, question: str) -> str:
         if not question or not isinstance(question, str):
             raise ValueError("Question must be a non-empty string")
@@ -200,10 +200,25 @@ class LLMService:
         
         return question
     
-    def _retrieve_context(self, question: str) -> str:
+    def _retrieve_context(self, question: str) -> dict[str, str | list[Any]] | dict[str, str | list[Any]] | dict[
+        str, str | list[Any]]:
+        url_relate = []
         try:
             with self._timer("Document retrieval"):
                 retrieved_docs = self.rag_service.retrieve_documents(question)
+
+            print("Retrieved documents:", retrieved_docs)
+            logging.info(retrieved_docs)
+
+            if (retrieved_docs.get("metadatas") and
+                    retrieved_docs["metadatas"] and
+                    retrieved_docs["metadatas"][0]):
+                metadatas = retrieved_docs["metadatas"][0]
+                print("Retrieved metadatas:")
+                print(metadatas)
+                url_relate = [meta.get('vbqppl_link', '') for meta in metadatas]
+                print("Related URLs:", url_relate)
+
             
             # Extract and combine context
             if (retrieved_docs.get("documents") and 
@@ -216,14 +231,23 @@ class LLMService:
                 if len(context) > self.config.MAX_CONTEXT_LENGTH * 4:  # Rough character estimate
                     context = context[:self.config.MAX_CONTEXT_LENGTH * 4]
                     logging.warning("Context truncated due to length")
-                
-                return context.strip()
+
+                return {
+                    'documents': context.strip(),
+                    'url_relate': url_relate,
+                }
             else:
-                return "Không có tài liệu liên quan."
+                return {
+                    'documents': "Không có tài liệu liên quan.",
+                    'url_relate': url_relate
+                }
                 
         except Exception as e:
             logging.error(f"Error retrieving context: {e}")
-            return "Không thể tìm kiếm tài liệu liên quan."
+            return {
+                'documents': "Không thể tìm kiếm tài liệu liên quan.",
+                'url_relate': url_relate
+            }
     
     def _generate_answer(self, question: str, context: str, threshold: float) -> QAResult:
         start_time = time.time()
@@ -344,18 +368,15 @@ class LLMService:
             logging.error(f"Error extracting answer: {e}")
             return "Không thể trích xuất câu trả lời."
     
-    def _save_conversation(self, question: str, answer: str, context: str) -> bool:
+    def _save_conversation(self, user_uuid: str, conversation_id:str, question: str, answer: str, context: str) -> bool:
         try:
-            user_uuid = str(uuid.uuid4())
-            
             # Create conversation
-            conversation_id = self.create_conversation(user_id=user_uuid, context=context)
-            
+            conversation_id = self.create_conversation(user_id=user_uuid, conversation_id=conversation_id , context=question)
+
             # Save question and answer
-            question_saved = self.create_message(conversation_id, user_uuid, question)
-            answer_saved = self.create_answer_message(conversation_id, user_uuid, answer)
-            
-            if question_saved and answer_saved:
+            question_saved = self.create_message(conversation_id, user_uuid, question, answer, context)
+
+            if question_saved :
                 logging.info(f"Conversation saved successfully with ID: {conversation_id}")
                 return True
             else:
@@ -366,7 +387,7 @@ class LLMService:
             logging.error(f"Error saving conversation: {e}")
             return False
     
-    def answer_question(self, question: str, 
+    def answer_question(self, user_id: str, question: str, conversation_id: str,
                        threshold: float = None) -> Union[str, Dict[str, Any]]:
         if threshold is None:
             threshold = self.config.DEFAULT_THRESHOLD
@@ -381,23 +402,35 @@ class LLMService:
             
             # Retrieve context
             context = self._retrieve_context(question)
+            print("context", context['documents'])
             
             # Generate answer
-            result = self._generate_answer(question, context, threshold)
-            
+            result = self._generate_answer(question, context['documents'], threshold)
+            print("result", result)
+            # GPT
+            answer_gpt = self.chat_service.generate_response(result.context, question, result.answer, context['url_relate'])
             # Save conversation if answer is valid and meets threshold
             if result.answer.strip():
-                save_success = self._save_conversation(question, result.answer, context)
+                save_success = self._save_conversation(user_id, conversation_id, question, answer_gpt, context['documents'])
                 if not save_success:
                     logging.warning("Failed to save conversation, but continuing with answer")
-            
+
+            logging.info(f"Test answer question llm ")
+            print(context)
+            logging.info(context)
+
+            # Process url
+            if not result.meets_threshold:
+                context['url_relate'] = []
+
             # Return detailed result
             return {
-                "answer": result.answer,
+                "answer": answer_gpt,
                 "context": result.context,
                 "confidence": result.confidence,
                 "meets_threshold": result.meets_threshold,
-                "processing_time": result.processing_time
+                "processing_time": result.processing_time,
+                "url_relate": context['url_relate'] if 'url_relate' in context else []
             }
             
         except ValueError as e:

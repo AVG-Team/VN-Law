@@ -1,17 +1,20 @@
+import uuid
+
 from app.models.base import Base, db
 from datetime import datetime
 
 class Conversation(Base):
     __tablename__ = "conversations"
 
-    conversation_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    conversation_id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = db.Column(db.Text, nullable=False)
     started_at = db.Column(db.DateTime, default=datetime.utcnow)
     ended_at = db.Column(db.DateTime)
     context = db.Column(db.Text)
 
-    def __init__(self, user_id, context=None, ended_at=None):
+    def __init__(self, user_id, conversation_id, context=None, ended_at=None):
         self.user_id = user_id
+        self.conversation_id = conversation_id
         self.context = context
         self.ended_at = ended_at
 

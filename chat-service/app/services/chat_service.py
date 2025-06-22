@@ -1,5 +1,4 @@
 from openai import OpenAI
-from app.services import LLMService, EmbeddingService, RAGService
 import os
 import sys
 from dotenv import load_dotenv
@@ -7,6 +6,7 @@ from dotenv import load_dotenv
 
 embedding_service = EmbeddingService()
 rag_service = RAGService(embedding_service=embedding_service, use_cpu=False)
+from dotenv import load_dotenv
 
 
 load_dotenv()
@@ -17,18 +17,14 @@ class ChatbotService:
         if not api_key:
             raise ValueError("Missing OPENAI_API_KEY")
         self.client = OpenAI(api_key=api_key)
-        self.llm_service = LLMService()
 
-    def generate_response(self, question: str) -> str:
+    def generate_response(self, context: str, question: str, answer: str, url_relate: list) -> str:
         """
         Gửi câu trả lời từ LLM lên GPT để viết lại câu trả lời rõ ràng, hợp lý.
         """
-        
-        response = self.llm_service.answer_question(question)
-        context = response['context']
-        answer = response['answer'].strip()
+        url_relate = ", ".join(url_relate)
         if not answer:
-            return "Xin lỗi, tôi không thể trả lời câu hỏi của bạn."
+            raise ValueError("Xin lỗi, tôi không thể trả lời câu hỏi của bạn.")
 
         prompt = f"""
                 Bạn là một trợ lý pháp lý thân thiện, có nhiệm vụ hỗ trợ người dân Việt Nam hiểu rõ các quy định pháp luật.
@@ -60,12 +56,11 @@ class ChatbotService:
 
                 4. Tuy nhiên các câu hỏi liên quan đến các vấn đề chính trị, tôn giáo, sắc tộc, giới tính, v.v. không được trả lời.
                 5. Nếu câu hỏi liên quan đến các tình huống cụ thể hoặc yêu cầu tư vấn pháp lý cá nhân, hãy trả lời theo kiến thức của bạn và đưa ra lời cảnh báo đây là "Thông tin dựa trên sự hiểu biết của tôi không phải là tư vấn pháp lý chính thức".
-
                 Chỉ trả về câu trả lời cuối cùng, không cần giải thích, nhận xét hay đánh giá gì thêm.
                 """
 
         try:
-                response = self.client.chat.completions.create(
+            response = self.client.chat.completions.create(
                 model="gpt-4.1",
                 messages=[
                     {"role": "system", "content": "Bạn là một trợ lý pháp lý thông minh."},
@@ -74,10 +69,11 @@ class ChatbotService:
                 temperature=0.7,
                 max_tokens=300,
                 top_p=0.9)
-                return { "answer": response.choices[0].message.content.strip(),
-                            "context": context }
+            responseAnswer = response.choices[0].message.content.strip()
+            # responseAnswer = "Câu trả lời của chatgpt sẽ ở đây sau khi hoàn thành tích hợp API OpenAI."
+            responseAnswer = responseAnswer + f"\n\nNguồn tham khảo: {url_relate}" if url_relate else responseAnswer
+            return responseAnswer
 
         except Exception as e:
             print(f"GPT API error: {e}")
-            return "Xin lỗi, hệ thống đang gặp sự cố khi xử lý câu trả lời."
-        
+            return "Xin lỗi, tôi không thể trả lời câu hỏi của bạn do lỗi hệ thống."

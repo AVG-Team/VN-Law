@@ -1,9 +1,11 @@
+import 'package:VNLAW/screens/chat/widgets/chat_input.dart';
+import 'package:VNLAW/screens/chat/widgets/chat_message.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'chatbot_provider.dart';
-import 'widgets/chat_message.dart';
-import 'widgets/chat_input.dart';
 import 'models/conversation_model.dart';
+
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -19,15 +21,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
-    _sidebarAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOutCubic,
-    );
-
+    _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
+    _sidebarAnimation = CurvedAnimation(parent: _animationController, curve: Curves.easeInOutCubic);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ChatbotProvider>(context, listen: false).resetState();
     });
@@ -42,7 +37,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ChatbotProvider>(context);
-
     if (provider.isSidebarOpen && _animationController.status != AnimationStatus.forward) {
       _animationController.forward();
     } else if (!provider.isSidebarOpen && _animationController.status != AnimationStatus.reverse) {
@@ -62,19 +56,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.chat_bubble_outline,
-                        size: 80,
-                        color: Colors.grey[400],
-                      ),
+                      Icon(Icons.chat_bubble_outline, size: 80, color: Colors.grey[400]),
                       const SizedBox(height: 16),
                       Text(
                         'Hãy bắt đầu cuộc trò chuyện với VN Law Bot',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: TextStyle(fontSize: 16, color: Colors.grey[600], fontWeight: FontWeight.w500),
                       ),
                     ],
                   ),
@@ -94,11 +80,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
                             CircleAvatar(
                               backgroundColor: Colors.blue.shade600,
                               radius: 18,
-                              child: const Icon(
-                                Icons.smart_toy,
-                                color: Colors.white,
-                                size: 20,
-                              ),
+                              child: const Icon(Icons.smart_toy, color: Colors.white, size: 20),
                             ),
                             const SizedBox(width: 12),
                             Container(
@@ -157,9 +139,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
                 behavior: HitTestBehavior.opaque,
                 child: FadeTransition(
                   opacity: _sidebarAnimation,
-                  child: Container(
-                    color: Colors.black.withOpacity(0.4),
-                  ),
+                  child: Container(color: Colors.black.withOpacity(0.4)),
                 ),
               ),
             ),
@@ -170,26 +150,15 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
             child: FadeTransition(
               opacity: _sidebarAnimation,
               child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(-1, 0),
-                  end: Offset.zero,
-                ).animate(_sidebarAnimation),
+                position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero).animate(_sidebarAnimation),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 400),
                   width: provider.isSidebarOpen ? MediaQuery.of(context).size.width * 0.75 : 0,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(20),
-                      bottomRight: Radius.circular(20),
-                    ),
+                    borderRadius: const BorderRadius.only(topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
                     boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 12,
-                        spreadRadius: 2,
-                        offset: const Offset(2, 0),
-                      ),
+                      BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 12, spreadRadius: 2, offset: const Offset(2, 0)),
                     ],
                   ),
                   child: provider.isSidebarOpen
@@ -217,11 +186,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
                               const Expanded(
                                 child: Text(
                                   'Lịch sử đối thoại',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
                                 ),
                               ),
                             ],
@@ -234,10 +199,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 'Đã ghim',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Colors.grey[800],
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(color: Colors.grey[800], fontWeight: FontWeight.w600),
                               ),
                             ),
                           ),
@@ -253,22 +218,25 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
                           const Divider(height: 1, thickness: 1),
                         ],
                         Expanded(
-                          child: ListView.builder(
+                          child: provider.conversations.isEmpty
+                              ? const Center(child: Text('Không có cuộc trò chuyện nào'))
+                              : ListView.builder(
                             itemCount: provider.conversations.length,
                             itemBuilder: (context, index) {
                               final conversation = provider.conversations[index];
-                              final timeGroup = provider.getConversationTimeGroup(conversation.lastMessageTime);
+                              // Kiểm tra và cập nhật lastMessageTime thông qua provider
+                              if (conversation.lastMessageTime == null) {
+                                Provider.of<ChatbotProvider>(context, listen: false).updateLastMessageTime(conversation);
+                              }
+                              final timeGroup = provider.getConversationTimeGroup(conversation.lastMessageTime!);
                               bool isFirstInGroup = index == 0 ||
-                                  provider.getConversationTimeGroup(
-                                      provider.conversations[index - 1].lastMessageTime) !=
-                                      timeGroup;
+                                  provider.getConversationTimeGroup(provider.conversations[index - 1].lastMessageTime!) != timeGroup;
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   if (isFirstInGroup)
                                     Padding(
-                                      padding:
-                                      const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 8.0),
+                                      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 8.0),
                                       child: Text(
                                         timeGroup,
                                         style: TextStyle(
@@ -298,9 +266,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
   }
 
   PreferredSizeWidget? _buildAppBar(ChatbotProvider provider) {
-    if (provider.isSidebarOpen) {
-      return null;
-    } else if (provider.messages.isEmpty) {
+    if (provider.isSidebarOpen) return null;
+    if (provider.messages.isEmpty) {
       return AppBar(
         title: const Text('VN Law Chatbot', style: TextStyle(fontWeight: FontWeight.w600)),
         centerTitle: true,
@@ -315,14 +282,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
           ),
         ),
         leading: IconButton(
-          icon: AnimatedIcon(
-            icon: AnimatedIcons.menu_close,
-            progress: _animationController,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            provider.toggleSidebar();
-          },
+          icon: AnimatedIcon(icon: AnimatedIcons.menu_close, progress: _animationController, color: Colors.white),
+          onPressed: () => provider.toggleSidebar(),
         ),
         actions: [
           IconButton(
@@ -331,46 +292,42 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
           ),
         ],
       );
-    } else {
-      return AppBar(
-        title: const Text('VN Law Chatbot', style: TextStyle(fontWeight: FontWeight.w600)),
-        centerTitle: true,
-        backgroundColor: Colors.blue.shade700,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue.shade700, Colors.blue.shade500],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+    }
+    return AppBar(
+      title: const Text('VN Law Chatbot', style: TextStyle(fontWeight: FontWeight.w600)),
+      centerTitle: true,
+      backgroundColor: Colors.blue.shade700,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue.shade700, Colors.blue.shade500],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+      ),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => provider.resetState(),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.push_pin, color: Colors.white),
           onPressed: () {
-            provider.resetState();
+            // TODO: Implement pin functionality
           },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.push_pin, color: Colors.white),
-            onPressed: () {
-              // TODO: Implement pin functionality
-            },
+        IconButton(
+          icon: const Icon(Icons.share, color: Colors.white),
+          onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Đã chia sẻ cuộc trò chuyện này')),
           ),
-          IconButton(
-            icon: const Icon(Icons.share, color: Colors.white),
-            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Đã chia sẻ cuộc trò chuyện này')),
-            ),
-          ),
-        ],
-      );
-    }
+        ),
+      ],
+    );
   }
 
-  Widget _buildConversationTile(
-      BuildContext context, ChatbotProvider provider, ConversationModel conversation, bool isPinned) {
+  Widget _buildConversationTile(BuildContext context, ChatbotProvider provider, ConversationModel conversation, bool isPinned) {
     return InkWell(
       onTap: () => provider.loadConversation(conversation),
       child: Container(
@@ -379,34 +336,23 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
           ],
         ),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           leading: CircleAvatar(
             backgroundColor: Colors.blue.shade100,
-            child: Icon(
-              Icons.chat_bubble_outline,
-              color: Colors.blue.shade600,
-              size: 20,
-            ),
+            child: Icon(Icons.chat_bubble_outline, color: Colors.blue.shade600, size: 20),
           ),
           title: Text(
-            conversation.title,
+            conversation.context,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 15,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
           ),
           subtitle: Text(
-            provider.getTimeDisplay(conversation.lastMessageTime),
+            provider.getTimeDisplay(conversation.lastMessageTime!),
             style: TextStyle(color: Colors.grey[600], fontSize: 13),
           ),
           trailing: IconButton(
@@ -429,20 +375,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
       margin: const EdgeInsets.symmetric(horizontal: 3),
       height: 8,
       width: 8,
-      decoration: BoxDecoration(
-        color: Colors.blue.shade600,
-        borderRadius: BorderRadius.circular(4),
-      ),
+      decoration: BoxDecoration(color: Colors.blue.shade600, borderRadius: BorderRadius.circular(4)),
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: 0.6, end: 1.0),
         curve: Curves.bounceOut,
         duration: Duration(milliseconds: 600 + (index * 200)),
-        builder: (context, value, child) {
-          return Transform.scale(
-            scale: value,
-            child: child,
-          );
-        },
+        builder: (context, value, child) => Transform.scale(scale: value, child: child),
       ),
     );
   }
@@ -460,9 +398,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
               controller: provider.emailController,
               decoration: InputDecoration(
                 labelText: 'Email của bạn',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: Colors.grey[100],
               ),
@@ -474,9 +410,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
               decoration: InputDecoration(
                 labelText: 'Nội dung',
                 alignLabelWithHint: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: Colors.grey[100],
               ),
@@ -495,9 +429,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
             ),
             onPressed: () {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Đã gửi email đến admin')),
-              );
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã gửi email đến admin')));
             },
             child: const Text('Gửi', style: TextStyle(color: Colors.white)),
           ),
