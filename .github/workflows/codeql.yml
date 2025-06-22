@@ -45,7 +45,7 @@ jobs:
         include:
         - language: actions
           build-mode: none
-        - language: c-cpp
+        - language: dart
           build-mode: autobuild
         - language: java-kotlin
           build-mode: autobuild
