@@ -1,20 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-    Send,
-    Scale,
-    User,
-    Bot,
-    Paperclip,
-    MoreVertical,
-    Menu,
-    Plus,
-    MessageSquare,
-    X,
-    Search,
-    Clock,
-} from "lucide-react";
+import { Send, Scale, User, Bot, Paperclip, Menu, Home } from "lucide-react";
+import ChatSidebar from "./components/ChatSidebar";
+import { useNavigate } from "react-router-dom";
+import Logo from "~/assets/images/logo/logo.png";
 
 export default function LegalAIChatbot() {
+    const navigate = useNavigate();
     const [messages, setMessages] = useState([
         {
             id: 1,
@@ -139,14 +130,6 @@ export default function LegalAIChatbot() {
         },
     ]);
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
-
     const handleSendMessage = async () => {
         if (!inputMessage.trim()) return;
 
@@ -189,98 +172,10 @@ export default function LegalAIChatbot() {
         });
     };
 
-    const formatChatTime = (date) => {
-        const now = new Date();
-        const diffTime = now - date;
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 0) {
-            return formatTime(date);
-        } else if (diffDays === 1) {
-            return "Hôm qua";
-        } else if (diffDays < 7) {
-            return `${diffDays} ngày trước`;
-        } else {
-            return date.toLocaleDateString("vi-VN");
-        }
-    };
-
-    const handleChatSelect = (chatId) => {
-        setActiveChat(chatId);
-        // In real app, you would load messages for this chat
-    };
-
-    const handleNewChat = () => {
-        // In real app, you would create a new chat session
-        console.log("Creating new chat...");
-    };
-
     return (
         <div className="flex h-screen bg-gray-50">
             {/* Sidebar */}
-            <div
-                className={`${
-                    sidebarOpen ? "w-80" : "w-0"
-                } transition-all duration-300 bg-white border-r border-gray-200 flex flex-col overflow-hidden`}
-            >
-                {/* Sidebar Header */}
-                <div className="p-4 border-b border-gray-200">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-semibold text-gray-800">Lịch sử Chat</h2>
-                        <button
-                            onClick={() => setSidebarOpen(false)}
-                            className="p-1 transition-colors rounded-lg hover:bg-gray-100 lg:hidden"
-                        >
-                            <X className="w-5 h-5 text-gray-500" />
-                        </button>
-                    </div>
-
-                    <button
-                        onClick={handleNewChat}
-                        className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                    >
-                        <Plus className="w-4 h-4" />
-                        <span className="font-medium">Chat mới</span>
-                    </button>
-                </div>
-
-                {/* Search */}
-                <div className="p-4 border-b border-gray-200">
-                    <div className="relative">
-                        <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm cuộc trò chuyện..."
-                            className="w-full py-2 pl-10 pr-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                    </div>
-                </div>
-
-                {/* Chat History */}
-                <div className="flex-1 overflow-y-auto">
-                    {chatHistory.map((chat) => (
-                        <div
-                            key={chat.id}
-                            onClick={() => handleChatSelect(chat.id)}
-                            className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                                chat.id === activeChat ? "bg-blue-50 border-l-4 border-l-blue-600" : ""
-                            }`}
-                        >
-                            <div className="flex items-start space-x-3">
-                                <MessageSquare className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="text-sm font-medium text-gray-900 truncate">{chat.title}</h3>
-                                    <p className="mt-1 text-xs text-gray-500 line-clamp-2">{chat.lastMessage}</p>
-                                    <div className="flex items-center mt-2 space-x-1">
-                                        <Clock className="w-3 h-3 text-gray-400" />
-                                        <span className="text-xs text-gray-400">{formatChatTime(chat.timestamp)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <ChatSidebar chatHistory={chatHistory} sidebarOpen={sidebarOpen} />
 
             {/* Main Chat Area */}
             <div className="flex flex-col flex-1">
@@ -297,19 +192,22 @@ export default function LegalAIChatbot() {
 
                             <div className="relative">
                                 <div className="flex items-center justify-center w-10 h-10 shadow-sm bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl">
-                                    <Scale className="w-5 h-5 text-white" />
+                                    <img src={Logo} alt="LegalWise Logo" className="w-10 h-10 rounded-xl" />
                                 </div>
                                 <div className="absolute w-3 h-3 bg-green-500 border-2 border-white rounded-full -bottom-1 -right-1"></div>
                             </div>
 
-                            <div>
-                                <h1 className="text-lg font-semibold text-gray-900">AI Luật sư</h1>
+                            <div className="flex flex-col content-start justify-content-start">
+                                <h1 className="text-lg font-semibold text-gray-900">LegalWise</h1>
                                 <p className="text-sm text-gray-500">Trợ lý AI pháp luật thông minh</p>
                             </div>
                         </div>
 
-                        <button className="p-2 transition-colors rounded-lg hover:bg-gray-100">
-                            <MoreVertical className="w-5 h-5 text-gray-500" />
+                        <button
+                            onClick={() => navigate("/")}
+                            className="p-2 transition-colors rounded-lg hover:bg-gray-100"
+                        >
+                            <Home className="w-5 h-5 text-gray-500" />
                         </button>
                     </div>
                 </div>
@@ -389,7 +287,7 @@ export default function LegalAIChatbot() {
                         </button>
 
                         <div className="relative flex-1">
-                            <textarea
+                            <input
                                 ref={inputRef}
                                 value={inputMessage}
                                 onChange={(e) => setInputMessage(e.target.value)}

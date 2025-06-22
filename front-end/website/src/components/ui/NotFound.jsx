@@ -126,7 +126,10 @@ export default function NotFound() {
                             <Home className="mr-2 group-hover:animate-bounce" size={20} />
                             Trang Chủ
                         </button>
-                        <button className="flex items-center px-8 py-4 font-semibold text-white transition-all duration-300 transform group bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-500 hover:to-gray-600 rounded-xl hover:scale-105 hover:shadow-2xl hover:shadow-gray-500/25">
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="flex items-center px-8 py-4 font-semibold text-white transition-all duration-300 transform group bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-500 hover:to-gray-600 rounded-xl hover:scale-105 hover:shadow-2xl hover:shadow-gray-500/25"
+                        >
                             <ArrowLeft
                                 className="mr-2 transition-transform duration-300 group-hover:-translate-x-1"
                                 size={20}

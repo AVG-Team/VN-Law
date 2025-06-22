@@ -2,19 +2,27 @@ import { Button, Typography, Modal } from "antd";
 import { PlusOutlined, DeleteOutlined, HistoryOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import PropTypes from "prop-types";
-import logo from "~/assets/images/logo/logo.png";
+import { useEffect, useState } from "react";
+import { Clock, MessageSquare, Plus, Search, X } from "lucide-react";
+import { Close } from "@mui/icons-material";
 
 const { Text } = Typography;
 
-const ChatSidebar = ({ collapsed, chatHistory, currentChatId, onNewChat, onLoadHistory, onDeleteHistory }) => {
-    const formatDate = (date) => {
-        return new Date(date).toLocaleDateString("vi-VN", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-        });
+const ChatSidebar = ({ sidebarOpen, chatHistory, currentChatId, onNewChat, onLoadHistory, onDeleteHistory }) => {
+    const [activeChat, setActiveChat] = useState(currentChatId || null);
+    const [sidebarVisible, setSidebarVisible] = useState();
+
+    useEffect(() => {
+        setSidebarVisible(sidebarOpen);
+    }, [sidebarOpen]);
+    const handleChatSelect = (chatId) => {
+        setActiveChat(chatId);
+        // In real app, you would load messages for this chat
+    };
+
+    const handleNewChat = () => {
+        // In real app, you would create a new chat session
+        console.log("Creating new chat...");
     };
 
     const handleDelete = (e, historyId) => {
@@ -29,107 +37,98 @@ const ChatSidebar = ({ collapsed, chatHistory, currentChatId, onNewChat, onLoadH
         });
     };
 
+    const formatTime = (date) => {
+        return date.toLocaleTimeString("vi-VN", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    };
+
+    const formatChatTime = (date) => {
+        const now = new Date();
+        const diffTime = now - date;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) {
+            return formatTime(date);
+        } else if (diffDays === 1) {
+            return "Hôm qua";
+        } else if (diffDays < 7) {
+            return `${diffDays} ngày trước`;
+        } else {
+            return date.toLocaleDateString("vi-VN");
+        }
+    };
+
     return (
-        <motion.div
-            initial={{ width: collapsed ? 0 : 320 }}
-            animate={{ width: collapsed ? 0 : 320 }}
-            className="flex flex-col h-full overflow-hidden border-r border-gray-200 shadow-sm bg-gradient-to-b from-white to-gray-50"
+        <div
+            className={`${
+                sidebarVisible ? "w-80" : "w-0"
+            } transition-all duration-300 bg-white border-r border-gray-200 flex flex-col overflow-hidden`}
         >
-            {/* New Chat Button */}
-            <div className="p-4 bg-white border-b border-gray-100">
-                <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    onClick={onNewChat}
-                    className="flex items-center justify-center w-full text-base transition-all duration-200 border-none bg-gradient-to-r from-blue-600 to-blue-700 h-11 hover:from-blue-700 hover:to-blue-800"
+            {/* Sidebar Header */}
+            <div className="p-4 border-b border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-gray-800">Lịch sử Chat</h2>
+                    <button
+                        onClick={() => setSidebarVisible(false)}
+                        aria-label="Đóng sidebar"
+                        className="p-1 transition-colors rounded-lg hover:bg-gray-100 lg:hidden"
+                    >
+                        <X className="w-5 h-5 text-gray-500" />
+                    </button>
+                </div>
+
+                <button
+                    onClick={handleNewChat}
+                    className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                 >
-                    Cuộc trò chuyện mới
-                </Button>
+                    <Plus className="w-4 h-4" />
+                    <span className="font-medium">Chat mới</span>
+                </button>
             </div>
 
-            {/* History List */}
-            <div className="flex-1 overflow-y-auto">
-                <div className="p-2 space-y-1">
-                    {chatHistory.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-full py-8 text-gray-400">
-                            <HistoryOutlined className="mb-4 text-4xl" />
-                            <Text>Chưa có lịch sử chat</Text>
-                        </div>
-                    ) : (
-                        chatHistory.map((item) => (
-                            <motion.div
-                                key={item.id}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                className={`group relative p-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                                    currentChatId === item.id
-                                        ? "bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 shadow-md"
-                                        : "bg-white hover:bg-gray-50 hover:shadow-sm"
-                                }`}
-                                onClick={() => onLoadHistory(item)}
-                            >
-                                <div className="flex items-start space-x-3">
-                                    <div
-                                        className={`flex-shrink-0 w-8 h-8 rounded-full overflow-hidden shadow-sm ${
-                                            currentChatId === item.id ? "bg-blue-100" : "bg-gray-100"
-                                        }`}
-                                    >
-                                        <img
-                                            src={logo}
-                                            alt="LegalWise"
-                                            className={`w-full h-full object-cover ${
-                                                currentChatId === item.id ? "opacity-100" : "opacity-70"
-                                            }`}
-                                        />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex flex-col">
-                                            <Text
-                                                strong
-                                                className={`block truncate text-sm sm:text-base ${
-                                                    currentChatId === item.id ? "text-blue-600" : "text-gray-700"
-                                                }`}
-                                                ellipsis={{ tooltip: item.title }}
-                                            >
-                                                {item.title}
-                                            </Text>
-                                            <Text type="secondary" className="text-xs mt-0.5">
-                                                {formatDate(item.timestamp)}
-                                            </Text>
-                                        </div>
-                                    </div>
-                                    <Button
-                                        type="text"
-                                        danger
-                                        icon={<DeleteOutlined />}
-                                        onClick={(e) => handleDelete(e, item.id)}
-                                        className="absolute transition-opacity -translate-y-1/2 opacity-0 right-2 top-1/2 group-hover:opacity-100"
-                                    />
-                                </div>
-                            </motion.div>
-                        ))
-                    )}
+            {/* Search */}
+            <div className="p-4 border-b border-gray-200">
+                <div className="relative">
+                    <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+                    <input
+                        type="text"
+                        placeholder="Tìm kiếm cuộc trò chuyện..."
+                        className="w-full py-2 pl-10 pr-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
                 </div>
             </div>
-        </motion.div>
+
+            {/* Chat History */}
+            <div className="flex-1 overflow-y-auto">
+                {chatHistory.map((chat) => (
+                    <div
+                        key={chat.id}
+                        onClick={() => handleChatSelect(chat.id)}
+                        className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
+                            chat.id === activeChat ? "bg-blue-50 border-l-4 border-l-blue-600" : ""
+                        }`}
+                    >
+                        <div className="flex items-start space-x-3">
+                            <MessageSquare className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-sm font-medium text-gray-900 truncate">{chat.title}</h3>
+                                <p className="mt-1 text-xs text-gray-500 line-clamp-2">{chat.lastMessage}</p>
+                                <div className="flex items-center mt-2 space-x-1">
+                                    <Clock className="w-3 h-3 text-gray-400" />
+                                    <span className="text-xs text-gray-400">{formatChatTime(chat.timestamp)}</span>
+                                </div>
+                            </div>
+                            <Close
+                                className="w-2 h-2 text-gray-400 cursor-pointer hover:text-red-500"
+                                onClick={(e) => handleDelete(e, chat.id)}
+                            />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
     );
 };
-
-ChatSidebar.propTypes = {
-    collapsed: PropTypes.bool.isRequired,
-    chatHistory: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.number.isRequired,
-            title: PropTypes.string.isRequired,
-            messages: PropTypes.array.isRequired,
-            timestamp: PropTypes.instanceOf(Date).isRequired,
-        }),
-    ).isRequired,
-    currentChatId: PropTypes.number,
-    onNewChat: PropTypes.func.isRequired,
-    onLoadHistory: PropTypes.func.isRequired,
-    onDeleteHistory: PropTypes.func.isRequired,
-};
-
 export default ChatSidebar;
