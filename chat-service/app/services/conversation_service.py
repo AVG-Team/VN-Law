@@ -9,8 +9,8 @@ class ConversationService:
         self.conversation_repository = ConversationRepository()
 
     @staticmethod
-    def create_conversation(user_id, context=None):
-        conversation = Conversation(user_id=user_id, context=context)
+    def create_conversation(user_id, conversation_id, context=None):
+        conversation = Conversation(user_id=user_id,conversation_id=conversation_id, context=context)
         return ConversationRepository.save(conversation)
 
     @staticmethod
@@ -39,6 +39,6 @@ class ConversationService:
         return [conversation.to_dict() for conversation in conversations]
     
     @staticmethod
-    def get_conversations_by_user_id(user_id):
-        conversations = ConversationRepository.get_all_by_user_id(user_id)
-        return [conversation.to_dict() for conversation in conversations]
+    def get_conversations_by_user_id(user_id, query='', offset=0, limit=10):
+        conversations, total = ConversationRepository.get_all_by_user_id(user_id, query, offset, limit)
+        return [conversation.to_dict() for conversation in conversations], total

@@ -7,8 +7,8 @@ class MessageService:
         self.message_repository = MessageRepository()
 
     @staticmethod
-    def create_message(conversation_id, user_id, content, sender='user'):
-        message = Message(conversation_id=conversation_id, user_id=user_id, content=content, sender=sender)
+    def create_message(conversation_id,question ,user_id, content, context):
+        message = Message(conversation_id=conversation_id, user_id=user_id, question=question, content=content, context=context)
         return MessageRepository.save(message)
 
     @staticmethod
@@ -22,6 +22,13 @@ class MessageService:
     def get_message_by_id(message_id):
         message = MessageRepository.get_by_id(message_id)
         return message.to_dict() if message else None
+
+    @staticmethod
+    def get_messages_by_id(conversation_id):
+        messages = MessageRepository.get_messages_by_conversation_id(conversation_id)
+        if messages:
+            return [message.to_dict() for message in messages]
+        return []
 
     @staticmethod
     def get_all_messages():

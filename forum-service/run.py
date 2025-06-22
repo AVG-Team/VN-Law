@@ -5,7 +5,7 @@ from app.main import app
 
 # Cấu hình Hypercorn
 config = Config()
-config.bind = ["0.0.0.0:9006"]
+config.bind = ["0.0.0.0:9005"]
 
 async def main():
     await hypercorn.asyncio.serve(app, config)

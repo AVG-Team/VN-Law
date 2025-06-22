@@ -1,6 +1,5 @@
 import 'package:VNLAW/screens/auth/login/auth_provider.dart';
 import 'package:VNLAW/screens/chat/chatbot_provider.dart';
-import 'package:VNLAW/screens/dashboard_screen.dart';
 import 'package:VNLAW/screens/forums/providers/post_details_provider.dart';
 import 'package:VNLAW/screens/forums/providers/post_provider.dart';
 import 'package:VNLAW/screens/home/home_provider.dart';

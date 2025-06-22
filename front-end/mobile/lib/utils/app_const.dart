@@ -18,6 +18,7 @@ class AppConst {
   static String apiAuthUrl = Env.apiAuthUrl;
   static String apiLawUrl = Env.apiLawUrl;
   static String apiForumUrl = Env.apiForumUrl;
+  static String apiChatUrl = Env.apiChatUrl;
 
   static String? endPoint;
   static String? bariKoiApiKey;

@@ -16,8 +16,11 @@ class Env {
   static String get apiKey => dotenv.env['API_KEY'] ?? '';
   static String get apiNewsKey => dotenv.env['API_NEWS_KEY'] ?? '';
 
-  // Auth
+  // Chat
   static String get apiAuthUrl => dotenv.env['API_AUTH_URL'] ?? '';
+
+  // Auth
+  static String get apiChatUrl => dotenv.env['API_CHAT_URL'] ?? '';
 
   // Law
   static String get apiLawUrl => dotenv.env['API_LAW_URL'] ?? '';

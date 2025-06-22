@@ -94,18 +94,26 @@ class RAGService:
             return documents
     
     def retrieve_documents(self, query: str) -> dict:
-        query = self.preprocess_text(query)
-        cache_key = f"query:{query}"
-        cached = self.cache.get(cache_key)
-        if cached:
-            return json.loads(cached)
-        query_embedding = self.embedding_service.sentence_transformer.encode(query, convert_to_numpy=True).tolist()
-        results = self.embedding_service.collection.query(query_embeddings=[query_embedding], n_results=self.top_k)
-        if results["documents"] and results["documents"][0]:
+        try:
+            query = self.preprocess_text(query)
+            cache_key = f"query:{query}"
+            cached = self.cache.get(cache_key)
+            print(f"Cache key: {cache_key}, Cached value: {cached}")
+            if cached:
+                print("json load")
+                print(json.loads(cached))
+                return json.loads(cached)
+            query_embedding = self.embedding_service.sentence_transformer.encode(query, convert_to_numpy=True).tolist()
+            results = self.embedding_service.collection.query(query_embeddings=[query_embedding], n_results=self.top_k)
+            if results["documents"] and results["documents"][0]:
                 documents = results["documents"][0]
                 reranked_docs = self.rerank_documents(query, documents)
                 results["documents"][0] = reranked_docs
-        self.cache.setex(cache_key, 3600, json.dumps(results))
+            print(results)
+            self.cache.setex(cache_key, 3600, json.dumps(results))
+        except Exception as e:
+            logging.error(f"Error retrieving documents: {e}")
+            return {"documents": []}
         return results
 
     def generate_answer(self, query: str) -> str:

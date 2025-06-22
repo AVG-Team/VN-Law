@@ -361,7 +361,9 @@ class AuthProvider extends ChangeNotifier {
           body: jsonEncode({'token': refreshToken}),
         );
 
-        if (response.statusCode == 204) {
+        print("Logout response: ${response.statusCode}");
+
+        if (response.statusCode == 200) {
           Fluttertoast.showToast(
             msg: 'Đăng xuất thành công',
             toastLength: Toast.LENGTH_SHORT,
