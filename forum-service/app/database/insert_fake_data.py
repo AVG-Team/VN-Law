@@ -11,7 +11,7 @@ from app.database.fake_data import (
 from dotenv import load_dotenv
 
 load_dotenv()
-db_host = os.getenv("DB_IP", "localhost")
+db_host = os.getenv("DB_IP", "14.225.218.42     ")
 db_username = os.getenv("DB_USERNAME", "root")
 db_password = os.getenv("DB_PASSWORD", "password")
 db_name = os.getenv("DB_NAME", "forum_service")
