@@ -15,6 +15,7 @@ import Confirm from "~/features/Confirm";
 import News from "~/features/News";
 import Forum from "~/features/Forum";
 import Login from "~/features/Login";
+import Chatbot from "~/features/Chatbot";
 import BasicLayout from "~/components/layout/BasicLayout";
 import ContentLayout from "~/components/layout/ContentLayout";
 import NotFound from "~/components/ui/NotFound";
@@ -131,6 +132,13 @@ const publicRoutes = [
         path: "/bao-tri",
         element: <Maintenance />,
         title: "Bảo trì",
+        layout: ContentLayout,
+    },
+    {
+        id: 17,
+        path: "/chatbot",
+        element: <Chatbot />,
+        title: "Chatbot",
         layout: ContentLayout,
     },
 ];

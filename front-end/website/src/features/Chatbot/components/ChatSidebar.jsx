@@ -4,25 +4,27 @@ import { motion } from "framer-motion";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { Clock, MessageSquare, Plus, Search, X } from "lucide-react";
-import { Close } from "@mui/icons-material";
+import Close from "@mui/icons-material/Close";
 
 const { Text } = Typography;
 
 const ChatSidebar = ({ sidebarOpen, chatHistory, currentChatId, onNewChat, onLoadHistory, onDeleteHistory }) => {
     const [activeChat, setActiveChat] = useState(currentChatId || null);
-    const [sidebarVisible, setSidebarVisible] = useState();
+    const [sidebarVisible, setSidebarVisible] = useState(sidebarOpen);
 
     useEffect(() => {
         setSidebarVisible(sidebarOpen);
-    }, [sidebarOpen]);
+        setActiveChat(currentChatId);
+    }, [sidebarOpen, currentChatId]);
+
     const handleChatSelect = (chatId) => {
         setActiveChat(chatId);
-        // In real app, you would load messages for this chat
+        onLoadHistory(chatId);
     };
 
     const handleNewChat = () => {
-        // In real app, you would create a new chat session
-        console.log("Creating new chat...");
+        onNewChat();
+        setActiveChat(null);
     };
 
     const handleDelete = (e, historyId) => {
@@ -38,7 +40,7 @@ const ChatSidebar = ({ sidebarOpen, chatHistory, currentChatId, onNewChat, onLoa
     };
 
     const formatTime = (date) => {
-        return date.toLocaleTimeString("vi-VN", {
+        return new Date(date).toLocaleTimeString("vi-VN", {
             hour: "2-digit",
             minute: "2-digit",
         });
@@ -46,7 +48,7 @@ const ChatSidebar = ({ sidebarOpen, chatHistory, currentChatId, onNewChat, onLoa
 
     const formatChatTime = (date) => {
         const now = new Date();
-        const diffTime = now - date;
+        const diffTime = now - new Date(date);
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
         if (diffDays === 0) {
@@ -56,7 +58,7 @@ const ChatSidebar = ({ sidebarOpen, chatHistory, currentChatId, onNewChat, onLoa
         } else if (diffDays < 7) {
             return `${diffDays} ngày trước`;
         } else {
-            return date.toLocaleDateString("vi-VN");
+            return new Date(date).toLocaleDateString("vi-VN");
         }
     };
 
@@ -104,25 +106,25 @@ const ChatSidebar = ({ sidebarOpen, chatHistory, currentChatId, onNewChat, onLoa
             <div className="flex-1 overflow-y-auto">
                 {chatHistory.map((chat) => (
                     <div
-                        key={chat.id}
-                        onClick={() => handleChatSelect(chat.id)}
+                        key={chat.conversation_id}
+                        onClick={() => handleChatSelect(chat.conversation_id)}
                         className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                            chat.id === activeChat ? "bg-blue-50 border-l-4 border-l-blue-600" : ""
+                            chat.conversation_id === activeChat ? "bg-blue-50 border-l-4 border-l-blue-600" : ""
                         }`}
                     >
                         <div className="flex items-start space-x-3">
                             <MessageSquare className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
                             <div className="flex-1 min-w-0">
-                                <h3 className="text-sm font-medium text-gray-900 truncate">{chat.title}</h3>
-                                <p className="mt-1 text-xs text-gray-500 line-clamp-2">{chat.lastMessage}</p>
+                                <h3 className="text-sm font-medium text-gray-900 truncate">{chat.context}</h3>
+                                {/* <p className="mt-1 text-xs text-gray-500 line-clamp-2">{chat.lastMessage}</p> */}
                                 <div className="flex items-center mt-2 space-x-1">
                                     <Clock className="w-3 h-3 text-gray-400" />
-                                    <span className="text-xs text-gray-400">{formatChatTime(chat.timestamp)}</span>
+                                    <span className="text-xs text-gray-400">{formatChatTime(chat.ended_at)}</span>
                                 </div>
                             </div>
                             <Close
                                 className="w-2 h-2 text-gray-400 cursor-pointer hover:text-red-500"
-                                onClick={(e) => handleDelete(e, chat.id)}
+                                onClick={(e) => handleDelete(e, chat.conversation_id)}
                             />
                         </div>
                     </div>
@@ -131,4 +133,14 @@ const ChatSidebar = ({ sidebarOpen, chatHistory, currentChatId, onNewChat, onLoa
         </div>
     );
 };
+
+ChatSidebar.propTypes = {
+    sidebarOpen: PropTypes.bool.isRequired,
+    chatHistory: PropTypes.array.isRequired,
+    currentChatId: PropTypes.string,
+    onNewChat: PropTypes.func.isRequired,
+    onLoadHistory: PropTypes.func.isRequired,
+    onDeleteHistory: PropTypes.func.isRequired,
+};
+
 export default ChatSidebar;

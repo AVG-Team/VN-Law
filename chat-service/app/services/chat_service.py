@@ -4,11 +4,6 @@ import sys
 from dotenv import load_dotenv
 
 
-embedding_service = EmbeddingService()
-rag_service = RAGService(embedding_service=embedding_service, use_cpu=False)
-from dotenv import load_dotenv
-
-
 load_dotenv()
 class ChatbotService:
     def __init__(self):
