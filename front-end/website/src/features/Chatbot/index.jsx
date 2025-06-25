@@ -3,9 +3,12 @@ import { Send, Scale, User, Bot, Paperclip, Menu, Home } from "lucide-react";
 import ChatSidebar from "./components/ChatSidebar";
 import { useNavigate } from "react-router-dom";
 import Logo from "~/assets/images/logo/logo.png";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function LegalAIChatbot() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { message, answer } = useSelector((state) => state.chatbot);
     const [messages, setMessages] = useState([
         {
             id: 1,
@@ -129,6 +132,12 @@ export default function LegalAIChatbot() {
             isActive: false,
         },
     ]);
+
+    useEffect(() => {
+        dispatch({
+            sendMessageRequest,
+        });
+    });
 
     const handleSendMessage = async () => {
         if (!inputMessage.trim()) return;

@@ -19,11 +19,43 @@ const chatReducer = (state = initialState, action) => {
                 error: null,
             };
         case ChatActionTypes.SEND_MESSAGE_SUCCESS:
+            const { answer, context, urlRelate, executionTime, conversationId, question } = action.payload;
+
+            // Format bot response với thông tin bổ sung
+            let botContent = answer;
+
+            if (context && context.length > 0) {
+                botContent += "\n\n📋 **Tài liệu tham khảo:**\n";
+                context.forEach((ctx, index) => {
+                    botContent += `${index + 1}. ${ctx}\n`;
+                });
+            }
+
+            if (urlRelate && urlRelate.length > 0) {
+                botContent += "\n\n🔗 **Liên kết liên quan:**\n";
+                urlRelate.forEach((url, index) => {
+                    botContent += `${index + 1}. ${url}\n`;
+                });
+            }
+
+            if (executionTime) {
+                botContent += `\n\n⏱️ *Thời gian xử lý: ${executionTime}*`;
+            }
+
+            const botMessage = {
+                id: Date.now(),
+                type: "bot",
+                content: botContent,
+                timestamp: new Date(),
+                context: context,
+                urlRelate: urlRelate,
+            };
+
             return {
                 ...state,
-                messages: [...state.messages, action.payload],
+                messages: [...state.messages, botMessage],
                 loading: false,
-                suggestions: action.payload.suggestions || [],
+                conversationId: conversationId || state.conversationId,
             };
         case ChatActionTypes.SEND_MESSAGE_FAILURE:
             return {
