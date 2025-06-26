@@ -7,6 +7,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileLines, faScaleBalanced } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
 import { filter } from "../../services/redux/actions/vbqpplAction";
+import LoadingComponent from "../../components/ui/Loading";
+import ErrorPage from "../../components/ui/Error";
+import NoDataPage from "../../components/ui/NoData";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -27,7 +30,7 @@ const sortOptions = [
 
 const VBQPPL = (props) => {
     const dispatch = useDispatch();
-    const { vbqppls, total, loading } = useSelector((state) => state.vbqppl);
+    const { vbqppls, total, loading, error } = useSelector((state) => state.vbqppl);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(12);
     const [type, setType] = useState("");
@@ -77,6 +80,38 @@ const VBQPPL = (props) => {
         setSortBy("newest");
         setPage(1);
     };
+
+    if (error === "Network Error")
+        return (
+            <ErrorPage
+                errorCode="500"
+                title="Đã xảy ra lỗi"
+                description="Xin lỗi, có lỗi xảy ra với hệ thống"
+                onRetry={() => window.location.reload()}
+                onGoHome={() => (window.location.href = "/")}
+            />
+        );
+    if (error === "Page not found")
+        return (
+            <ErrorPage
+                errorCode="404"
+                title="Trang không tồn tại"
+                description="Xin lỗi, trang bạn đang tìm kiếm không tồn tại hoặc đã bị xóa"
+                onGoHome={() => (window.location.href = "/")}
+                onGoBack={() => window.history.back()}
+                showBackButton={true}
+            />
+        );
+
+    if (!vbqppls || vbqppls.length === 0)
+        return (
+            <NoDataPage
+                title="Không có dữ liệu VBQPPL"
+                description="Hiện tại chưa có dữ liệu VBQPPL để hiển thị"
+                showRefreshButton={true}
+                onRefresh={() => window.location.reload()}
+            />
+        );
 
     return (
         <div className="px-4 py-6 lg:px-8">
@@ -168,6 +203,15 @@ const VBQPPL = (props) => {
             </motion.div>
 
             <Row gutter={[16, 16]} className="mt-6">
+                {loading && (
+                    <Col span={24}>
+                        <LoadingComponent
+                            fullscreen={false}
+                            title="Đang tải văn bản quy phạm pháp luật..."
+                            size="large"
+                        />
+                    </Col>
+                )}
                 {vbqppls.map((item, index) => (
                     <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
                         <motion.div
@@ -188,7 +232,7 @@ const VBQPPL = (props) => {
                                             </Tag>
                                             <Text type="secondary" className="flex items-center text-sm truncate">
                                                 <CalendarOutlined className="mr-1" />
-                                                {new Date(item.effectiveDate).toLocaleDateString("vi-VN")}
+                                                {new Date(item.effective_date).toLocaleDateString("vi-VN")}
                                             </Text>
                                         </div>
                                         <Title level={5} className="mb-2 text-blue-600 truncate">

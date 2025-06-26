@@ -5,7 +5,8 @@ import chapterReducer from "./chapterReducer";
 import subjectReducer from "./subjectReducer";
 import vbqpplReducer from "./vbqpplReducer";
 import treeLawReducer from "./treeLawReducer";
-import chatReducer from "./chapterReducer";
+import chatReducer from "./chatReducer";
+import summaryReducer from "./summaryReducer";
 
 const rootReducer = combineReducers({
     topic: topicReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
     vbqppl: vbqpplReducer,
     treelaw: treeLawReducer,
     chatbot: chatReducer,
+    summary: summaryReducer,
 });
 
 export default rootReducer;

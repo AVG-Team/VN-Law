@@ -158,6 +158,12 @@
 			<version>3.5.0</version> <!-- Hoặc phiên bản phù hợp -->
 		</dependency>
 
+		<dependency>
+			<groupId>io.github.cdimascio</groupId>
+			<artifactId>dotenv-java</artifactId>
+			<version>2.3.2</version>
+		</dependency>
+
 
 	</dependencies>
 

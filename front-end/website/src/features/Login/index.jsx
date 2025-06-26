@@ -11,14 +11,14 @@ import {
     EyeInvisibleOutlined,
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
-import {Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import Logo from "~/assets/images/logo/logo.png";
 import GoogleLoginButton from "../SignIn/components/GoogleLoginButton";
 import SocialButton from "../SignIn/components/GoogleLoginButton";
 import axios from "axios";
-import {setToken} from "../../mock/auth";
+import { setToken } from "../../mock/auth";
 
 const { Title, Text } = Typography;
 
@@ -63,18 +63,18 @@ const Login = () => {
     const onFinish = async (values) => {
         setIsLoading(true);
         try {
-            const response = await axios.post('http://localhost:9001/api/auth/authenticate', {
+            const response = await axios.post("http://14.225.218.42:9001/api/auth/authenticate", {
                 email: values.email,
                 password: values.password,
             });
-            console.log('Response from server:', response.data.data);
+            console.log("Response from server:", response.data.data);
             setToken(response.data.data);
             message.success("Đăng nhập thành công!");
-            navigate('/');
+            navigate("/");
             //Todo: Alert Success
         } catch (error) {
-            console.error('Login failed:', error);
-            alert('Đăng nhập thất bại');
+            console.error("Login failed:", error);
+            alert("Đăng nhập thất bại");
         } finally {
             setIsLoading(false);
         }

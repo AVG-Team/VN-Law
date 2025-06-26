@@ -6,7 +6,8 @@ import topicSaga from "./topicSaga";
 import tableSaga from "./tableSaga";
 import chapterSaga from "./chapterSaga";
 import treeLawSaga from "./treeLawSaga";
-import chatSaga from "./chatSage";
+import chatSaga from "./chatSaga";
+import summarySaga from "./summarySaga";
 // Assuming you have a treeLawSaga to handle tree-related actions
 
 export default function* rootSaga() {
@@ -18,8 +19,7 @@ export default function* rootSaga() {
         tableSaga(),
         chapterSaga(),
         treeLawSaga(),
-        chatSaga(), // Assuming you have a treeLawSaga to handle tree-related actions
-        // Add other sagas here as needed
-        // e.g., yield all([otherSaga1(), otherSaga2()]),
+        chatSaga(),
+        summarySaga(),
     ]);
 }

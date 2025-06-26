@@ -64,11 +64,11 @@ export function ResetPasswordForm({ token }) {
         if (Object.keys(validationErrors).length === 0) {
             try {
                 setLoading(true);
-                const response = await axios.post('http://localhost:9001/api/auth/change-password-with-token', {
+                const response = await axios.post("http://14.225.218.42:9001/api/auth/change-password-with-token", {
                     password: password,
                     token: token,
                 });
-                console.log('Response from server:', response.data);
+                console.log("Response from server:", response.data);
                 let message = response.data.message;
 
                 toast.success(message, {
