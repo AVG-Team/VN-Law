@@ -1,6 +1,7 @@
 package avg.vnlaw.authservice.faker;
 
 import avg.vnlaw.authservice.entities.Role;
+import avg.vnlaw.authservice.entities.RoleType;
 import avg.vnlaw.authservice.enums.RoleEnum;
 import avg.vnlaw.authservice.repositories.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -18,10 +19,10 @@ public class RoleFaker implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if(roleRepository.findAll().isEmpty()){
-            Role.RoleType[] roleEnums = Role.RoleType.values();
-            for(Role.RoleType roleEnum : roleEnums){
+            RoleType[] roleEnums = RoleType.values();
+            for(RoleType roleEnum : roleEnums){
                 Role role = new Role();
-                role.setName(Role.RoleType.valueOf(roleEnum.name()));
+                role.setName(RoleType.valueOf(roleEnum.name()));
                 roleRepository.save(role);
             }
         }

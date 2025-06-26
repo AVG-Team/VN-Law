@@ -1,15 +1,19 @@
+import 'dart:convert';
+import 'package:VNLAW/utils/auth.dart';
+import 'package:VNLAW/utils/environment.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import '../../data/repositories/repository.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import '../../utils/nav_util_animation.dart';
 import '../../utils/routes.dart';
 import '../../utils/shared_preferences.dart';
 
 class SplashProvider extends ChangeNotifier {
-  String? themeId;
   bool isLoading = false;
   bool _isDisposed = false;
 
-  SplashProvider(context) {
+  SplashProvider(BuildContext context) {
+    print('SplashProvider initialized');
     initFunction(context);
   }
 
@@ -19,80 +23,40 @@ class SplashProvider extends ChangeNotifier {
     super.dispose();
   }
 
-  getThemeID(context) async {
-    try {
-      isLoading = true;
-      if (!_isDisposed) notifyListeners();
-      
-      var apiResponse = await Repository.baseSettingApi();
-      if (kDebugMode) {
-        print("apiResponse: $apiResponse");
-      }
-      
-      if (apiResponse.result == true && apiResponse.data != null) {
-        // Process the data if needed
-        // themeId = apiResponse.data.themeId; // Uncomment if needed
-        // Navigate using named route with arguments
+  Future<void> initFunction(BuildContext context) async {
+    print('initFunction started');
+    var token = await SPUtill.getValue(SPUtill.keyRefreshToken);
+    print("Bearer token: $token");
+    await Future.delayed(const Duration(milliseconds: 1000));
+
+    if (token != null && token.isNotEmpty) {
+      bool isValid = await AuthHelper.checkTokenValidity(token);
+      print('Token validity: $isValid');
+      if (isValid && !_isDisposed) {
+        print('Token valid, navigating to dashboard');
+        NavUtilAnimation.navigateScreen(
+          context,
+          AppRoutes.dashboard,
+        );
+      } else {
+        print('Token invalid, deleting token and navigating to login');
+        await SPUtill.deleteKey(SPUtill.keyRefreshToken);
         if (!_isDisposed) {
-          Navigator.of(context).pushReplacementNamed(
-            AppRoutes.dashboard,
+          NavUtilAnimation.navigateScreen(
+            context,
+            AppRoutes.loginProvider,
           );
         }
-      } else {
-        // Handle API failure
-        await SPUtill.deleteKey(SPUtill.keyAuthToken);
-        if (!_isDisposed) {
-          Navigator.of(context).pushReplacementNamed(AppRoutes.login);
-        }
       }
-    } catch (e) {
-      if (kDebugMode) {
-        print("Error in getThemeID: $e");
-      }
-      // Handle any errors
-      await SPUtill.deleteKey(SPUtill.keyAuthToken);
+    } else {
+      print('No token found, navigating to login');
       if (!_isDisposed) {
-        Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+        NavUtilAnimation.navigateScreen(
+          context,
+          AppRoutes.loginProvider,
+        );
       }
-    } finally {
-      isLoading = false;
-      if (!_isDisposed) notifyListeners();
     }
+    if (!_isDisposed) notifyListeners();
   }
-
-  initFunction(context) {
-    Future.delayed(const Duration(seconds: 2), () async {
-      var token = await SPUtill.getValue(SPUtill.keyAuthToken);
-      if (kDebugMode) {
-        /// development purpose only
-        print("Bearer token: $token");
-      }
-      if (token != null) {
-        getThemeID(context);
-      } else {
-        if(!_isDisposed) {
-          Navigator.of(context).pushReplacementNamed(AppRoutes.login);
-        }
-      }
-      if (!_isDisposed) notifyListeners();
-    });
-  }
-
-// /// getToken API .............
-// void getToken(context) async {
-//   var token = await SPUtill.getValue(SPUtill.keyAuthToken);
-//   var bodyToken = BodyToken(
-//       token: token
-//   );
-//   var apiResponse = await Repository.validTokenApi(bodyToken);
-//   if (apiResponse.result == true) {
-//     isValid = true;
-//     initFunction(context);
-//     notifyListeners();
-//   } else {
-//     isValid = false;
-//     notifyListeners();
-//   }
-//
-// }
 }

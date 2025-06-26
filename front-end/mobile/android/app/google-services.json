@@ -1,34 +1,49 @@
 {
   "project_info": {
-    "project_number": "582983299080",
-    "project_id": "vnlaw-bf731",
-    "storage_bucket": "vnlaw-bf731.appspot.com"
+    "project_number": "739767436237",
+    "project_id": "vnlaw-d68a3",
+    "storage_bucket": "vnlaw-d68a3.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:582983299080:android:601a8afd93f5fafc2ea1bd",
+        "mobilesdk_app_id": "1:739767436237:android:30c721f36349273e923a84",
         "android_client_info": {
           "package_name": "com.example.mobile"
         }
       },
       "oauth_client": [
         {
-          "client_id": "582983299080-q2vslpu7dbdvj9udjdllpot6p8ihr2ge.apps.googleusercontent.com",
+          "client_id": "739767436237-f9om56pc35iuf1oghgvdqbuvlulaqpvv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mobile",
+            "certificate_hash": "a81a055e38c9ee23b1d0f682a06d7ed697d93290"
+          }
+        },
+        {
+          "client_id": "739767436237-ismfobn21lkt06mfb8ca5e44ebuhnk3d.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAucAXnqMBykGK_lxblqkHPWAMKmZ73WiY"
+          "current_key": "AIzaSyDHY35HGfDhoNh8FfSm_Ac6W_epBdKHaXg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "582983299080-q2vslpu7dbdvj9udjdllpot6p8ihr2ge.apps.googleusercontent.com",
+              "client_id": "739767436237-ismfobn21lkt06mfb8ca5e44ebuhnk3d.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "739767436237-umdgal4u4bv03pu9vi6ji5jm45jvhlej.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.mobile"
+              }
             }
           ]
         }

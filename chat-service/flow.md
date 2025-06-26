@@ -1,0 +1,10 @@
+flowchart TD
+    A[Start] --> B[Load legal documents from MySQL or files]
+    B --> C[Split long documents into segments ~512-1024 tokens]
+    C --> D[Summarize each segment using strong LLM e.g., GPT-4, Claude, viT5]
+    D --> E[Generate legal questions from each summary]
+    E --> F[Extract exact answers from original legal text]
+    F --> G[Create QA samples: context + question + answer]
+    G --> H[Format as JSON for fine-tuning]
+    H --> I[Fine-tune PhoBERT-base or other LLM with generated dataset]
+    I --> J[End]

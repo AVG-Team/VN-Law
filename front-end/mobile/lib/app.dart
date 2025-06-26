@@ -1,5 +1,9 @@
-import 'package:VNLAW/screens/auth/login/login_provider.dart';
+import 'package:VNLAW/screens/auth/login/auth_provider.dart';
+import 'package:VNLAW/screens/chat/chatbot_provider.dart';
+import 'package:VNLAW/screens/forums/providers/post_details_provider.dart';
+import 'package:VNLAW/screens/forums/providers/post_provider.dart';
 import 'package:VNLAW/screens/home/home_provider.dart';
+import 'package:VNLAW/screens/legal_document/legal_document_provider.dart';
 import 'package:VNLAW/screens/splash_screen/splash_screen.dart';
 import 'package:VNLAW/utils/app_color.dart';
 import 'package:VNLAW/utils/routes.dart';
@@ -46,13 +50,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    print('Build MyApp');
     configLoading();
-    
+
     return MultiProvider(providers: [
       ChangeNotifierProvider(create: (_) => ApiProvider()),
-      ChangeNotifierProvider(create: (_) => LoginProvider()),
+      // ChangeNotifierProvider(create: (_) => LoginProvider()),
       ChangeNotifierProvider(create: (_) => HomeProvider()),
+      ChangeNotifierProvider(create: (_) => AuthProvider()),
       ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
+      ChangeNotifierProvider(create: (_) => LegalDocumentProvider()),
+      ChangeNotifierProvider(create: (_) => ChatbotProvider()),
+      ChangeNotifierProvider(create: (_) => PostProvider()),
+      ChangeNotifierProvider(create: (_) => PostDetailsProvider()),
     ], child: MaterialApp(
           navigatorKey: GlobalKey<NavigatorState>(),
           title: 'VNLAW',

@@ -1,11 +1,9 @@
+import 'package:VNLAW/utils/nav_util_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../../api_service/connectivity/no_internet_screen.dart';
-import '../../../custom_widgets/custom_button.dart';
-import '../../../utils/navigation_utils.dart';
-import 'google_provider.dart';
-import 'login_provider.dart';
+import '../../../utils/routes.dart';
+import 'auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,208 +12,298 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   var _obscureText = true;
-  final _formKey = GlobalKey<FormState>();
+  final _loginFormKey = GlobalKey<FormState>();
+  final _registerFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    // Tính chiều cao khả dụng: chiều cao màn hình - logo - TabBar - padding
+    final availableHeight = MediaQuery.of(context).size.height -
+        kToolbarHeight - // SafeArea top
+        40 - // SizedBox trên logo
+        200 - // Logo height
+        48 - // SizedBox dưới logo
+        48 - // TabBar height (ước lượng)
+        32; // Padding top của TabBarView
+
     return NoInternetScreen(
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: Colors.white,
-        key: context.watch<LoginProvider>().scaffoldKey,
         body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(height: 40),
-                    Center(
-                      child: Image.asset(
-                        "assets/logo.png",
-                        width: 200,
-                      ),
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  const SizedBox(height: 40),
+                  Center(
+                    child: Image.asset(
+                      "assets/logo.png",
+                      width: 200,
                     ),
-                    const SizedBox(height: 48),
-                    Text(
-                      "Chào Mừng Bạn Trở Lại!",
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.cyanAccent[400],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "Vui Lòng Đăng Nhập Để Tiếp Tục",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 32),
-                    _buildTextField(
-                      controller: context.watch<LoginProvider>().emailTextController,
-                      label: 'Email',
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Vui lòng nhập email của bạn!';
-                        }
-                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                          return 'Email không hợp lệ!';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _buildPasswordField(
-                      controller: context.watch<LoginProvider>().passwordTextController,
-                      label: 'Mật Khẩu',
-                      isVisible: _obscureText,
-                      toggleVisibility: () {
-                        setState(() {
-                          _obscureText = !_obscureText;
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Vui lòng nhập mật khẩu của bạn!';
-                        }
-                        if (value.length < 3) {
-                          return 'Mật khẩu phải hơn 3 kí tự!';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          context.read<LoginProvider>().resetTextField();
-                          // NavUtil.navigateScreen(context, const ForgetPassword());
-                        },
-                        child: Text(
-                          "Quên Mật Khẩu?",
-                          style: TextStyle(
-                            color: Colors.cyanAccent[400],
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          context.read<LoginProvider>().getUserInfo(context);
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.cyanAccent[400],
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        "Đăng Nhập",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
+                  ),
+                  const SizedBox(height: 48),
+                  TabBar(
+                    controller: _tabController,
+                    labelColor: Colors.cyanAccent[400],
+                    unselectedLabelColor: Colors.grey[600],
+                    indicatorColor: Colors.cyanAccent[400],
+                    tabs: const [
+                      Tab(text: 'Đăng Nhập'),
+                      Tab(text: 'Đăng Ký'),
+                    ],
+                  ),
+                  // Bọc TabBarView trong Container với chiều cao giới hạn
+                  Container(
+                    height: availableHeight,
+                    child: TabBarView(
+                      controller: _tabController,
                       children: [
-                        Expanded(child: Divider(color: Colors.grey[300])),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            "Hoặc tiếp tục với",
-                            style: TextStyle(color: Colors.grey[600]),
+                        // Tab Đăng nhập
+                        SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                          child: Form(
+                            key: _loginFormKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  "Chào Mừng Bạn Trở Lại!",
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.cyanAccent[400],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  "Vui Lòng Đăng Nhập Để Tiếp Tục",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[600],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 32),
+                                _buildTextField(
+                                  controller: authProvider.emailTextController,
+                                  label: 'Email',
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Vui lòng nhập email của bạn!';
+                                    }
+                                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                                      return 'Email không hợp lệ!';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 16),
+                                _buildPasswordField(
+                                  controller: authProvider.passwordTextController,
+                                  label: 'Mật Khẩu',
+                                  isVisible: _obscureText,
+                                  toggleVisibility: () {
+                                    setState(() {
+                                      _obscureText = !_obscureText;
+                                    });
+                                  },
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Vui lòng nhập mật khẩu của bạn!';
+                                    }
+                                    if (value.length < 3) {
+                                      return 'Mật khẩu phải hơn 3 kí tự!';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 8),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      authProvider.resetTextField();
+                                      Navigator.of(context).pushNamed(AppRoutes.forgotPassword);
+                                    },
+                                    child: Text(
+                                      "Quên Mật Khẩu?",
+                                      style: TextStyle(
+                                        color: Colors.cyanAccent[400],
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    if (_loginFormKey.currentState!.validate()) {
+                                      await authProvider.loginWithEmail(context);
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.cyanAccent[400],
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Đăng Nhập",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        Expanded(child: Divider(color: Colors.grey[300])),
+                        // Tab Đăng ký
+                        SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                          child: Form(
+                            key: _registerFormKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  "Tạo Tài Khoản Mới",
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.cyanAccent[400],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  "Vui Lòng Điền Thông Tin Để Đăng Ký",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[600],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 32),
+                                _buildTextField(
+                                  controller: authProvider.nameTextController,
+                                  label: 'Họ Tên',
+                                  keyboardType: TextInputType.name,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Vui lòng nhập họ tên!';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 16),
+                                _buildTextField(
+                                  controller: authProvider.emailTextController,
+                                  label: 'Email',
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Vui lòng nhập email của bạn!';
+                                    }
+                                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                                      return 'Email không hợp lệ!';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 16),
+                                _buildPasswordField(
+                                  controller: authProvider.passwordTextController,
+                                  label: 'Mật Khẩu',
+                                  isVisible: _obscureText,
+                                  toggleVisibility: () {
+                                    setState(() {
+                                      _obscureText = !_obscureText;
+                                    });
+                                  },
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Vui lòng nhập mật khẩu của bạn!';
+                                    }
+                                    if (value.length < 6) {
+                                      return 'Mật khẩu phải ít nhất 6 ký tự!';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 24),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    if (_registerFormKey.currentState!.validate()) {
+                                      await authProvider.registerUser(context);
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.cyanAccent[400],
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Đăng Ký",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 24),
-                    Center(
-                      child: InkWell(
-                        onTap: () async {
-                          try {
-                            print('On click');
-                            final GoogleSignInService googleSignInService = GoogleSignInService();
-                            final String? token = await googleSignInService.signInWithGoogle();
-                            if (token != null) {
-                              // Điều hướng đến Dashboard với dữ liệu người dùng
-                              NavigationUtils.navigateToDashboardWithData(
-                                context,
-                                data: {
-                                  'token': token,
-                                  'loginType': 'google',
-                                },
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Đăng nhập Google thất bại. Vui lòng thử lại!'),
-                                  backgroundColor: Colors.red,
-                                  duration: Duration(seconds: 3),
-                                ),
-                              );
-                            }
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Có lỗi xảy ra: ${e.toString()}'),
-                                backgroundColor: Colors.red,
-                                duration: const Duration(seconds: 3),
-                              ),
-                            );
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                spreadRadius: 1,
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Image.asset(
-                            "assets/google_icon.png",
-                            width: 24,
-                            height: 24,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
+                ],
+              ),
+              // Nút trở lại
+              Positioned(
+                top: 16,
+                left: 16,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Colors.cyanAccent[400],
+                    size: 28,
+                  ),
+                  onPressed: () {
+                    NavUtilAnimation.navigateScreenRevert(
+                      context,
+                      AppRoutes.loginProvider,
+                    );
+                  },
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),

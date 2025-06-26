@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h2>Chatbot Demo</h2>
+    <ul id="messages"></ul>
+    <input id="input" autocomplete="off" /><button onclick="send()">Send</button>
+
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+    <script>
+      var socket = io("http://localhost:5000");
+
+      socket.on("bot_response", function (data) {
+        let li = document.createElement("li");
+        li.innerText = data.user + ": " + data.message;
+        document.getElementById("messages").appendChild(li);
+      });
+
+      function send() {
+        var msg = document.getElementById("input").value;
+        socket.emit("chat_message", { message: msg });
+        document.getElementById("input").value = "";
+      }
+    </script>
+  </body>
+</html>

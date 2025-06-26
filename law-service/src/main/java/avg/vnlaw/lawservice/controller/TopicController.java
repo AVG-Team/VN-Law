@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/topic")
+@RequestMapping("law/api/topic")
 @RequiredArgsConstructor
 public class TopicController  {
 
@@ -23,7 +23,7 @@ public class TopicController  {
     private final TopicDocumentService topicDocumentService;
 
 
-    @GetMapping("{topicId}")
+    @GetMapping("/{topicId}")
     public ResponseEntity<Object> getTopicDetails(@PathVariable("topicId") String topicId){
         return HandlerResponse.responseBuilder("Get topic details successfully",
                 HttpStatus.OK,topicService.getTopic(topicId));

@@ -42,7 +42,7 @@ class Pdtable(Base):
     __tablename__ = "pdtable"
     id = Column(Integer, primary_key=True, autoincrement=True)
     article_id = Column(String(128), ForeignKey("pdarticle.id"))  # Đổi id_article thành article_id
-    html = Column(Text)
+    html = Column(Text(length=4294967295))  # LONGTEXT cho HTML
 
 class Pdfile(Base):
     __tablename__ = "pdfile"

@@ -1,15 +1,11 @@
-import 'package:VNLAW/screens/screen_tmp.dart';
+import 'package:VNLAW/screens/forums/forum_screen.dart';
 import 'package:flutter/material.dart';
-// import 'package:mobile/screens/news/news_screen.dart';
-
+import 'package:provider/provider.dart';
 import 'app_flow/navigation_bar/custom_bottom_navbar.dart';
+import 'chat/chatbot_provider.dart';
 import 'home/home_screen.dart';
 import 'home/profile_screen.dart';
 import 'chat/chatbot_screen.dart';
-// import 'package:mobile/pages/ChatScreen/homepage.dart';
-// import 'package:mobile/pages/Home/profile_screen.dart';
-// import 'package:mobile/pages/Home/home_screen.dart';
-// import 'package:mobile/pages/Forum/forum_screen.dart'; // Import your Forum screen
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -24,7 +20,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const ChatbotScreen(),
-    const MyHomePage(title: "Forum"),
+    const ForumScreen(),
+    // const TestScreen(),
     const ProfileScreen(),
   ];
 
@@ -32,21 +29,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (_currentIndex != index) {
       setState(() {
         _currentIndex = index;
+        if (index == 1) {
+          Provider.of<ChatbotProvider>(context, listen: false).resetState();
+        }
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final chatbotProvider = Provider.of<ChatbotProvider>(context);
+    final isChatbotScreen = _currentIndex == 1;
+    final showNavbar = !isChatbotScreen ||
+        (isChatbotScreen && chatbotProvider.messages.isEmpty && !chatbotProvider.isSidebarOpen);
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(
+      bottomNavigationBar: showNavbar
+          ? CustomBottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabChanged,
-      ),
+      )
+          : null,
     );
   }
 }

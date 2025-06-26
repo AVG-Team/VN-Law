@@ -1,55 +1,116 @@
-import "./components/style.css";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Worker } from "@react-pdf-viewer/core";
-import VbqpplApi from "~/services/vbqpplApi";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
-import { DocumentIcon, ArrowDownTrayIcon, EyeIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { DocumentIcon, EyeIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 import Localization from "./components/Localization";
-import { Breadcrumb, Typography, Card, Descriptions, Button, Space, Divider, Tag, Tooltip, Badge } from "antd";
+import { Breadcrumb, Typography, Card, Descriptions, Button, Space, Tag, Tooltip, Badge } from "antd";
 import { ShareAltOutlined, PrinterOutlined, BookOutlined, LinkOutlined, HistoryOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faScaleBalanced, faFileSignature } from "@fortawesome/free-solid-svg-icons";
+import { faScaleBalanced } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { filter, getById } from "../../services/redux/actions/vbqpplAction";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
+import LoadingComponent from "../../components/ui/Loading";
+import NoDataPage from "../../components/ui/NoData";
+import ErrorPage from "../../components/ui/Error";
 
 const { Title, Text } = Typography;
 
 export default function Detail(props) {
+    const dispatch = useDispatch();
+    const { vbqppl, vbqppls, loading, error } = useSelector((state) => state.vbqppl);
     const [isViewPdf, setIsViewPdf] = useState(false);
-    const [vbqppl, setVbqppl] = useState({});
     const [relatedDocs, setRelatedDocs] = useState([]);
     const navigate = useNavigate();
     let { param } = useParams();
-    const id = param;
+    const vbqpplId = param;
 
+    // Gọi API getById
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await VbqpplApi.getById(id);
-                setVbqppl(data);
+        if (vbqpplId) {
+            dispatch(getById(vbqpplId));
+        }
+    }, [vbqpplId, dispatch]);
 
-                // Fetch related documents
-                const related = await VbqpplApi.filter({
-                    type: data.type,
+    // Gọi API filter khi vbqppl.type có sẵn
+    useEffect(() => {
+        if (vbqppl?.type) {
+            dispatch(
+                filter({
+                    pageNo: 0,
                     pageSize: 3,
-                    excludeId: id,
-                });
-                setRelatedDocs(related.content);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-        fetchData();
-    }, [id]);
+                    type: vbqppl.type,
+                }),
+            );
+        }
+    }, [vbqppl, dispatch]);
+
+    // Cập nhật relatedDocs từ vbqppls
+    useEffect(() => {
+        console.log("vbqppls ss", vbqppls);
+        if (vbqppls && vbqppls.length > 0) {
+            setRelatedDocs(vbqppls);
+        }
+    }, [vbqppls]);
 
     const handleViewPDF = () => {
-        setIsViewPdf(true);
+        setIsViewPdf((prevIsViewPdf) => !prevIsViewPdf);
     };
 
-    const handleDownload = () => {
-        // Implement download functionality
-        console.log("Downloading document...");
+    const handleDownload = async () => {
+        if (!vbqppl?.html) {
+            console.error("No HTML content available");
+            return;
+        }
+
+        try {
+            // Tạo một div tạm để render nội dung HTML
+            const contentElement = document.createElement("div");
+            contentElement.innerHTML = vbqppl.html;
+            contentElement.style.position = "absolute";
+            contentElement.style.left = "-9999px"; // Ẩn khỏi giao diện
+            document.body.appendChild(contentElement);
+
+            // Chuyển HTML thành hình ảnh bằng html2canvas
+            const canvas = await html2canvas(contentElement, {
+                scale: 2, // Tăng chất lượng hình ảnh
+                useCORS: true, // Hỗ trợ hình ảnh từ domain khác
+                logging: true, // Bật log để debug
+            });
+            const imgData = canvas.toDataURL("image/png");
+
+            // Tạo PDF bằng jsPDF
+            const pdf = new jsPDF("p", "mm", "a4"); // Kích thước A4, hướng dọc
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            // Thêm hình ảnh vào PDF và xử lý đa trang
+            let heightLeft = pdfHeight;
+            let position = 0;
+
+            pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+            heightLeft -= pdf.internal.pageSize.getHeight();
+
+            while (heightLeft > 0) {
+                position = heightLeft - pdfHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+                heightLeft -= pdf.internal.pageSize.getHeight();
+            }
+
+            // Tải xuống PDF
+            pdf.save(`vbqppl_${vbqpplId}.pdf`);
+
+            // Dọn dẹp
+            document.body.removeChild(contentElement);
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+        }
     };
 
     const handlePrint = () => {
@@ -59,12 +120,56 @@ export default function Detail(props) {
     const handleShare = () => {
         if (navigator.share) {
             navigator.share({
-                title: vbqppl.title,
-                text: vbqppl.description,
+                title: vbqppl?.title || "Văn bản QPPL",
+                text: vbqppl?.description || "",
                 url: window.location.href,
             });
         }
     };
+
+    const handleStatusDocument = (status) => {
+        switch (status) {
+            case 1:
+                return <Badge status="error" text="Hết hiệu lực toàn bộ" />;
+            case 2:
+                return <Badge status="warning" text="Hết hiệu lực một phần" />;
+            case 3:
+                return <Badge status="success" text="Đang hiệu lực" />;
+        }
+    };
+
+    if (loading)
+        return <LoadingComponent fullscreen={false} title="Đang tải văn bản quy phạm pháp luật..." size="large" />;
+    if (error === "Network Error")
+        return (
+            <ErrorPage
+                errorCode="500"
+                title="Đã xảy ra lỗi"
+                description="Xin lỗi, có lỗi xảy ra với hệ thống"
+                onRetry={() => window.location.reload()}
+                onGoHome={() => (window.location.href = "/")}
+            />
+        );
+    if (error === "Page not found")
+        return (
+            <ErrorPage
+                errorCode="404"
+                title="Trang không tồn tại"
+                description="Xin lỗi, trang bạn đang tìm kiếm không tồn tại hoặc đã bị xóa"
+                onGoHome={() => (window.location.href = "/")}
+                onGoBack={() => window.history.back()}
+                showBackButton={true}
+            />
+        );
+    if (!vbqppl)
+        return (
+            <NoDataPage
+                title="Không có dữ liệu VBQPPL"
+                description="Hiện tại chưa có dữ liệu VBQPPL để hiển thị"
+                showRefreshButton={true}
+                onRefresh={() => window.location.reload()}
+            />
+        );
 
     return (
         <motion.div
@@ -76,13 +181,13 @@ export default function Detail(props) {
             <Breadcrumb
                 items={[
                     { title: "Trang chủ", href: "/" },
-                    { title: "Văn bản quy phạm pháp luật", href: "/vbqppl" },
+                    { title: "Văn bản quy phạm pháp luật", href: "/van-ban-quy-pham-phap-luat" },
                     { title: vbqppl.title || "Chi tiết văn bản" },
                 ]}
                 className="mb-6"
             />
 
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between p-4 mb-6 bg-white rounded-lg shadow-sm">
                 <div className="flex items-center space-x-4">
                     <Button
                         type="text"
@@ -92,7 +197,7 @@ export default function Detail(props) {
                     >
                         Quay lại
                     </Button>
-                    <Badge status="processing" text="Đang hiệu lực" />
+                    {handleStatusDocument(vbqppl.status)}
                 </div>
                 <Space>
                     <Tooltip title="Chia sẻ">
@@ -112,9 +217,9 @@ export default function Detail(props) {
                         transition={{ duration: 0.5 }}
                     >
                         <Card className="mb-6 transition-shadow shadow-sm hover:shadow-md">
-                            <div className="flex items-center mb-4">
+                            <div className="flex items-center mb-4 underscore">
                                 <FontAwesomeIcon icon={faScaleBalanced} className="mr-3 text-2xl text-blue-600" />
-                                <Title level={2} className="!mb-0">
+                                <Title level={2} className="!mb-0 ">
                                     {vbqppl.title}
                                 </Title>
                             </div>
@@ -128,14 +233,16 @@ export default function Detail(props) {
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Ngày ban hành">
                                     <span className="font-medium">
-                                        {new Date(vbqppl.date).toLocaleDateString("vi-VN")}
+                                        {vbqppl.issue_date
+                                            ? new Date(vbqppl.issue_date).toLocaleDateString("vi-VN")
+                                            : "N/A"}
                                     </span>
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Cơ quan ban hành">
-                                    <span className="font-medium">{vbqppl.issuingBody}</span>
+                                    <span className="font-medium">{vbqppl.issuer || "N/A"}</span>
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Trạng thái">
-                                    <Badge status="success" text={vbqppl.status} />
+                                    {handleStatusDocument(vbqppl.status)}
                                 </Descriptions.Item>
                             </Descriptions>
 
@@ -195,22 +302,29 @@ export default function Detail(props) {
                             }
                             className="mb-6 shadow-sm"
                         >
-                            {relatedDocs.map((doc) => (
-                                <div
-                                    key={doc.id}
-                                    className="p-2 mb-4 transition-colors rounded-lg last:mb-0 hover:bg-gray-50"
-                                >
-                                    <a
-                                        href={`/vbqppl/${doc.id}`}
-                                        className="block transition-colors hover:text-blue-600"
+                            {relatedDocs.length > 0 ? (
+                                relatedDocs.map((doc) => (
+                                    <div
+                                        key={doc.id}
+                                        className="p-2 mb-4 transition-colors rounded-lg last:mb-0 hover:bg-gray-50 hover:text-blue-600"
                                     >
-                                        <Text className="block font-medium">{doc.title}</Text>
-                                        <Text type="secondary" className="text-sm">
-                                            {doc.number} - {new Date(doc.date).toLocaleDateString("vi-VN")}
-                                        </Text>
-                                    </a>
-                                </div>
-                            ))}
+                                        <a
+                                            href={`/van-ban-quy-pham-phap-luat/${doc.id}`}
+                                            className="block transition-colors hover:text-blue-600"
+                                        >
+                                            <Text className="block font-medium">{doc.title}</Text>
+                                            <Text type="secondary" className="text-sm">
+                                                {doc.number} -{" "}
+                                                {doc.issue_date
+                                                    ? new Date(doc.issue_date).toLocaleDateString("vi-VN")
+                                                    : "N/A"}
+                                            </Text>
+                                        </a>
+                                    </div>
+                                ))
+                            ) : (
+                                <Text type="secondary">Không có văn bản liên quan</Text>
+                            )}
                         </Card>
 
                         <Card
@@ -225,29 +339,35 @@ export default function Detail(props) {
                             <Descriptions column={1}>
                                 <Descriptions.Item label="Ngày có hiệu lực">
                                     <span className="font-medium">
-                                        {new Date(vbqppl.effectiveDate).toLocaleDateString("vi-VN")}
+                                        {vbqppl.effective_date
+                                            ? new Date(vbqppl.effective_date).toLocaleDateString("vi-VN")
+                                            : "N/A"}
                                     </span>
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Ngày hết hiệu lực">
                                     <span className="font-medium">
                                         {vbqppl.expiryDate
-                                            ? new Date(vbqppl.expiryDate).toLocaleDateString("vi-VN")
+                                            ? new Date(vbqppl.effective_end_date).toLocaleDateString("vi-VN")
                                             : "Chưa có"}
                                     </span>
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Lĩnh vực">
-                                    <span className="font-medium">{vbqppl.field}</span>
+                                    <span className="font-medium">{vbqppl.type || "N/A"}</span>
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Từ khóa">
                                     <div className="flex flex-wrap gap-1">
-                                        {vbqppl.keywords?.map((keyword, index) => (
-                                            <Tag
-                                                key={index}
-                                                className="px-2 py-1 text-blue-600 border-blue-100 rounded-full bg-blue-50"
-                                            >
-                                                {keyword}
-                                            </Tag>
-                                        ))}
+                                        {vbqppl.keywords?.length > 0 ? (
+                                            vbqppl.keywords.map((keyword, index) => (
+                                                <Tag
+                                                    key={index}
+                                                    className="px-2 py-1 text-blue-600 border-blue-100 rounded-full bg-blue-50"
+                                                >
+                                                    {keyword}
+                                                </Tag>
+                                            ))
+                                        ) : (
+                                            <Text type="secondary">Không có</Text>
+                                        )}
                                     </div>
                                 </Descriptions.Item>
                             </Descriptions>

@@ -31,6 +31,8 @@ public class VbqpplService implements BaseService<VbqpplRequest, Integer, Vbqppl
 
     public Page<VbqpplResponse> getAllVbqppl(Optional<Integer> pageNo, Optional<Integer> pageSize) {
         log.info("get ALL vbqppl");
+        if(vbqpplRepository.findAll().isEmpty())
+            throw new AppException(ErrorCode.VBQPPL_EMPTY);
         Pageable pageable = PageRequest.of(pageNo.orElse(0),pageSize.orElse(10));
         return vbqpplRepository.findAllVbs(pageable);
     }

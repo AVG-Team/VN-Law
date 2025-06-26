@@ -6,11 +6,11 @@ import BasicLayout from "~/components/layout/BasicLayout";
 import routes from "~/routes";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import './App.css';
+import "./App.css";
 
 const App = () => {
     const [isLoading, setIsLoading] = useState(true);
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState("");
 
     useEffect(() => {
         AOS.init();
@@ -26,25 +26,25 @@ const App = () => {
 
     const handleCrawl = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/crawl', {
-                method: 'POST',
+            const response = await fetch("http://localhost:5000/api/crawl", {
+                method: "POST",
             });
             const data = await response.json();
             setMessage(data.message);
         } catch (error) {
-            setMessage('Error: ' + error.message);
+            setMessage("Error: " + error.message);
         }
     };
 
     const handleTestCrawl = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/test-crawl', {
-                method: 'POST',
+            const response = await fetch("http://localhost:5000/api/test-crawl", {
+                method: "POST",
             });
             const data = await response.json();
             setMessage(data.message);
         } catch (error) {
-            setMessage('Error: ' + error.message);
+            setMessage("Error: " + error.message);
         }
     };
 
@@ -54,16 +54,18 @@ const App = () => {
                 <Preloader />
             ) : (
                 <div className="App">
-                    <h1>Crawl Data Control Panel</h1>
+                    {/* <h1>Crawl Data Control Panel</h1>
                     <div className="button-container">
                         <button onClick={handleCrawl}>Start Crawl Data</button>
                         <button onClick={handleTestCrawl}>Start Test Crawl</button>
-                    </div>
+                    </div> */}
                     {message && <p className="message">{message}</p>}
                     <Routes>
                         {routes.map((route) => {
                             const Layout = route.private ? AuthLayout : BasicLayout;
-                            return <Route key={route.id} path={route.path} element={<Layout element={route.element} />} />;
+                            return (
+                                <Route key={route.id} path={route.path} element={<Layout element={route.element} />} />
+                            );
                         })}
                     </Routes>
                 </div>

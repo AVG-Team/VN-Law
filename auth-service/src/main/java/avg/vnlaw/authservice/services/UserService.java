@@ -1,15 +1,35 @@
 package avg.vnlaw.authservice.services;
 
+import avg.vnlaw.authservice.entities.CustomUserDetail;
 import avg.vnlaw.authservice.entities.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.multipart.MultipartFile;
+import avg.vnlaw.authservice.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
-public interface UserService {
-    User registerUser(String email, String password, String roleName);
-    User registerUser(User user);
-    User saveUser(User user);
-    User findByEmail(String email);
-    void verifyUserEmail(String email);
-    UserDetails loadUserByUsername(String email) throws UsernameNotFoundException;
+@Service
+public class UserService {
+    @Autowired
+    private UserRepository userRepository;
+
+    
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElse(null);
+    }
+
+    
+    public User getCurrentUserByEmail(String email) {
+        User user = findByEmail(email);
+        if (user == null) return null;
+        return getUserCurrentService();
+    }
+
+    private User getUserCurrentService() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated())  return null;
+        CustomUserDetail customUserDetail = (CustomUserDetail) authentication.getPrincipal();
+        return customUserDetail.getUser();
+    }
 }

@@ -92,7 +92,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: currentIndex == 3 ? Colors.blue.withOpacity(0.1) : Colors.transparent,
+            color: currentIndex == 4 ? Colors.blue.withOpacity(0.1) : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
           ),
           child: const Icon(Icons.person_rounded),

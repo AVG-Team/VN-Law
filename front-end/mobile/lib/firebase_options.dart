@@ -41,50 +41,52 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyARG-bBO4Ua2NCsZG-stM9hUO9ueazhLMI',
-    appId: '1:582983299080:web:1cef9030127a28d72ea1bd',
-    messagingSenderId: '582983299080',
-    projectId: 'vnlaw-bf731',
-    authDomain: 'vnlaw-bf731.firebaseapp.com',
-    storageBucket: 'vnlaw-bf731.appspot.com',
-    measurementId: 'G-MHNNH87998',
+    apiKey: 'AIzaSyB899dV_5GkoZ_6OARTuyiZ7ErruiynH-s',
+    appId: '1:739767436237:web:7b837083db1ac056923a84',
+    messagingSenderId: '739767436237',
+    projectId: 'vnlaw-d68a3',
+    authDomain: 'vnlaw-d68a3.firebaseapp.com',
+    storageBucket: 'vnlaw-d68a3.firebasestorage.app',
+    measurementId: 'G-CVVM6W40DJ',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAucAXnqMBykGK_lxblqkHPWAMKmZ73WiY',
-    appId: '1:582983299080:android:601a8afd93f5fafc2ea1bd',
-    messagingSenderId: '582983299080',
-    projectId: 'vnlaw-bf731',
-    storageBucket: 'vnlaw-bf731.appspot.com',
+    apiKey: 'AIzaSyDHY35HGfDhoNh8FfSm_Ac6W_epBdKHaXg',
+    appId: '1:739767436237:android:30c721f36349273e923a84',
+    messagingSenderId: '739767436237',
+    projectId: 'vnlaw-d68a3',
+    storageBucket: 'vnlaw-d68a3.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyANcFdSCxMLHMQ6qZRY0gOAOZm0ktT53HI',
-    appId: '1:582983299080:ios:4f6b14f72e45d2862ea1bd',
-    messagingSenderId: '582983299080',
-    projectId: 'vnlaw-bf731',
-    storageBucket: 'vnlaw-bf731.appspot.com',
-    iosClientId: '582983299080-ducvvjotac3if6p29vktrlcan7nlu8hc.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAsvoU57_ANdwLUlHLidjCk91RvMl5gRqI',
+    appId: '1:739767436237:ios:fbf5c33b699a33fa923a84',
+    messagingSenderId: '739767436237',
+    projectId: 'vnlaw-d68a3',
+    storageBucket: 'vnlaw-d68a3.firebasestorage.app',
+    androidClientId: '739767436237-v04p9kjc8fulonv895cjvkqjfn59qflu.apps.googleusercontent.com',
+    iosClientId: '739767436237-umdgal4u4bv03pu9vi6ji5jm45jvhlej.apps.googleusercontent.com',
     iosBundleId: 'com.example.mobile',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyANcFdSCxMLHMQ6qZRY0gOAOZm0ktT53HI',
-    appId: '1:582983299080:ios:4f6b14f72e45d2862ea1bd',
-    messagingSenderId: '582983299080',
-    projectId: 'vnlaw-bf731',
-    storageBucket: 'vnlaw-bf731.appspot.com',
-    iosClientId: '582983299080-ducvvjotac3if6p29vktrlcan7nlu8hc.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAsvoU57_ANdwLUlHLidjCk91RvMl5gRqI',
+    appId: '1:739767436237:ios:fbf5c33b699a33fa923a84',
+    messagingSenderId: '739767436237',
+    projectId: 'vnlaw-d68a3',
+    storageBucket: 'vnlaw-d68a3.firebasestorage.app',
+    androidClientId: '739767436237-v04p9kjc8fulonv895cjvkqjfn59qflu.apps.googleusercontent.com',
+    iosClientId: '739767436237-umdgal4u4bv03pu9vi6ji5jm45jvhlej.apps.googleusercontent.com',
     iosBundleId: 'com.example.mobile',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyARG-bBO4Ua2NCsZG-stM9hUO9ueazhLMI',
-    appId: '1:582983299080:web:6cfaf1f1d7277fc22ea1bd',
-    messagingSenderId: '582983299080',
-    projectId: 'vnlaw-bf731',
-    authDomain: 'vnlaw-bf731.firebaseapp.com',
-    storageBucket: 'vnlaw-bf731.appspot.com',
-    measurementId: 'G-W9Y3CF1MLR',
+    apiKey: 'AIzaSyB899dV_5GkoZ_6OARTuyiZ7ErruiynH-s',
+    appId: '1:739767436237:web:54744e98eb654ddb923a84',
+    messagingSenderId: '739767436237',
+    projectId: 'vnlaw-d68a3',
+    authDomain: 'vnlaw-d68a3.firebaseapp.com',
+    storageBucket: 'vnlaw-d68a3.firebasestorage.app',
+    measurementId: 'G-E42469REZW',
   );
 }
