@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from app.models import db
 
 # Khởi tạo Flask app và socketio từ create_app
-app, socketio = create_app("dev")
+app, socketio = create_app("prod")
 
 # Khởi tạo Migrate và kết nối db
 migrate = Migrate(app, db)

@@ -4,16 +4,10 @@ import sys
 from dotenv import load_dotenv
 
 
-embedding_service = EmbeddingService()
-rag_service = RAGService(embedding_service=embedding_service, use_cpu=False)
-from dotenv import load_dotenv
-
-
 load_dotenv()
 class ChatbotService:
     def __init__(self):
         api_key = os.getenv("OPENAI_API_KEY")
-        print(f"Using OpenAI API key: {api_key}")
         if not api_key:
             raise ValueError("Missing OPENAI_API_KEY")
         self.client = OpenAI(api_key=api_key)

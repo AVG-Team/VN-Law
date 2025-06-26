@@ -24,11 +24,11 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    # SQLALCHEMY_DATABASE_URI = os.getenv(
-    #     'DEV_DATABASE_URI',
-    #     'mysql+pymysql://root:password@mysql-db:3306/chat_service_dev'
-    # )
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:password@14.225.218.42:3306/chat_service_dev'
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        'DEV_DATABASE_URI',
+        'mysql+pymysql://root:password@mysql-db:3306/chat_service_dev'
+    )
+   
 
 class ProductionConfig(Config):
     DEBUG = False
