@@ -122,13 +122,14 @@ class ChatbotProvider extends ChangeNotifier {
           messages: [],
         );
         _conversations.insert(0, newConversation);
+        newConversation.lastMessageTime = DateTime.now();
       }
       final botMessage = ChatMessageModel(
         id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
         conversationId: conversationId,
         question: null,
-        content: answerData['answer'],
-        context: answerData['context'],
+        content: answerData['context'],
+        context: answerData['answer'],
         intent: answerData['intent'] ?? '',
         userId: 'bot',
         timestamp: DateTime.now(),
@@ -136,6 +137,11 @@ class ChatbotProvider extends ChangeNotifier {
       );
       _messages.add(botMessage);
       _listKey.currentState?.insertItem(_messages.length - 1);
+
+      // Cập nhật lastMessageTime cho cuộc trò chuyện
+      final conversation = _conversations.firstWhere((c) => c.id == conversationId);
+      conversation.lastMessageTime = DateTime.now();
+
       notifyListeners();
     } else {
       // Xử lý lỗi
@@ -169,16 +175,16 @@ class ChatbotProvider extends ChangeNotifier {
       isUser: true,
     );
     _messages.add(userMessage);
+    print('Messages length: ${_messages.length}, isTyping: $_isTyping');
     _listKey.currentState?.insertItem(_messages.length - 1);
     _isNewChat = true;
     _isTyping = true;
     notifyListeners();
     _scrollToBottom();
-    sendQuestion(text).then((_) {
-      _isTyping = false;
-      notifyListeners();
-      _scrollToBottom();
-    });
+    await sendQuestion(text);
+    _isTyping = false;
+    notifyListeners();
+    _scrollToBottom();
   }
 
   void _scrollToBottom() {
@@ -222,12 +228,12 @@ class ChatbotProvider extends ChangeNotifier {
     });
   }
 
-  void updateLastMessageTime(ConversationModel conversation) {
-    if (conversation.lastMessageTime == null) {
-      conversation.lastMessageTime = DateTime.now();
-      notifyListeners();
-    }
-  }
+  // void updateLastMessageTime(ConversationModel conversation) {
+  //   if (conversation.lastMessageTime == null) {
+  //     conversation.lastMessageTime = DateTime.now();
+  //     notifyListeners();
+  //   }
+  // }
 
   void resetState() {
     _messages.clear();
@@ -239,7 +245,7 @@ class ChatbotProvider extends ChangeNotifier {
   }
 
   String getConversationTimeGroup(DateTime? time) {
-    if (time == null) return 'Không xác định';
+    if (time == null) return 'Vừa xong';
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));

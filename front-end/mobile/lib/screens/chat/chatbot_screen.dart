@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'chatbot_provider.dart';
 import 'models/conversation_model.dart';
+import './widgets/typing.dart';
 
 
 class ChatbotScreen extends StatefulWidget {
@@ -58,9 +59,17 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
                     children: [
                       Icon(Icons.chat_bubble_outline, size: 80, color: Colors.grey[400]),
                       const SizedBox(height: 16),
-                      Text(
-                        'Hãy bắt đầu cuộc trò chuyện với VN Law Bot',
-                        style: TextStyle(fontSize: 16, color: Colors.grey[600], fontWeight: FontWeight.w500),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0), // Khoảng trắng 2 bên
+                        child: Text(
+                          'Hãy bắt đầu cuộc trò chuyện với VN Law Bot, Chúng tôi sẽ giúp bạn giải đáp các thắc mắc về pháp luật.',
+                          textAlign: TextAlign.center, // Căn giữa nội dung
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -69,62 +78,32 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
                   key: provider.listKey,
                   controller: provider.scrollController,
                   padding: const EdgeInsets.all(16),
-                  initialItemCount: provider.messages.length + (provider.isTyping ? 1 : 0),
+                  initialItemCount: provider.messages.length + (provider.isTyping && provider.messages.isNotEmpty ? 1 : 0),
                   itemBuilder: (context, index, animation) {
-                    if (index == provider.messages.length) {
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: Colors.blue.shade600,
-                              radius: 18,
-                              child: const Icon(Icons.smart_toy, color: Colors.white, size: 20),
-                            ),
-                            const SizedBox(width: 12),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(18),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  _buildTypingDot(0),
-                                  _buildTypingDot(1),
-                                  _buildTypingDot(2),
-                                ],
-                              ),
-                            ),
-                          ],
+                    print('Index: $index, Messages length: ${provider.messages.length}, isTyping: ${provider.isTyping}');
+                    // Kiểm tra nếu index vượt quá độ dài danh sách tin nhắn, hiển thị TypingIndicator
+                    if (index == provider.messages.length && provider.isTyping && provider.messages.isNotEmpty) {
+                      return const TypingIndicator();
+                    }
+                    // Nếu index hợp lệ, lấy tin nhắn
+                    if (index < provider.messages.length) {
+                      final message = provider.messages[index];
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position: Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(animation),
+                          child: ChatMessage(
+                            message: message,
+                            isFirst: index == 0 || (index > 0 && provider.messages[index - 1].isUser != message.isUser),
+                            isLast: index == provider.messages.length - 1 || (index < provider.messages.length - 1 && provider.messages[index + 1].isUser != message.isUser),
+                            isNewChat: provider.isNewChat,
+                          ),
                         ),
                       );
                     }
-                    final message = provider.messages[index];
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(animation),
-                        child: ChatMessage(
-                          message: message,
-                          isFirst: index == 0 || provider.messages[index - 1].isUser != message.isUser,
-                          isLast: index == provider.messages.length - 1 ||
-                              provider.messages[index + 1].isUser != message.isUser,
-                          isNewChat: provider.isNewChat,
-                        ),
-                      ),
-                    );
+                    return const SizedBox.shrink(); // Trả về widget rỗng nếu index không hợp lệ
                   },
-                ),
+                )
               ),
               ChatInput(onSendMessage: provider.handleSendMessage),
             ],
@@ -219,39 +198,60 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
                         ],
                         Expanded(
                           child: provider.conversations.isEmpty
-                              ? const Center(child: Text('Không có cuộc trò chuyện nào'))
-                              : ListView.builder(
-                            itemCount: provider.conversations.length,
-                            itemBuilder: (context, index) {
-                              final conversation = provider.conversations[index];
-                              // Kiểm tra và cập nhật lastMessageTime thông qua provider
-                              if (conversation.lastMessageTime == null) {
-                                Provider.of<ChatbotProvider>(context, listen: false).updateLastMessageTime(conversation);
-                              }
-                              final timeGroup = provider.getConversationTimeGroup(conversation.lastMessageTime!);
-                              bool isFirstInGroup = index == 0 ||
-                                  provider.getConversationTimeGroup(provider.conversations[index - 1].lastMessageTime!) != timeGroup;
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (isFirstInGroup)
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 8.0),
-                                      child: Text(
-                                        timeGroup,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey[800],
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ),
-                                  _buildConversationTile(context, provider, conversation, false),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
+                                    ? const Center(
+                                        child: Text(
+                                            'Không có cuộc trò chuyện nào'))
+                                    : ListView.builder(
+                                        itemCount:
+                                            provider.conversations.length,
+                                        itemBuilder: (context, index) {
+                                          final conversation =
+                                              provider.conversations[index];
+                                          // Không gọi updateLastMessageTime trong itemBuilder
+                                          final timeGroup =
+                                              provider.getConversationTimeGroup(
+                                                  conversation
+                                                          .lastMessageTime ??
+                                                      DateTime.now());
+                                          bool isFirstInGroup = index == 0 ||
+                                              provider.getConversationTimeGroup(
+                                                      provider
+                                                              .conversations[
+                                                                  index - 1]
+                                                              .lastMessageTime ??
+                                                          DateTime.now()) !=
+                                                  timeGroup;
+                                          return Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              if (isFirstInGroup)
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 16.0,
+                                                          right: 16.0,
+                                                          top: 16.0,
+                                                          bottom: 8.0),
+                                                  child: Text(
+                                                    timeGroup,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: Colors.grey[800],
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ),
+                                              _buildConversationTile(
+                                                  context,
+                                                  provider,
+                                                  conversation,
+                                                  false),
+                                            ],
+                                          );
+                                        }),
+                              ),
                       ],
                     ),
                   )
@@ -352,7 +352,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
             style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
           ),
           subtitle: Text(
-            provider.getTimeDisplay(conversation.lastMessageTime!),
+            conversation.lastMessageTime != null
+                ? provider.getTimeDisplay(conversation.lastMessageTime!)
+                : 'Vừa xong',
             style: TextStyle(color: Colors.grey[600], fontSize: 13),
           ),
           trailing: IconButton(
@@ -364,23 +366,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
             onPressed: () => provider.pinConversation(conversation),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTypingDot(int index) {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 600 + (index * 200)),
-      curve: Curves.bounceOut,
-      margin: const EdgeInsets.symmetric(horizontal: 3),
-      height: 8,
-      width: 8,
-      decoration: BoxDecoration(color: Colors.blue.shade600, borderRadius: BorderRadius.circular(4)),
-      child: TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0.6, end: 1.0),
-        curve: Curves.bounceOut,
-        duration: Duration(milliseconds: 600 + (index * 200)),
-        builder: (context, value, child) => Transform.scale(scale: value, child: child),
       ),
     );
   }

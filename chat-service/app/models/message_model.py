@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum
+from sqlalchemy.dialects.mysql import LONGTEXT
 from datetime import datetime
 from app.models.base import Base, db
 
@@ -7,10 +8,10 @@ class Message(Base):
     __tablename__ = "messages"
 
     message_id = Column(Integer, primary_key=True, autoincrement=True)
-    conversation_id = db.Column(db.String(36), db.ForeignKey('conversations.conversation_id'), nullable=False)
-    question = db.Column(db.Text)
-    content = Column(Text, nullable=False)
-    context = db.Column(db.Text)
+    conversation_id = Column(db.String(36), db.ForeignKey('conversations.conversation_id'), nullable=False)
+    question = Column(Text)
+    content = Column(LONGTEXT, nullable=False)
+    context = Column(LONGTEXT)
     intent = Column(String(50))
     user_id = Column(String(50), nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow)

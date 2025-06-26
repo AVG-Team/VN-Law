@@ -62,6 +62,7 @@ class ChatbotService:
                 temperature=0.7,
                 max_tokens=300,
                 top_p=0.9)
+            print(f"GPT API response: {response}")
             responseAnswer = response.choices[0].message.content.strip()
             # responseAnswer = "Câu trả lời của chatgpt sẽ ở đây sau khi hoàn thành tích hợp API OpenAI."
             responseAnswer = responseAnswer + f"\n\nNguồn tham khảo: {url_relate}" if url_relate else responseAnswer

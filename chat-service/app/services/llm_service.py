@@ -176,6 +176,8 @@ class LLMService:
 
     def create_message(self, conversation_id: str, user_id: str, question:str, content: str, context:str) -> bool:
         try:
+            print("create_message")
+            print("answer", context)
             self.message_service.create_message(
                 conversation_id=conversation_id, user_id=user_id,
                 question=question, content=content, context=context
@@ -407,6 +409,11 @@ class LLMService:
             # Generate answer
             result = self._generate_answer(question, context['documents'], threshold)
             print("result", result)
+
+            # Process url
+            if not result.meets_threshold:
+                context['url_relate'] = []
+
             # GPT
             answer_gpt = self.chat_service.generate_response(result.context, question, result.answer, context['url_relate'])
             # Save conversation if answer is valid and meets threshold
@@ -418,10 +425,6 @@ class LLMService:
             logging.info(f"Test answer question llm ")
             print(context)
             logging.info(context)
-
-            # Process url
-            if not result.meets_threshold:
-                context['url_relate'] = []
 
             # Return detailed result
             return {

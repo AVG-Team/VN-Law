@@ -4,7 +4,7 @@ python -m venv myenv
 # Activate the virtual environment
 
 # Windows
-env\Scripts\activate
+.venv\Scripts\activate
 
 pip freeze > requirements.txt
 

@@ -50,7 +50,7 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
   }
 
   void _startTypingEffect() {
-    Future.delayed(const Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) _typeNextCharacter();
     });
   }
@@ -62,7 +62,7 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
         _displayText = text.substring(0, _currentCharIndex + 1);
         _currentCharIndex++;
       });
-      Future.delayed(const Duration(milliseconds: 50), _typeNextCharacter);
+      Future.delayed(const Duration(milliseconds: 35), _typeNextCharacter);
     }
   }
 
