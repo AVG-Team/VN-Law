@@ -7,6 +7,8 @@ const initialState = {
     loading: false,
     error: null,
     suggestions: [],
+    chatHistory: [],
+    chatById: null,
 };
 
 const chatReducer = (state = initialState, action) => {
@@ -20,11 +22,17 @@ const chatReducer = (state = initialState, action) => {
             };
         case ChatActionTypes.SEND_MESSAGE_SUCCESS:
             const { answer, context, urlRelate, executionTime, conversationId, question } = action.payload;
+            const userMessage = {
+                id: `${Date.now()}-user`,
+                type: "user",
+                context: question,
+                timestamp: new Date().toISOString(),
+            };
 
-            // Format bot response với thông tin bổ sung
             let botContent = answer;
-
-            if (context && context.length > 0) {
+            if (context && typeof context === "string" && context.trim()) {
+                botContent += "\n\n📋 **Tài liệu tham khảo:**\n" + context;
+            } else if (Array.isArray(context) && context.length > 0) {
                 botContent += "\n\n📋 **Tài liệu tham khảo:**\n";
                 context.forEach((ctx, index) => {
                     botContent += `${index + 1}. ${ctx}\n`;
@@ -37,23 +45,20 @@ const chatReducer = (state = initialState, action) => {
                     botContent += `${index + 1}. ${url}\n`;
                 });
             }
-
             if (executionTime) {
                 botContent += `\n\n⏱️ *Thời gian xử lý: ${executionTime}*`;
             }
-
             const botMessage = {
-                id: Date.now(),
+                id: Date.now() + "-bot",
                 type: "bot",
                 content: botContent,
-                timestamp: new Date(),
-                context: context,
-                urlRelate: urlRelate,
+                timestamp: new Date().toISOString(),
+                context,
+                urlRelate,
             };
-
             return {
                 ...state,
-                messages: [...state.messages, botMessage],
+                messages: [...state.messages, userMessage, botMessage],
                 loading: false,
                 conversationId: conversationId || state.conversationId,
             };
@@ -76,6 +81,12 @@ const chatReducer = (state = initialState, action) => {
                 isTyping: action.payload,
             };
 
+        case ChatActionTypes.SET_CONVERSATION_ID:
+            return {
+                ...state,
+                conversationId: action.payload,
+            };
+
         case ChatActionTypes.CLEAR_CHAT:
             return {
                 ...state,
@@ -91,36 +102,43 @@ const chatReducer = (state = initialState, action) => {
                 suggestions: [],
             };
 
-        // Xử lý khi lấy lịch sử chat
         case ChatActionTypes.GET_CHAT_HISTORY_REQUEST:
-            return { ...state, loading: true, chatHistory: [] };
+            return { ...state, loading: true, error: null };
         case ChatActionTypes.GET_CHAT_HISTORY_SUCCESS:
-            return { ...state, loading: false, chatHistory: action.payload };
+            return { ...state, loading: false, chatHistory: action.payload || [] };
         case ChatActionTypes.GET_CHAT_HISTORY_FAILURE:
             return { ...state, loading: false, error: action.payload };
 
-        // Xử lý khi lấy chat theo ID
         case ChatActionTypes.GET_CHAT_BY_ID_REQUEST:
-            return { ...state, loading: true, chatById: null };
+            return { ...state, loading: true, error: null };
         case ChatActionTypes.GET_CHAT_BY_ID_SUCCESS:
-            return { ...state, loading: false, chatById: action.payload };
+            return {
+                ...state,
+                loading: false,
+                messages: action.payload || [],
+                chatById: action.payload,
+            };
         case ChatActionTypes.GET_CHAT_BY_ID_FAILURE:
             return { ...state, loading: false, error: action.payload };
 
-        // Xử lý khi lấy tất cả các chat
-        case ChatActionTypes.GET_ALL_CHATS_REQUEST:
-            return { ...state, loading: true, allChats: [] };
-        case ChatActionTypes.GET_ALL_CHATS_SUCCESS:
-            return { ...state, loading: false, allChats: action.payload };
-        case ChatActionTypes.GET_ALL_CHATS_FAILURE:
+        case ChatActionTypes.CREATE_CONVERSATION_REQUEST:
+            return { ...state, loading: true, error: null };
+        case ChatActionTypes.CREATE_CONVERSATION_SUCCESS:
+            return { ...state, loading: false, conversationId: action.payload };
+        case ChatActionTypes.CREATE_CONVERSATION_FAILURE:
             return { ...state, loading: false, error: action.payload };
 
-        // Xử lý khi lấy các chat theo người dùng
-        case ChatActionTypes.GET_CHATS_BY_USER_REQUEST:
-            return { ...state, loading: true, chatByUser: [] };
-        case ChatActionTypes.GET_CHATS_BY_USER_SUCCESS:
-            return { ...state, loading: false, chatByUser: action.payload };
-        case ChatActionTypes.GET_CHATS_BY_USER_FAILURE:
+        case ChatActionTypes.DELETE_CONVERSATION_REQUEST:
+            return { ...state, loading: true, error: null };
+        case ChatActionTypes.DELETE_CONVERSATION_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                chatHistory: state.chatHistory.filter((chat) => chat.id !== action.payload),
+                conversationId: state.conversationId === action.payload ? null : state.conversationId,
+                messages: state.conversationId === action.payload ? [] : state.messages,
+            };
+        case ChatActionTypes.DELETE_CONVERSATION_FAILURE:
             return { ...state, loading: false, error: action.payload };
 
         default:

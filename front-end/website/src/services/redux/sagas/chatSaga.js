@@ -1,68 +1,42 @@
-import { ChatActionTypes } from "../actions/chatAction";
 import { call, put, takeLatest } from "redux-saga/effects";
 import axios from "~/config/axios";
 import { CHAT_API_BASE_URL, StorageKeys } from "~/common/constants/keys";
+import { ChatActionTypes } from "../actions/chatAction";
 
 const BASE_URL = CHAT_API_BASE_URL;
 
-async function answerChatSaga(question) {
-    try {
-        const token = localStorage.getItem(StorageKeys.ACCESS_TOKEN);
-
-        if (!token) {
-            throw new Error("Bạn cần đăng nhập để sử dụng tính năng này");
-        }
-
-        const response = await fetch(`${BASE_URL}/api/chat/get-answer`, {
-            method: "POST",
+function answerChatSaga({ message, conversationId }) {
+    return axios.post(
+        `${BASE_URL}/api/chat/get-answer`,
+        {
+            question: message,
+            conversation_id: conversationId || "",
+        },
+        {
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${localStorage.getItem(StorageKeys.ACCESS_TOKEN)}`,
             },
-            body: JSON.stringify({
-                question: question,
-                conversation_id: conversationId,
-            }),
-        });
-
-        if (!response.ok) {
-            if (response.status === 401) {
-                throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
-            }
-            if (response.status === 400) {
-                throw new Error("Câu hỏi không hợp lệ. Vui lòng thử lại.");
-            }
-            throw new Error("Có lỗi xảy ra khi kết nối đến server");
         }
-
-        const data = await response.json();
-
-        if (data.status_code !== 200) {
-            throw new Error(data.message || "Có lỗi xảy ra");
-        }
-
-        return data.data;
-    } catch (error) {
-        console.error("Chat API Error:", error);
-        throw error;
-    }
+    );
 }
 
 function* fetchAnswerChatSaga(action) {
     try {
-        const { question, conversationId } = action.payload;
+        const { message, conversationId } = action.payload;
+        const question = message.trim();
 
         // Bật typing indicator
         yield put({ type: ChatActionTypes.SET_TYPING, payload: true });
 
         // Gọi API
-        const response = yield call(sendChatMessageApi, question);
+        const response = yield call(answerChatSaga, { message, conversationId });
 
         // Cập nhật conversation ID nếu có
-        if (response.conversation_id !== conversationId) {
+        if (response.data.conversation_id !== conversationId) {
             yield put({
                 type: ChatActionTypes.SET_CONVERSATION_ID,
-                payload: response.conversation_id,
+                payload: response.data.conversation_id,
             });
         }
 
@@ -70,19 +44,20 @@ function* fetchAnswerChatSaga(action) {
         yield put({
             type: ChatActionTypes.SEND_MESSAGE_SUCCESS,
             payload: {
-                answer: response.answer,
-                context: response.context,
-                urlRelate: response.url_relate,
-                executionTime: response.execution_time,
-                conversationId: response.conversation_id,
-                question: question,
+                answer: response.data.answer,
+                context: response.data.context,
+                urlRelate: response.data.url_relate,
+                executionTime: response.data.execution_time,
+                conversationId: response.data.conversation_id,
+                question,
+                message,
             },
         });
     } catch (error) {
         // Dispatch failure
         yield put({
             type: ChatActionTypes.SEND_MESSAGE_FAILURE,
-            payload: error.message,
+            payload: error.response?.data?.message || error.message,
         });
     } finally {
         // Tắt typing indicator
@@ -91,74 +66,117 @@ function* fetchAnswerChatSaga(action) {
 }
 
 function getChatHistorySaga() {
-    return axios.get(`${BASE_URL}/history`);
+    return axios.get(`${BASE_URL}/api/chat/get-history`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem(StorageKeys.ACCESS_TOKEN)}`,
+        },
+    });
 }
 
 function* fetchGetChatHistorySaga() {
     try {
         const response = yield call(getChatHistorySaga);
-        console.log("response", response.data);
-        yield put({ type: ChatActionTypes.GET_CHAT_HISTORY_SUCCESS, payload: response.data });
+        const conversations = response.data?.conversations || [];
+        yield put({ type: ChatActionTypes.GET_CHAT_HISTORY_SUCCESS, payload: conversations });
     } catch (error) {
-        yield put({ type: ChatActionTypes.GET_CHAT_HISTORY_FAILURE, payload: error.message });
+        yield put({
+            type: ChatActionTypes.GET_CHAT_HISTORY_FAILURE,
+            payload: error.response?.data?.message || error.message,
+        });
     }
 }
 
 function getChatByIdSaga(id) {
-    return axios.get(`${BASE_URL}/${id}`);
+    return axios.get(`${BASE_URL}/api/chat/get-messages?conversation_id=${id}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem(StorageKeys.ACCESS_TOKEN)}`,
+        },
+    });
 }
 
 function* fetchGetChatByIdSaga(action) {
     try {
         const response = yield call(getChatByIdSaga, action.payload);
-        console.log("response", response.data);
-        yield put({ type: ChatActionTypes.GET_CHAT_BY_ID_SUCCESS, payload: response.data });
+        const apiMessages = response.data?.messages || [];
+        const messages = apiMessages.reduce((acc, msg) => {
+            if (msg.question) {
+                acc.push({
+                    id: `${msg.message_id}-user`,
+                    type: "user",
+                    context: msg.question,
+                    timestamp: new Date(msg.timestamp).toISOString(),
+                });
+            }
+            acc.push({
+                id: `${msg.message_id}-bot`,
+                type: "bot",
+                content: msg.content,
+                timestamp: new Date(msg.timestamp).toISOString(),
+                context: msg.context,
+                conversation_id: msg.conversation_id,
+            });
+            return acc;
+        }, []);
+        yield put({ type: ChatActionTypes.GET_CHAT_BY_ID_SUCCESS, payload: messages });
     } catch (error) {
-        yield put({ type: ChatActionTypes.GET_CHAT_BY_ID_FAILURE, payload: error.message });
+        console.error("Error fetching chat by id:", error);
+        yield put({
+            type: ChatActionTypes.GET_CHAT_BY_ID_FAILURE,
+            payload: error.response?.data?.message || error.message,
+        });
     }
 }
 
-function getAllChatsSaga() {
-    return axios.get(`${BASE_URL}/all`);
+function createConversationSaga() {
+    return axios.post(`${BASE_URL}/api/chat/create-conversation`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem(StorageKeys.ACCESS_TOKEN)}`,
+        },
+    });
 }
 
-function* fetchGetAllChatsSaga() {
+function* fetchCreateConversationSaga() {
     try {
-        const response = yield call(getAllChatsSaga);
-        console.log("response", response.data);
-        yield put({ type: ChatActionTypes.GET_ALL_CHATS_SUCCESS, payload: response.data });
+        const response = yield call(createConversationSaga);
+        yield put({
+            type: ChatActionTypes.CREATE_CONVERSATION_SUCCESS,
+            payload: response.data?.conversation_id || "",
+        });
     } catch (error) {
-        yield put({ type: ChatActionTypes.GET_ALL_CHATS_FAILURE, payload: error.message });
+        yield put({
+            type: ChatActionTypes.CREATE_CONVERSATION_FAILURE,
+            payload: error.response?.data?.message || error.message,
+        });
     }
 }
 
-function getChatsByUserSaga(userId) {
-    return axios.get(`${BASE_URL}/user/${userId}`);
+function deleteConversationSaga(id) {
+    return axios.delete(`${BASE_URL}/api/chat/conversation/${id}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem(StorageKeys.ACCESS_TOKEN)}`,
+        },
+    });
 }
 
-function* fetchGetChatsByUserSaga(action) {
+function* fetchDeleteConversationSaga(action) {
     try {
-        const response = yield call(getChatsByUserSaga, action.payload);
-        console.log("response", response.data);
-        yield put({ type: ChatActionTypes.GET_CHATS_BY_USER_SUCCESS, payload: response.data });
+        yield call(deleteConversationSaga, action.payload);
+        yield put({
+            type: ChatActionTypes.DELETE_CONVERSATION_SUCCESS,
+            payload: action.payload,
+        });
     } catch (error) {
-        yield put({ type: ChatActionTypes.GET_CHATS_BY_USER_FAILURE, payload: error.message });
+        yield put({
+            type: ChatActionTypes.DELETE_CONVERSATION_FAILURE,
+            payload: error.response?.data?.message || error.message,
+        });
     }
 }
-
-// async function createConversationSaga() => {
-//      try {
-//             const response = await axios.post(`${BASE_URL}/chatbot/conversation`);
-//             return response.data;
-//         } catch (error) {
-//             throw new Error(error.response?.data?.message || 'Không thể tạo cuộc trò chuyện mới');
-//         }
-// }
 
 export default function* chatSaga() {
     yield takeLatest(ChatActionTypes.SEND_MESSAGE_REQUEST, fetchAnswerChatSaga);
     yield takeLatest(ChatActionTypes.GET_CHAT_HISTORY_REQUEST, fetchGetChatHistorySaga);
     yield takeLatest(ChatActionTypes.GET_CHAT_BY_ID_REQUEST, fetchGetChatByIdSaga);
-    yield takeLatest(ChatActionTypes.GET_ALL_CHATS_REQUEST, fetchGetAllChatsSaga);
-    yield takeLatest(ChatActionTypes.GET_CHATS_BY_USER_REQUEST, fetchGetChatsByUserSaga);
+    yield takeLatest(ChatActionTypes.CREATE_CONVERSATION_REQUEST, fetchCreateConversationSaga);
+    yield takeLatest(ChatActionTypes.DELETE_CONVERSATION_REQUEST, fetchDeleteConversationSaga);
 }

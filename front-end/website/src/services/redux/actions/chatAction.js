@@ -11,22 +11,19 @@ export const ChatActionTypes = {
     GET_CHAT_BY_ID_SUCCESS: "GET_CHAT_BY_ID_SUCCESS",
     GET_CHAT_BY_ID_FAILURE: "GET_CHAT_BY_ID_FAILURE",
 
-    GET_ALL_CHATS_REQUEST: "GET_ALL_CHATS_REQUEST",
-    GET_ALL_CHATS_SUCCESS: "GET_ALL_CHATS_SUCCESS",
-    GET_ALL_CHATS_FAILURE: "GET_ALL_CHATS_FAILURE",
-
-    GET_CHATS_BY_USER_REQUEST: "GET_CHATS_BY_USER_REQUEST",
-    GET_CHATS_BY_USER_SUCCESS: "GET_CHATS_BY_USER_SUCCESS",
-    GET_CHATS_BY_USER_FAILURE: "GET_CHATS_BY_USER_FAILURE",
-
     CREATE_CONVERSATION_REQUEST: "CREATE_CONVERSATION_REQUEST",
     CREATE_CONVERSATION_SUCCESS: "CREATE_CONVERSATION_SUCCESS",
     CREATE_CONVERSATION_FAILURE: "CREATE_CONVERSATION_FAILURE",
+
+    DELETE_CONVERSATION_REQUEST: "DELETE_CONVERSATION_REQUEST",
+    DELETE_CONVERSATION_SUCCESS: "DELETE_CONVERSATION_SUCCESS",
+    DELETE_CONVERSATION_FAILURE: "DELETE_CONVERSATION_FAILURE",
 
     RATE_MESSAGE: "RATE_MESSAGE",
     CLEAR_CHAT: "CLEAR_CHAT",
     SET_TYPING: "SET_TYPING",
     ADD_MESSAGE: "ADD_MESSAGE",
+    SET_CONVERSATION_ID: "SET_CONVERSATION_ID",
 };
 
 export const sendMessageRequest = (message, conversationId) => ({
@@ -73,35 +70,55 @@ export const getChatByIdFailure = (error) => ({
     payload: error,
 });
 
-export const createConversationRequest = (conversation) => ({
+export const createConversationRequest = () => ({
     type: ChatActionTypes.CREATE_CONVERSATION_REQUEST,
-    payload: conversation,
 });
 
-export const getAllChatsRequest = () => ({
-    type: ChatActionTypes.GET_ALL_CHATS_REQUEST,
+export const createConversationSuccess = (conversationId) => ({
+    type: ChatActionTypes.CREATE_CONVERSATION_SUCCESS,
+    payload: conversationId,
 });
 
-export const getChatsByUserRequest = (userId) => ({
-    type: ChatActionTypes.GET_CHATS_BY_USER_REQUEST,
-    payload: userId,
+export const createConversationFailure = (error) => ({
+    type: ChatActionTypes.CREATE_CONVERSATION_FAILURE,
+    payload: error,
+});
+
+export const deleteConversationRequest = (id) => ({
+    type: ChatActionTypes.DELETE_CONVERSATION_REQUEST,
+    payload: id,
+});
+
+export const deleteConversationSuccess = (id) => ({
+    type: ChatActionTypes.DELETE_CONVERSATION_SUCCESS,
+    payload: id,
+});
+
+export const deleteConversationFailure = (error) => ({
+    type: ChatActionTypes.DELETE_CONVERSATION_FAILURE,
+    payload: error,
 });
 
 export const rateMessage = (messageId, rating) => ({
-    type: ChatbotActionTypes.RATE_MESSAGE,
+    type: ChatActionTypes.RATE_MESSAGE,
     payload: { messageId, rating },
 });
 
 export const clearChat = () => ({
-    type: ChatbotActionTypes.CLEAR_CHAT,
+    type: ChatActionTypes.CLEAR_CHAT,
 });
 
 export const setTyping = (isTyping) => ({
-    type: ChatbotActionTypes.SET_TYPING,
+    type: ChatActionTypes.SET_TYPING,
     payload: isTyping,
 });
 
 export const addMessage = (message) => ({
-    type: ChatbotActionTypes.ADD_MESSAGE,
+    type: ChatActionTypes.ADD_MESSAGE,
     payload: message,
+});
+
+export const setConversationId = (conversationId) => ({
+    type: ChatActionTypes.SET_CONVERSATION_ID,
+    payload: conversationId,
 });
