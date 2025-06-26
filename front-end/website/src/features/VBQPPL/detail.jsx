@@ -14,6 +14,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { filter, getById } from "../../services/redux/actions/vbqpplAction";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
+import LoadingComponent from "../../components/ui/Loading";
+import NoDataPage from "../../components/ui/NoData";
+import ErrorPage from "../../components/ui/Error";
 
 const { Title, Text } = Typography;
 
@@ -135,9 +138,38 @@ export default function Detail(props) {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error.message}</div>;
-    if (!vbqppl) return <div>No data</div>;
+    if (loading)
+        return <LoadingComponent fullscreen={false} title="Đang tải văn bản quy phạm pháp luật..." size="large" />;
+    if (error === "Network Error")
+        return (
+            <ErrorPage
+                errorCode="500"
+                title="Đã xảy ra lỗi"
+                description="Xin lỗi, có lỗi xảy ra với hệ thống"
+                onRetry={() => window.location.reload()}
+                onGoHome={() => (window.location.href = "/")}
+            />
+        );
+    if (error === "Page not found")
+        return (
+            <ErrorPage
+                errorCode="404"
+                title="Trang không tồn tại"
+                description="Xin lỗi, trang bạn đang tìm kiếm không tồn tại hoặc đã bị xóa"
+                onGoHome={() => (window.location.href = "/")}
+                onGoBack={() => window.history.back()}
+                showBackButton={true}
+            />
+        );
+    if (!vbqppl)
+        return (
+            <NoDataPage
+                title="Không có dữ liệu VBQPPL"
+                description="Hiện tại chưa có dữ liệu VBQPPL để hiển thị"
+                showRefreshButton={true}
+                onRefresh={() => window.location.reload()}
+            />
+        );
 
     return (
         <motion.div
@@ -201,8 +233,8 @@ export default function Detail(props) {
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Ngày ban hành">
                                     <span className="font-medium">
-                                        {vbqppl.issueDate
-                                            ? new Date(vbqppl.issueDate).toLocaleDateString("vi-VN")
+                                        {vbqppl.issue_date
+                                            ? new Date(vbqppl.issue_date).toLocaleDateString("vi-VN")
                                             : "N/A"}
                                     </span>
                                 </Descriptions.Item>
@@ -283,8 +315,8 @@ export default function Detail(props) {
                                             <Text className="block font-medium">{doc.title}</Text>
                                             <Text type="secondary" className="text-sm">
                                                 {doc.number} -{" "}
-                                                {doc.issueDate
-                                                    ? new Date(doc.issueDate).toLocaleDateString("vi-VN")
+                                                {doc.issue_date
+                                                    ? new Date(doc.issue_date).toLocaleDateString("vi-VN")
                                                     : "N/A"}
                                             </Text>
                                         </a>
@@ -307,15 +339,15 @@ export default function Detail(props) {
                             <Descriptions column={1}>
                                 <Descriptions.Item label="Ngày có hiệu lực">
                                     <span className="font-medium">
-                                        {vbqppl.effectiveDate
-                                            ? new Date(vbqppl.effectiveDate).toLocaleDateString("vi-VN")
+                                        {vbqppl.effective_date
+                                            ? new Date(vbqppl.effective_date).toLocaleDateString("vi-VN")
                                             : "N/A"}
                                     </span>
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Ngày hết hiệu lực">
                                     <span className="font-medium">
                                         {vbqppl.expiryDate
-                                            ? new Date(vbqppl.expiryDate).toLocaleDateString("vi-VN")
+                                            ? new Date(vbqppl.effective_end_date).toLocaleDateString("vi-VN")
                                             : "Chưa có"}
                                     </span>
                                 </Descriptions.Item>

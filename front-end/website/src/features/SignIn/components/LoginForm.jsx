@@ -109,7 +109,7 @@ export default function LoginForm() {
     };
 
     function handleGoogleLogin() {
-        window.location.href = 'http://localhost:9001/oauth2/authorize/google?client_type=web';
+        window.location.href = "http://14.225.218.42:9001/oauth2/authorize/google?client_type=web";
     }
 
     return (
@@ -211,8 +211,9 @@ export default function LoginForm() {
                             showResent ? "hidden" : "flex"
                         }`}
                     >
-                        <button className="flex items-center justify-center w-full h-12 px-4 text-black bg-slate-200 rounded-xl hover:bg-slate-300"
-                        onClick={handleGoogleLogin}
+                        <button
+                            className="flex items-center justify-center w-full h-12 px-4 text-black bg-slate-200 rounded-xl hover:bg-slate-300"
+                            onClick={handleGoogleLogin}
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"

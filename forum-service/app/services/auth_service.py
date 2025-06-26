@@ -24,7 +24,7 @@ async def authenticate_user(request: Request) -> UserInfo:
     token = auth_header.split(" ")[1]
     logger.info(f"Extracted token: {token}")
 
-    api_auth_url = os.getenv("API_AUTH_URL", "http://localhost:9001")
+    api_auth_url = os.getenv("API_AUTH_URL", "http://14.225.218.42:9001")
     validation_url = f"{api_auth_url}/api/auth/validate-token"
     logger.info(f"Validation URL: {validation_url}")
 
@@ -74,7 +74,7 @@ async def authenticate_user(request: Request) -> UserInfo:
 
 
 def get_user_info(keycloak_id: str) -> UserResponse | dict[str, str]:
-    api_url = f"{os.getenv('API_AUTH_URL', 'http://localhost:9001')}/api/auth/get-user-by-id/{keycloak_id}"
+    api_url = f"{os.getenv('API_AUTH_URL', 'http://14.225.218.42:9001')}/api/auth/get-user-by-id/{keycloak_id}"
     try:
         response = requests.get(api_url)
         response.raise_for_status()
@@ -107,7 +107,7 @@ def get_user_info(keycloak_id: str) -> UserResponse | dict[str, str]:
         return {"name": "Unknown"}
 
 def get_users_by_realm_role(realm_role: str) -> Union[List[UserResponse], dict[str, str]]:
-    api_url = f"{os.getenv('API_AUTH_URL', 'http://localhost:9001')}/api/auth/get-users-by-realm-role/{realm_role}"
+    api_url = f"{os.getenv('API_AUTH_URL', 'http://14.225.218.42:9001')}/api/auth/get-users-by-realm-role/{realm_role}"
     try:
         response = requests.get(api_url)
         response.raise_for_status()

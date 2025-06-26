@@ -1,12 +1,13 @@
 from openai import OpenAI
 import os
+import sys
 from dotenv import load_dotenv
 
+
+load_dotenv()
 class ChatbotService:
     def __init__(self):
-        load_dotenv()
         api_key = os.getenv("OPENAI_API_KEY")
-        print(f"Using OpenAI API key: {api_key}")
         if not api_key:
             raise ValueError("Missing OPENAI_API_KEY")
         self.client = OpenAI(api_key=api_key)

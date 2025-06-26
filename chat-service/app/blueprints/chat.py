@@ -3,7 +3,7 @@ from uuid import uuid4
 from flask import Blueprint, request, jsonify
 from app.models.response_model_chat_api import ResponseModel
 from app.models.user_info import UserInfo
-from app.services import RAGService, EmbeddingService, LLMService, ChatbotService, ConversationService, MessageService
+from app.services import RAGService, EmbeddingService, LLMService, ChatbotService, ConversationService, MessageService,SummaryService
 import logging
 import requests
 import os
@@ -19,6 +19,7 @@ embedding_service = EmbeddingService()
 rag_service = RAGService(embedding_service=embedding_service, use_cpu=False)
 llm_service = LLMService()
 chat_service = ChatbotService()
+summary_service = SummaryService()
 
 def authenticate_user(auth_header) -> UserInfo:
     if not auth_header or not auth_header.startswith("Bearer "):
@@ -165,3 +166,22 @@ def retrieve():
         ).dict()), 200
     except Exception as e:
         return jsonify(ResponseModel(status_code=500, message=str(e), data=None).dict()), 500
+    
+@chat_bp.route('/api/chat/summarize', methods=['POST'])
+def summarize():
+    try:
+        user_info = authenticate_user(request.headers.get("Authorization"))
+        data = request.get_json()
+        text = data.get('text', '')
+        if not text:
+            return jsonify(ResponseModel(status_code=400, message="Text is required", data=None).dict()), 400
+
+        summary = summary_service.summarize_document(text)
+        return jsonify(ResponseModel(
+            status_code=200,
+            message="Success",
+            data={"summary": summary}
+        ).dict()), 200
+    except Exception as e:
+        logger.error(f"Error in summarize: {str(e)}")
+        return jsonify(ResponseModel(status_code=e.status_code, message=e.detail, data=None).dict()), e.status_code    

@@ -12,23 +12,25 @@ from underthesea import text_normalize
 import logging
 from typing import List, Dict, Optional
 import mysql.connector
+from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
+load_dotenv()
 class EmbeddingService:
     def __init__(
             self,
             embedding_model: str = "bkai-foundation-models/vietnamese-bi-encoder",
             top_k: int = 5,
-            chroma_host: str = "14.225.218.42",
-            chroma_port: int = 8000,
-            hf_token: str = None,
+            chroma_host: str =os.getenv("CHROMA_HOST"),
+            chroma_port: int = os.getenv("CHROMA_PORT", 8000),
+            hf_token: str = os.getenv("HF_TOKEN", ""),
             # MySQL connection parameters
-            mysql_host: str = "14.225.218.42",
-            mysql_port: int = 3306,
-            mysql_user: str = "root",
-            mysql_password: str = "password",
-            mysql_database: str = "law_service",
+            mysql_host: str = os.getenv("MYSQL_HOST"),
+            mysql_port: int = os.getenv("MYSQL_PORT"),
+            mysql_user: str = os.getenv("MYSQL_USER"),
+            mysql_password: str = os.getenv("MYSQL_PASSWORD"),
+            mysql_database: str = os.getenv("MYSQL_DATABASE")
     ):
         """
         Initializes the EmbeddingService with the specified parameters.

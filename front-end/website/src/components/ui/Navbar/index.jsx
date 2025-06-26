@@ -1,7 +1,7 @@
 import React, { memo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, Close } from "@mui/icons-material";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaUserTie } from "react-icons/fa";
 import { IoMenu } from "react-icons/io5";
 import { StorageKeys } from "../../../common/constants/keys";
@@ -23,6 +23,7 @@ const Navbar = memo(() => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const location = useLocation();
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -46,7 +47,7 @@ const Navbar = memo(() => {
     const baseMenuItems = [
         { label: "Đăng nhập", path: "/login" },
         { label: "Thông tin cá nhân", path: "/profile" },
-        { label: "Cài đặt", path: "/settings" },
+        { label: "Cài đặt", path: "/trang-khong-ton-tai" },
         { label: "Đăng xuất", path: "/sign-out" },
     ];
 
@@ -72,10 +73,11 @@ const Navbar = memo(() => {
             >
                 {/* Logo */}
                 <motion.div
+                    onClick={() => navigate("/")}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="text-2xl font-bold text-black"
+                    className="text-2xl font-bold text-black cursor-pointer"
                 >
                     LegalWise
                 </motion.div>

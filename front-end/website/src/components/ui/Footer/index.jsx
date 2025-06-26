@@ -1,9 +1,16 @@
-import Logo from "~/assets/images/logo/logo2.png";
+import Logo from "~/assets/images/logo/logo.png";
 export default function Footer() {
     return (
         <footer className="w-full p-6 px-4 mt-auto bg-white">
             <div className="py-10 border-t border-slate-900/5">
-                <img src={Logo} alt="logo-ct" className="mx-auto w-52 text-slate-900" />
+                <div className="flex items-center justify-center space-x-4">
+                    <img
+                        src={Logo}
+                        alt="logo-ct"
+                        className="w-24 mx-auto rounded-full text-slate-900" // thêm ở đây
+                    />
+                </div>
+
                 <p className="mt-5 text-sm leading-6 text-center text-slate-500">
                     &copy; AVG TEAM 2023. All rights reserved.
                 </p>
