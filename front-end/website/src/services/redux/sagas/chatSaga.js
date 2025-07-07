@@ -17,7 +17,7 @@ function answerChatSaga({ message, conversationId }) {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${localStorage.getItem(StorageKeys.ACCESS_TOKEN)}`,
             },
-        }
+        },
     );
 }
 
@@ -128,7 +128,7 @@ function* fetchGetChatByIdSaga(action) {
 }
 
 function createConversationSaga() {
-    return axios.post(`${BASE_URL}/api/chat/create-conversation`, {
+    return axios.post(`${BASE_URL}/api/chat/get-answer`, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem(StorageKeys.ACCESS_TOKEN)}`,
         },

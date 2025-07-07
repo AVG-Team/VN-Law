@@ -1,4 +1,4 @@
-import { Form, Input, Button, Typography, Card, Divider, message, Checkbox, Tooltip } from "antd";
+import { Form, Input, Button, Typography, Card, Divider, message, Checkbox, Tooltip, Modal } from "antd";
 import {
     UserOutlined,
     LockOutlined,
@@ -12,11 +12,10 @@ import {
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
 import { useState } from "react";
 import Logo from "~/assets/images/logo/logo.png";
-import GoogleLoginButton from "../SignIn/components/GoogleLoginButton";
-import SocialButton from "../SignIn/components/GoogleLoginButton";
+import GoogleLoginButton from "./GoogleLoginButton";
+import SocialButton from "./GoogleLoginButton";
 import axios from "axios";
 import { setToken } from "../../mock/auth";
 
@@ -63,10 +62,16 @@ const Login = () => {
     const onFinish = async (values) => {
         setIsLoading(true);
         try {
-            const response = await axios.post("http://14.225.218.42:9001/api/auth/authenticate", {
-                email: values.email,
-                password: values.password,
-            });
+            const response = await axios.post(
+                "http://14.225.218.42:9001/api/auth/authenticate",
+                {
+                    email: values.email,
+                    password: values.password,
+                },
+                {
+                    withCredentials: true,
+                },
+            );
             console.log("Response from server:", response.data.data);
             setToken(response.data.data);
             message.success("Đăng nhập thành công!");
@@ -74,7 +79,11 @@ const Login = () => {
             //Todo: Alert Success
         } catch (error) {
             console.error("Login failed:", error);
-            alert("Đăng nhập thất bại");
+            Modal.info({
+                title: "Thông báo",
+                content: error?.response?.data?.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại.",
+                okText: "Đóng",
+            });
         } finally {
             setIsLoading(false);
         }
@@ -83,6 +92,14 @@ const Login = () => {
     const onFinishFailed = (errorInfo) => {
         console.log("Failed:", errorInfo);
         message.error("Vui lòng kiểm tra lại thông tin đăng nhập!");
+    };
+
+    const handleLoginWithFacebook = () => {
+        Modal.info({
+            title: "Thông báo",
+            content: "Chức năng đăng nhập với Facebook đang được phát triển.",
+            okText: "Đóng",
+        });
     };
 
     return (
@@ -219,7 +236,7 @@ const Login = () => {
                                     <SocialButton
                                         icon={<FacebookOutlined />}
                                         text="Đăng nhập với Facebook"
-                                        onClick={() => console.log("Facebook login")}
+                                        onClick={handleLoginWithFacebook}
                                     />
                                 </div>
 
@@ -227,7 +244,7 @@ const Login = () => {
                                     <Text className="text-gray-600">
                                         Chưa có tài khoản?{" "}
                                         <Link
-                                            to="/register"
+                                            to="/dang-ky"
                                             className="font-medium text-blue-600 transition-colors duration-300 hover:text-blue-700"
                                         >
                                             Đăng ký ngay
@@ -309,7 +326,7 @@ const Login = () => {
                                 <Text className="block mb-6 text-gray-600">
                                     Đăng ký tài khoản để trải nghiệm đầy đủ các tính năng của LegalWise
                                 </Text>
-                                <Link to="/register">
+                                <Link to="/dang-ky">
                                     <motion.div
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}

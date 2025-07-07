@@ -1,5 +1,6 @@
 import React from "react";
 import { RefreshCw, Home, ArrowLeft, AlertTriangle, Wifi, Server, Shield } from "lucide-react";
+import PropTypes from "prop-types"; // Thêm PropTypes nếu không dùng TypeScript
 
 const ErrorPage = ({
     errorCode = "500",
@@ -123,6 +124,20 @@ const ErrorPage = ({
             </div>
         </div>
     );
+};
+
+// Kiểm tra prop types (nếu không dùng TypeScript)
+ErrorPage.propTypes = {
+    errorCode: PropTypes.string,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    showRetryButton: PropTypes.bool,
+    showHomeButton: PropTypes.bool,
+    showBackButton: PropTypes.bool,
+    onRetry: PropTypes.func,
+    onGoHome: PropTypes.func,
+    onGoBack: PropTypes.func,
+    errorType: PropTypes.string,
 };
 
 export default ErrorPage;

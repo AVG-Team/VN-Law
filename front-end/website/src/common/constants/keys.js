@@ -13,7 +13,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000
 const GOOGLE_AUTH_URL = API_BASE_URL + "/auth" + "/oauth2/authorize/google?redirect_uri=" + OAUTH2_REDIRECT_URI;
 
 const LAW_API_BASE_URL =
-    import.meta.env.VITE_LAWYER_API_BASE_URL || "https://7249-2a09-bac5-d468-1d05-00-2e4-31.ngrok-free.app/law/api";
+    import.meta.env.VITE_LAWYER_API_BASE_URL || "http://[2402:800:6f5f:ef7b:f38c:c665:201e:c6d9]:9002/law/api";
 const CHAT_API_BASE_URL = import.meta.env.VITE_CHAT_API_BASE_URL || "http://localhost:9006";
 
 export { StorageKeys, API_BASE_URL, GOOGLE_AUTH_URL, LAW_API_BASE_URL, CHAT_API_BASE_URL };

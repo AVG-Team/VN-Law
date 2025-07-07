@@ -12,11 +12,10 @@ import {
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
 import { useState } from "react";
 import Logo from "~/assets/images/logo/logo.png";
 import axios from "axios";
-import SocialButton from "../SignIn/components/GoogleLoginButton";
+import SocialButton from "~/features/Login/GoogleLoginButton";
 
 const { Title, Text } = Typography;
 
@@ -69,7 +68,7 @@ const SignUp = () => {
             });
             console.log("Response from server:", response.data);
             message.success("Đăng ký thành công!");
-            navigate("/login");
+            navigate("/dang-nhap");
             // Todo: Alert Success
             alert("Đăng Ký thành công");
         } catch (error) {
@@ -253,7 +252,7 @@ const SignUp = () => {
                                     <Text className="text-gray-600">
                                         Bạn đã có tài khoản?{" "}
                                         <Link
-                                            to="/login"
+                                            to="/dang-nhap"
                                             className="font-medium text-blue-600 transition-colors duration-300 hover:text-blue-700"
                                         >
                                             Đăng nhập ngay
@@ -335,7 +334,7 @@ const SignUp = () => {
                                 <Text className="block mb-6 text-gray-600">
                                     Đăng nhập tài khoản để trải nghiệm đầy đủ các tính năng của LegalWise
                                 </Text>
-                                <Link to="/login">
+                                <Link to="/dang-nhap">
                                     <motion.div
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}

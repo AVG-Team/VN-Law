@@ -18,11 +18,11 @@ const OAuth2Callback = () => {
                     localStorage.setItem("userInfo", JSON.stringify(response.data));
                 } catch (error) {
                     console.error("Failed to fetch user info:", error);
-                    navigate("/login", { replace: true });
+                    navigate("/dang-nhap", { replace: true });
                 }
                 navigate("/", { replace: true });
             } else {
-                navigate("/login", { replace: true });
+                navigate("/dang-nhap", { replace: true });
             }
         };
 

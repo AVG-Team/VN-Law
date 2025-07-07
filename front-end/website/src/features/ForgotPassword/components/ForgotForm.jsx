@@ -26,7 +26,7 @@ export function ForgotForm() {
             console.log("Response from server:", response.data);
             let message = response.data.message;
             toast.success(message, {
-                onClose: () => navigate("/login"),
+                onClose: () => navigate("/dang-nhap"),
                 autoClose: 2000,
                 buttonClose: false,
             });

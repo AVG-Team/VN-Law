@@ -1,11 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { motion } from "framer-motion";
-import { Button } from "antd";
+import { Button, Modal } from "antd";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { setToken } from "../../../mock/auth";
+import { setToken } from "../../mock/auth";
 
 const GoogleLoginWrapper = ({ icon, text }) => {
     const navigate = useNavigate();
@@ -22,19 +22,31 @@ const GoogleLoginWrapper = ({ icon, text }) => {
                 console.log("Response from server:", response.data);
                 if (response.data.code !== 0) {
                     console.error("Authentication failed:", response.data.message);
-                    alert("Đăng nhập thất bại");
+                    Modal.info({
+                        title: "Thông báo",
+                        content: "Đăng nhập thất bại. Vui lòng kiểm tra lại.",
+                        okText: "Đóng",
+                    });
                     return;
                 }
                 setToken(response.data.data);
                 navigate("/");
             } catch (error) {
                 console.error("Authentication failed:", error);
-                alert("Đăng nhập thất bại");
+                Modal.info({
+                    title: "Thông báo",
+                    content: "Đăng nhập thất bại. Vui lòng kiểm tra lại.",
+                    okText: "Đóng",
+                });
             }
         },
         onError: () => {
             console.error("Google login failed");
-            alert("Đăng nhập thất bại");
+            Modal.info({
+                title: "Thông báo",
+                content: "Đăng nhập thất bại. Vui lòng kiểm tra lại.",
+                okText: "Đóng",
+            });
         },
         scope: "openid email profile",
         flow: "implicit",

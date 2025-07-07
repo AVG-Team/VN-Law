@@ -8,7 +8,7 @@ const BASE_URL = CHAT_API_BASE_URL;
 async function summaryDocumentSaga(payload) {
     try {
         const { document } = payload || {};
-        const response = await axios.post(`${BASE_URL}/get-summary`, {
+        const response = await axios.post(`${BASE_URL}/api/chat/summarize`, {
             document,
         });
         return response.data;
@@ -19,10 +19,7 @@ async function summaryDocumentSaga(payload) {
 
 function* fetchSummaryDocumentSaga(action) {
     try {
-        const { document } = action.payload;
-
-        // Bật loading
-        yield put({ type: SummaryActionTypes.SUMMARY_DOCUMENT_REQUEST });
+        const { document } = action.payload.document;
 
         // Gọi API
         const response = yield call(summaryDocumentSaga, { document });
@@ -30,7 +27,7 @@ function* fetchSummaryDocumentSaga(action) {
         // Cập nhật kết quả tóm tắt
         yield put({
             type: SummaryActionTypes.SUMMARY_DOCUMENT_SUCCESS,
-            payload: { summary_document: response.summary_document },
+            payload: { summary_document: response.summary },
         });
     } catch (error) {
         yield put({

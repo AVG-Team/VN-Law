@@ -45,9 +45,9 @@ const chatReducer = (state = initialState, action) => {
                     botContent += `${index + 1}. ${url}\n`;
                 });
             }
-            if (executionTime) {
-                botContent += `\n\n⏱️ *Thời gian xử lý: ${executionTime}*`;
-            }
+            // if (executionTime) {
+            //     botContent += `\n\n⏱️ *Thời gian xử lý: ${executionTime}*`;
+            // }
             const botMessage = {
                 id: Date.now() + "-bot",
                 type: "bot",
@@ -90,14 +90,8 @@ const chatReducer = (state = initialState, action) => {
         case ChatActionTypes.CLEAR_CHAT:
             return {
                 ...state,
-                messages: [
-                    {
-                        id: "welcome_new",
-                        type: "bot",
-                        content: "🗑️ Cuộc trò chuyện đã được xóa.\n\n**Tôi có thể giúp gì khác cho bạn?**",
-                        timestamp: new Date(),
-                    },
-                ],
+                messages: [],
+                isTyping: false,
                 conversationId: null,
                 suggestions: [],
             };
