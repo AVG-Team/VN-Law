@@ -155,7 +155,7 @@
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-clients</artifactId>
-			<version>3.5.0</version> <!-- Hoặc phiên bản phù hợp -->
+			<version>3.9.1</version> <!-- Hoặc phiên bản phù hợp -->
 		</dependency>
 
 		<dependency>
