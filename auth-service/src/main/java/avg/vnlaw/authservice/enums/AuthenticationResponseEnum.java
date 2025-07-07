@@ -10,4 +10,6 @@ public enum AuthenticationResponseEnum {
     ACCOUNT_DISABLED,
     INVALID_TOKEN,
     INTERNAL_SERVER_ERROR,
+    KEYCLOAK_ERROR,
+    INVALID_CREDENTIALS
 }

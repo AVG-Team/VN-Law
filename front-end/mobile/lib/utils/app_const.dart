@@ -1,6 +1,9 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-import '../core/config/environment.dart';
+import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'environment.dart';
+import 'package:http/http.dart' as http;
 
 class AppConst {
   /// This is Live URL
@@ -12,6 +15,10 @@ class AppConst {
   /// Make sure you are in live server or test server by base url
   static String baseUrlApi = Env.apiBaseUrl;
   static String apiKeyAuth = Env.apiKey;
+  static String apiAuthUrl = Env.apiAuthUrl;
+  static String apiLawUrl = Env.apiLawUrl;
+  static String apiForumUrl = Env.apiForumUrl;
+  static String apiChatUrl = Env.apiChatUrl;
 
   static String? endPoint;
   static String? bariKoiApiKey;
@@ -41,6 +48,15 @@ class AppConst {
 
   static int approve = 1;
   static int reject = 6;
+
+
+  static String _keycloakAdminToken = '';
+  static int _tokenExpiration = 0; // Thời gian hết hạn (Unix timestamp)
+
+  // Định dạng timestamp thành thời gian đọc được
+  static String _formatTimestamp(int timestamp) {
+    return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000).toString();
+  }
 }
 
 class CustomColors {
@@ -53,9 +69,14 @@ class CustomColors {
   final Color _accentColor = const Color(0xFF8C98A8);
   final Color _accentDarkColor = const Color(0xFF9999aa);
   final Color _scaffoldColor = const Color(0xFFFAFAFA);
+  final Color _appBarColor = const Color(0xFF1976D2);
 
   Color mainColor({double? opacity}) {
     return _mainColor.withOpacity(opacity ?? 1.0);
+  }
+
+  Color appBarColor({double? opacity}) {
+    return _appBarColor.withOpacity(opacity ?? 1.0);
   }
 
   Color secondColor(double opacity) {

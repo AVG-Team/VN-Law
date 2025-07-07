@@ -2,9 +2,14 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import logo from "~/assets/images/logo/logo.png";
 
-const Preloader = () => {
+const Preloader = (props) => {
     const [isLoading, setIsLoading] = useState(true);
+    const { title } = props;
+    const pageTitle = title || "Đang tải...";
 
+    useEffect(() => {
+        document.title = pageTitle;
+    }, [pageTitle]);
     useEffect(() => {
         // Hide body scroll during loading
         document.body.style.overflow = "hidden";

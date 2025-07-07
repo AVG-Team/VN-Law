@@ -1,0 +1,36 @@
+export const ChapterActionTypes = {
+    GET_ALL_CHAPTERS_BY_PAGE_REQUEST: "GET_ALL_CHAPTERS_BY_PAGE_REQUEST",
+    GET_ALL_CHAPTERS_BY_PAGE_SUCCESS: "GET_ALL_CHAPTERS_BY_PAGE_SUCCESS",
+    GET_ALL_CHAPTERS_BY_PAGE_FAILURE: "GET_ALL_CHAPTERS_BY_PAGE_FAILURE",
+
+    GET_BY_CHAPTER_REQUEST: "GET_BY_CHAPTER_REQUEST",
+    GET_BY_CHAPTER_SUCCESS: "GET_BY_CHAPTER_SUCCESS",
+    GET_BY_CHAPTER_FAILURE: "GET_BY_CHAPTER_FAILURE",
+
+    GET_ALL_CHAPTERS_REQUEST: "GET_ALL_CHAPTERS_REQUEST",
+    GET_ALL_CHAPTERS_SUCCESS: "GET_ALL_CHAPTERS_SUCCESS",
+    GET_ALL_CHAPTERS_FAILURE: "GET_ALL_CHAPTERS_FAILURE",
+
+    GET_BY_SUBJECT_REQUEST: "GET_BY_SUBJECT_REQUEST",
+    GET_BY_SUBJECT_SUCCESS: "GET_BY_SUBJECT_SUCCESS",
+    GET_BY_SUBJECT_FAILURE: "GET_BY_SUBJECT_FAILURE",
+};
+
+export const getAllByPage = (params) => ({
+    type: ChapterActionTypes.GET_ALL_CHAPTERS_BY_PAGE_REQUEST,
+    payload: params,
+});
+
+export const getById = (chapterId) => ({
+    type: ChapterActionTypes.GET_BY_CHAPTER_REQUEST,
+    payload: chapterId,
+});
+
+export const getAll = () => ({
+    type: ChapterActionTypes.GET_ALL_CHAPTERS_REQUEST,
+});
+
+export const getBySubject = (subjectId) => ({
+    type: ChapterActionTypes.GET_BY_SUBJECT_REQUEST,
+    payload: subjectId,
+});

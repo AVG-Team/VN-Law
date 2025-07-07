@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/article")
+@RequestMapping("law/api/article")
 @RequiredArgsConstructor
 public class ArticleController {
 

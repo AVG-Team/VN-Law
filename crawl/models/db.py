@@ -11,7 +11,7 @@ load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 Base = declarative_base()
 
 # Lấy URL database từ biến môi trường
-DATABASE_URL = os.getenv("DATABASE_URL", "mysql+mysqlconnector://root:password@localhost:3306/law_service_check?ssl_disabled=True")
+DATABASE_URL = os.getenv("DATABASE_URL", "mysql+mysqlconnector://root:password@localhost:3306/law_service?ssl_disabled=True")
 print(DATABASE_URL)
 
 # Tạo engine kết nối database

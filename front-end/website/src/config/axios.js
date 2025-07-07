@@ -2,12 +2,13 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { StorageKeys } from "../common/constants/keys";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:9002 ";
 
 const axiosClient = axios.create({
     baseURL: baseURL,
     headers: {
         "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
     },
 });
 

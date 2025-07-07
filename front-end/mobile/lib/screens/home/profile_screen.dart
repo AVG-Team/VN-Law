@@ -1,9 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'dart:io';
-
-import '../../api_service/api_service.dart';
+import '../auth/login/auth_provider.dart';
 import '../../utils/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -68,18 +69,23 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     String? name = await SPUtill.getValue(SPUtill.keyName);
     String? email = await SPUtill.getValue(SPUtill.keyEmail);
     String? image = await SPUtill.getValue(SPUtill.keyProfileImage);
-    bool? isAdmin = await SPUtill.getBoolValue(SPUtill.keyIsAdmin) ?? false;
+    String? rolesJson = await SPUtill.getValue(SPUtill.keyRoles);
+
+    List<String> roles = rolesJson != null ? List<String>.from(jsonDecode(rolesJson)) : [];
+    String userRole = roles.contains('admin') ? 'Admin' : 'User';
 
     setState(() {
       userName = name;
       userEmail = email;
       profileImage = image ?? "assets/user_avatar.png";
-      role = isAdmin ? "Admin" : "User";
+      role = userRole;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -93,7 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.red),
             onPressed: () async {
-              await ApiService.logOutFunctionality(context);
+              await authProvider.logout(context);
             },
           ),
         ],

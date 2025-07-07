@@ -1,10 +1,12 @@
 import 'package:VNLAW/screens/home/widgets/_build_news_card.dart';
 import 'package:VNLAW/screens/home/widgets/_build_news_tag.dart';
 import 'package:VNLAW/screens/home/widgets/_build_service_Icon.dart';
+import 'package:VNLAW/screens/tree_vbqppl/topic_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../api_service/connectivity/no_internet_screen.dart';
 import '../../data/models/news_response/response_news.dart';
+import '../legal_document/legal_document_screen.dart';
 import '../news/news_detail_widget.dart';
 import '../news/news_provider.dart';
 import '../screen_tmp.dart';
@@ -137,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   icon: Icons.search_rounded,
                                   bgColor: Colors.red[50]!,
                                   iconColor: Colors.red,
-                                  destination: const MyHomePage(title: "Tra cứu pháp luật"),
+                                  destination: const TopicScreen(),
                                 ),
                                 ServiceCategory(
                                   title: 'Chatbot\nPháp Luật',
@@ -151,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   icon: Icons.document_scanner_outlined,
                                   bgColor: Colors.blue[50]!,
                                   iconColor: Colors.blue,
-                                  destination: const MyHomePage(title: "Văn bản pháp luật"),
+                                  destination: const LegalDocumentScreen(),
                                 ),
                               ],
                             ),

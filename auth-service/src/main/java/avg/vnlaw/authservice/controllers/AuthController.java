@@ -1,120 +1,250 @@
 package avg.vnlaw.authservice.controllers;
 
-import avg.vnlaw.authservice.entities.User;
-import avg.vnlaw.authservice.requests.LoginRequest;
-import avg.vnlaw.authservice.requests.RegisterRequest;
-import avg.vnlaw.authservice.responses.AuthResponse;
+import avg.vnlaw.authservice.dto.ApiResponse;
+import avg.vnlaw.authservice.dto.responses.CheckTokenResponse;
+import avg.vnlaw.authservice.dto.requests.*;
+import avg.vnlaw.authservice.dto.responses.*;
+import avg.vnlaw.authservice.enums.AuthenticationResponseEnum;
+import avg.vnlaw.authservice.exception.AppException;
+import avg.vnlaw.authservice.exception.ErrorCode;
+import avg.vnlaw.authservice.services.AuthenticationService;
 import avg.vnlaw.authservice.services.EmailService;
-import avg.vnlaw.authservice.services.JwtService;
+import avg.vnlaw.authservice.services.ReCaptchaService;
 import avg.vnlaw.authservice.services.UserService;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.http.javanet.NetHttpTransport;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
+@Slf4j
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("api/auth")
 @RequiredArgsConstructor
+@ResponseBody
 public class AuthController {
-
-    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+    private final AuthenticationService authService;
     private final UserService userService;
-    private final JwtService jwtService;
+    private final ReCaptchaService reCaptchaService;
     private final EmailService emailService;
-    private final AuthenticationManager authenticationManager;
+    private final Logger logger = Logger.getLogger(AuthenticationService.class.getName());
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
+
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        User user = userService.registerUser(request.getEmail(), request.getPassword(), "USER");
-        emailService.sendVerificationEmail(user.getEmail());
-        return ResponseEntity.ok("Verification code sent to " + user.getEmail());
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
-        User user = userService.findByEmail(request.getEmail());
-        String token = jwtService.generateToken(user.getEmail(), user.getRole().getName().name());
-        return ResponseEntity.ok(new AuthResponse(token));
-    }
-
-    @GetMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@RequestParam String email, @RequestParam String code) {
-        boolean verified = emailService.verifyEmail(email, code);
-        if (verified) {
-            userService.verifyUserEmail(email);
-            return ResponseEntity.ok("Email verified successfully");
-        }
-        return ResponseEntity.badRequest().body("Invalid verification code");
-    }
-
-    //    Google Mobile :
-    @PostMapping("/google-mobile")
-    public ResponseEntity<?> googleMobileLogin(@RequestBody Map<String, String> body) {
-        String idToken = body.get("token");
-        log.info("Received ID token: " + idToken);
-
-        try {
-            log.info("Verifying ID token...");
-            GoogleIdToken googleIdToken = verifyIdToken(idToken);
-
-            if (googleIdToken != null) {
-                log.info("ID token verified successfully.");
-                GoogleIdToken.Payload payload = googleIdToken.getPayload();
-                String email = payload.getEmail();
-                String name = (String) payload.get("name");
-                String googleId = payload.getSubject();
-
-                log.info("Email: " + email + ", Name: " + name + ", Google ID: " + googleId);
-
-                User user = userService.findByEmail(email);
-                if (user == null) {
-                    log.info("User not found. Creating new user...");
-                    user = new User();
-                    user.setEmail(email);
-                    user.setName(name);
-                    user.setGoogleId(googleId);
-                    userService.registerUser(user);
-                    log.info("New user registered: " + email);
-                } else {
-                    log.info("User found: " + email);
-                }
-
-                String role = user.getRole().getName().name();
-                String jwtToken = jwtService.generateToken(email, role);
-                Map<String, String> responseData = new HashMap<>();
-                responseData.put("token", jwtToken);
-                responseData.put("name", user.getName()); // Lấy từ User entity
-                responseData.put("role", role);
-                responseData.put("email", email);
-                return ResponseEntity.ok(responseData);
-            } else {
-                log.warn("Invalid ID token received.");
-                return ResponseEntity.status(401).body("Invalid ID token");
+    public ApiResponse<?> register(
+            @RequestBody RegisterRequest request
+    ) {
+        if (!"dev".equalsIgnoreCase(activeProfile)) {
+            ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+            if (!reCaptchaResponse.isSuccess()) {
+                throw new AppException(ErrorCode.RECAPCHA_INVALID);
             }
-        } catch (Exception e) {
-            log.error("Error verifying ID token: " + e.getMessage(), e);
-            return ResponseEntity.status(500).body("Error verifying ID token: " + e.getMessage());
+        }
+        String message;
+        AuthenticationResponse authResponse = authService.register(request);
+        if (authResponse.getType() == AuthenticationResponseEnum.EMAIL_ALREADY_REGISTERED) {
+            message = "Account is already registered";
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        } else {
+            message = "Account registered successfully";
+        }
+        return ApiResponse.builder()
+                .message(message)
+                .data(authResponse)
+                .build();
+
+    }
+
+    @PostMapping("/authenticate")
+    public ApiResponse<?> authenticate(
+            @RequestBody AuthenticationRequest request
+    ) {
+        if(!("dev".equalsIgnoreCase(activeProfile))) {
+            ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+            if (!reCaptchaResponse.isSuccess()) {
+                throw new AppException(ErrorCode.RECAPCHA_INVALID);
+            }
+        }
+
+        String message;
+        AuthenticationResponse authResponse = authService.authenticate(request);
+        log.info("Authentication response: {}", authResponse);
+
+        if (authResponse.getType() == AuthenticationResponseEnum.INVALID_CREDENTIALS) {
+            message = "Invalid credentials";
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        } else if (authResponse.getType() == AuthenticationResponseEnum.ACCOUNT_NOT_ACTIVATED) {
+            message = "Account not activated";
+            throw new AppException(ErrorCode.ACCOUNT_NOT_ACTIVATED);
+        } else if (authResponse.getType() == AuthenticationResponseEnum.KEYCLOAK_ERROR) {
+            message = authResponse.getMessage();
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        message = "Account authenticated successfully";
+        return ApiResponse.builder()
+                .message(message)
+                .data(authResponse)
+                .build();
+    }
+
+    @PostMapping("/google-token")
+    public ResponseEntity<ApiResponse<?>> authenticateWithGoogleToken(@RequestBody GoogleTokenRequest request) {
+        log.info("Google token: {}", request.getToken());
+        log.info("Google provider: {}", request.getProvider());
+
+        AuthenticationResponse authResponse = authService.authenticateWithGoogleToken(request.getProvider(), request.getToken());
+        log.info("Authentication response: {}", authResponse);
+
+        if (authResponse.getType() == AuthenticationResponseEnum.OK) {
+            return ResponseEntity.ok(ApiResponse.builder()
+                    .message("Account authenticated successfully")
+                    .data(authResponse)
+                    .build());
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.builder()
+                            .message(authResponse.getMessage() != null ? authResponse.getMessage() : "Authentication failed")
+                            .data(null)
+                            .build());
         }
     }
 
-    private GoogleIdToken verifyIdToken(String idTokenString) throws Exception {
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), GsonFactory.getDefaultInstance())
-                .setAudience(Collections.singletonList("582983299080-q2vslpu7dbdvj9udjdllpot6p8ihr2ge.apps.googleusercontent.com")) //Todo Thay bằng Client ID của bạn
+    @PostMapping("/confirm-email")
+    public ApiResponse<?> confirm(@RequestBody ConfirmEmailRequest request) {
+        MessageResponse authResponse = authService.confirm(request.getToken());
+
+        if(authResponse.getType() == HttpStatus.BAD_REQUEST) {
+            return ApiResponse.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message(authResponse.getMessage())
+                    .data(null)
+                    .build();
+        }
+
+        return ApiResponse.builder()
+                .code(HttpStatus.OK.value())
+                .message(authResponse.getMessage())
+                .data(authResponse.getType())
                 .build();
-        return verifier.verify(idTokenString);
+    }
+
+    @PostMapping("/forgot-password")
+    public ApiResponse<?> forgotPassword(
+            @RequestBody PasswordResetTokenRequest request
+    ) {
+//        Todo: Recaptcha
+        if (!"dev".equalsIgnoreCase(activeProfile)) {
+            ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+            if (!reCaptchaResponse.isSuccess()) {
+                throw new AppException(ErrorCode.RECAPCHA_INVALID);
+            }
+        }
+
+        MessageResponse authResponse = authService.forgotPassword(request.getEmail());
+        return ApiResponse.builder()
+                .message(authResponse.getMessage())
+                .data(authResponse.getType())
+                .build();
+    }
+
+    @PostMapping("/change-password-with-token")
+    public ApiResponse<?> changePassword(
+            @RequestBody ChangePasswordRequest request
+    ) {
+//        Todo: Recaptcha
+        if (!"dev".equalsIgnoreCase(activeProfile)) {
+            ReCaptchaResponse reCaptchaResponse = reCaptchaService.verify(request.getRecaptchaToken());
+            if (!reCaptchaResponse.isSuccess()) {
+                throw new AppException(ErrorCode.RECAPCHA_INVALID);
+            }
+        }
+        MessageResponse authResponse = authService.changePassword(request.getToken(), request.getPassword());
+        return ApiResponse.builder()
+                .message(authResponse.getMessage())
+                .data(authResponse.getType())
+                .build();
+    }
+
+    @PostMapping("/get-current-user")
+    public ApiResponse<?> getCurrentUser(@RequestBody AccessTokenRequest request) {
+        AuthenticationResponse response = authService.getCurrentUserByAccessToken(request.getToken());
+        return ApiResponse.builder()
+                .message("Profile retrieved successfully")
+                .data(response)
+                .build();
+    }
+
+    @GetMapping("/get-user-by-id/{userId}")
+    public ApiResponse<?> getUserById(@PathVariable String userId) {
+        log.info("Get user by ID request: {}", userId);
+        UserDetailResponse userInfo = authService.getUserById(userId);
+        return ApiResponse.builder()
+                .message("Get User By User Id successfully")
+                .data(userInfo)
+                .build();
+    }
+
+    @GetMapping("/get-users-by-realm-role/{realmRole}")
+    public ApiResponse<?> getUsersByRealmRole(@PathVariable String realmRole) {
+        log.info("Get user by realmRole request: {}", realmRole);
+        List<UserDetailResponse> userList = authService.getUsersByRealmRole(realmRole);
+        return ApiResponse.builder()
+                .message("Get Users By Realm Role successfully")
+                .data(userList)
+                .build();
+    }
+
+    @PostMapping("/check-token-keycloak")
+    public ApiResponse<?> checkTokenKeycloak(@RequestBody AccessTokenRequest request) {
+        log.info("Check token request: {}", request);
+        MessageResponse authResponse = authService.checkTokenKeycloak(request.getToken());
+        return ApiResponse.builder()
+                .message(authResponse.getMessage())
+                .data(authResponse.getType())
+                .build();
+    }
+
+    @PostMapping("/validate-token")
+    public ResponseEntity<CheckTokenResponse> validateToken(@RequestBody String token) {
+        log.info("Received token validation request : {}", token);
+        CheckTokenResponse response = authService.validateToken(token);
+        log.info("Token validation response: {}", response);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/get-access-token-from-refresh-token")
+    public ApiResponse<?> getAccessTokenFromRefreshToken(@RequestBody Map<String, String> request) {
+        log.info("Get access token from refresh token request: {}", request);
+        String token = request.get("token"); // Lấy chuỗi token từ JSON
+        TokenExchangeResponse authResponse = authService.getAccessTokenFromRefreshToken(token);
+        if (authResponse != null) {
+            return ApiResponse.builder()
+                    .message("Access token retrieved successfully")
+                    .data(authResponse)
+                    .build();
+        } else {
+            return ApiResponse.builder()
+                    .message("Failed to get access token from refresh token")
+                    .data(null)
+                    .build();
+        }
+    }
+
+    @PostMapping("/logout-keycloak")
+    public ApiResponse<?> logoutKeycloak(@RequestBody AccessTokenRequest request) {
+        log.info("Logout request: {}", request);
+        MessageResponse authResponse = authService.logoutKeycloak(request.getToken());
+        return ApiResponse.builder()
+                .message(authResponse.getMessage())
+                .data(authResponse.getType())
+                .build();
     }
 }

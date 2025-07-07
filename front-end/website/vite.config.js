@@ -13,7 +13,7 @@ export default defineConfig({
     },
     server: {
         host: "0.0.0.0", // Cho phép truy cập từ các thiết bị khác
-        port: 3000,
+        port: 5173,
         strictPort: true,
     },
     envPrefix: "VITE_",

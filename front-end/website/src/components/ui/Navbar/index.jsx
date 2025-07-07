@@ -1,9 +1,9 @@
 import React, { memo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, Close } from "@mui/icons-material";
-import { Link, useLocation } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
-import { IoMenu } from "react-icons/io5";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaUserCircle, FaUserTie } from "react-icons/fa";
+import { checkAuth, getUserInfo } from "../../../mock/auth";
 
 const NavLink = memo(({ href, children, className = "" }) => (
     <motion.a
@@ -21,6 +21,7 @@ const Navbar = memo(() => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const location = useLocation();
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -32,18 +33,33 @@ const Navbar = memo(() => {
     }, []);
 
     const navItems = [
-        { href: "/vbqppl", label: "Văn bản pháp luật" },
+        { href: "/van-ban-quy-pham-phap-luat", label: "Văn bản pháp luật" },
         { href: "/chat-bot", label: "Chatbot" },
-        { href: "/tree-law", label: "Tra cứu pháp điển" },
-        { href: "/", label: "Learn" },
+        { href: "/phap-dien", label: "Tra cứu pháp điển" },
+        { href: "/dien-dan", label: "Diễn đàn" },
         { href: "/tin-tuc", label: "Tin tức" },
     ];
 
-    const userMenuItems = [
+    const isLoggedIn = checkAuth();
+
+    const guestMenu = [{ label: "Đăng nhập", path: "/dang-nhap" }];
+    const authMenu = [
         { label: "Thông tin cá nhân", path: "/profile" },
-        { label: "Cài đặt", path: "/settings" },
-        { label: "Đăng xuất", path: "/logout" },
+        { label: "Cài đặt", path: "/trang-khong-ton-tai" },
+        { label: "Đăng xuất", path: "/sign-out" },
     ];
+
+    const userMenuItems = isLoggedIn ? authMenu : guestMenu;
+
+    const userInfo = getUserInfo();
+    const handleUserInfo = () => {
+        if (isLoggedIn) {
+            console.log("User Info:", userInfo.name);
+            return userInfo;
+        } else {
+            return { name: "Guest", role: "GUEST", email: "", keycloakId: "" };
+        }
+    };
 
     return (
         <div className="fixed top-0 left-0 right-0 z-50 flex justify-center">
@@ -57,10 +73,11 @@ const Navbar = memo(() => {
             >
                 {/* Logo */}
                 <motion.div
+                    onClick={() => navigate("/")}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="text-2xl font-bold text-black"
+                    className="text-2xl font-bold text-black cursor-pointer"
                 >
                     LegalWise
                 </motion.div>
@@ -90,8 +107,12 @@ const Navbar = memo(() => {
                             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                             className="flex items-center space-x-2 text-gray-700 hover:text-[#1bddff] transition-colors duration-200"
                         >
-                            <FaUserCircle className="w-6 h-6" />
-                            <span className="text-sm font-medium">John Doe</span>
+                            {userInfo && userInfo.role === "ADMIN" ? (
+                                <FaUserTie className="w-8 h-8 text-gray-600" />
+                            ) : (
+                                <FaUserCircle className="w-8 h-8 text-gray-600" />
+                            )}
+                            <span className="text-sm font-medium">{handleUserInfo().name}</span>
                         </motion.button>
 
                         {/* User Dropdown Menu */}
@@ -192,10 +213,14 @@ const Navbar = memo(() => {
                                     className="pt-4 border-t"
                                 >
                                     <div className="flex items-center px-4 py-3 space-x-3">
-                                        <FaUserCircle className="w-8 h-8 text-gray-600" />
+                                        {userInfo && userInfo.role === "ADMIN" ? (
+                                            <FaUserTie className="w-8 h-8 text-gray-600" />
+                                        ) : (
+                                            <FaUserCircle className="w-8 h-8 text-gray-600" />
+                                        )}
                                         <div>
-                                            <div className="text-lg font-medium text-gray-800">John Doe</div>
-                                            <div className="text-sm text-gray-500">user@example.com</div>
+                                            <div className="text-lg font-medium text-gray-800">{userInfo.name}</div>
+                                            <div className="text-sm text-gray-500">{userInfo.email}</div>
                                         </div>
                                     </div>
                                     <div className="mt-2 space-y-1">

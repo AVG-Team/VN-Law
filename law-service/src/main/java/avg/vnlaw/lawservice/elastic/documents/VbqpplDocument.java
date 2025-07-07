@@ -4,6 +4,8 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @Builder
@@ -15,6 +17,12 @@ public class VbqpplDocument {
     Integer id;
     String content;
     String type;
-    String name;
+    String number;
     String html;
+    Date effectiveDate;
+    Date effectiveEndDate;
+    Integer statusCode;
+    Date issueDate;
+    String issuer;
+    String title;
 }

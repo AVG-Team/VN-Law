@@ -22,4 +22,10 @@ public class SyncController {
 
     }
 
+    @PostMapping("/vbqppl")
+    public String syncVbqppl() {
+        syncService.syncVbqpplDocumentsToElasticSearch();
+        return "Started Vbqppl sync";
+    }
+
 }

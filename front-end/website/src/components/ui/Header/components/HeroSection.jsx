@@ -2,6 +2,8 @@ import React, { memo } from "react";
 import { motion } from "framer-motion";
 import { ReactTyped } from "react-typed";
 import BgHero from "~/assets/images/bg/bg-hero.png";
+import { use } from "react";
+import { useNavigate } from "react-router-dom";
 
 const FeatureCard = memo(({ icon, title, description, delay }) => (
     <motion.div
@@ -49,6 +51,8 @@ const HeroSection = memo(() => {
         },
     ];
 
+    const navigate = useNavigate();
+
     return (
         <div
             className="w-full bg-center bg-no-repeat bg-cover rounded-md"
@@ -79,7 +83,7 @@ const HeroSection = memo(() => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-                        className="text-[35px] sm:text-[55px] font-semibold leading-[45px] sm:leading-[70px] h-36"
+                        className="text-[35px] sm:text-[55px] font-semibold leading-[45px] sm:leading-[70px] h-52"
                     >
                         <span className="text-[#050505]">Legal Wise</span>{" "}
                         <ReactTyped
@@ -88,7 +92,7 @@ const HeroSection = memo(() => {
                             backSpeed={100}
                             backDelay={5000}
                             loop
-                            className="mb-2 text-5xl font-semibold text-blue-gray-950"
+                            className="mb-2 text-5xl font-semibold text-blue-gray-950 white-space-nowrap"
                         />
                     </motion.h2>
                     <motion.p
@@ -100,6 +104,7 @@ const HeroSection = memo(() => {
                         Đây là hệ thống hỗ trợ tra cứu giải đáp pháp luật Việt Nam
                     </motion.p>
                     <motion.button
+                        onClick={() => navigate("/dang-nhap")}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}

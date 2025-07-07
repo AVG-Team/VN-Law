@@ -1,26 +1,40 @@
-import PropTypes from "prop-types";
-import MarkdownIt from "markdown-it";
-import { Card, Spin, Typography, Button, Space, Tooltip } from "antd";
 import { useEffect, useState } from "react";
-import articleApi from "~/services/articleApi";
+import { useDispatch, useSelector } from "react-redux";
+import { Card, Spin, Typography, Button, Space, Tooltip, Modal, notification } from "antd";
+import MarkdownIt from "markdown-it";
+import DOMPurify from "dompurify"; // For sanitizing HTML
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { motion } from "framer-motion";
-import { ShareAltOutlined, PrinterOutlined, BookOutlined, ArrowUpOutlined } from "@ant-design/icons";
+import {
+    ShareAltOutlined,
+    PrinterOutlined,
+    BookOutlined,
+    ArrowUpOutlined,
+    PlusOutlined,
+    MinusOutlined,
+    ProfileOutlined,
+} from "@ant-design/icons";
+import articleApi from "~/services/articleApi";
+import { updateChapterArticles } from "../../../services/redux/actions/treeLawAction";
+import { getById } from "../../../services/redux/actions/chapterAction";
+import { summaryDocumentRequest } from "../../../services/redux/actions/summaryAction";
 
 const { Title, Text } = Typography;
 const md = new MarkdownIt({ html: true });
-let loaded = false;
 
-export default function Reader({ selectedChapter, setSeletedChapter }) {
+export default function Reader() {
     const [autoAnimateParent] = useAutoAnimate();
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const [expanded, setExpanded] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false); // Replace global `loaded` with state
 
-    Reader.propTypes = {
-        selectedChapter: PropTypes.object,
-        setSeletedChapter: PropTypes.func,
-    };
+    const dispatch = useDispatch();
+    const selectedChapter = useSelector((state) => state.treelaw?.chapterSelected);
+    const { chapter, loading: chapterLoading } = useSelector((state) => state.chapter);
+    const { summary_document, loading: summaryLoading, error: summaryError } = useSelector((state) => state.summary);
 
     useEffect(() => {
         resetState();
@@ -28,7 +42,7 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
 
     useEffect(() => {
         const handleScroll = async () => {
-            if (isBottomOfPage() && !loading) {
+            if (isBottomOfPage() && !loading && !isLoaded) {
                 setLoading(true);
                 await fetchArticles();
                 setLoading(false);
@@ -38,10 +52,71 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
 
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, [selectedChapter, page, loading]);
+    }, [selectedChapter, page, loading, isLoaded]);
+
+    useEffect(() => {
+        if (selectedChapter?.id) {
+            dispatch(getById(selectedChapter.id));
+        }
+    }, [selectedChapter?.id, dispatch]);
+
+    useEffect(() => {
+        let modalInstance = null;
+        if (showModal) {
+            if (summary_document) {
+                modalInstance = Modal.info({
+                    title: (
+                        <Title level={4} style={{ color: "#1677ff", marginBottom: 0 }}>
+                            📝 Tóm tắt tài liệu
+                        </Title>
+                    ),
+                    content: (
+                        <div style={{ marginTop: 16, maxHeight: "50vh", overflowY: "auto" }}>
+                            {summaryLoading ? (
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                    <div
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            border: "3px solid #1677ff",
+                                            borderTop: "3px solid transparent",
+                                            borderRadius: "50%",
+                                            animation: "spin 1s linear infinite",
+                                        }}
+                                    />
+                                    <Text style={{ fontSize: 16, color: "#555" }}>
+                                        Đang tạo tóm tắt, vui lòng chờ...
+                                    </Text>
+                                </div>
+                            ) : (
+                                <Text style={{ fontSize: 16, color: "#333", whiteSpace: "pre-line", lineHeight: 1.6 }}>
+                                    {summary_document || "Không có nội dung tóm tắt."}
+                                </Text>
+                            )}
+                        </div>
+                    ),
+                    okText: "Đóng",
+                    width: 700, // 👈 tăng chiều rộng modal
+                    centered: true,
+                    maskClosable: false,
+                    onOk: () => setShowModal(false),
+                });
+            } else if (summaryError) {
+                modalInstance = Modal.error({
+                    title: "Lỗi",
+                    content: <Text>{summaryError || "Không thể tạo tóm tắt. Vui lòng thử lại."}</Text>,
+                    onOk: () => setShowModal(false),
+                });
+            }
+        }
+
+        return () => {
+            if (modalInstance) modalInstance.destroy();
+        };
+    }, [showModal, summary_document, summaryLoading, summaryError]);
 
     const resetState = () => {
-        loaded = false;
+        setIsLoaded(false);
         window.scrollTo(0, 0);
         setPage(1);
     };
@@ -53,23 +128,23 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
     };
 
     const fetchArticles = async () => {
-        if (!selectedChapter?.id || loaded) return;
+        if (!selectedChapter?.id || isLoaded) return;
 
         try {
             const response = await articleApi.getAllByChapter(selectedChapter.id.toString(), page);
             const articles = response.data;
             if (!articles.content.length) {
-                loaded = true;
+                setIsLoaded(true);
                 return;
             }
-
-            setSeletedChapter((prevChapter) => ({
-                ...prevChapter,
-                articles: [...(prevChapter?.articles || []), ...articles.content],
-            }));
+            dispatch(updateChapterArticles(articles.content));
             setPage((prevPage) => prevPage + 1);
         } catch (error) {
             console.error("Error fetching articles:", error);
+            notification.error({
+                message: "Lỗi",
+                description: "Không thể tải bài viết. Vui lòng thử lại.",
+            });
         }
     };
 
@@ -79,12 +154,39 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
 
     const handleShare = () => {
         if (navigator.share && selectedChapter?.name) {
-            navigator.share({
-                title: selectedChapter.name,
-                text: "Xem nội dung pháp điển",
-                url: window.location.href,
+            navigator
+                .share({
+                    title: chapter?.data.name,
+                    text: "Xem nội dung pháp điển",
+                    url: window.location.href,
+                })
+                .catch((error) => {
+                    console.error("Share failed:", error);
+                    notification.info({
+                        message: "Chia sẻ không thành công",
+                        description: "Vui lòng sao chép liên kết thủ công.",
+                    });
+                });
+        } else {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                notification.success({
+                    message: "Đã sao chép liên kết",
+                    description: "Liên kết đã được sao chép vào clipboard.",
+                });
             });
         }
+    };
+
+    const handleSummaryDocument = (document) => {
+        if (!document) {
+            notification.error({
+                message: "Lỗi",
+                description: "Không có nội dung để tóm tắt.",
+            });
+            return;
+        }
+        dispatch(summaryDocumentRequest({ document }));
+        setShowModal(true);
     };
 
     const scrollToTop = () => {
@@ -93,16 +195,16 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <Card className="shadow-sm hover:shadow-md transition-shadow">
+            <Card className="transition-shadow shadow-sm hover:shadow-md">
                 <div
                     className="sticky top-0 z-10 bg-white border-b border-gray-100 rounded-t-lg"
                     style={{ margin: "-24px -24px 24px -24px", padding: "16px 24px" }}
                 >
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                            <BookOutlined className="text-blue-500 text-xl" />
+                            <BookOutlined className="text-xl text-blue-500" aria-hidden="true" />
                             <Title level={4} className="!mb-0">
-                                {selectedChapter?.name || "Chọn một mục để xem"}
+                                {chapter?.data.name || "Chọn một mục để xem nội dung"}
                             </Title>
                         </div>
                         <Space>
@@ -112,6 +214,7 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
                                     onClick={handleShare}
                                     className="hover:text-blue-600"
                                     disabled={!selectedChapter?.name}
+                                    aria-label="Chia sẻ nội dung"
                                 />
                             </Tooltip>
                             <Tooltip title="In">
@@ -120,6 +223,7 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
                                     onClick={handlePrint}
                                     className="hover:text-blue-600"
                                     disabled={!selectedChapter?.articles?.length}
+                                    aria-label="In nội dung"
                                 />
                             </Tooltip>
                         </Space>
@@ -135,33 +239,63 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
                             transition={{ duration: 0.5, delay: index * 0.1 }}
                         >
                             <Card
-                                bordered={false}
-                                className="mb-4 hover:shadow-md transition-shadow"
+                                hoverable
+                                className="mb-4 transition-shadow"
                                 title={
                                     <div className="flex items-center justify-between">
                                         <Text strong className="text-lg">
                                             {article.name}
                                         </Text>
+                                        <Space>
+                                            <Button
+                                                size="small"
+                                                type="text"
+                                                className="p-3 rounded-full hover:text-blue-600"
+                                                onClick={() => handleSummaryDocument(article.content)}
+                                                aria-label={`Tóm tắt bài viết ${article.name}`}
+                                            >
+                                                <ProfileOutlined />
+                                                Tóm tắt
+                                            </Button>
+                                            <Button
+                                                size="small"
+                                                type="text"
+                                                className="rounded-full hover:text-blue-600"
+                                                onClick={() => setExpanded(!expanded)}
+                                                aria-label={expanded ? "Thu nhỏ nội dung" : "Mở rộng nội dung"}
+                                            >
+                                                {expanded ? <MinusOutlined /> : <PlusOutlined />}
+                                            </Button>
+                                        </Space>
                                     </div>
                                 }
                             >
-                                <div
-                                    id={article.id}
-                                    className="markdown-body"
-                                    dangerouslySetInnerHTML={{ __html: md.render(article.content) }}
-                                />
-                                {article.tables?.map((table) => (
+                                <div className="flex items-center justify-between mb-4 text-sm text-gray-500">
                                     <div
-                                        key={table.id}
-                                        className="markdown-body mt-4"
-                                        dangerouslySetInnerHTML={{ __html: md.render(table.html) }}
+                                        id={article.id}
+                                        className="markdown-body"
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                expanded
+                                                    ? md.render(article.content)
+                                                    : md.render(article.content.substring(0, 500) + "..."),
+                                            ),
+                                        }}
                                     />
-                                ))}
+                                    {article.tables?.map((table) => (
+                                        <div
+                                            key={table.id}
+                                            className="mt-4 markdown-body"
+                                            dangerouslySetInnerHTML={{
+                                                __html: DOMPurify.sanitize(md.render(table.html)),
+                                            }}
+                                        />
+                                    ))}
+                                </div>
                             </Card>
                         </motion.div>
                     ))}
                 </div>
-
                 {loading && (
                     <div className="flex justify-center w-full py-8">
                         <Spin size="large" />
@@ -173,7 +307,7 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed bottom-8 right-8 z-50"
+                        className="fixed z-50 bottom-8 right-8"
                     >
                         <Tooltip title="Lên đầu trang">
                             <Button
@@ -181,7 +315,8 @@ export default function Reader({ selectedChapter, setSeletedChapter }) {
                                 shape="circle"
                                 icon={<ArrowUpOutlined />}
                                 onClick={scrollToTop}
-                                className="shadow-lg hover:shadow-xl transition-shadow"
+                                className="transition-shadow shadow-lg hover:shadow-xl"
+                                aria-label="Cuộn lên đầu trang"
                             />
                         </Tooltip>
                     </motion.div>

@@ -35,15 +35,16 @@ services:
       - db-network
     ports:
       - "9092:9092"
-      - "9093:9093"  # Thêm port cho controller
+      - "9093:9093"
+      - "7071:7071"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER  # Thêm biến này để chỉ định rõ listener cho controller
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
@@ -52,8 +53,11 @@ services:
       KAFKA_LOG_DIRS: /var/lib/kafka/data
       KAFKA_LOG_RETENTION_HOURS: 168
       KAFKA_LOG_RETENTION_BYTES: -1
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=0.0.0.0 -Djava.net.preferIPv4Stack=true -javaagent:/opt/jmx_prometheus_javaagent-0.17.2.jar=7071:/opt/kafka.yml"
     volumes:
       - kafka_data:/var/lib/kafka/data
+      - ./prometheus/jmx_prometheus_javaagent-0.17.2.jar:/opt/jmx_prometheus_javaagent-0.17.2.jar
+      - ./prometheus/kafka.yml:/opt/kafka.yml
 
   mysql-db:
     image: mysql:8.4.0
@@ -97,36 +101,49 @@ services:
     depends_on:
       mysql-db:
         condition: service_healthy  # Chờ MySQL sẵn sàng
+      keycloak:
+        condition: service_started
+    networks:
+      - db-network
+    env_file:
+      - ./auth-service/src/main/resources/.env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/auth_service
+    ports:
+      - "9001:9001"
+
+  law-service:
+    build: ./law-service
+    restart: always
+    depends_on:
+      mysql-db:
+        condition: service_healthy  # Chờ MySQL sẵn sàng
     networks:
       - db-network
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/auth_service?createDatabaseIfNotExist=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/law_service
     ports:
-      - "9001:9001"
-    volumes:
-      - ./auth-service/src:/app/src
+      - "9002:9002"
 
-  react-frontend:
-    build:
-      context: ./front-end/website
-      dockerfile: Dockerfile
-    ports:
-      - "5173:5173"
-    networks:
-      - db-network
-    depends_on:
-      - kong
-    expose:
-      - "5173"
-    volumes:
-      - ./front-end/website:/app
-      - /app/node_modules
-    env_file:
-      - ./front-end/website/.env
-      
+#  react-frontend:
+#    build:
+#      context: ./front-end/website
+#      dockerfile: Dockerfile
+#    ports:
+#      - "5173:5173"
+#    networks:
+#      - db-network
+#    depends_on:
+#      - kong
+#    expose:
+#      - "5173"
+#      - "3000"
+#    volumes:
+#      - ./front-end/website:/app
+#      - /app/node_modules
+#    env_file:
+#      - ./front-end/website/.env
+
   crawl-api:
     build:
       context: ./crawl
@@ -188,13 +205,18 @@ services:
       - db-network
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:v2.48.0
+    restart: always
+    networks:
+      - db-network
     ports:
-      - "9091:9090"
+      - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml
+    depends_on:
+      - kafka
+
 
   grafana:
     image: grafana/grafana
@@ -202,6 +224,10 @@ services:
       - "3000:3000"
     volumes:
       - grafana-storage:/var/lib/grafana
+    networks:
+      - db-network
+    depends_on:
+      - prometheus
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
@@ -210,18 +236,96 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=false  # Disable security for local dev
       - xpack.security.transport.ssl.enabled=false
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g
+      - thread_pool.write.queue_size=1000
+      - http.max_content_length=500mb
     ports:
       - "9200:9200"
       - "9300:9300"
     volumes:
       - es-data:/usr/share/elasticsearch/data
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.4
+    container_name: keycloak
+    environment:
+      - KC_FEATURES=scripts,token-exchange,admin-fine-grained-authz
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://keycloak-db:5432/keycloak
+      - KC_DB_USERNAME=keycloak
+      - KC_DB_PASSWORD=keycloak
+      - KC_HOSTNAME=localhost
+    ports:
+      - "8080:8080"
+    depends_on:
+      - keycloak-db
+    command: start-dev
+    networks:
+      - db-network
+
+  keycloak-db:
+    image: postgres:14
+    container_name: keycloak-db
+    environment:
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=keycloak
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+    networks:
+      - db-network
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: chat-service
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - db-network
+
+  chroma-db:
+      image: chromadb/chroma:0.6.1
+      environment:
+        - IS_PERSISTENT=TRUE
+        - PERSIST_DIRECTORY=/chroma/chroma
+        - ANONYMIZED_TELEMETRY=FALSE
+      volumes:
+        - chroma-data:/chroma/chroma
+      ports:
+        - "8000:8000"
+      networks:
+        - db-network
+
+  alert-manager:
+    image: prom/alertmanager:v0.25.0
+    restart: always
+    networks:
+      - db-network
+    ports:
+      - "9094:9093"
+    volumes:
+      - ./prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    depends_on:
+      - prometheus
+
 volumes:
   mysql_data:
+  keycloak-db-data:
   kafka_data:
   grafana-storage:
   es-data:
+  postgres_data:
+  chroma-data:
+      driver: local
 
 networks:
   db-network:

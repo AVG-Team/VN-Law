@@ -2,14 +2,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../screens/auth/login/login_screen.dart';
-import '../screens/splash_screen/splash_screen.dart';
 import '../utils/app_const.dart';
 import '../utils/nav_utail.dart';
 import '../utils/shared_preferences.dart';
 
 class ApiService {
   static Dio? _dio;
-  static Dio? _dioNews;
 
   static Dio? getDio() {
     if (_dio == null) {
@@ -23,7 +21,7 @@ class ApiService {
 
       _dio!.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) async {
 
-        var token = await SPUtill.getValue(SPUtill.keyAuthToken);
+        var token = await SPUtill.getValue(SPUtill.keyAccessToken);
         if (token != null) {
           options.headers = {
             'Content-Type': 'application/json;charset=UTF-8',
@@ -56,7 +54,8 @@ class ApiService {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   static logOutFunctionality(context) async {
-    await SPUtill.deleteKey(SPUtill.keyAuthToken);
+    await SPUtill.deleteKey(SPUtill.keyAccessToken);
+    await SPUtill.deleteKey(SPUtill.keyRefreshToken);
     await SPUtill.deleteKey(SPUtill.keyUserId);
     await SPUtill.deleteKey(SPUtill.keyProfileImage);
     await SPUtill.deleteKey(SPUtill.keyCheckInID);

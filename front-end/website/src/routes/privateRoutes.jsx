@@ -7,27 +7,31 @@ import AuthLayout from "~/components/layout/AuthLayout";
 
 const privateRoutes = [
     {
+        id: 1,
         path: "/sign-out",
         element: <SignOut />,
-        layout: AuthLayout,
+        private: true,
         title: "Đăng xuất",
     },
     {
+        id: 2,
         path: "/chat-bot",
         element: <Chatbot />,
-        layout: AuthLayout,
+        private: true,
         title: "Chatbot",
     },
     {
+        id: 3,
         path: "/verify-email",
         element: <VerifyEmail />,
-        layout: AuthLayout,
+        private: true,
         title: "Xác thực email",
     },
     {
+        id: 4,
         path: "/profile",
         element: <Profile />,
-        layout: AuthLayout,
+        private: true,
         title: "Hồ sơ",
     },
 ];
