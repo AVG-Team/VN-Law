@@ -2,6 +2,8 @@ import React, { memo } from "react";
 import { motion } from "framer-motion";
 import { ReactTyped } from "react-typed";
 import BgHero from "~/assets/images/bg/bg-hero.png";
+import { use } from "react";
+import { useNavigate } from "react-router-dom";
 
 const FeatureCard = memo(({ icon, title, description, delay }) => (
     <motion.div
@@ -48,6 +50,8 @@ const HeroSection = memo(() => {
             description: "Hệ thống chatbot hỗ trợ giải đáp các thắc mắc về pháp luật",
         },
     ];
+
+    const navigate = useNavigate();
 
     return (
         <div
@@ -100,6 +104,7 @@ const HeroSection = memo(() => {
                         Đây là hệ thống hỗ trợ tra cứu giải đáp pháp luật Việt Nam
                     </motion.p>
                     <motion.button
+                        onClick={() => navigate("/dang-nhap")}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}

@@ -3,7 +3,7 @@ import { StorageKeys } from "~/common/constants/keys";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
-const BASE_URL = "http://localhost:9006";
+const BASE_URL = "http://221.132.33.148:9005";
 
 const getAuthHeader = () => {
     const token = localStorage.getItem(StorageKeys.ACCESS_TOKEN);
@@ -44,7 +44,7 @@ api.interceptors.response.use(
         if (error.response?.status === 401) {
             // Handle token expiration
             localStorage.removeItem(StorageKeys.ACCESS_TOKEN);
-            window.location.href = "/login";
+            window.location.href = "/dang-nhap";
         }
         return Promise.reject(error);
     },

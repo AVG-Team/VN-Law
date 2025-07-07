@@ -6,7 +6,7 @@ from flask_migrate import Migrate
 from app.models import db
 
 # Khởi tạo Flask app và socketio từ create_app
-app, socketio = create_app("prod")
+app, socketio = create_app("dev")
 
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 

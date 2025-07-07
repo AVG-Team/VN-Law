@@ -3,7 +3,6 @@ import Home from "../features/Home";
 import About from "~/features/About";
 import SignUp from "~/features/SignUp";
 import VBQPPL from "~/features/VBQPPL";
-import SignIn from "~/features/SignIn";
 import TreeLaw from "~/features/TreeLaw";
 import Contact from "~/features/Contact";
 import VerifyEmail from "~/features/VerifyEmail";
@@ -31,14 +30,14 @@ const publicRoutes = [
     },
     {
         id: 2,
-        path: "/about",
+        path: "/gioi-thieu",
         element: <About />,
         title: "Giới thiệu",
         layout: ContentLayout,
     },
     {
         id: 3,
-        path: "/register",
+        path: "/dang-ky",
         element: <SignUp />,
         title: "Đăng ký",
         layout: ContentLayout,
@@ -52,7 +51,7 @@ const publicRoutes = [
     },
     {
         id: 5,
-        path: "/login",
+        path: "/dang-nhap",
         element: <Login />,
         title: "Đăng nhập",
         layout: ContentLayout,

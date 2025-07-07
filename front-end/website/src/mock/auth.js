@@ -14,7 +14,18 @@ export const getUserInfo = () => {
 };
 
 export const checkAuth = () => {
-    return !!Cookies.get(StorageKeys.ACCESS_TOKEN);
+    const token = Cookies.get(StorageKeys.ACCESS_TOKEN);
+    return token && !isTokenExpired(token);
+};
+
+export const isTokenExpired = (token) => {
+    try {
+        const decoded = jwtDecode(token);
+        const now = Date.now() / 1000;
+        return decoded.exp <= now;
+    } catch {
+        return true; // nếu decode lỗi coi như token không hợp lệ
+    }
 };
 
 export const checkAdmin = () => {

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Send, Scale, User, Bot, Paperclip, Menu, Home } from "lucide-react";
 import ChatSidebar from "./components/ChatSidebar";
 import { useNavigate } from "react-router-dom";
@@ -19,8 +19,10 @@ export default function LegalAIChatbot() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { messages, isTyping, chatHistory, conversationId, loading, error } = useSelector((state) => state.chatbot);
-    const [inputMessage, setInputMessage] = React.useState("");
-    const [sidebarOpen, setSidebarOpen] = React.useState(true);
+    const [inputMessage, setInputMessage] = useState("");
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [pendingMessage, setPendingMessage] = useState(null);
+    const [conversationHistory, setConversationHistory] = useState([]);
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
 
@@ -58,10 +60,6 @@ export default function LegalAIChatbot() {
     }, [dispatch]);
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
-
-    useEffect(() => {
         if (error) {
             notification.error({
                 message: "Lỗi",
@@ -72,8 +70,25 @@ export default function LegalAIChatbot() {
 
     const handleSendMessage = () => {
         if (!inputMessage.trim()) return;
-        dispatch(sendMessageRequest(inputMessage, conversationId));
+
+        const userMessage = inputMessage.trim();
+
+        // Tạo pending message để hiển thị tạm thời
+        const newUserMessage = {
+            id: "pending-" + Date.now(),
+            type: "user",
+            context: userMessage,
+            timestamp: new Date().toISOString(),
+        };
+
+        // Set pending message
+        setPendingMessage(newUserMessage);
+
+        // Xóa input
         setInputMessage("");
+
+        // Gửi request API
+        dispatch(sendMessageRequest(userMessage, conversationId));
     };
 
     const handleKeyPress = (e) => {
@@ -84,8 +99,8 @@ export default function LegalAIChatbot() {
     };
 
     const handleNewChat = () => {
+        console.log("Starting new chat...");
         dispatch(clearChat());
-        dispatch(createConversationRequest());
     };
 
     const handleChatSelect = (chatId) => {
@@ -103,13 +118,21 @@ export default function LegalAIChatbot() {
         });
     };
 
+    const addFirstMessage = () => {
+        console.log("Adding welcome message...");
+        const welcomeMessage = {
+            id: "welcome-" + Date.now(),
+            type: "bot",
+            content:
+                "Chào mừng bạn đến với LegalWise – người bạn đồng hành pháp lý của bạn! Hãy đặt câu hỏi, chúng tôi sẽ giúp bạn giải đáp dựa trên dữ liệu pháp luật Việt Nam cập nhật",
+            timestamp: new Date().toISOString(),
+        };
+        messages.push(welcomeMessage);
+        setPendingMessage(welcomeMessage);
+    };
+
     return (
         <div className="flex h-screen bg-gray-50">
-            {loading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-50">
-                    <p className="text-gray-500">Đang tải...</p>
-                </div>
-            )}
             {error && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-50">
                     <p className="text-red-500">Lỗi: {error}</p>
@@ -155,6 +178,27 @@ export default function LegalAIChatbot() {
                 </div>
 
                 <div className="flex-1 px-4 py-6 space-y-6 overflow-y-auto">
+                    {messages.length === 0 && (
+                        <div className="flex items-center justify-center h-full">
+                            <div className="text-center">
+                                <h2 className="text-lg font-semibold text-gray-800">
+                                    Chào mừng bạn đến với LegalWise!
+                                </h2>
+                                <p className="mt-2 text-gray-600">
+                                    Hãy đặt câu hỏi pháp luật của bạn và tôi sẽ cố gắng giúp đỡ
+                                    <br />
+                                    <span className="text-blue-600">Ví dụ: "Quy định về hợp đồng lao động"</span>
+                                </p>
+                                <p className="mt-2 text-gray-500">Bạn có thể nhập câu hỏi của mình bên dưới.</p>
+                                <button
+                                    onClick={addFirstMessage}
+                                    className="px-4 py-2 mt-4 text-sm font-medium text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
+                                >
+                                    Bắt đầu trò chuyện mới
+                                </button>
+                            </div>
+                        </div>
+                    )}
                     {messages.map((message) => (
                         <div
                             key={message.id}
@@ -174,7 +218,9 @@ export default function LegalAIChatbot() {
                                         : "bg-white text-gray-800 mr-12 border border-gray-200 shadow-sm"
                                 }`}
                             >
-                                <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.context}</p>
+                                <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                                    {message.type === "bot" ? message.content : message.context}
+                                </p>
                                 <p
                                     className={`text-xs mt-2 ${
                                         message.type === "user" ? "text-blue-100" : "text-gray-500"
@@ -190,6 +236,20 @@ export default function LegalAIChatbot() {
                             )}
                         </div>
                     ))}
+
+                    {/* Hiển thị pending message chỉ khi đang typing */}
+                    {pendingMessage && isTyping && (
+                        <div className="flex items-start justify-end space-x-3 animate-fade-in">
+                            <div className="max-w-2xl px-4 py-3 ml-12 text-white bg-blue-600 rounded-2xl animate-scale-in opacity-70">
+                                <p className="text-sm leading-relaxed whitespace-pre-wrap">{pendingMessage.context}</p>
+                                <p className="mt-2 text-xs text-blue-100">{formatTime(pendingMessage.timestamp)}</p>
+                            </div>
+                            <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full">
+                                <User className="w-4 h-4 text-gray-600" />
+                            </div>
+                        </div>
+                    )}
+
                     {isTyping && (
                         <div className="flex items-start space-x-3 animate-fade-in">
                             <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 animate-pulse">

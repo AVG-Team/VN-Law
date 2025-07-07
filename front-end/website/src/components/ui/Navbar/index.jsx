@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, Close } from "@mui/icons-material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaUserTie } from "react-icons/fa";
-import { IoMenu } from "react-icons/io5";
-import { StorageKeys } from "../../../common/constants/keys";
 import { checkAuth, getUserInfo } from "../../../mock/auth";
 
 const NavLink = memo(({ href, children, className = "" }) => (
@@ -44,22 +42,24 @@ const Navbar = memo(() => {
 
     const isLoggedIn = checkAuth();
 
-    const baseMenuItems = [
-        { label: "Đăng nhập", path: "/login" },
+    const guestMenu = [{ label: "Đăng nhập", path: "/dang-nhap" }];
+    const authMenu = [
         { label: "Thông tin cá nhân", path: "/profile" },
         { label: "Cài đặt", path: "/trang-khong-ton-tai" },
         { label: "Đăng xuất", path: "/sign-out" },
     ];
 
-    const userMenuItems = baseMenuItems.filter((item) => {
-        if (isLoggedIn) {
-            return item.label !== "Đăng nhập";
-        } else {
-            return item.label !== "Đăng xuất";
-        }
-    });
+    const userMenuItems = isLoggedIn ? authMenu : guestMenu;
 
     const userInfo = getUserInfo();
+    const handleUserInfo = () => {
+        if (isLoggedIn) {
+            console.log("User Info:", userInfo.name);
+            return userInfo;
+        } else {
+            return { name: "Guest", role: "GUEST", email: "", keycloakId: "" };
+        }
+    };
 
     return (
         <div className="fixed top-0 left-0 right-0 z-50 flex justify-center">
@@ -112,7 +112,7 @@ const Navbar = memo(() => {
                             ) : (
                                 <FaUserCircle className="w-8 h-8 text-gray-600" />
                             )}
-                            <span className="text-sm font-medium">{userInfo.name}</span>
+                            <span className="text-sm font-medium">{handleUserInfo().name}</span>
                         </motion.button>
 
                         {/* User Dropdown Menu */}

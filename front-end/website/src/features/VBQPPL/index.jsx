@@ -38,14 +38,12 @@ const VBQPPL = (props) => {
     const [sortBy, setSortBy] = useState("");
     const [isFilterVisible, setIsFilterVisible] = useState(false);
 
-    VBQPPL.propTypes = {
-        title: PropTypes.string.isRequired,
-    };
-
     const { title } = props;
     const pageTitle = title || "Văn bản quy phạm pháp luật";
     const pageDescription = "Tra cứu và xem các văn bản quy phạm pháp luật mới nhất";
-
+    VBQPPL.propTypes = {
+        title: PropTypes.string.isRequired,
+    };
     useEffect(() => {
         document.title = title || "Trang không tồn tại";
     }, [title]);
@@ -103,7 +101,7 @@ const VBQPPL = (props) => {
             />
         );
 
-    if (!vbqppls || vbqppls.length === 0)
+    if (!vbqppls || (vbqppls.length === 0 && !loading))
         return (
             <NoDataPage
                 title="Không có dữ liệu VBQPPL"

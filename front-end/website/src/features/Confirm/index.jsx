@@ -40,7 +40,7 @@ export default function Notify(props) {
             let message = response.data.message;
             setIsVerify(true);
             toast.success(message, {
-                onClose: () => navigate("/login"),
+                onClose: () => navigate("/dang-nhap"),
                 autoClose: 2000,
                 buttonClose: false,
             });

@@ -34,10 +34,13 @@ class SummaryService:
         if len(sentences) <= 2:
             logging.warning("Text is too short to summarize effectively.")
         prompt = f"""
-        You are a legal assistant tasked with summarizing legal documents for better understanding.
-        
-        Please provide a concise summary of the following text:
-        \"\"\"{data}\"\"\
+        Bạn là một trợ lý pháp lý thông minh. Nhiệm vụ của bạn là tóm tắt các văn bản pháp luật sao cho ngắn gọn, dễ hiểu và đúng trọng tâm.
+
+            Hãy đọc và tóm tắt đoạn văn bản pháp luật sau:
+
+            \"\"\"{data}\"\"\"
+
+            Vui lòng viết lại phần tóm tắt bằng tiếng Việt, trình bày rõ ràng, dễ tiếp cận cho người không chuyên luật.
         """
         response = self.client.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -48,7 +51,7 @@ class SummaryService:
             max_tokens=150,
             temperature=0.7
         )
-        summary = response.choices[0].message['content'].strip()
+        summary = response.choices[0].message.content.strip()
         return summary if summary else "No summary could be generated."
     
     def summarize_document(self, document: str) -> str:
