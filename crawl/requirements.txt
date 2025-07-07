@@ -4,7 +4,7 @@ celery==5.2.2
 redis==3.5.3
 mysql-connector-python==9.1.0
 python-dotenv==0.19.0
-requests~=2.32.0
+requests~=2.32.4
 beautifulsoup4~=4.13.3
 sqlalchemy==1.4.23
 pymysql==1.1.1
