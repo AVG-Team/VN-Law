@@ -31,9 +31,9 @@ const chatReducer = (state = initialState, action) => {
 
             let botContent = answer;
             if (context && typeof context === "string" && context.trim()) {
-                botContent += "\n\n📋 **Tài liệu tham khảo:**\n" + context;
+                botContent += "\n\n **Tài liệu tham khảo:**\n" + context;
             } else if (Array.isArray(context) && context.length > 0) {
-                botContent += "\n\n📋 **Tài liệu tham khảo:**\n";
+                botContent += "\n\n **Tài liệu tham khảo:**\n";
                 context.forEach((ctx, index) => {
                     botContent += `${index + 1}. ${ctx}\n`;
                 });

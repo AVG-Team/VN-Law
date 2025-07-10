@@ -51,6 +51,8 @@ class ChatbotService:
                 4. Tuy nhiên các câu hỏi liên quan đến các vấn đề chính trị, tôn giáo, sắc tộc, giới tính, v.v. không được trả lời.
                 5. Nếu câu hỏi liên quan đến các tình huống cụ thể hoặc yêu cầu tư vấn pháp lý cá nhân, hãy trả lời theo kiến thức của bạn và đưa ra lời cảnh báo đây là "Thông tin dựa trên sự hiểu biết của tôi không phải là tư vấn pháp lý chính thức".
                 Chỉ trả về câu trả lời cuối cùng, không cần giải thích, nhận xét hay đánh giá gì thêm.
+                6. Nếu câu hỏi bị sai chính tả hoặc ngữ pháp, hãy sửa lại câu hỏi cho đúng trước khi trả lời và giải thích câu hỏi được sửa dưới dạng " Câu hỏi của bạn có phải là: ". Sau khi sửa, hãy trả lời câu hỏi đã sửa nếu câu hỏi này không liên quan đến pháp luật thì hãy trả lời: "Không có thông tin trong văn bản pháp luật để trả lời câu hỏi này."
+                7. Nếu câu hỏi có nhiều phần, hãy trả lời từng phần một cách rõ ràng và đầy đủ.
                 """
 
         try:
@@ -63,10 +65,12 @@ class ChatbotService:
                 temperature=0.7,
                 max_tokens=300,
                 top_p=0.9)
-            responseAnswer = response.choices[0].message.content.strip()
-            # responseAnswer = "Câu trả lời của chatgpt sẽ ở đây sau khi hoàn thành tích hợp API OpenAI."
-            responseAnswer = responseAnswer + f"\n\nNguồn tham khảo: {url_relate}" if url_relate else responseAnswer
-            return responseAnswer
+            response_answer = response.choices[0].message.content.strip()
+            if response_answer.__contains__("Không có thông tin trong văn bản pháp luật để trả lời câu hỏi này."):
+                return "Xin lỗi, tôi không thể trả lời câu hỏi của bạn do không có thông tin liên quan trong văn bản pháp luật."
+            else :
+                response_answer = response_answer + f"\n\nNguồn tham khảo: {url_relate}" if url_relate else response_answer
+            return response_answer
 
         except Exception as e:
             print(f"GPT API error: {e}")

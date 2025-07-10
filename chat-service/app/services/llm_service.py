@@ -415,10 +415,16 @@ class LLMService:
                 if not save_success:
                     logging.warning("Failed to save conversation, but continuing with answer")
 
-            logging.info(f"Test answer question llm ")
-            print(context)
-            logging.info(context)
-
+            # Check if answer is wrong or empty
+            if not result.answer.strip() or answer_gpt.startswith("Xin lỗi"):
+                return {
+                    "answer": answer_gpt,
+                    "context": "",
+                    "confidence": result.confidence,
+                    "meets_threshold": False,
+                    "processing_time": result.processing_time,
+                    "url_relate": []
+                }
             # Process url
             if not result.meets_threshold:
                 context['url_relate'] = []

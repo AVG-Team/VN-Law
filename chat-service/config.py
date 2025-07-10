@@ -26,7 +26,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.getenv(
         'DEV_DATABASE_URI',
-        'mysql+pymysql://root:password@mysql-db:3306/chat_service_dev'
+        'mysql+pymysql://huy:password@103.173.226.110:3306/chat_service_dev'
     )
    
 
@@ -34,7 +34,7 @@ class ProductionConfig(Config):
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.getenv(
         'PROD_DATABASE_URI',
-        'mysql+pymysql://huy:password@14.225.218.42:3306/chat_service_dev'
+        'mysql+pymysql://huy:password@103.173.226.110:3306/chat_service_dev'
     )
 
 # Dùng trong create_app()
