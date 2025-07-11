@@ -1,5 +1,6 @@
 package avg.vnlaw.lawservice.dto.response;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,8 @@ public class ArticleTreeResponse {
     private String content;
     private String index;
     private String vbqppl;
+
+    @Column(name = "vbqppl_link")
     private String vbqpplLink;
     private Integer order;
 

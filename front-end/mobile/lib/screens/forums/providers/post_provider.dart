@@ -117,4 +117,17 @@ class PostProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void updatePost(Post updatedPost) {
+    final index = _posts.indexWhere((p) => p.id == updatedPost.id);
+    if (index != -1) {
+      _posts[index] = updatedPost;
+      notifyListeners();
+    }
+  }
+
+  void removePost(String postId) {
+    _posts.removeWhere((p) => p.id == postId);
+    notifyListeners();
+  }
 }

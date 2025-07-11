@@ -18,33 +18,6 @@ class PostCard extends StatelessWidget {
     return '${content.substring(0, 200)}...';
   }
 
-  // void _showSharePopup(BuildContext context) {
-  //   final link = 'https://example.com/post/${post.id}';
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       title: const Text('Chia sẻ liên kết'),
-  //       content: Text('Liên kết: $link'),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () {
-  //             Clipboard.setData(ClipboardData(text: link));
-  //             ScaffoldMessenger.of(context).showSnackBar(
-  //               const SnackBar(content: Text('Đã sao chép liên kết!')),
-  //             );
-  //             Navigator.pop(context);
-  //           },
-  //           child: const Text('Copy link'),
-  //         ),
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           child: const Text('Đóng'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   void _navigateToDetails(BuildContext context) {
     print("Navigating to post details for post ID: ${post.id}");
     Navigator.push(

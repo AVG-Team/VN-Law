@@ -83,6 +83,7 @@ dependencies:
   diacritic: ^0.1.3
   share_plus: ^7.2.1
   flutter_animate: ^4.5.0
+  fluttericon: ^2.0.0
 
   device_info_plus: any
 dev_dependencies:

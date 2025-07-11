@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import '../chatbot_provider.dart';
 import '../models/chat_message_model.dart';
 
 // ChatMessage Widget
@@ -45,7 +47,7 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
     if (!widget.message.isUser && widget.isNewChat) {
       _startTypingEffect();
     } else {
-      _displayText = widget.message.isUser ? widget.message.question! : widget.message.context;
+      _displayText = (widget.message.isUser ? widget.message.question! : widget.message.content)!;
     }
   }
 
@@ -135,13 +137,79 @@ class _ChatMessageState extends State<ChatMessage> with SingleTickerProviderStat
                           BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 6, offset: const Offset(0, 2)),
                         ],
                       ),
-                      child: Text(
-                        _displayText,
-                        style: TextStyle(
-                          color: widget.message.isUser ? Colors.white : Colors.black87,
-                          fontSize: 15,
-                          height: 1.4,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _displayText,
+                            style: TextStyle(
+                              color: widget.message.isUser ? Colors.white : Colors.black87,
+                              fontSize: 15,
+                              height: 1.4,
+                            ),
+                          ),
+                          if (!widget.message.isUser) ...[
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                PopupMenuButton<String>(
+                                  icon: Consumer<ChatbotProvider>(
+                                    builder: (context, provider, child) {
+                                      if (provider.isSummarizing) {
+                                        return SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.grey.shade600),
+                                          ),
+                                        );
+                                      }
+                                      return Icon(
+                                        Icons.more_vert,
+                                        color: Colors.grey.shade600,
+                                        size: 20,
+                                      );
+                                    },
+                                  ),
+                                  onSelected: (value) {
+                                    if (value == 'summarize') {
+                                      final provider = Provider.of<ChatbotProvider>(context, listen: false);
+                                      provider.summarizeMessage(widget.message, context);
+                                    }
+                                  },
+                                  itemBuilder: (context) => [
+                                    PopupMenuItem<String>(
+                                      value: 'summarize',
+                                      child: Consumer<ChatbotProvider>(
+                                        builder: (context, provider, child) {
+                                          return Row(
+                                            children: [
+                                              if (provider.isSummarizing)
+                                                SizedBox(
+                                                  width: 18,
+                                                  height: 18,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.grey.shade600),
+                                                  ),
+                                                )
+                                              else
+                                                const Icon(Icons.summarize, size: 18),
+                                              const SizedBox(width: 8),
+                                              Text(provider.isSummarizing ? 'Đang tóm tắt...' : 'Tóm tắt'),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                     Padding(

@@ -8,22 +8,24 @@ import '../data/models/vbqppl/article.dart';
 import '../data/models/vbqppl/chapter.dart';
 import '../data/models/vbqppl/subject.dart';
 import '../data/models/vbqppl/topic.dart';
+import '../utils/shared_preferences.dart';
 
 class ApiServiceLaw {
   static String baseUrl = '${AppConst.apiLawUrl}/law/api';
 
   // Lấy danh sách topic
   Future<List<Topic>> getTopics() async {
+    final token = await SPUtill.getValue(SPUtill.keyAccessToken);
     print("baseUrl: " + baseUrl);
     final response = await http.get(
         Uri.parse('$baseUrl/topic'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
         },
     );
-    print("response: " + response.toString());
-    print("response: " + response.statusCode.toString());
+    print("topics : ");
     print("response: " + response.body);
 
     if (response.statusCode == 200) {
@@ -37,13 +39,17 @@ class ApiServiceLaw {
 
   // Lấy danh sách subject theo topic ID
   Future<List<Subject>> getSubjectsByTopic(String topicId) async {
+    final token = await SPUtill.getValue(SPUtill.keyAccessToken);
     final response = await http.get(
         Uri.parse('$baseUrl/subject/topic/$topicId'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
         },
     );
+    print("subjects : ");
+    print("response: " + response.body);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));
@@ -56,13 +62,18 @@ class ApiServiceLaw {
 
   // Lấy danh sách chapter theo subject ID
   Future<List<Chapter>> getChaptersBySubject(String subjectId) async {
+    final token = await SPUtill.getValue(SPUtill.keyAccessToken);
     final response = await http.get(
         Uri.parse('$baseUrl/chapter/subject/$subjectId'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
         },
     );
+
+    print("chapters : ");
+    print("response: " + response.body);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));
@@ -76,16 +87,22 @@ class ApiServiceLaw {
   // Lấy danh sách article theo chapter ID với phân trang
   Future<Map<String, dynamic>> getArticlesByChapter(String chapterId, int page, int size) async {
     String url = '$baseUrl/article/$chapterId?page=$page&size=$size';
-
+    final token = await SPUtill.getValue(SPUtill.keyAccessToken);
     final response = await http.get(
         Uri.parse(url),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
         },
     );
 
-    print("response: " + response.body.toString());
+    debugPrint("articles : ");
+    final responseBody = response.body;
+    const int chunkSize = 1000; // Kích thước mỗi phần
+    for (int i = 0; i < responseBody.length; i += chunkSize) {
+      debugPrint(responseBody.substring(i, i + chunkSize > responseBody.length ? responseBody.length : i + chunkSize));
+    }
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));

@@ -95,6 +95,8 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
   Future<void> _launchUrl(String url) async {
     final Uri uri = Uri.parse(url);
+    print('Launching URL: $url');
+    print('Launching URL: $uri');
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Không thể mở liên kết: $url')),
@@ -124,15 +126,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
         title: _isSearching
             ? TextField(
           controller: _searchController,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'Tìm kiếm điều luật...',
             border: InputBorder.none,
             hintStyle: TextStyle(color: Colors.white70),
           ),
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
           onChanged: _filterArticles,
         )
-            : Text('Điều luật: ${widget.chapter.name}'),
+            : Text('Điều luật: ${widget.chapter.name.trim()}'),
         actions: [
           IconButton(
             icon: Icon(_isSearching ? Icons.close : Icons.search),

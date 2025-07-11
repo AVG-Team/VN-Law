@@ -1,4 +1,6 @@
+import 'package:VNLAW/screens/forums/providers/post_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../data/models/forum/post.dart';
 import '../services/post_service.dart';
 import '../../../data/models/user_info.dart';
@@ -36,13 +38,19 @@ class PostDetailsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> toggleLike(String postId) async {
+  Future<void> toggleLike(String postId, BuildContext context) async {
     try {
       await PostService.likePost(postId);
       if (_post != null) {
         _post!.isLiked = !_post!.isLiked;
         _post!.likes = _post!.likes + (_post!.isLiked ? 1 : -1);
+        print('Post ${_post!.id} like status: ${_post!.isLiked}');
+        print('Post ${_post!.id} likes count: ${_post!.likes}');
         notifyListeners();
+
+        // Cập nhật PostProvider
+        final postProvider = Provider.of<PostProvider>(context, listen: false);
+        postProvider.updatePost(_post!);
       }
     } catch (e) {
       _error = e.toString();
@@ -89,13 +97,17 @@ class PostDetailsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updatePost(String postId, String title, String content) async {
+  Future<void> updatePost(String postId, String title, String content, BuildContext context) async {
     try {
       if (_post != null) {
         UserInfo userInfo = await UserInfo.initialize();
         Post updatedPost = await PostService.updatePost(userInfo, postId, title, content);
         _post = updatedPost;
         notifyListeners();
+
+        // Cập nhật PostProvider
+        final postProvider = Provider.of<PostProvider>(context, listen: false);
+        postProvider.updatePost(_post!);
       }
     } catch (e) {
       _error = e.toString();
@@ -104,11 +116,15 @@ class PostDetailsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deletePost(String postId) async {
+  Future<void> deletePost(String postId, BuildContext context) async {
     try {
       await PostService.deletePost(postId);
       _post = null;
       notifyListeners();
+
+      // Cập nhật PostProvider
+      final postProvider = Provider.of<PostProvider>(context, listen: false);
+      postProvider.removePost(postId);
     } catch (e) {
       _error = e.toString();
       print('Error deleting post: $e');
@@ -116,14 +132,21 @@ class PostDetailsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addComment(String postId, String content, int? parentId) async {
+  Future<void> addComment(String postId, String content, int? parentId, BuildContext context) async {
     try {
       if (_post != null) {
         final userInfo = await UserInfo.initialize();
         Comment newComment = await PostService.createComment(userInfo, postId, content, parentId);
         _post!.comments.insert(0, newComment);
         _post!.commentsCount++;
+        print('New comment added: ${newComment.id}');
+        print('Total comments count: ${_post!.commentsCount}');
+        print('Post ID: ${newComment.content}');
         notifyListeners();
+
+        // Cập nhật PostProvider
+        final postProvider = Provider.of<PostProvider>(context, listen: false);
+        postProvider.updatePost(_post!);
       }
     } catch (e) {
       _error = e.toString();
@@ -132,7 +155,7 @@ class PostDetailsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateComment(int commentId, String content) async {
+  Future<void> updateComment(int commentId, String content, BuildContext context) async {
     try {
       if (_post != null) {
         final userInfo = await UserInfo.initialize();
@@ -141,6 +164,10 @@ class PostDetailsProvider with ChangeNotifier {
         if (index != -1) {
           _post!.comments[index] = updatedComment;
           notifyListeners();
+
+          // Cập nhật PostProvider
+          final postProvider = Provider.of<PostProvider>(context, listen: false);
+          postProvider.updatePost(_post!);
         }
       }
     } catch (e) {
@@ -150,13 +177,17 @@ class PostDetailsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteComment(int commentId) async {
+  Future<void> deleteComment(int commentId, BuildContext context) async {
     try {
       if (_post != null) {
         await PostService.deleteComment(commentId);
         _post!.comments.removeWhere((c) => c.id == commentId);
         _post!.commentsCount--;
         notifyListeners();
+
+        // Cập nhật PostProvider
+        final postProvider = Provider.of<PostProvider>(context, listen: false);
+        postProvider.updatePost(_post!);
       }
     } catch (e) {
       _error = e.toString();

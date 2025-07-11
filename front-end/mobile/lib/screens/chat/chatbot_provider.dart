@@ -16,6 +16,7 @@ class ChatbotProvider extends ChangeNotifier {
   bool _isSidebarOpen = false;
   bool _isTyping = false;
   bool _isNewChat = false;
+  bool _isSummarizing = false;
   String? _currentConversationId;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _messageController = TextEditingController();
@@ -33,6 +34,7 @@ class ChatbotProvider extends ChangeNotifier {
   bool get isSidebarOpen => _isSidebarOpen;
   bool get isTyping => _isTyping;
   bool get isNewChat => _isNewChat;
+  bool get isSummarizing => _isSummarizing;
   TextEditingController get emailController => _emailController;
   TextEditingController get messageController => _messageController;
   ScrollController get scrollController => _scrollController;
@@ -128,8 +130,8 @@ class ChatbotProvider extends ChangeNotifier {
         id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
         conversationId: conversationId,
         question: null,
-        content: answerData['context'],
-        context: answerData['answer'],
+        content: answerData['answer'],
+        context: answerData['context'],
         intent: answerData['intent'] ?? '',
         userId: 'bot',
         timestamp: DateTime.now(),
@@ -240,6 +242,7 @@ class ChatbotProvider extends ChangeNotifier {
     _isTyping = false;
     _isSidebarOpen = false;
     _isNewChat = false;
+    _isSummarizing = false;
     _currentConversationId = null;
     notifyListeners();
   }
@@ -267,6 +270,85 @@ class ChatbotProvider extends ChangeNotifier {
       return DateFormat('HH:mm').format(time);
     }
     return DateFormat('dd/MM/yyyy HH:mm').format(time);
+  }
+
+  Future<void> summarizeMessage(ChatMessageModel message, BuildContext context) async {
+    if (message.isUser || message.content == null) return;
+    
+    _isSummarizing = true;
+    notifyListeners();
+    
+    try {
+      final url = Uri.parse('http://10.0.2.2:9006/api/chat/summarize');
+      final token = await SPUtill.getValue(SPUtill.keyAccessToken);
+      
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'document': message.content,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('Summarize response: $data');
+        final summary = data['data']['summary'] as String;
+        
+        // Thêm tin nhắn user "Tóm tắt câu trả lời chatbot"
+        final userInfo = await UserInfo.initialize();
+        final userMessage = ChatMessageModel(
+          id: 'summary_user_${DateTime.now().millisecondsSinceEpoch}',
+          conversationId: _currentConversationId ?? '',
+          question: 'Tóm tắt câu trả lời chatbot',
+          content: null,
+          context: '',
+          intent: '',
+          userId: userInfo.userId,
+          timestamp: DateTime.now(),
+          isUser: true,
+        );
+        
+        // Thêm tin nhắn bot với kết quả tóm tắt
+        final botMessage = ChatMessageModel(
+          id: 'summary_bot_${DateTime.now().millisecondsSinceEpoch}',
+          conversationId: _currentConversationId ?? '',
+          question: null,
+          content: summary,
+          context: '',
+          intent: '',
+          userId: 'bot',
+          timestamp: DateTime.now(),
+          isUser: false,
+        );
+        
+        // Thêm cả 2 tin nhắn vào danh sách
+        _messages.add(userMessage);
+        _listKey.currentState?.insertItem(_messages.length - 1);
+        
+        _messages.add(botMessage);
+        _listKey.currentState?.insertItem(_messages.length - 1);
+        
+        notifyListeners();
+        _scrollToBottom();
+      } else {
+        // Xử lý lỗi
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Có lỗi xảy ra khi tóm tắt: ${response.statusCode}')),
+        );
+      }
+    } catch (e) {
+      print('Error summarizing message: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Có lỗi xảy ra khi tóm tắt tin nhắn')),
+      );
+    } finally {
+      _isSummarizing = false;
+      notifyListeners();
+    }
   }
 
   void disposeControllers() {

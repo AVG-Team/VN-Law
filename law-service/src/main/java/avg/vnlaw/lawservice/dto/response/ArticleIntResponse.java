@@ -1,5 +1,7 @@
 package avg.vnlaw.lawservice.dto.response;
 
+import jakarta.persistence.Column;
+
 public interface ArticleIntResponse {
     String getId();
     String getName();
@@ -7,5 +9,7 @@ public interface ArticleIntResponse {
     String getContent();
     String getIndex();
     String getVbqppl();
+
+    @Column(name = "vbqppl_link")
     String getVbqpplLink();
 }

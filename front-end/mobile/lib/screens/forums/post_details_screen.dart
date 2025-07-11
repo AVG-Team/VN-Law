@@ -118,7 +118,7 @@ class PostDetailsScreenState extends State<PostDetailsScreen> {
                                   post.isLiked ? Icons.favorite : Icons.favorite_border,
                                   color: post.isLiked ? Colors.red : null,
                                 ),
-                                onPressed: () => provider.toggleLike(post.id),
+                                onPressed: () => provider.toggleLike(post.id, context),
                               ),
                               Text('${post.likes} lượt thích'),
                             ],
@@ -190,6 +190,7 @@ class PostDetailsScreenState extends State<PostDetailsScreen> {
                             post.id,
                             _commentController.text,
                             replyingToCommentId,
+                            context
                           );
                           _commentController.clear();
                           setState(() => replyingToCommentId = null);
@@ -237,7 +238,7 @@ class PostDetailsScreenState extends State<PostDetailsScreen> {
                 title: const Text('Xoá comment'),
                 onTap: () async {
                   Navigator.pop(context);
-                  await provider.deleteComment(comment.id);
+                  await provider.deleteComment(comment.id, context);
                 },
               ),
             ],
@@ -261,7 +262,7 @@ class PostDetailsScreenState extends State<PostDetailsScreen> {
           ),
           TextButton(
             onPressed: () async {
-              await provider.updateComment(comment.id, controller.text);
+              await provider.updateComment(comment.id, controller.text, context);
               Navigator.pop(context);
             },
             child: const Text('Lưu'),
@@ -293,7 +294,7 @@ class PostDetailsScreenState extends State<PostDetailsScreen> {
           ),
           TextButton(
             onPressed: () async {
-              await provider.updatePost(post.id, titleController.text, contentController.text);
+              await provider.updatePost(post.id, titleController.text, contentController.text, context);
               Navigator.pop(context);
             },
             child: const Text('Lưu'),
@@ -316,7 +317,7 @@ class PostDetailsScreenState extends State<PostDetailsScreen> {
           ),
           TextButton(
             onPressed: () async {
-              await provider.deletePost(provider.post!.id);
+              await provider.deletePost(provider.post!.id, context);
               Navigator.pop(context);
               Navigator.pop(context); // Quay lại màn hình trước
             },

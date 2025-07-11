@@ -172,7 +172,7 @@ def summarize():
     try:
         user_info = authenticate_user(request.headers.get("Authorization"))
         data = request.get_json()
-        text = data.get('text', '')
+        text = data.get('document', '')
         if not text:
             return jsonify(ResponseModel(status_code=400, message="Text is required", data=None).dict()), 400
 

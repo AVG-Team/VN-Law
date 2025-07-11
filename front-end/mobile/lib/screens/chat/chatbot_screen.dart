@@ -57,8 +57,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.chat_bubble_outline, size: 80, color: Colors.grey[400]),
-                      const SizedBox(height: 16),
+                      const Image(image: AssetImage('assets/logo.png'), height: 200),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24.0), // Khoảng trắng 2 bên
                         child: Text(

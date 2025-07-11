@@ -5,8 +5,38 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c61decd0-867b-4621-a3ab-ec288fabf87f" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../law-service/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../law-service/src/main/resources/.env.prod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../law-service/src/test/resources/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../law-service/src/test/resources/.env.prod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../law-service/src/test/resources/application-dev.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../law-service/src/test/resources/application-prod.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../law-service/src/test/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/blueprints/chat.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/blueprints/chat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/summary_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/summary_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../forum-service/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../forum-service/app/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../front-end/mobile/.env.dev" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/.env.dev" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/.env.prod" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/.env.prod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/api_service/api_service_law.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/api_service/api_service_law.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/data/models/vbqppl/article.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/data/models/vbqppl/article.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/chatbot_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/chatbot_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/chatbot_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/chatbot_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/widgets/chat_message.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/chat/widgets/chat_message.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/post_details_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/post_details_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/providers/post_details_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/providers/post_details_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/providers/post_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/providers/post_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/widget/post_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/forums/widget/post_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/lib/screens/tree_vbqppl/article_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/lib/screens/tree_vbqppl/article_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-end/mobile/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../front-end/mobile/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/LawServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/LawServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/controller/ArticleController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/controller/ArticleController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/dto/response/ArticleIntResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/dto/response/ArticleIntResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/dto/response/ArticleTreeResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/main/java/avg/vnlaw/lawservice/dto/response/ArticleTreeResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/src/main/resources/application-prod.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/main/resources/application-prod.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../law-service/src/test/java/avg/vnlaw/lawservice/LawServiceApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/../law-service/src/test/java/avg/vnlaw/lawservice/LawServiceApplicationTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -269,6 +299,14 @@
       <workItem from="1750598588649" duration="4484000" />
       <workItem from="1750604112065" duration="8000" />
       <workItem from="1750784248077" duration="56000" />
+      <workItem from="1751039499175" duration="7000" />
+      <workItem from="1751066178684" duration="2483000" />
+      <workItem from="1751190976361" duration="7000" />
+      <workItem from="1751562000731" duration="1232000" />
+      <workItem from="1752124925784" duration="1000" />
+      <workItem from="1752125236703" duration="1409000" />
+      <workItem from="1752157023189" duration="1742000" />
+      <workItem from="1752241295868" duration="1038000" />
     </task>
     <servers />
   </component>
@@ -288,7 +326,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/chat_service$test_v1.coverage" NAME="test_v1 Coverage Results" MODIFIED="1749301978900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/chat_service$app.coverage" NAME="app Coverage Results" MODIFIED="1750580791441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/chat_service$app.coverage" NAME="app Coverage Results" MODIFIED="1752157183905" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/chat_service$ChatApi.coverage" NAME="ChatApi Coverage Results" MODIFIED="1749490535397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/api" />
     <SUITE FILE_PATH="coverage/chat_service$RAGNotKafkaService.coverage" NAME="RAGNotKafkaService Coverage Results" MODIFIED="1749831276328" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/services" />
     <SUITE FILE_PATH="coverage/chat_service$test_v2.coverage" NAME="test_v2 Coverage Results" MODIFIED="1749233104911" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

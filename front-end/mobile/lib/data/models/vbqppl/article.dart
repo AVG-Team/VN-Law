@@ -29,10 +29,15 @@ class Article {
       index: json['index'] ?? '',
       order: json['order'],
       vbqppl: json['vbqppl'] ?? '',
-      vbqpplLink: json['vbqpplLink'] ?? '',
+      vbqpplLink: json['vbqppl_link'] ?? '',
       tables: json['tables'] ?? [],
       files: json['files'] ?? [],
     );
+  }
+
+  @override
+  String toString() {
+    return 'Article{id: $id, name: $name, index: $index, order: $order, vbqppl: $vbqppl, vbqpplLink: $vbqpplLink}, tables: $tables, files: $files}';
   }
 
   String getSummary() {
